@@ -248,6 +248,27 @@ def test_resume_rejects_changed_policy_configuration(tmp_path: Path) -> None:
     graph.close()
 
 
+def test_resume_rejects_changed_evaluator_identity(tmp_path: Path) -> None:
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "evidence.sqlite")
+    graph.save_run(
+        "run_a",
+        step=0,
+        status="completed",
+        config={},
+        metadata={"evaluators": {"essentiality": "artifact-a"}},
+    )
+
+    with pytest.raises(GraphError, match="evaluators"):
+        validate_search_resume(
+            graph,
+            run_id="run_a",
+            resume=True,
+            expected_metadata={"evaluators": {"essentiality": "artifact-b"}},
+        )
+
+    graph.close()
+
+
 @pytest.mark.asyncio
 async def test_heuristic_selects_active_cached_identity_after_config_reversion(
     tmp_path: Path,

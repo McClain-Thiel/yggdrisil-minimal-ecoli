@@ -6,6 +6,7 @@ import argparse
 import asyncio
 import json
 from dataclasses import asdict, dataclass
+from importlib.metadata import distribution
 from pathlib import Path
 
 from yggdrisil import (
@@ -20,6 +21,7 @@ from yggdrisil import (
     SQLiteStateGraph,
 )
 
+from yggdrisil_ecoli import __version__
 from yggdrisil_ecoli.actions import DeleteGenes
 from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.essentiality import EssentialityDataset
@@ -31,6 +33,8 @@ from yggdrisil_ecoli.scorers.essentiality import EssentialityScorer
 from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 from yggdrisil_ecoli.state import GenomeState
+
+SEARCH_CONTRACT_VERSION = 2
 
 
 @dataclass(frozen=True, slots=True)
@@ -104,8 +108,13 @@ async def run_baseline_search(
 
     if policy_name not in {"random", "heuristic"}:
         raise ValueError(f"unknown policy: {policy_name!r}")
+    registry, essentiality, evaluators = load_standard_evaluators(artifacts)
+    evaluator_ids = active_evaluator_ids(evaluators)
     metadata = {
-        "application": "yggdrisil-ecoli",
+        "application": f"yggdrisil-ecoli=={__version__}",
+        "search_contract": SEARCH_CONTRACT_VERSION,
+        "framework": _installed_revision("yggdrisil"),
+        "evaluators": evaluator_ids,
         "policy": policy_name,
         "seed": seed,
         "bundle_size": bundle_size,
@@ -119,7 +128,6 @@ async def run_baseline_search(
             resume=resume,
             expected_metadata=metadata,
         )
-        registry, essentiality, evaluators = load_standard_evaluators(artifacts)
         problem = EcoliProblem(registry, max_genes_per_action=bundle_size)
         policy: Policy[DeleteGenes]
         if policy_name == "random":
@@ -132,7 +140,7 @@ async def run_baseline_search(
             policy = SimpleHeuristicPolicy(
                 registry=registry,
                 essentiality=essentiality,
-                evaluator_ids=active_evaluator_ids(evaluators),
+                evaluator_ids=evaluator_ids,
                 bundle_size=bundle_size,
                 n_proposals=n_proposals,
                 seed=seed,
@@ -186,6 +194,25 @@ def validate_search_resume(
             f"{', '.join(sorted(changed))}; use a new graph for an independent "
             "experiment, or --new-run to reuse the existing DAG"
         )
+
+
+def _installed_revision(name: str) -> str:
+    """Return the exact VCS revision when PEP 610 metadata provides one."""
+
+    package = distribution(name)
+    identity = f"{name}=={package.version}"
+    raw = package.read_text("direct_url.json")
+    if raw is None:
+        return identity
+    try:
+        direct_url = json.loads(raw)
+    except json.JSONDecodeError:
+        return identity
+    if isinstance(direct_url, dict):
+        vcs = direct_url.get("vcs_info")
+        if isinstance(vcs, dict) and isinstance(vcs.get("commit_id"), str):
+            return f"{identity}@{vcs['commit_id']}"
+    return identity
 
 
 def main() -> None:
