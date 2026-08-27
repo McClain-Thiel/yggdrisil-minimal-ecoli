@@ -1,0 +1,28 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.venv/
+__pycache__/
+uv.lock
+*.egg-info/
+build/
+dist/
+runs/
+
+# Reproducible, locally generated scientific data. Source licenses differ, so
+# these artifacts are rebuilt from the recorded source manifest rather than
+# redistributed from this public repository.
+data/raw/*
+data/interim/*
+data/processed/*
+data/external/*
+data/validation/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
+!data/validation/.gitkeep
