@@ -1,8 +1,7 @@
-"""Build frozen Choe 2023 MG1655 essentiality observations and summaries."""
+"""Build the frozen, one-row-per-gene Choe 2023 essentiality artifact."""
 
 from __future__ import annotations
 
-import argparse
 import hashlib
 import json
 import os
@@ -15,7 +14,6 @@ from yggdrisil_ecoli import __version__
 from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.essentiality import (
     parse_choe_workbook,
-    write_essentiality_tables,
 )
 from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
 from yggdrisil_ecoli.data.sources import (
@@ -28,8 +26,9 @@ from yggdrisil_ecoli.data.sources import (
 
 def build_essentiality_data(
     *, registry_path: Path, data_dir: Path, refresh: bool
-) -> tuple[Path, Path]:
+) -> Path:
     registry = GeneRegistry.from_parquet(registry_path)
+    registry_sha256 = file_sha256(registry_path)
     external_dir = data_dir / "external" / "choe2023"
     raw_dir = data_dir / "raw" / "essentiality"
     processed_dir = data_dir / "processed"
@@ -52,17 +51,26 @@ def build_essentiality_data(
     workbook_path = raw_dir / CHOE_2023_MEMBER
     _atomic_bytes(workbook_path, workbook_bytes)
 
-    parsed = parse_choe_workbook(workbook_path, registry)
-    observation_path = processed_dir / "essentiality_observations.parquet"
-    summary_path = processed_dir / "essentiality_summary.parquet"
-    write_essentiality_tables(parsed, observation_path, summary_path)
+    dataset, report = parse_choe_workbook(
+        workbook_path,
+        registry,
+        metadata={
+            "provenance": {
+                "source_bundle_sha256": source_record.sha256,
+                "workbook_sha256": member_sha256,
+                "reference_registry_sha256": registry_sha256,
+            }
+        },
+    )
+    output_path = processed_dir / "essentiality.parquet"
+    dataset.to_parquet(output_path)
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "built_at": datetime.now(UTC).isoformat(),
         "script_version": __version__,
         "reference_registry": {
             "path": str(registry_path),
-            "sha256": file_sha256(registry_path),
+            "sha256": registry_sha256,
         },
         "source": source_record.as_dict(),
         "archive_member": {
@@ -72,29 +80,22 @@ def build_essentiality_data(
             "license": "CC-BY-4.0",
             "doi": "10.1128/msystems.00896-22",
         },
-        "import_audit": parsed.report.as_dict(),
-        "outputs": {
-            "observations": {
-                "path": str(observation_path),
-                "sha256": file_sha256(observation_path),
-                "rows": len(parsed.observations),
-            },
-            "summary": {
-                "path": str(summary_path),
-                "sha256": file_sha256(summary_path),
-                "rows": len(parsed.summaries),
-            },
+        "import_audit": report.as_dict(),
+        "output": {
+            "path": str(output_path),
+            "sha256": file_sha256(output_path),
+            "rows": len(dataset),
         },
     }
     _atomic_json(processed_dir / "essentiality_manifest.json", manifest)
     print(
-        f"Mapped {parsed.report.mapped_source_genes} Choe genes; "
-        f"{len(parsed.report.canonical_genes_without_measurement)} canonical genes "
+        f"Mapped {report.mapped_source_genes} Choe genes; "
+        f"{len(report.canonical_genes_without_measurement)} canonical genes "
         "remain unknown."
     )
-    print(json.dumps(parsed.report.summary_counts, sort_keys=True))
-    print(f"Wrote {observation_path} and {summary_path}")
-    return observation_path, summary_path
+    print(json.dumps(report.summary_counts, sort_keys=True))
+    print(f"Wrote {output_path}")
+    return output_path
 
 
 def _atomic_bytes(path: Path, content: bytes) -> None:
@@ -112,25 +113,3 @@ def _atomic_bytes(path: Path, content: bytes) -> None:
 
 def _atomic_json(path: Path, payload: dict[str, object]) -> None:
     _atomic_bytes(path, (json.dumps(payload, indent=2, sort_keys=True) + "\n").encode())
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--registry",
-        type=Path,
-        default=Path("data/processed/gene_registry.parquet"),
-    )
-    parser.add_argument("--data-dir", type=Path, default=Path("data"))
-    parser.add_argument("--refresh", action="store_true")
-    args = parser.parse_args()
-    try:
-        build_essentiality_data(
-            registry_path=args.registry, data_dir=args.data_dir, refresh=args.refresh
-        )
-    except (DataValidationError, ValueError) as exc:
-        raise SystemExit(str(exc)) from exc
-
-
-if __name__ == "__main__":
-    main()

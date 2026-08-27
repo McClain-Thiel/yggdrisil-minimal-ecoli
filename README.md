@@ -41,7 +41,7 @@ uv run python scripts/build_gene_registry.py \
   --iml1515-json data/external/iML1515.json
 ```
 
-Build the Choe et al. experimental-essentiality tables and KEGG module catalog:
+Build the Choe et al. experimental-essentiality artifact and KEGG module catalog:
 
 ```bash
 uv run python scripts/build_essentiality_data.py

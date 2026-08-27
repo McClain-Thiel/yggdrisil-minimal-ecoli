@@ -69,9 +69,10 @@ is safe.
 
 ## Derived evidence artifacts
 
-- `essentiality_observations.parquet` preserves the source rows and conditions.
-- `essentiality_summary.parquet` reports each canonical gene as `essential`,
-  `conditionally_essential`, `nonessential`, `ambiguous`, or `unknown`.
+- `essentiality.parquet` contains exactly one row per canonical gene, with its
+  LB/M9 source calls, ecIPKM values, derived classification, and explicit
+  measured/unknown coverage. Study, assay, medium, and source-provenance
+  constants are stored once in Parquet metadata rather than repeated per gene.
 - `kegg_modules.json` contains definitions for modules KEGG reports complete in
   wild-type MG1655, plus referenced dependencies. KO assignments belonging to
   non-protein-coding MG1655 genes remain fixed background evidence because those
