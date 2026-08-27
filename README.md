@@ -23,7 +23,8 @@ scientific changes can continue independently.
 
 ## Reproduce the local evidence build
 
-Install the locked development environment:
+Install the development environment. This creates an ignored local `uv.lock`;
+the numerical FBA stack is pinned directly in `pyproject.toml`:
 
 ```bash
 uv sync --extra dev --extra data --extra fba

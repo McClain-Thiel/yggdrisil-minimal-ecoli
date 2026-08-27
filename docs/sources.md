@@ -19,6 +19,6 @@ kept out of Git so every generated build follows the same provenance path.
 Published whole-cell-model and current vEcoli crosswalks are intentionally
 deferred. Their empty registry columns mean "not integrated," not "not modeled."
 
-The v1 numerical environment is locked to COBRApy 0.32.1 and swiglpk 5.0.13
-with the transitive Optlang version in `uv.lock`. All three runtime versions are
-reported in FBA provenance and participate in its cache fingerprint.
+The v1 numerical environment pins COBRApy 0.32.1, Optlang 1.9.1, and swiglpk
+5.0.13 directly in `pyproject.toml`. All three runtime versions are reported in
+FBA provenance and participate in its cache fingerprint.

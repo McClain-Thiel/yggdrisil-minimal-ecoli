@@ -30,6 +30,7 @@ data = [
 ]
 fba = [
     "cobra==0.32.1",
+    "optlang==1.9.1",
     "swiglpk==5.0.13",
 ]
 dev = [
