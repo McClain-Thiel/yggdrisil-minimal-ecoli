@@ -41,6 +41,7 @@ def test_offline_cached_build_writes_registry_audit_and_manifest(
     registry = GeneRegistry.from_parquet(registry_path)
     manifest = json.loads((data_dir / "processed" / "source_manifest.json").read_text())
     assert len(registry) == 3
+    assert manifest["schema_version"] == 2
     assert manifest["outputs"]["gene_registry"]["sha256"] == file_sha256(registry_path)
     assert manifest["outputs"]["gene_registry"]["rows"] == 3
     assert (data_dir / "processed" / "crosswalk_audit.txt").exists()

@@ -54,7 +54,7 @@ def parse_ncbi_gff(path: str | Path) -> ParsedGff:
 
     directives: dict[str, str] = {}
     genes: dict[str, _Feature] = {}
-    products: dict[str, list[tuple[str | None, str | None]]] = {}
+    descriptions: dict[str, str] = {}
     region: _Feature | None = None
 
     for line_number, line in enumerate(_text_lines(Path(path)), start=1):
@@ -85,17 +85,14 @@ def parse_ncbi_gff(path: str | Path) -> ParsedGff:
                 )
             genes[locus_tag] = feature
         elif feature.feature_type == "CDS":
-            candidate = (
-                feature.attributes.get("product"),
-                feature.attributes.get("protein_id"),
-            )
-            candidates = products.setdefault(locus_tag, [])
-            if candidate not in candidates:
-                candidates.append(candidate)
+            description = feature.attributes.get("product")
+            if description is not None:
+                descriptions.setdefault(locus_tag, description)
 
     metadata = _validate_reference(directives, region)
     records = [
-        _gene_record(tag, feature, products.get(tag)) for tag, feature in genes.items()
+        _gene_record(tag, feature, descriptions.get(tag))
+        for tag, feature in genes.items()
     ]
     return ParsedGff(registry=GeneRegistry(records), metadata=metadata)
 
@@ -187,18 +184,13 @@ def _validate_reference(
 def _gene_record(
     b_number: str,
     feature: _Feature,
-    products: list[tuple[str | None, str | None]] | None,
+    description: str | None,
 ) -> GeneRecord:
+    if feature.seqid != REFERENCE_ACCESSION:
+        raise DataValidationError(
+            f"{b_number}: expected reference {REFERENCE_ACCESSION}, got {feature.seqid}"
+        )
     crossrefs = _crossrefs(feature.attributes.get("Dbxref", ""))
-    products = products or []
-    descriptions = tuple(
-        description for description, _protein_id in products if description is not None
-    )
-    protein_ids = tuple(
-        protein_id for _description, protein_id in products if protein_id is not None
-    )
-    description = descriptions[0] if descriptions else None
-    protein_id = protein_ids[0] if protein_ids else None
     symbol = feature.attributes.get("gene") or feature.attributes.get("Name")
     display_name = feature.attributes.get("Name")
     if display_name == symbol:
@@ -208,14 +200,9 @@ def _gene_record(
         symbol=symbol,
         name=display_name,
         description=description,
-        product_descriptions=descriptions,
-        gene_type=feature.attributes["gene_biotype"],
-        reference_accession=feature.seqid,
         start=feature.start,
         end=feature.end,
         strand=feature.strand,
-        protein_id=protein_id,
-        protein_ids=protein_ids,
         ncbi_gene_id=_one_crossref(b_number, crossrefs, "GeneID"),
         ecocyc_id=_one_crossref(b_number, crossrefs, "ECOCYC"),
     )

@@ -12,7 +12,7 @@ from pathlib import Path
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from yggdrisil_ecoli.constants import GENE_TYPE, REFERENCE_ACCESSION, is_b_number
+from yggdrisil_ecoli.constants import is_b_number
 from yggdrisil_ecoli.data.errors import DataValidationError
 
 REGISTRY_SCHEMA = pa.schema(
@@ -21,24 +21,14 @@ REGISTRY_SCHEMA = pa.schema(
         pa.field("symbol", pa.string()),
         pa.field("name", pa.string()),
         pa.field("description", pa.string()),
-        pa.field("product_descriptions", pa.list_(pa.string()), nullable=False),
-        pa.field("gene_type", pa.string(), nullable=False),
-        pa.field("reference_accession", pa.string(), nullable=False),
         pa.field("start", pa.int64(), nullable=False),
         pa.field("end", pa.int64(), nullable=False),
         pa.field("strand", pa.string(), nullable=False),
-        pa.field("protein_id", pa.string()),
-        pa.field("protein_ids", pa.list_(pa.string()), nullable=False),
         pa.field("ncbi_gene_id", pa.string()),
         pa.field("ecocyc_id", pa.string()),
         pa.field("kegg_gene_id", pa.string()),
         pa.field("ko_ids", pa.list_(pa.string()), nullable=False),
         pa.field("iml1515_gene_id", pa.string()),
-        pa.field("in_iml1515", pa.bool_(), nullable=False),
-        pa.field("wcm_gene_id", pa.string()),
-        pa.field("in_published_wcm", pa.bool_(), nullable=False),
-        pa.field("vecoli_gene_id", pa.string()),
-        pa.field("in_current_vecoli", pa.bool_(), nullable=False),
     ]
 )
 
@@ -51,37 +41,18 @@ class GeneRecord:
     symbol: str | None
     name: str | None
     description: str | None
-    product_descriptions: tuple[str, ...]
-    gene_type: str
-    reference_accession: str
     start: int
     end: int
     strand: str
-    protein_id: str | None
-    protein_ids: tuple[str, ...]
     ncbi_gene_id: str | None
     ecocyc_id: str | None
     kegg_gene_id: str | None = None
     ko_ids: tuple[str, ...] = ()
     iml1515_gene_id: str | None = None
-    in_iml1515: bool = False
-    wcm_gene_id: str | None = None
-    in_published_wcm: bool = False
-    vecoli_gene_id: str | None = None
-    in_current_vecoli: bool = False
 
     def __post_init__(self) -> None:
         if not is_b_number(self.b_number):
             raise DataValidationError(f"malformed canonical ID: {self.b_number!r}")
-        if self.gene_type != GENE_TYPE:
-            raise DataValidationError(
-                f"{self.b_number}: unexpected gene type {self.gene_type!r}"
-            )
-        if self.reference_accession != REFERENCE_ACCESSION:
-            raise DataValidationError(
-                f"{self.b_number}: expected {REFERENCE_ACCESSION}, "
-                f"got {self.reference_accession}"
-            )
         if self.start < 1 or self.end < self.start:
             raise DataValidationError(
                 f"{self.b_number}: invalid coordinates {self.start}..{self.end}"
@@ -94,32 +65,17 @@ class GeneRecord:
         if any(not _is_ko_id(ko_id) for ko_id in normalized_kos):
             raise DataValidationError(f"{self.b_number}: malformed KO identifiers")
         object.__setattr__(self, "ko_ids", normalized_kos)
-        object.__setattr__(
-            self,
-            "product_descriptions",
-            tuple(dict.fromkeys(self.product_descriptions)),
-        )
-        object.__setattr__(self, "protein_ids", tuple(dict.fromkeys(self.protein_ids)))
-        if (
-            self.description is not None
-            and self.description not in self.product_descriptions
-        ):
-            raise DataValidationError(
-                f"{self.b_number}: primary description is absent from product list"
-            )
-        if self.protein_id is not None and self.protein_id not in self.protein_ids:
-            raise DataValidationError(
-                f"{self.b_number}: primary protein ID is absent from product list"
-            )
+
+    @property
+    def in_iml1515(self) -> bool:
+        """Whether the canonical ID has an iML1515 crosswalk."""
+
+        return self.iml1515_gene_id is not None
 
     def as_arrow_row(self) -> dict[str, object]:
         """Return a PyArrow-compatible row with deterministic list values."""
 
-        row = asdict(self)
-        row["product_descriptions"] = list(self.product_descriptions)
-        row["protein_ids"] = list(self.protein_ids)
-        row["ko_ids"] = list(self.ko_ids)
-        return row
+        return {**asdict(self), "ko_ids": list(self.ko_ids)}
 
 
 class GeneRegistry:
@@ -172,8 +128,6 @@ class GeneRegistry:
         table = pq.read_table(path, schema=REGISTRY_SCHEMA)
         records = []
         for row in table.to_pylist():
-            row["product_descriptions"] = tuple(row["product_descriptions"] or ())
-            row["protein_ids"] = tuple(row["protein_ids"] or ())
             row["ko_ids"] = tuple(row["ko_ids"] or ())
             records.append(GeneRecord(**row))
         return cls(records)

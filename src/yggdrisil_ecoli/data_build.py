@@ -3,9 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import json
-import os
-import tempfile
 import time
 from datetime import UTC, datetime
 from pathlib import Path
@@ -16,7 +13,7 @@ from yggdrisil_ecoli.constants import (
     ORGANISM_NAME,
     REFERENCE_ACCESSION,
 )
-from yggdrisil_ecoli.data.audit import audit_registry, write_audit
+from yggdrisil_ecoli.data.audit import audit_registry, write_audit, write_json
 from yggdrisil_ecoli.data.crosswalks import (
     CrosswalkDiagnostics,
     add_iml1515_membership,
@@ -106,7 +103,7 @@ def build_registry(
     )
 
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "built_at": datetime.now(UTC).isoformat(),
         "script_version": __version__,
         "reference": {
@@ -126,29 +123,10 @@ def build_registry(
         },
         "crosswalk_audit": audit.as_dict(),
     }
-    _atomic_json(processed_dir / "source_manifest.json", manifest)
+    write_json(processed_dir / "source_manifest.json", manifest)
     print(audit.render_text(), end="")
     print(f"\nWrote {registry_path}")
     return registry_path
-
-
-def _atomic_json(path: Path, payload: dict[str, object]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    content = json.dumps(payload, indent=2, sort_keys=True) + "\n"
-    with tempfile.NamedTemporaryFile(
-        mode="w",
-        encoding="utf-8",
-        prefix=f".{path.name}.",
-        suffix=".tmp",
-        dir=path.parent,
-        delete=False,
-    ) as handle:
-        handle.write(content)
-        temporary = Path(handle.name)
-    try:
-        os.replace(temporary, path)
-    finally:
-        temporary.unlink(missing_ok=True)
 
 
 def _parser() -> argparse.ArgumentParser:

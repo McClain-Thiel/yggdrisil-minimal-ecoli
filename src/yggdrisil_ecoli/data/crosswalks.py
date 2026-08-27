@@ -104,7 +104,6 @@ def add_iml1515_membership(
         replace(
             record,
             iml1515_gene_id=(record.b_number if record.b_number in model_ids else None),
-            in_iml1515=record.b_number in model_ids,
         )
         for record in registry
     ]

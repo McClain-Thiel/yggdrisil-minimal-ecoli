@@ -13,7 +13,7 @@ identity or silently translated outside the registry layer.
 ## Source ownership
 
 - NCBI RefSeq GFF3 owns the canonical gene set, coordinates, symbols, NCBI Gene
-  identifiers, EcoCyc cross-references, protein accessions, and descriptions.
+  identifiers, EcoCyc cross-references, and descriptions.
 - KEGG contributes only `eco` gene identifiers and KO cross-references. Its API
   is optional, build-time only, rate-limited, and requires explicit acceptance
   of KEGG's academic-use terms.
@@ -42,14 +42,15 @@ published MG1655 deletion intervals:
 | `symbol` | Current NCBI display symbol, nullable. |
 | `name` | Longer gene name when separately available, nullable. |
 | `description` | NCBI product description, nullable. |
-| `gene_type` | `protein_coding` in v1. |
-| `reference_accession` | Must be `NC_000913.3`. |
 | `start`, `end`, `strand` | One-based inclusive reference coordinates. |
-| `protein_id` | First NCBI translated-product accession for compact display. |
-| `product_descriptions`, `protein_ids` | Complete ordered CDS-product lists; these preserve genes such as `b0149` that have more than one annotated translation. |
 | `ncbi_gene_id`, `ecocyc_id` | External identifiers from NCBI GFF3. |
 | `kegg_gene_id`, `ko_ids` | Optional KEGG snapshot mappings. |
-| `*_gene_id`, `in_*` | Model-universe membership and identifier. |
+| `iml1515_gene_id` | Optional model-universe mapping; membership is derived from its presence. |
+
+Protein-coding type and reference accession are validated once at the GFF3
+boundary and recorded in the source manifest rather than repeated on every row.
+Published-WCM and current-vEcoli data remain held out and are not registry
+columns.
 
 ## Build failures
 

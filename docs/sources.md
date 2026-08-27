@@ -17,7 +17,7 @@ only as a local artifact. Choe supplementary data are CC BY 4.0, but are also
 kept out of Git so every generated build follows the same provenance path.
 
 Published whole-cell-model and current vEcoli crosswalks are intentionally
-deferred. Their empty registry columns mean "not integrated," not "not modeled."
+deferred and are not exposed in the search registry.
 
 The v1 numerical environment pins COBRApy 0.32.1, Optlang 1.9.1, and swiglpk
 5.0.13 directly in `pyproject.toml`. All three runtime versions are reported in

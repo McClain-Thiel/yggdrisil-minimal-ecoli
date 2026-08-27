@@ -6,28 +6,25 @@ import argparse
 import json
 import os
 import tempfile
-from collections import defaultdict
-from dataclasses import asdict, dataclass, field
+from collections import Counter, defaultdict
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from yggdrisil_ecoli.data.crosswalks import CrosswalkDiagnostics
 from yggdrisil_ecoli.data.registry import GeneRecord, GeneRegistry
 
-
-@dataclass(frozen=True, slots=True)
-class CoverageCount:
-    mapped: int
-    total: int
-
-    @property
-    def percent(self) -> float:
-        return 100.0 * self.mapped / self.total if self.total else 0.0
+_CROSSWALK_FIELDS = {
+    "ncbi_gene": "ncbi_gene_id",
+    "ecocyc": "ecocyc_id",
+    "kegg_gene": "kegg_gene_id",
+    "iml1515": "iml1515_gene_id",
+}
 
 
 @dataclass(slots=True)
 class AuditReport:
     canonical_protein_coding_genes: int
-    coverage: dict[str, CoverageCount]
+    coverage: dict[str, int]
     duplicate_b_numbers: list[str] = field(default_factory=list)
     ambiguous_mappings: dict[str, dict[str, list[str]]] = field(default_factory=dict)
     unresolved_identifiers: dict[str, list[str]] = field(default_factory=dict)
@@ -56,14 +53,16 @@ class AuditReport:
         return errors
 
     def as_dict(self) -> dict[str, object]:
+        total = self.canonical_protein_coding_genes
         return {
-            "canonical_protein_coding_genes": self.canonical_protein_coding_genes,
+            "canonical_protein_coding_genes": total,
             "coverage": {
                 name: {
-                    **asdict(count),
-                    "percent": round(count.percent, 4),
+                    "mapped": mapped,
+                    "total": total,
+                    "percent": round(_percent(mapped, total), 4),
                 }
-                for name, count in sorted(self.coverage.items())
+                for name, mapped in sorted(self.coverage.items())
             },
             "duplicate_b_numbers": self.duplicate_b_numbers,
             "ambiguous_mappings": self.ambiguous_mappings,
@@ -78,8 +77,8 @@ class AuditReport:
         total = self.canonical_protein_coding_genes
 
         def line(label: str, key: str) -> str:
-            count = self.coverage[key]
-            return f"{label:<30}{count.mapped:>5} / {total} ({count.percent:6.2f}%)"
+            mapped = self.coverage[key]
+            return f"{label:<30}{mapped:>5} / {total} ({_percent(mapped, total):6.2f}%)"
 
         output = [
             f"Canonical protein-coding MG1655 genes: {total}",
@@ -89,9 +88,7 @@ class AuditReport:
             line("KEGG gene mapped:", "kegg_gene"),
             line("KO mapped:", "ko"),
             "",
-            f"Present in iML1515:          {self.coverage['iml1515'].mapped}",
-            (f"Present in published WCM:    {self.coverage['published_wcm'].mapped}"),
-            (f"Present in current vEcoli:   {self.coverage['current_vecoli'].mapped}"),
+            f"Present in iML1515:          {self.coverage['iml1515']}",
             "",
             f"Duplicate b-numbers:         {len(self.duplicate_b_numbers)}",
             f"Ambiguous mappings:          {self.ambiguous_count}",
@@ -118,20 +115,10 @@ def audit_registry(
 
     rows = list(records)
     total = len(rows)
-    b_counts: dict[str, int] = defaultdict(int)
-    for record in rows:
-        b_counts[record.b_number] += 1
+    b_counts = Counter(record.b_number for record in rows)
 
-    external_fields = {
-        "ncbi_gene": "ncbi_gene_id",
-        "ecocyc": "ecocyc_id",
-        "kegg_gene": "kegg_gene_id",
-        "iml1515": "iml1515_gene_id",
-        "published_wcm": "wcm_gene_id",
-        "current_vecoli": "vecoli_gene_id",
-    }
     ambiguous: dict[str, dict[str, list[str]]] = {}
-    for namespace, field_name in external_fields.items():
+    for namespace, field_name in _CROSSWALK_FIELDS.items():
         inverse: dict[str, set[str]] = defaultdict(set)
         for record in rows:
             value = getattr(record, field_name)
@@ -146,15 +133,10 @@ def audit_registry(
             ambiguous[namespace] = conflicts
 
     coverage = {
-        name: CoverageCount(
-            mapped=sum(getattr(record, field_name) is not None for record in rows),
-            total=total,
-        )
-        for name, field_name in external_fields.items()
+        name: sum(getattr(record, field_name) is not None for record in rows)
+        for name, field_name in _CROSSWALK_FIELDS.items()
     }
-    coverage["ko"] = CoverageCount(
-        mapped=sum(bool(record.ko_ids) for record in rows), total=total
-    )
+    coverage["ko"] = sum(bool(record.ko_ids) for record in rows)
     unresolved = diagnostics.unresolved_identifiers if diagnostics else {}
     notes = diagnostics.notes if diagnostics else []
     return AuditReport(
@@ -172,8 +154,14 @@ def audit_registry(
 def write_audit(report: AuditReport, json_path: Path, text_path: Path) -> None:
     """Atomically persist machine- and human-readable audit artifacts."""
 
-    _atomic_text(json_path, json.dumps(report.as_dict(), indent=2, sort_keys=True))
+    write_json(json_path, report.as_dict())
     _atomic_text(text_path, report.render_text())
+
+
+def write_json(path: Path, payload: dict[str, object]) -> None:
+    """Atomically write a deterministic JSON object."""
+
+    _atomic_text(path, json.dumps(payload, indent=2, sort_keys=True))
 
 
 def _atomic_text(path: Path, content: str) -> None:
@@ -192,6 +180,10 @@ def _atomic_text(path: Path, content: str) -> None:
         os.replace(temporary, path)
     finally:
         temporary.unlink(missing_ok=True)
+
+
+def _percent(mapped: int, total: int) -> float:
+    return 100.0 * mapped / total if total else 0.0
 
 
 def main() -> None:
