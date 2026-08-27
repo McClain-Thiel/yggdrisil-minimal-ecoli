@@ -21,6 +21,7 @@ from yggdrisil import (
 )
 
 from yggdrisil_ecoli.actions import DeleteGenes
+from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.essentiality import EssentialityDataset
 from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
 from yggdrisil_ecoli.policies import RandomDeletionSampler, SimpleHeuristicPolicy
@@ -30,6 +31,7 @@ from yggdrisil_ecoli.scorers.essentiality import EssentialityScorer
 from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 from yggdrisil_ecoli.state import GenomeState
+
 
 @dataclass(frozen=True, slots=True)
 class SearchArtifacts:
@@ -204,21 +206,24 @@ def main() -> None:
     )
     parser.add_argument("--data-dir", type=Path, default=Path("data"))
     args = parser.parse_args()
-    result = asyncio.run(
-        run_baseline_search(
-            artifacts=SearchArtifacts(args.data_dir),
-            graph_path=args.graph,
-            policy_name=args.policy,
-            seed=args.seed,
-            bundle_size=args.bundle_size,
-            n_proposals=args.n_proposals,
-            max_states=args.max_states,
-            max_steps=args.max_steps,
-            max_wall_time_s=args.max_wall_time_s,
-            run_id=args.run_id,
-            resume=not args.new_run,
+    try:
+        result = asyncio.run(
+            run_baseline_search(
+                artifacts=SearchArtifacts(args.data_dir),
+                graph_path=args.graph,
+                policy_name=args.policy,
+                seed=args.seed,
+                bundle_size=args.bundle_size,
+                n_proposals=args.n_proposals,
+                max_states=args.max_states,
+                max_steps=args.max_steps,
+                max_wall_time_s=args.max_wall_time_s,
+                run_id=args.run_id,
+                resume=not args.new_run,
+            )
         )
-    )
+    except (DataValidationError, GraphError, OSError, ValueError) as exc:
+        raise SystemExit(str(exc)) from exc
     print(json.dumps(asdict(result), indent=2, sort_keys=True))
 
 

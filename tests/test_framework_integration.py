@@ -19,7 +19,8 @@ from yggdrisil_ecoli.actions import DeleteGenes
 from yggdrisil_ecoli.data.essentiality import (
     EssentialityClass,
     EssentialityDataset,
-    EssentialitySummary,
+    EssentialityRecord,
+    SourceCall,
 )
 from yggdrisil_ecoli.data.gff import parse_ncbi_gff
 from yggdrisil_ecoli.policies import RandomDeletionSampler, SimpleHeuristicPolicy
@@ -153,8 +154,7 @@ async def test_simple_heuristic_avoids_infeasible_parent_and_essential_gene(
             _essentiality_summary("b0001", "essential"),
             _essentiality_summary("b0002", "nonessential"),
             _essentiality_summary("b0003", "nonessential"),
-        ),
-        (),
+        )
     )
     graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "policy.sqlite")
     root = graph.add_state(
@@ -208,18 +208,22 @@ async def test_simple_heuristic_avoids_infeasible_parent_and_essential_gene(
 def _essentiality_summary(
     gene: str,
     classification: EssentialityClass,
-) -> EssentialitySummary:
-    return EssentialitySummary(
+) -> EssentialityRecord:
+    calls: dict[EssentialityClass, tuple[SourceCall, SourceCall]] = {
+        "essential": ("E", "E"),
+        "conditionally_essential": ("NE", "E"),
+        "nonessential": ("NE", "NE"),
+        "ambiguous": ("E", "NE"),
+    }
+    lb_call, m9_call = calls[classification]
+    return EssentialityRecord(
         b_number=gene,
         classification=classification,
-        m9_call_raw=None,
-        lb_call_raw=None,
-        m9_ecipkm=None,
-        lb_ecipkm=None,
-        cross_condition_pattern=None,
-        evidence_conflict=False,
-        basis_observation_ids=(),
-        study_id="fixture",
+        coverage="measured",
+        lb_call_raw=lb_call,
+        lb_ecipkm=1.0 if lb_call == "E" else 3.0,
+        m9_call_raw=m9_call,
+        m9_ecipkm=1.0 if m9_call == "E" else 3.0,
     )
 
 
@@ -254,8 +258,7 @@ async def test_heuristic_selects_active_cached_identity_after_config_reversion(
             _essentiality_summary("b0001", "nonessential"),
             _essentiality_summary("b0002", "nonessential"),
             _essentiality_summary("b0003", "nonessential"),
-        ),
-        (),
+        )
     )
     graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "identity.sqlite")
     graph.add_state("root", GenomeState(frozenset()))

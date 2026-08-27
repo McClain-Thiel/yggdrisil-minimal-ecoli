@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import json
-import os
 import re
-import tempfile
 import time
 from datetime import UTC, datetime
 from pathlib import Path
@@ -13,6 +11,7 @@ from pathlib import Path
 from yggdrisil_ecoli import __version__
 from yggdrisil_ecoli.constants import KEGG_ORGANISM
 from yggdrisil_ecoli.data.errors import DataValidationError
+from yggdrisil_ecoli.data.io import atomic_json
 from yggdrisil_ecoli.data.kegg_modules import (
     PARSER_SEMANTICS_VERSION,
     KeggModuleEntry,
@@ -127,7 +126,7 @@ def build_kegg_modules(
         },
     }
     output_path = processed_dir / "kegg_modules.json"
-    _atomic_json(output_path, payload)
+    atomic_json(output_path, payload)
     manifest = {
         "schema_version": 1,
         "built_at": datetime.now(UTC).isoformat(),
@@ -150,7 +149,7 @@ def build_kegg_modules(
             }
         },
     }
-    _atomic_json(processed_dir / "kegg_modules_manifest.json", manifest)
+    atomic_json(processed_dir / "kegg_modules_manifest.json", manifest)
     print(
         f"Validated {len(wt_complete_ids)} WT-complete modules against "
         f"{len(wt_kos)} remaining-gene KOs."
@@ -255,22 +254,3 @@ def _definition_source(module_ids: list[str]) -> SourceSpec:
         source_version="live REST snapshot (content hash frozen in manifest)",
         redistribution="academic-use API snapshot; do not redistribute",
     )
-
-
-def _atomic_json(path: Path, payload: dict[str, object]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    content = json.dumps(payload, indent=2, sort_keys=True) + "\n"
-    with tempfile.NamedTemporaryFile(
-        mode="w",
-        encoding="utf-8",
-        prefix=f".{path.name}.",
-        suffix=".tmp",
-        dir=path.parent,
-        delete=False,
-    ) as handle:
-        handle.write(content)
-        temporary = Path(handle.name)
-    try:
-        os.replace(temporary, path)
-    finally:
-        temporary.unlink(missing_ok=True)

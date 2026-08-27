@@ -64,9 +64,7 @@ async def validate(data_dir: Path, seed: int) -> dict[str, object]:
         failures.append("wild type has no positive FBA biomass solution")
     if evaluated["metabolic_and_rule_trpA"]["fba"].metrics["growth_rate"] != 0.0:
         failures.append("b1260 deletion did not eliminate iML1515 biomass")
-    dna_a_coverage = evaluated["known_essential_dnaA"]["fba"].metadata[
-        "coverage"
-    ]
+    dna_a_coverage = evaluated["known_essential_dnaA"]["fba"].metadata["coverage"]
     if not isinstance(dna_a_coverage, dict) or (
         dna_a_coverage.get("deleted_genes_unmodeled") != 1
     ):
@@ -98,7 +96,10 @@ def main() -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
     print(f"environment validation: {report['status']} ({output})")
-    for failure in report["failures"]:
+    failures = report["failures"]
+    if not isinstance(failures, list):
+        raise TypeError("malformed validation failures")
+    for failure in failures:
         print(f"- {failure}")
     if report["status"] != "passed":
         raise SystemExit(1)

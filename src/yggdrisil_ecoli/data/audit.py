@@ -2,14 +2,12 @@
 
 from __future__ import annotations
 
-import json
-import os
-import tempfile
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from yggdrisil_ecoli.data.crosswalks import CrosswalkDiagnostics
+from yggdrisil_ecoli.data.io import atomic_json, atomic_text
 from yggdrisil_ecoli.data.registry import GeneRecord, GeneRegistry
 
 _CROSSWALK_FIELDS = {
@@ -153,32 +151,8 @@ def audit_registry(
 def write_audit(report: AuditReport, json_path: Path, text_path: Path) -> None:
     """Atomically persist machine- and human-readable audit artifacts."""
 
-    write_json(json_path, report.as_dict())
-    _atomic_text(text_path, report.render_text())
-
-
-def write_json(path: Path, payload: dict[str, object]) -> None:
-    """Atomically write a deterministic JSON object."""
-
-    _atomic_text(path, json.dumps(payload, indent=2, sort_keys=True))
-
-
-def _atomic_text(path: Path, content: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile(
-        mode="w",
-        encoding="utf-8",
-        prefix=f".{path.name}.",
-        suffix=".tmp",
-        dir=path.parent,
-        delete=False,
-    ) as handle:
-        handle.write(content.rstrip("\n") + "\n")
-        temporary = Path(handle.name)
-    try:
-        os.replace(temporary, path)
-    finally:
-        temporary.unlink(missing_ok=True)
+    atomic_json(json_path, report.as_dict())
+    atomic_text(text_path, report.render_text())
 
 
 def _percent(mapped: int, total: int) -> float:

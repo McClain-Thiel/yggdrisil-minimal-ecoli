@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
-import tempfile
 import zipfile
 from datetime import UTC, datetime
 from pathlib import Path
@@ -15,6 +13,7 @@ from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.essentiality import (
     parse_choe_workbook,
 )
+from yggdrisil_ecoli.data.io import atomic_bytes, atomic_json
 from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
 from yggdrisil_ecoli.data.sources import (
     CHOE_2023_MEMBER,
@@ -49,7 +48,7 @@ def build_essentiality_data(
             f"got {member_sha256}"
         )
     workbook_path = raw_dir / CHOE_2023_MEMBER
-    _atomic_bytes(workbook_path, workbook_bytes)
+    atomic_bytes(workbook_path, workbook_bytes)
 
     dataset, report = parse_choe_workbook(
         workbook_path,
@@ -87,7 +86,7 @@ def build_essentiality_data(
             "rows": len(dataset),
         },
     }
-    _atomic_json(processed_dir / "essentiality_manifest.json", manifest)
+    atomic_json(processed_dir / "essentiality_manifest.json", manifest)
     print(
         f"Mapped {report.mapped_source_genes} Choe genes; "
         f"{len(report.canonical_genes_without_measurement)} canonical genes "
@@ -96,20 +95,3 @@ def build_essentiality_data(
     print(json.dumps(report.summary_counts, sort_keys=True))
     print(f"Wrote {output_path}")
     return output_path
-
-
-def _atomic_bytes(path: Path, content: bytes) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile(
-        prefix=f".{path.name}.", suffix=".tmp", dir=path.parent, delete=False
-    ) as handle:
-        handle.write(content)
-        temporary = Path(handle.name)
-    try:
-        os.replace(temporary, path)
-    finally:
-        temporary.unlink(missing_ok=True)
-
-
-def _atomic_json(path: Path, payload: dict[str, object]) -> None:
-    _atomic_bytes(path, (json.dumps(payload, indent=2, sort_keys=True) + "\n").encode())

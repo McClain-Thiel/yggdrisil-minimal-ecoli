@@ -6,13 +6,12 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
-import tempfile
 import zipfile
 from datetime import UTC, datetime
 from pathlib import Path
 
 from yggdrisil_ecoli.data.errors import DataValidationError
+from yggdrisil_ecoli.data.io import atomic_bytes
 from yggdrisil_ecoli.data.sources import (
     IML1515_PUBLICATION_ARCHIVE,
     IML1515_PUBLICATION_MEMBER,
@@ -48,7 +47,7 @@ def fetch_iml1515(data_dir: Path, *, refresh: bool) -> Path:
     model = json.loads(model_bytes)
     _validate_model(model)
     model_path = external / "iML1515.json"
-    _atomic_bytes(model_path, model_bytes)
+    atomic_bytes(model_path, model_bytes)
     manifest = {
         "schema_version": 1,
         "fetched_at": datetime.now(UTC).isoformat(),
@@ -65,7 +64,7 @@ def fetch_iml1515(data_dir: Path, *, refresh: bool) -> Path:
             **{key: len(model[key]) for key in ("genes", "reactions", "metabolites")},
         },
     }
-    _atomic_bytes(
+    atomic_bytes(
         external / "iML1515.manifest.json",
         (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode(),
     )
@@ -77,25 +76,16 @@ def _validate_model(payload: object) -> None:
         raise DataValidationError("iML1515 publication member is not a JSON object")
     if payload.get("id") != "iML1515" or payload.get("version") != "1":
         raise DataValidationError("unexpected iML1515 model identity or version")
-    for key, expected in {"genes": 1516, "reactions": 2712, "metabolites": 1877}.items():
+    for key, expected in {
+        "genes": 1516,
+        "reactions": 2712,
+        "metabolites": 1877,
+    }.items():
         value = payload.get(key)
         if not isinstance(value, list) or len(value) != expected:
             raise DataValidationError(
                 f"unexpected iML1515 {key} count: expected {expected}"
             )
-
-
-def _atomic_bytes(path: Path, content: bytes) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile(
-        prefix=f".{path.name}.", suffix=".tmp", dir=path.parent, delete=False
-    ) as handle:
-        handle.write(content)
-        temporary = Path(handle.name)
-    try:
-        os.replace(temporary, path)
-    finally:
-        temporary.unlink(missing_ok=True)
 
 
 def main() -> None:

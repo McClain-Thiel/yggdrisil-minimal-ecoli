@@ -12,13 +12,14 @@ from yggdrisil_ecoli.constants import (
     ORGANISM_NAME,
     REFERENCE_ACCESSION,
 )
-from yggdrisil_ecoli.data.audit import audit_registry, write_audit, write_json
+from yggdrisil_ecoli.data.audit import audit_registry, write_audit
 from yggdrisil_ecoli.data.crosswalks import (
     CrosswalkDiagnostics,
     add_iml1515_membership,
     add_kegg_crosswalk,
 )
 from yggdrisil_ecoli.data.gff import parse_ncbi_gff
+from yggdrisil_ecoli.data.io import atomic_json
 from yggdrisil_ecoli.data.registry import file_sha256
 from yggdrisil_ecoli.data.sources import (
     KEGG_GENE_LIST,
@@ -122,7 +123,7 @@ def build_registry(
         },
         "crosswalk_audit": audit.as_dict(),
     }
-    write_json(processed_dir / "source_manifest.json", manifest)
+    atomic_json(processed_dir / "source_manifest.json", manifest)
     print(audit.render_text(), end="")
     print(f"\nWrote {registry_path}")
     return registry_path
