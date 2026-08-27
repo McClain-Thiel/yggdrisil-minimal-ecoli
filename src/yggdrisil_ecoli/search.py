@@ -30,7 +30,7 @@ from yggdrisil_ecoli.scorers.modules import ModuleCatalog, ModuleRetentionScorer
 from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 from yggdrisil_ecoli.state import GenomeState
 
-YGGDRISIL_COMMIT = "833ab5c007021a67c852520dce2603be7945aacb"
+YGGDRISIL_COMMIT = "d114144e4696989aacb85a4159c4177909deef1f"
 
 
 @dataclass(frozen=True, slots=True)
