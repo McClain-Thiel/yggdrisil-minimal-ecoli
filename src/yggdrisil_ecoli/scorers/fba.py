@@ -6,12 +6,10 @@ import asyncio
 import hashlib
 import json
 import math
-from contextlib import contextmanager
-from dataclasses import dataclass
 from importlib.metadata import version
 from pathlib import Path
 from types import MappingProxyType
-from typing import Iterator, Mapping
+from typing import Mapping
 
 from cobra import Model
 from cobra.io import load_json_model
@@ -54,163 +52,121 @@ M9_GLUCOSE_AEROBIC_MEDIUM: Mapping[str, float] = MappingProxyType(
     }
 )
 
-
-@dataclass(frozen=True, slots=True)
-class FBAEnvironment:
-    name: str
-    medium: Mapping[str, float]
-    oxygenation: str
-    temperature_c: float
-    solver: str = "glpk"
-
-    def config_hash(self) -> str:
-        payload = {
-            "name": self.name,
-            "medium": dict(sorted(self.medium.items())),
-            "oxygenation": self.oxygenation,
-            "temperature_c": self.temperature_c,
-            "solver": self.solver,
-        }
-        encoded = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode()
-        return hashlib.sha256(encoded).hexdigest()
+_ENVIRONMENT = {
+    "name": "aerobic_m9_minimal_glucose",
+    "medium": dict(sorted(M9_GLUCOSE_AEROBIC_MEDIUM.items())),
+    "oxygenation": "aerobic_unlimited_oxygen",
+    "temperature_c": 37.0,
+    "solver": "glpk",
+}
 
 
-DEFAULT_FBA_ENVIRONMENT = FBAEnvironment(
-    name="aerobic_m9_minimal_glucose",
-    medium=M9_GLUCOSE_AEROBIC_MEDIUM,
-    oxygenation="aerobic_unlimited_oxygen",
-    temperature_c=37.0,
-)
+def _sha256_json(value: object) -> str:
+    encoded = json.dumps(value, separators=(",", ":"), sort_keys=True).encode()
+    return hashlib.sha256(encoded).hexdigest()
 
 
-@dataclass(frozen=True, slots=True)
-class FBAResult:
-    feasible: bool
-    growth_rate: float | None
-    solver_status: str
-    deleted_genes_total: int
-    deleted_genes_modeled: int
-    deleted_genes_unmodeled: int
-    modeled_gene_ids: tuple[str, ...]
-    unmodeled_gene_ids: tuple[str, ...]
-    model_sha256: str
-    registry_mapping_hash: str
-    environment_config_hash: str
-    solver: str
-    cobra_version: str
-    optlang_version: str
-    solver_package: str
-    solver_package_version: str
+class FBAScorer:
+    """Native Yggdrisil evaluator using a fresh iML1515 copy per candidate."""
 
-    def metrics(self) -> dict[str, object]:
-        return {
-            "feasible": self.feasible,
-            "growth_rate": self.growth_rate,
-            "solver_status": self.solver_status,
-        }
-
-    def coverage(self) -> dict[str, object]:
-        return {
-            "deleted_genes_total": self.deleted_genes_total,
-            "deleted_genes_modeled": self.deleted_genes_modeled,
-            "deleted_genes_unmodeled": self.deleted_genes_unmodeled,
-            "modeled_gene_ids": list(self.modeled_gene_ids),
-            "unmodeled_gene_ids": list(self.unmodeled_gene_ids),
-        }
-
-    def provenance(self) -> dict[str, object]:
-        return {
-            "model_sha256": self.model_sha256,
-            "registry_mapping_hash": self.registry_mapping_hash,
-            "environment_config_hash": self.environment_config_hash,
-            "solver": self.solver,
-            "cobra_version": self.cobra_version,
-            "optlang_version": self.optlang_version,
-            "solver_package": self.solver_package,
-            "solver_package_version": self.solver_package_version,
-        }
-
-
-class FBAEvaluator:
-    """Copy-on-score iML1515 evaluator; the frozen base model is never mutated."""
+    name = "fba"
+    version = "1"
 
     def __init__(
         self,
         *,
         model_path: str | Path,
         registry: GeneRegistry,
-        environment: FBAEnvironment = DEFAULT_FBA_ENVIRONMENT,
+        solver: str = "glpk",
     ) -> None:
+        if solver != "glpk":
+            raise DataValidationError("v1 FBA supports only the pinned GLPK solver")
         self.model_path = Path(model_path)
         self.registry = registry
-        self.environment = environment
-        if environment.solver != "glpk":
-            raise DataValidationError("v1 FBA supports only the pinned GLPK solver")
         self.model_sha256 = file_sha256(self.model_path)
-        mapping_payload = [
-            (record.b_number, record.iml1515_gene_id) for record in self.registry
-        ]
-        self.registry_mapping_hash = hashlib.sha256(
-            json.dumps(mapping_payload, separators=(",", ":")).encode()
-        ).hexdigest()
+        self.registry_mapping_hash = _sha256_json(
+            [(record.b_number, record.iml1515_gene_id) for record in registry]
+        )
+        self.environment_config_hash = _sha256_json(_ENVIRONMENT)
+        self.solver = solver
         self.cobra_version = version("cobra")
         self.optlang_version = version("optlang")
         self.solver_package = "swiglpk"
         self.solver_package_version = version(self.solver_package)
+        self.config = {
+            "model_sha256": self.model_sha256,
+            "registry_mapping_sha256": self.registry_mapping_hash,
+            "environment_config_sha256": self.environment_config_hash,
+            "cobra_version": self.cobra_version,
+            "optlang_version": self.optlang_version,
+            "solver_package": self.solver_package,
+            "solver_package_version": self.solver_package_version,
+        }
         self._base_model = load_json_model(str(self.model_path))
-        self._validate_model(self._base_model)
+        self._validate_model()
 
-    def score_deleted(self, deleted_genes: set[str] | frozenset[str]) -> FBAResult:
-        deleted, modeled, unmodeled = self._partition_deletions(deleted_genes)
-        with self._candidate_model(modeled) as model:
-            solution = model.optimize()
-            status = str(solution.status)
-            feasible = status == "optimal"
-            growth: float | None = None
-            if feasible and solution.objective_value is not None:
-                candidate = float(solution.objective_value)
-                if not math.isfinite(candidate):
-                    raise DataValidationError("FBA returned non-finite biomass flux")
-                growth = 0.0 if abs(candidate) < 1e-9 else candidate
-        return FBAResult(
-            feasible=feasible,
-            growth_rate=growth,
-            solver_status=status,
-            deleted_genes_total=len(deleted),
-            deleted_genes_modeled=len(modeled),
-            deleted_genes_unmodeled=len(unmodeled),
-            modeled_gene_ids=modeled,
-            unmodeled_gene_ids=unmodeled,
-            model_sha256=self.model_sha256,
-            registry_mapping_hash=self.registry_mapping_hash,
-            environment_config_hash=self.environment.config_hash(),
-            solver=self.environment.solver,
-            cobra_version=self.cobra_version,
-            optlang_version=self.optlang_version,
-            solver_package=self.solver_package,
-            solver_package_version=self.solver_package_version,
+    async def evaluate(self, state: GenomeState) -> EvaluationResult:
+        """Evaluate a candidate without blocking Yggdrisil's event loop."""
+
+        metrics, coverage = await asyncio.to_thread(
+            self._score_deleted, state.deleted_genes
+        )
+        return scientific_evaluation(
+            metrics,
+            coverage=coverage,
+            provenance={
+                "model_sha256": self.model_sha256,
+                "registry_mapping_hash": self.registry_mapping_hash,
+                "environment_config_hash": self.environment_config_hash,
+                "solver": self.solver,
+                "cobra_version": self.cobra_version,
+                "optlang_version": self.optlang_version,
+                "solver_package": self.solver_package,
+                "solver_package_version": self.solver_package_version,
+            },
         )
 
-    async def score_deleted_async(
+    def _score_deleted(
         self, deleted_genes: set[str] | frozenset[str]
-    ) -> FBAResult:
-        """Run blocking solver work outside an async scorer event loop."""
-
-        return await asyncio.to_thread(self.score_deleted, deleted_genes)
+    ) -> tuple[dict[str, object], dict[str, object]]:
+        deleted, modeled, unmodeled = self._partition_deletions(deleted_genes)
+        solution = self._candidate_model(modeled).optimize()
+        status = str(solution.status)
+        feasible = status == "optimal"
+        growth: float | None = None
+        if feasible and solution.objective_value is not None:
+            candidate = float(solution.objective_value)
+            if not math.isfinite(candidate):
+                raise DataValidationError("FBA returned non-finite biomass flux")
+            growth = 0.0 if abs(candidate) < 1e-9 else candidate
+        return (
+            {
+                "feasible": feasible,
+                "growth_rate": growth,
+                "solver_status": status,
+            },
+            {
+                "deleted_genes_total": len(deleted),
+                "deleted_genes_modeled": len(modeled),
+                "deleted_genes_unmodeled": len(unmodeled),
+                "modeled_gene_ids": list(modeled),
+                "unmodeled_gene_ids": list(unmodeled),
+            },
+        )
 
     def reaction_bounds_after_deletion(
         self,
         deleted_genes: set[str] | frozenset[str],
         reaction_ids: tuple[str, ...],
     ) -> dict[str, tuple[float, float]]:
-        """Diagnostic used by GPR correctness checks and environment validation."""
+        """Return candidate bounds for GPR and environment diagnostics."""
 
         _deleted, modeled, _unmodeled = self._partition_deletions(deleted_genes)
-        with self._candidate_model(modeled) as model:
-            return {
-                reaction_id: tuple(model.reactions.get_by_id(reaction_id).bounds)
-                for reaction_id in reaction_ids
-            }
+        model = self._candidate_model(modeled)
+        return {
+            reaction_id: tuple(model.reactions.get_by_id(reaction_id).bounds)
+            for reaction_id in reaction_ids
+        }
 
     def base_reaction_bounds(
         self, reaction_ids: tuple[str, ...]
@@ -227,27 +183,23 @@ class FBAEvaluator:
         modeled: list[str] = []
         unmodeled: list[str] = []
         for b_number in deleted:
-            record = self.registry.require(b_number)
-            if record.iml1515_gene_id is None:
+            model_gene_id = self.registry.require(b_number).iml1515_gene_id
+            if model_gene_id is None:
                 unmodeled.append(b_number)
             else:
-                modeled.append(record.iml1515_gene_id)
+                modeled.append(model_gene_id)
         return deleted, tuple(modeled), tuple(unmodeled)
 
-    @contextmanager
-    def _candidate_model(self, modeled_gene_ids: tuple[str, ...]) -> Iterator[Model]:
+    def _candidate_model(self, modeled_gene_ids: tuple[str, ...]) -> Model:
         model = self._base_model.copy()
-        try:
-            model.solver = self.environment.solver
-            model.medium = dict(self.environment.medium)
-            for model_gene_id in modeled_gene_ids:
-                model.genes.get_by_id(model_gene_id).knock_out()
-            yield model
-        finally:
-            # COBRA models own solver resources; a copied model is discarded here.
-            del model
+        model.solver = self.solver
+        model.medium = dict(M9_GLUCOSE_AEROBIC_MEDIUM)
+        for model_gene_id in modeled_gene_ids:
+            model.genes.get_by_id(model_gene_id).knock_out()
+        return model
 
-    def _validate_model(self, model: Model) -> None:
+    def _validate_model(self) -> None:
+        model = self._base_model
         if model.id != "iML1515":
             raise DataValidationError(f"expected iML1515 model, got {model.id!r}")
         try:
@@ -264,7 +216,8 @@ class FBAEvaluator:
         if tuple(atpm.bounds) != (6.86, 1000.0):
             raise DataValidationError(f"unexpected ATPM bounds: {atpm.bounds}")
         missing_exchanges = sorted(
-            set(self.environment.medium) - {reaction.id for reaction in model.exchanges}
+            set(M9_GLUCOSE_AEROBIC_MEDIUM)
+            - {reaction.id for reaction in model.exchanges}
         )
         if missing_exchanges:
             raise DataValidationError(
@@ -284,28 +237,3 @@ class FBAEvaluator:
             )
         if len(mapped_gene_ids) != len(set(mapped_gene_ids)):
             raise DataValidationError("registry maps multiple genes to one iML1515 ID")
-
-
-class FBAScorer:
-    name = "fba"
-    version = "1"
-
-    def __init__(self, evaluator: FBAEvaluator) -> None:
-        self.evaluator = evaluator
-        self.config = {
-            "model_sha256": evaluator.model_sha256,
-            "registry_mapping_sha256": evaluator.registry_mapping_hash,
-            "environment_config_sha256": evaluator.environment.config_hash(),
-            "cobra_version": evaluator.cobra_version,
-            "optlang_version": evaluator.optlang_version,
-            "solver_package": evaluator.solver_package,
-            "solver_package_version": evaluator.solver_package_version,
-        }
-
-    async def evaluate(self, state: GenomeState) -> EvaluationResult:
-        result = await self.evaluator.score_deleted_async(state.deleted_genes)
-        return scientific_evaluation(
-            result.metrics(),
-            coverage=result.coverage(),
-            provenance=result.provenance(),
-        )
