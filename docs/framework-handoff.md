@@ -1,10 +1,10 @@
 # Yggdrisil framework handoff
 
-The application is pinned to Yggdrisil commit
-`d114144e4696989aacb85a4159c4177909deef1f`. Runner-owned evaluator scheduling,
+The application is pinned to Yggdrisil merge commit
+`808d4bab856f815bc6050245f61b42607f682437`. Runner-owned evaluator scheduling,
 resume backfill, and opt-in concurrent suites landed through
-[Yggdrisil PR #1](https://github.com/McClain-Thiel/yggdrisil/pull/1). The pinned
-commit additionally exposes canonical evaluator identities through draft
+[Yggdrisil PR #1](https://github.com/McClain-Thiel/yggdrisil/pull/1). Canonical
+evaluator identities landed through
 [Yggdrisil PR #2](https://github.com/McClain-Thiel/yggdrisil/pull/2), allowing
 policies to select exactly the evidence from their active suite. No biological
 concept was added to the framework.
