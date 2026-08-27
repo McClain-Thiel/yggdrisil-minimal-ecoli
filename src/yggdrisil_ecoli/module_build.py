@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import argparse
 import json
 import os
+import re
 import tempfile
 import time
 from datetime import UTC, datetime
@@ -18,7 +18,8 @@ from yggdrisil_ecoli.data.kegg_modules import (
     KeggModuleEntry,
     evaluate_module_expression,
     parse_kegg_module_flat_file,
-    referenced_modules,
+    referenced_ids,
+    registry_ko_mapping_hash,
 )
 from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
 from yggdrisil_ecoli.data.sources import (
@@ -28,7 +29,6 @@ from yggdrisil_ecoli.data.sources import (
     SourceSpec,
     acquire_source,
 )
-from yggdrisil_ecoli.scorers.modules import registry_ko_mapping_hash
 
 
 def build_kegg_modules(
@@ -80,7 +80,11 @@ def build_kegg_modules(
             )
         entries.update(parsed)
         for entry in parsed.values():
-            needed.update(referenced_modules(entry.expression))
+            needed.update(
+                identifier
+                for identifier in referenced_ids(entry.expression)
+                if identifier.startswith("M")
+            )
 
     expressions = {module_id: entry.expression for module_id, entry in entries.items()}
     wt_kos = {ko_id for record in registry for ko_id in record.ko_ids}
@@ -114,7 +118,12 @@ def build_kegg_modules(
         "background_kos": sorted(background_kos),
         "wt_complete_module_ids": sorted(wt_complete_ids),
         "definitions": {
-            module_id: entry.as_dict() for module_id, entry in sorted(entries.items())
+            module_id: {
+                "name": entry.name,
+                "definition": entry.definition,
+                "module_class": entry.module_class,
+            }
+            for module_id, entry in sorted(entries.items())
         },
     }
     output_path = processed_dir / "kegg_modules.json"
@@ -158,21 +167,20 @@ def _validated_ko_links_source(
     manifest_path = registry_path.with_name("source_manifest.json")
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
+        registry_output = manifest["outputs"]["gene_registry"]
+        sources = manifest["sources"]
+    except (OSError, json.JSONDecodeError, KeyError, TypeError) as exc:
         raise DataValidationError(
-            f"cannot validate KEGG KO links without {manifest_path}"
+            f"cannot validate KEGG KO links from {manifest_path}"
         ) from exc
-    outputs = manifest.get("outputs")
-    sources = manifest.get("sources")
-    if not isinstance(outputs, dict) or not isinstance(sources, list):
-        raise DataValidationError("malformed registry source manifest")
-    registry_output = outputs.get("gene_registry")
-    if not isinstance(registry_output, dict) or registry_output.get(
-        "sha256"
-    ) != file_sha256(registry_path):
+    if not isinstance(registry_output, dict) or registry_output.get("sha256") != (
+        file_sha256(registry_path)
+    ):
         raise DataValidationError(
             "registry does not match the artifact recorded in its source manifest"
         )
+    if not isinstance(sources, list):
+        raise DataValidationError("malformed registry source manifest")
     matches = [
         source
         for source in sources
@@ -200,26 +208,18 @@ def _validated_ko_links_source(
 
 def _parse_wt_module_ids(path: Path) -> frozenset[str]:
     ids: set[str] = set()
-    expected_prefix = f"md:{KEGG_ORGANISM}_"
+    pattern = re.compile(rf"md:{KEGG_ORGANISM}_(M[0-9]{{5}})")
     with path.open(encoding="utf-8") as handle:
         for line_number, line in enumerate(handle, start=1):
             if not line.strip():
                 continue
             fields = line.rstrip("\n").split("\t")
-            if len(fields) != 2 or not fields[1].startswith(expected_prefix):
+            match = pattern.fullmatch(fields[1]) if len(fields) == 2 else None
+            if match is None:
                 raise DataValidationError(
                     f"{path}:{line_number}: malformed organism-module link"
                 )
-            module_id = fields[1].removeprefix(expected_prefix)
-            if (
-                len(module_id) != 6
-                or not module_id.startswith("M")
-                or not module_id[1:].isdigit()
-            ):
-                raise DataValidationError(
-                    f"{path}:{line_number}: malformed module ID {module_id!r}"
-                )
-            ids.add(module_id)
+            ids.add(match.group(1))
     if not ids:
         raise DataValidationError("KEGG returned no WT-complete MG1655 modules")
     return frozenset(ids)
@@ -230,30 +230,17 @@ def _background_kos(path: Path, registry: GeneRegistry) -> frozenset[str]:
 
     background: set[str] = set()
     universe = registry.search_universe
+    pattern = re.compile(rf"{KEGG_ORGANISM}:([^\t]+)\tko:(K[0-9]{{5}})")
     with path.open(encoding="utf-8") as handle:
         for line_number, line in enumerate(handle, start=1):
             if not line.strip():
                 continue
-            fields = line.rstrip("\n").split("\t")
-            if len(fields) != 2:
+            match = pattern.fullmatch(line.rstrip("\n"))
+            if match is None:
                 raise DataValidationError(
                     f"{path}:{line_number}: malformed KEGG gene-KO link"
                 )
-            raw_gene, raw_ko = fields
-            gene_prefix, separator, b_number = raw_gene.partition(":")
-            ko_prefix, ko_separator, ko_id = raw_ko.partition(":")
-            if (
-                not separator
-                or gene_prefix != KEGG_ORGANISM
-                or not ko_separator
-                or ko_prefix != "ko"
-                or len(ko_id) != 6
-                or not ko_id.startswith("K")
-                or not ko_id[1:].isdigit()
-            ):
-                raise DataValidationError(
-                    f"{path}:{line_number}: malformed KEGG gene-KO link"
-                )
+            b_number, ko_id = match.groups()
             if b_number not in universe:
                 background.add(ko_id)
     return frozenset(background)
@@ -287,35 +274,3 @@ def _atomic_json(path: Path, payload: dict[str, object]) -> None:
         os.replace(temporary, path)
     finally:
         temporary.unlink(missing_ok=True)
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--registry",
-        type=Path,
-        default=Path("data/processed/gene_registry.parquet"),
-    )
-    parser.add_argument(
-        "--kegg-ko-links",
-        type=Path,
-        default=Path("data/raw/kegg_eco_ko_links.tsv"),
-    )
-    parser.add_argument("--data-dir", type=Path, default=Path("data"))
-    parser.add_argument("--accept-kegg-terms", action="store_true")
-    parser.add_argument("--refresh", action="store_true")
-    args = parser.parse_args()
-    try:
-        build_kegg_modules(
-            registry_path=args.registry,
-            ko_links_path=args.kegg_ko_links,
-            data_dir=args.data_dir,
-            accept_kegg_terms=args.accept_kegg_terms,
-            refresh=args.refresh,
-        )
-    except (ValueError, DataValidationError) as exc:
-        raise SystemExit(str(exc)) from exc
-
-
-if __name__ == "__main__":
-    main()

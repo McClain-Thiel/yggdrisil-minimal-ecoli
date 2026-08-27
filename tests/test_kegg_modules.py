@@ -12,11 +12,17 @@ from yggdrisil_ecoli.data.kegg_modules import (
     evaluate_module_expression,
     parse_kegg_module_flat_file,
     parse_module_expression,
-    referenced_kos,
+    referenced_ids,
+    registry_ko_mapping_hash,
 )
 from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
-from yggdrisil_ecoli.module_build import _validated_ko_links_source
-from yggdrisil_ecoli.scorers.modules import ModuleCatalog, ModuleRetentionScorer
+from yggdrisil_ecoli.module_build import (
+    _background_kos,
+    _parse_wt_module_ids,
+    _validated_ko_links_source,
+)
+from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
+from yggdrisil_ecoli.state import GenomeState
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -78,11 +84,15 @@ def test_module_references_are_resolved_from_the_same_frozen_snapshot() -> None:
     assert result.minimal_missing_ko_sets == (("K00003",),)
 
 
-def test_referenced_kos_includes_optional_components() -> None:
+def test_referenced_ids_include_optional_components_and_module_refs() -> None:
     expression = parse_module_expression("K00001+(K00002,K00003)-K00004")
 
-    assert referenced_kos(expression) == frozenset(
+    assert referenced_ids(expression) == frozenset(
         {"K00001", "K00002", "K00003", "K00004"}
+    )
+
+    assert referenced_ids(parse_module_expression("M00001+K00001")) == frozenset(
+        {"M00001", "K00001"}
     )
 
 
@@ -117,6 +127,15 @@ def test_cyclic_module_reference_is_rejected() -> None:
         )
 
 
+def test_exact_option_limit_is_enforced() -> None:
+    with pytest.raises(ModuleExpressionError, match="option limit"):
+        evaluate_module_expression(
+            parse_module_expression("K00001,K00002,K00003"),
+            set(),
+            max_options=2,
+        )
+
+
 def test_kegg_flat_file_continuations_are_parsed_without_changing_grammar() -> None:
     entries = parse_kegg_module_flat_file(FIXTURES / "kegg_modules_excerpt.txt")
 
@@ -134,7 +153,8 @@ def test_module_retention_uses_remaining_ko_presence_and_reports_coverage() -> N
         for record in base
     ]
     registry = GeneRegistry(records)
-    catalog = ModuleCatalog(
+    evaluator = ModuleEvaluator(
+        registry=registry,
         entries={
             "M00001": KeggModuleEntry(
                 module_id="M00001",
@@ -147,8 +167,8 @@ def test_module_retention_uses_remaining_ko_presence_and_reports_coverage() -> N
         parser_semantics_version="test",
     )
 
-    one_isozyme_deleted = catalog.score_deleted({"b0001", "b0003"}, registry)
-    both_isozymes_deleted = catalog.score_deleted({"b0001", "b0002"}, registry)
+    one_isozyme_deleted = evaluator.score_deleted({"b0001", "b0003"})
+    both_isozymes_deleted = evaluator.score_deleted({"b0001", "b0002"})
 
     assert one_isozyme_deleted.n_complete == 1
     assert one_isozyme_deleted.deleted_genes_without_ko == ("b0003",)
@@ -158,7 +178,8 @@ def test_module_retention_uses_remaining_ko_presence_and_reports_coverage() -> N
 
 def test_non_search_universe_kos_are_fixed_background() -> None:
     registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    catalog = ModuleCatalog(
+    evaluator = ModuleEvaluator(
+        registry=registry,
         entries={
             "M00001": KeggModuleEntry(
                 module_id="M00001",
@@ -172,33 +193,100 @@ def test_non_search_universe_kos_are_fixed_background() -> None:
         background_kos=("K18513",),
     )
 
-    result = catalog.score_deleted(registry.search_universe, registry)
+    result = evaluator.score_deleted(registry.search_universe)
 
     assert result.n_complete == 1
 
 
-def test_module_scorer_rejects_registry_crosswalk_snapshot_mismatch() -> None:
+def test_module_evaluator_rejects_registry_crosswalk_snapshot_mismatch() -> None:
     registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    catalog = ModuleCatalog(
-        entries={
-            "M00001": KeggModuleEntry(
-                module_id="M00001",
-                name="Mismatch fixture",
-                definition="K00001",
-                module_class=None,
-            )
-        },
-        wt_complete_module_ids=("M00001",),
-        parser_semantics_version="test",
-        reference_registry_ko_mapping_hash="0" * 64,
-    )
 
     with pytest.raises(DataValidationError, match="different snapshots"):
-        ModuleRetentionScorer(
+        ModuleEvaluator(
             registry=registry,
-            catalog=catalog,
-            artifact_hash="catalog-hash",
+            entries={
+                "M00001": KeggModuleEntry(
+                    module_id="M00001",
+                    name="Mismatch fixture",
+                    definition="K00001",
+                    module_class=None,
+                )
+            },
+            wt_complete_module_ids=("M00001",),
+            parser_semantics_version="test",
+            provenance={"reference_registry_ko_mapping_hash": "0" * 64},
         )
+
+
+@pytest.mark.asyncio
+async def test_loaded_evaluator_retains_and_emits_all_provenance(
+    tmp_path: Path,
+) -> None:
+    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
+    artifact = tmp_path / "kegg_modules.json"
+    registry_sha = "1" * 64
+    background_sha = "2" * 64
+    artifact.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "parser_semantics_version": "test",
+                "reference_registry_sha256": registry_sha,
+                "reference_registry_ko_mapping_hash": registry_ko_mapping_hash(
+                    registry
+                ),
+                "background_ko_source_sha256": background_sha,
+                "background_kos": ["K00001"],
+                "wt_complete_module_ids": ["M00001"],
+                "definitions": {
+                    "M00001": {
+                        "name": "Provenance fixture",
+                        "definition": "K00001",
+                        "module_class": None,
+                    }
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    evaluator = ModuleEvaluator.from_json(artifact, registry)
+    result = await evaluator.evaluate(GenomeState(frozenset()))
+
+    assert evaluator.background_ko_source_sha256 == background_sha
+    assert evaluator.reference_registry_sha256 == registry_sha
+    assert result.metrics == {"n_complete": 1, "n_broken": 0}
+    assert "complete_modules" not in result.metadata["details"]
+    assert result.metadata["provenance"] == {
+        "artifact_sha256": file_sha256(artifact),
+        "reference_registry_sha256": registry_sha,
+        "reference_registry_ko_mapping_hash": registry_ko_mapping_hash(registry),
+        "registry_ko_mapping_sha256": registry_ko_mapping_hash(registry),
+        "background_ko_source_sha256": background_sha,
+        "parser_semantics_version": "test",
+    }
+
+
+def test_module_link_inputs_are_strict_and_keep_out_of_scope_kos(
+    tmp_path: Path,
+) -> None:
+    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
+    module_links = tmp_path / "modules.tsv"
+    ko_links = tmp_path / "kos.tsv"
+    module_links.write_text(
+        "eco:b0001\tmd:eco_M00001\neco:b0002\tmd:eco_M00002\n",
+        encoding="utf-8",
+    )
+    ko_links.write_text(
+        "eco:b0001\tko:K00001\neco:b9999\tko:K00002\n", encoding="utf-8"
+    )
+
+    assert _parse_wt_module_ids(module_links) == frozenset({"M00001", "M00002"})
+    assert _background_kos(ko_links, registry) == frozenset({"K00002"})
+
+    ko_links.write_text("eco:b9999\textra\tko:K00002\n", encoding="utf-8")
+    with pytest.raises(DataValidationError, match="malformed KEGG gene-KO link"):
+        _background_kos(ko_links, registry)
 
 
 def test_background_ko_input_must_match_registry_source_manifest(

@@ -74,11 +74,13 @@ is safe.
   measured/unknown coverage. Study, assay, medium, and source-provenance
   constants are stored once in Parquet metadata rather than repeated per gene.
 - `kegg_modules.json` contains definitions for modules KEGG reports complete in
-  wild-type MG1655, plus referenced dependencies. KO assignments belonging to
+  wild-type MG1655, plus referenced dependencies. Each keyed definition stores
+  only its name, expression, and class; referenced identifiers and complete
+  result lists are derived at evaluation time. KO assignments belonging to
   non-protein-coding MG1655 genes remain fixed background evidence because those
   genes are outside the deletion universe. The builder requires the exact
-  gene-to-KO snapshot recorded by the registry manifest and copies its lineage
-  and hash into the module manifest.
+  gene-to-KO snapshot recorded by the registry manifest. Module results retain
+  the catalog, registry, gene-to-KO, and fixed-background source hashes.
 - `iML1515.json` is a local, hash-validated publication artifact. FBA reports
   model coverage separately for every deletion set.
 

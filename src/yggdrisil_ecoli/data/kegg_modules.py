@@ -8,6 +8,9 @@ before the completeness expression is evaluated.
 
 from __future__ import annotations
 
+import hashlib
+import json
+import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 from itertools import product
@@ -15,6 +18,7 @@ from pathlib import Path
 from typing import Literal, TypeAlias
 
 from yggdrisil_ecoli.data.errors import DataValidationError
+from yggdrisil_ecoli.data.registry import GeneRegistry
 
 
 class ModuleExpressionError(DataValidationError):
@@ -22,12 +26,7 @@ class ModuleExpressionError(DataValidationError):
 
 
 @dataclass(frozen=True, slots=True)
-class Ko:
-    identifier: str
-
-
-@dataclass(frozen=True, slots=True)
-class ModuleRef:
+class Reference:
     identifier: str
 
 
@@ -39,7 +38,6 @@ class OptionalComponent:
 @dataclass(frozen=True, slots=True)
 class And:
     expressions: tuple[Expression, ...]
-    operator: Literal["space", "+"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -47,7 +45,7 @@ class Or:
     expressions: tuple[Expression, ...]
 
 
-Expression: TypeAlias = Ko | ModuleRef | OptionalComponent | And | Or
+Expression: TypeAlias = Reference | OptionalComponent | And | Or
 PARSER_SEMANTICS_VERSION = "1"
 
 
@@ -71,23 +69,8 @@ class KeggModuleEntry:
     def expression(self) -> Expression:
         return parse_module_expression(self.definition)
 
-    def as_dict(self) -> dict[str, object]:
-        expression = self.expression
-        return {
-            "module_id": self.module_id,
-            "name": self.name,
-            "definition": self.definition,
-            "module_class": self.module_class,
-            "referenced_kos": sorted(referenced_kos(expression)),
-            "referenced_modules": sorted(referenced_modules(expression)),
-        }
 
-
-@dataclass(frozen=True, slots=True)
-class _Token:
-    kind: Literal["ID", "SPACE", "+", "-", ",", "(", ")", "EOF"]
-    value: str
-    position: int
+_Token: TypeAlias = tuple[str, str, int]
 
 
 def parse_module_expression(raw: str) -> Expression:
@@ -144,34 +127,26 @@ def evaluate_module_expression(
     )
 
 
-def referenced_kos(expression: Expression) -> frozenset[str]:
-    """Return all K numbers directly referenced by an expression."""
+def referenced_ids(expression: Expression) -> frozenset[str]:
+    """Return all K and M identifiers directly referenced by an expression."""
 
-    if isinstance(expression, Ko):
+    if isinstance(expression, Reference):
         return frozenset({expression.identifier})
-    if isinstance(expression, ModuleRef):
-        return frozenset()
     if isinstance(expression, OptionalComponent):
-        return referenced_kos(expression.expression)
+        return referenced_ids(expression.expression)
     result: set[str] = set()
     for child in expression.expressions:
-        result.update(referenced_kos(child))
+        result.update(referenced_ids(child))
     return frozenset(result)
 
 
-def referenced_modules(expression: Expression) -> frozenset[str]:
-    """Return all nested M numbers directly referenced by an expression."""
+def registry_ko_mapping_hash(registry: GeneRegistry) -> str:
+    """Fingerprint the canonical gene-to-KO mapping used by module evaluation."""
 
-    if isinstance(expression, ModuleRef):
-        return frozenset({expression.identifier})
-    if isinstance(expression, Ko):
-        return frozenset()
-    if isinstance(expression, OptionalComponent):
-        return referenced_modules(expression.expression)
-    result: set[str] = set()
-    for child in expression.expressions:
-        result.update(referenced_modules(child))
-    return frozenset(result)
+    payload = [(record.b_number, list(record.ko_ids)) for record in registry]
+    return hashlib.sha256(
+        json.dumps(payload, separators=(",", ":")).encode()
+    ).hexdigest()
 
 
 def parse_kegg_module_flat_file(path: str | Path) -> dict[str, KeggModuleEntry]:
@@ -243,67 +218,58 @@ class _Parser:
 
     def expect(self, kind: _TokenKind) -> _Token:
         token = self.current
-        if token.kind != kind:
+        if token[0] != kind:
             raise ModuleExpressionError(
-                f"expected {kind} at position {token.position}, found {token.value!r}"
+                f"expected {kind} at position {token[2]}, found {token[1]!r}"
             )
         self.index += 1
         return token
 
-    def accept(self, kind: _TokenKind) -> _Token | None:
-        if self.current.kind != kind:
-            return None
-        return self.expect(kind)
+    def accept(self, kind: _TokenKind) -> bool:
+        if self.current[0] != kind:
+            return False
+        self.index += 1
+        return True
 
     def parse_definition(self) -> Expression:
         expressions = [self.parse_or()]
-        while self.accept("SPACE") is not None:
+        while self.accept("SPACE"):
             expressions.append(self.parse_or())
-        return _combine_and(expressions, "space")
+        return _combine(expressions, And)
 
     def parse_or(self) -> Expression:
         expressions = [self.parse_complex()]
-        while self.accept(",") is not None:
+        while self.accept(","):
             expressions.append(self.parse_complex())
-        if len(expressions) == 1:
-            return expressions[0]
-        flattened: list[Expression] = []
-        for expression in expressions:
-            if isinstance(expression, Or):
-                flattened.extend(expression.expressions)
-            else:
-                flattened.append(expression)
-        return Or(tuple(flattened))
+        return _combine(expressions, Or)
 
     def parse_complex(self) -> Expression:
         expressions: list[Expression] = [self.parse_primary()]
         saw_operator = False
-        while self.current.kind in {"+", "-"}:
-            operator = self.current.kind
+        while self.current[0] in {"+", "-"}:
+            optional = self.current[0] == "-"
             self.index += 1
             child = self.parse_primary()
-            if operator == "-":
+            if optional:
                 child = OptionalComponent(child)
             expressions.append(child)
             saw_operator = True
         if not saw_operator:
             return expressions[0]
-        return _combine_and(expressions, "+")
+        return _combine(expressions, And)
 
     def parse_primary(self) -> Expression:
         token = self.current
-        if token.kind == "ID":
+        if token[0] == "ID":
             self.index += 1
-            if token.value.startswith("K"):
-                return Ko(token.value)
-            return ModuleRef(token.value)
-        if self.accept("(") is not None:
+            return Reference(token[1])
+        if self.accept("("):
             expression = self.parse_definition()
             self.expect(")")
             return expression
         raise ModuleExpressionError(
-            f"expected K number, M number, or '(' at position {token.position}; "
-            f"found {token.value!r}"
+            f"expected K number, M number, or '(' at position {token[2]}; "
+            f"found {token[1]!r}"
         )
 
 
@@ -312,63 +278,47 @@ _TokenKind: TypeAlias = Literal["ID", "SPACE", "+", "-", ",", "(", ")", "EOF"]
 
 def _tokenize(expression: str) -> list[_Token]:
     tokens: list[_Token] = []
-    index = 0
-    while index < len(expression):
-        char = expression[index]
-        if char == " ":
-            start = index
-            while index < len(expression) and expression[index] == " ":
-                index += 1
-            tokens.append(_Token("SPACE", expression[start:index], start))
-            continue
-        if char in "+-,()":
-            tokens.append(_Token(char, char, index))  # type: ignore[arg-type]
-            index += 1
-            continue
-        if char in {"K", "M"}:
-            end = index + 1
-            while end < len(expression) and expression[end].isdigit():
-                end += 1
-            value = expression[index:end]
-            if len(value) != 6:
-                raise ModuleExpressionError(
-                    f"malformed KEGG identifier {value!r} at position {index}"
-                )
-            tokens.append(_Token("ID", value, index))
-            index = end
-            continue
+    position = 0
+    for match in re.finditer(r"[KM][0-9]{5}| +|[+\-,()]", expression):
+        if match.start() != position:
+            raise ModuleExpressionError(
+                f"unexpected character {expression[position]!r} at position {position}"
+            )
+        value = match.group()
+        kind = "ID" if value[0] in "KM" else "SPACE" if value[0] == " " else value
+        tokens.append((kind, value, position))
+        position = match.end()
+    if position != len(expression):
         raise ModuleExpressionError(
-            f"unexpected character {char!r} at position {index}"
+            f"unexpected character {expression[position]!r} at position {position}"
         )
-    tokens.append(_Token("EOF", "", len(expression)))
+    tokens.append(("EOF", "", len(expression)))
     _reject_spaces_next_to_punctuation(tokens)
     return tokens
 
 
 def _reject_spaces_next_to_punctuation(tokens: list[_Token]) -> None:
     for index, token in enumerate(tokens):
-        if token.kind != "SPACE":
+        if token[0] != "SPACE":
             continue
-        previous = tokens[index - 1].kind if index else "EOF"
-        following = tokens[index + 1].kind
+        previous = tokens[index - 1][0] if index else "EOF"
+        following = tokens[index + 1][0]
         if previous in {"+", "-", ",", "("} or following in {"+", "-", ",", ")"}:
             raise ModuleExpressionError(
-                f"space next to punctuation at position {token.position} is ambiguous"
+                f"space next to punctuation at position {token[2]} is ambiguous"
             )
 
 
-def _combine_and(
-    expressions: list[Expression], operator: Literal["space", "+"]
-) -> Expression:
+def _combine(expressions: list[Expression], kind: type[And] | type[Or]) -> Expression:
     if len(expressions) == 1:
         return expressions[0]
     flattened: list[Expression] = []
     for expression in expressions:
-        if isinstance(expression, And) and expression.operator == operator:
+        if isinstance(expression, kind):
             flattened.extend(expression.expressions)
         else:
             flattened.append(expression)
-    return And(tuple(flattened), operator)
+    return kind(tuple(flattened))
 
 
 def _completion_options(
@@ -379,16 +329,12 @@ def _completion_options(
     stack: tuple[str, ...],
     max_options: int,
 ) -> frozenset[frozenset[str]]:
-    if isinstance(expression, Ko):
-        option = (
-            frozenset()
-            if expression.identifier in present_kos
-            else frozenset({expression.identifier})
-        )
-        return frozenset({option})
-    if isinstance(expression, OptionalComponent):
-        return frozenset({frozenset()})
-    if isinstance(expression, ModuleRef):
+    if isinstance(expression, Reference):
+        if expression.identifier.startswith("K"):
+            missing: frozenset[str] = frozenset()
+            if expression.identifier not in present_kos:
+                missing = frozenset({expression.identifier})
+            return frozenset({missing})
         if expression.identifier in stack:
             chain = " -> ".join((*stack, expression.identifier))
             raise ModuleExpressionError(f"cyclic module reference: {chain}")
@@ -405,6 +351,8 @@ def _completion_options(
             stack=(*stack, expression.identifier),
             max_options=max_options,
         )
+    if isinstance(expression, OptionalComponent):
+        return frozenset({frozenset()})
     child_options = [
         _completion_options(
             child,
