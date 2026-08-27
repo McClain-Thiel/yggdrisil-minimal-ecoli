@@ -1,0 +1,18 @@
+##gff-version 3
+#!gff-spec-version 1.21
+#!processor NCBI annotwriter
+#!genome-build ASM584v2
+#!genome-build-accession NCBI_Assembly:GCF_000005845.2
+#!annotation-date 2025-01-01
+#!annotation-source RefSeq test fixture
+##sequence-region NC_000913.3 1 4641652
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=511145
+NC_000913.3	RefSeq	region	1	4641652	.	+	.	ID=NC_000913.3:1..4641652;Dbxref=taxon:511145;Is_circular=true;Name=ANONYMOUS;gbkey=Src;genome=chromosome;mol_type=genomic DNA;strain=K-12;substrain=MG1655
+NC_000913.3	RefSeq	gene	190	255	.	+	.	ID=gene-b0001;Dbxref=ECOCYC:EG11277,GeneID:944742;Name=thrL;gbkey=Gene;gene=thrL;gene_biotype=protein_coding;locus_tag=b0001
+NC_000913.3	RefSeq	CDS	190	255	.	+	0	ID=cds-NP_414542.1;Parent=gene-b0001;Dbxref=ECOCYC:EG11277,GeneID:944742;Name=NP_414542.1;gbkey=CDS;gene=thrL;locus_tag=b0001;product=thr operon leader peptide;protein_id=NP_414542.1
+NC_000913.3	RefSeq	gene	337	2799	.	+	.	ID=gene-b0002;Dbxref=ECOCYC:EG10998,GeneID:945803;Name=thrA;gbkey=Gene;gene=thrA;gene_biotype=protein_coding;locus_tag=b0002
+NC_000913.3	RefSeq	CDS	337	2799	.	+	0	ID=cds-NP_414543.1;Parent=gene-b0002;Dbxref=ECOCYC:EG10998,GeneID:945803;Name=NP_414543.1;gbkey=CDS;gene=thrA;locus_tag=b0002;product=fused aspartate kinase%2Fhomoserine dehydrogenase 1;protein_id=NP_414543.1
+NC_000913.3	RefSeq	CDS	400	2799	.	+	0	ID=cds-YP_000000002.1;Parent=gene-b0002;Dbxref=ECOCYC:EG10998,GeneID:945803;Name=YP_000000002.1;gbkey=CDS;gene=thrA;locus_tag=b0002;product=alternative ThrA translation;protein_id=YP_000000002.1
+NC_000913.3	RefSeq	gene	2801	3733	.	-	.	ID=gene-b0003;Dbxref=ECOCYC:EG10999,GeneID:947498;Name=thrB;gbkey=Gene;gene=thrB;gene_biotype=protein_coding;locus_tag=b0003
+NC_000913.3	RefSeq	CDS	2801	3733	.	-	0	ID=cds-NP_414544.1;Parent=gene-b0003;Dbxref=ECOCYC:EG10999,GeneID:947498;Name=NP_414544.1;gbkey=CDS;gene=thrB;locus_tag=b0003;product=homoserine kinase;protein_id=NP_414544.1
+NC_000913.3	RefSeq	gene	3945	4268	.	+	.	ID=gene-tff;Dbxref=GeneID:999999;Name=tff;gbkey=Gene;gene=tff;gene_biotype=tRNA;locus_tag=tff
