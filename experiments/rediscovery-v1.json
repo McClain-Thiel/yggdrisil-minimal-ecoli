@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "experiment_id": "rediscovery-v1",
+  "status": "pilot",
+  "claim": "Compare blind and annotation-rich LLM search without exposing held-out reduced-genome memberships.",
+  "models": [
+    "openai/gpt-4o-mini-2024-07-18",
+    "google/gemini-2.5-flash-lite",
+    "qwen/qwen3-30b-a3b-instruct-2507"
+  ],
+  "paired_seeds": [101, 211, 307],
+  "arms": [
+    {
+      "id": "E0-random",
+      "policy": "random",
+      "agent_mode": null
+    },
+    {
+      "id": "E0-heuristic",
+      "policy": "heuristic",
+      "agent_mode": null
+    },
+    {
+      "id": "E1-closed-book",
+      "policy": "agent",
+      "agent_mode": "closed-book"
+    },
+    {
+      "id": "E2-tool-rich",
+      "policy": "agent",
+      "agent_mode": "tool-rich"
+    }
+  ],
+  "pilot_limits": {
+    "max_states": 10,
+    "max_steps": 9,
+    "bundle_size": 1,
+    "n_proposals": 1,
+    "max_agent_requests": 1,
+    "max_model_requests": 6,
+    "max_agent_tool_calls": 16,
+    "max_agent_output_tokens": 400,
+    "max_agent_cost_usd_per_invocation": "0.005"
+  },
+  "held_out_validation": [
+    {
+      "id": "MDS42",
+      "availability": "locally_buildable",
+      "truth_method": "AP012306-to-NC_000913.3 whole-genome alignment followed by canonical-gene intersection",
+      "agent_visible": false
+    },
+    {
+      "id": "MS56",
+      "availability": "locally_buildable",
+      "truth_method": "Park et al. 2014 Supplementary Table S3 locus tags intersected with the canonical search universe",
+      "agent_visible": false
+    },
+    {
+      "id": "vEcoli",
+      "availability": "integration_not_yet_implemented",
+      "agent_visible": false
+    }
+  ],
+  "primary_metrics": [
+    "published_deletion_gene_precision",
+    "published_deletion_gene_recall",
+    "published_deletion_gene_jaccard",
+    "published_deletion_interval_recall",
+    "genes_deleted",
+    "fba_growth_rate",
+    "essential_genes_deleted",
+    "broken_kegg_modules",
+    "unknown_and_unmodeled_deletions",
+    "model_calls_and_cost"
+  ],
+  "posthoc_analysis": {
+    "build_command": "uv run --extra data python scripts/build_reduced_genome_validation.py",
+    "summarize_command": "uv run python scripts/summarize_runs.py --validation data/validation/reduced_genomes.json GRAPH.sqlite",
+    "truth_artifact": "data/validation/reduced_genomes.json"
+  }
+}

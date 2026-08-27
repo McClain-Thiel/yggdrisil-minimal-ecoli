@@ -30,6 +30,14 @@ the numerical FBA stack is pinned directly in `pyproject.toml`:
 uv sync --extra dev --extra data --extra fba
 ```
 
+Add `--extra agents` when running model-backed searches. OpenRouter credentials
+are loaded from `~/.env`; never pass the key as a command-line argument or put
+it in this repository:
+
+```bash
+uv sync --extra agents --extra dev --extra data --extra fba
+```
+
 Build the exact iML1515 model, canonical registry, essentiality table, and KEGG
 module catalog in dependency order:
 
@@ -59,13 +67,56 @@ uv run yggdrisil-ecoli-search \
   --max-states 10
 ```
 
+Run a bounded model-backed search by naming an exact OpenRouter model. There is
+no default model, so an accidental invocation cannot spend credits. This smoke
+configuration permits at most one navigator request, sixteen local tool calls, 800
+output tokens, and an estimated $0.02 per navigator or explorer invocation:
+
+```bash
+uv run --extra agents --extra fba yggdrisil-ecoli-search \
+  --graph runs/agent-closed.sqlite \
+  --policy agent \
+  --agent-mode closed-book \
+  --model openai/gpt-4o-mini-2024-07-18 \
+  --seed 101 \
+  --bundle-size 1 \
+  --n-proposals 1 \
+  --max-states 10
+```
+
+`closed-book` replaces canonical genes with a seeded opaque identifier map and
+exposes only categorical experimental/model coverage. Prompts and tool returns
+contain no locus tags, symbols, descriptions, literature, current-vEcoli, or
+published whole-cell-model membership. `tool-rich` exposes the existing gene,
+essentiality, and KEGG inspection tools. Use separate graph files for every
+model, seed, and exposure mode.
+
 Both policies use the same four-evaluator suite. Yggdrisil evaluates and caches
 every state before the next policy call. Inspect a completed or active graph
 with `uv run yggdrisil inspect runs/random.sqlite`. Reopening a graph resumes
-only when its policy settings, application/framework revisions, and exact
+only when its policy settings, application source/framework revisions, and exact
 evaluator/artifact identities match. Use a separate graph for independent
 comparisons. `--new-run` creates a new run over the states already present in
 that same shared DAG.
+
+Build the held-out reduced-genome labels only for post-hoc analysis. The NCBI
+sequence wrapper must first fetch `NC_000913.3` and MDS42 `AP012306` into the
+paths accepted by the builder; MS56 uses Park et al. 2014 Supplementary Table
+S3. The builder aligns the two complete chromosomes with minimap2, preserves
+the derived reference intervals, intersects both sources with the canonical
+search universe, and writes a gitignored artifact:
+
+```bash
+uv run --extra data python scripts/build_reduced_genome_validation.py
+
+uv run python scripts/summarize_runs.py \
+  --validation data/validation/reduced_genomes.json \
+  runs/agent-closed.sqlite
+```
+
+The search command never loads this artifact. The summarizer reports overlap,
+precision, recall, Jaccard similarity, and MDS42 interval recall only after a
+run has finished.
 
 Generated scientific data are gitignored. Each build records source URLs,
 versions, access times, content hashes, row counts, mapping gaps, and output
@@ -91,6 +142,11 @@ explicit academic-use acknowledgement and are not redistributed.
   scorer version, and source/configuration fingerprints.
 - Fixed-seed `RandomPolicy` and a deliberately small heuristic baseline that
   avoids known essential genes and FBA-infeasible parent states.
+- A bounded OpenRouter navigator/explorer policy with fixed model identity,
+  prompt/config provenance, per-call usage limits, and closed-book versus
+  tool-rich evidence modes.
+- A post-hoc, agent-invisible MDS42/MS56 rediscovery evaluator built from a
+  complete-genome alignment and the original published MS56 deletion table.
 - Canonical-only gene inspection, set analysis, and frozen-module inspection
   tools.
 

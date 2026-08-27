@@ -1,0 +1,8 @@
+NCBI sequence-fetch terms notice
+
+Before using NCBI resources, review the terms and policies published at:
+
+- https://www.ncbi.nlm.nih.gov/
+- https://www.ncbi.nlm.nih.gov/home/about/policies/
+
+Notice presented: 2026-08-27 (Europe/London)

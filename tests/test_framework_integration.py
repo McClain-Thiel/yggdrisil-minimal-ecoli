@@ -23,13 +23,13 @@ from yggdrisil_ecoli.data.essentiality import (
     SourceCall,
 )
 from yggdrisil_ecoli.data.gff import parse_ncbi_gff
-from yggdrisil_ecoli.policies import RandomDeletionSampler, SimpleHeuristicPolicy
+from yggdrisil_ecoli.policies import deletion_sampler, make_heuristic_policy
 from yggdrisil_ecoli.problem import EcoliProblem
 from yggdrisil_ecoli.scorers.base import (
     active_evaluator_ids,
     scientific_evaluation,
 )
-from yggdrisil_ecoli.search import validate_search_resume
+from yggdrisil_ecoli.search import _application_source_hash, validate_search_resume
 from yggdrisil_ecoli.state import GenomeState
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -96,7 +96,7 @@ async def test_runner_persists_serializable_states_actions_and_evidence(
     result = await Runner(
         problem,
         RandomPolicy(
-            RandomDeletionSampler(registry),
+            deletion_sampler(registry),
             n_proposals=1,
             seed=7,
         ),
@@ -179,7 +179,7 @@ async def test_simple_heuristic_avoids_infeasible_parent_and_essential_gene(
     suite = EvaluatorSuite(list(scorers), concurrent=True)
     for node in graph.states():
         await suite.evaluate_cached(graph, node.state_id)
-    policy = SimpleHeuristicPolicy(
+    policy = make_heuristic_policy(
         registry=registry,
         essentiality=essentiality,
         evaluator_ids=active_evaluator_ids(scorers),
@@ -248,6 +248,13 @@ def test_resume_rejects_changed_policy_configuration(tmp_path: Path) -> None:
     graph.close()
 
 
+def test_application_source_hash_is_stable_and_content_addressed() -> None:
+    first = _application_source_hash()
+
+    assert len(first) == 64
+    assert first == _application_source_hash()
+
+
 def test_resume_rejects_changed_evaluator_identity(tmp_path: Path) -> None:
     graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "evidence.sqlite")
     graph.save_run(
@@ -311,7 +318,7 @@ async def test_heuristic_selects_active_cached_identity_after_config_reversion(
     await EvaluatorSuite(list(inactive), concurrent=True).evaluate_cached(graph, "root")
     # Reverting to A is a cache hit, so A remains older than B.
     await EvaluatorSuite(list(active), concurrent=True).evaluate_cached(graph, "root")
-    policy = SimpleHeuristicPolicy(
+    policy = make_heuristic_policy(
         registry=registry,
         essentiality=essentiality,
         evaluator_ids=active_evaluator_ids(active),

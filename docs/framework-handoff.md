@@ -1,13 +1,17 @@
 # Yggdrisil framework handoff
 
-The application is pinned to Yggdrisil merge commit
-`808d4bab856f815bc6050245f61b42607f682437`. Runner-owned evaluator scheduling,
+The application is pinned to Yggdrisil commit
+`2bec2d729c4d9b41c29de406b13066baca0e06c1`. Runner-owned evaluator scheduling,
 resume backfill, and opt-in concurrent suites landed through
 [Yggdrisil PR #1](https://github.com/McClain-Thiel/yggdrisil/pull/1). Canonical
 evaluator identities landed through
 [Yggdrisil PR #2](https://github.com/McClain-Thiel/yggdrisil/pull/2), allowing
 policies to select exactly the evidence from their active suite. No biological
 concept was added to the framework.
+Agent request, token, cache, tool-call, and cost accounting is persisted through
+[Yggdrisil PR #3](https://github.com/McClain-Thiel/yggdrisil/pull/3), which also
+adds a generic best-first eligibility predicate so the application does not own
+a policy implementation.
 
 ## Stable application boundary
 
@@ -24,12 +28,13 @@ concept was added to the framework.
 - The framework `EvaluatorSuite(concurrent=True)` and `Runner(evaluators=...)`
   own search-time scheduling and persistent cache records. The application
   never defines a combined reward.
-- `RandomPolicy` and `SimpleHeuristicPolicy` run against the same problem and
-  evaluations. Their decisions and proposals are persisted by the framework.
+- Framework-native `RandomPolicy` and `BestFirstPolicy` run against the same
+  problem and evaluations using two small application callbacks. Their
+  decisions and proposals are persisted by the framework.
 - The search entrypoint refuses an accidental resume when policy settings,
-  application/search contract, installed framework revision, or any active
-  evaluator identity differs. Evaluator identities include artifact and
-  configuration hashes.
+  the application source hash/search contract, installed framework revision,
+  or any active evaluator identity differs. Evaluator identities include
+  artifact and configuration hashes.
   `--new-run` still shares existing DAG states; independent experiments use
   separate graph files.
 
@@ -56,9 +61,6 @@ compact canonical gene evidence and require structured `DeleteGenes` output.
 
 ## Deferred work
 
-- Add the compact Navigator/Explorer context and closed-book tool configuration,
-  then exercise `NavigatorExplorerPolicy` with fake agents before a live model.
 - Add published whole-cell-model and current-vEcoli crosswalk discovery.
-- Add published reduced-genome baselines and interval-to-registry derivation.
 - Add expensive whole-cell simulation only after cached cheap evidence gates
   are stable.

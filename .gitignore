@@ -1,4 +1,7 @@
 .DS_Store
+.env
+.env.*
+!.env.example
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
@@ -17,7 +20,9 @@ data/raw/*
 data/interim/*
 data/processed/*
 data/external/*
+data/validation/*
 !data/raw/.gitkeep
 !data/interim/.gitkeep
 !data/processed/.gitkeep
 !data/external/.gitkeep
+!data/validation/.gitkeep

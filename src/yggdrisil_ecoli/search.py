@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import hashlib
 import json
 from dataclasses import asdict, dataclass
+from decimal import Decimal
 from importlib.metadata import distribution
 from pathlib import Path
 
@@ -23,10 +25,15 @@ from yggdrisil import (
 
 from yggdrisil_ecoli import __version__
 from yggdrisil_ecoli.actions import DeleteGenes
+from yggdrisil_ecoli.agent_policy import (
+    AgentPolicyError,
+    AgentSearchConfig,
+    make_agent_policy,
+)
 from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.essentiality import EssentialityDataset
 from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
-from yggdrisil_ecoli.policies import RandomDeletionSampler, SimpleHeuristicPolicy
+from yggdrisil_ecoli.policies import deletion_sampler, make_heuristic_policy
 from yggdrisil_ecoli.problem import EcoliProblem
 from yggdrisil_ecoli.scorers.base import active_evaluator_ids
 from yggdrisil_ecoli.scorers.essentiality import EssentialityScorer
@@ -34,7 +41,7 @@ from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 from yggdrisil_ecoli.state import GenomeState
 
-SEARCH_CONTRACT_VERSION = 2
+SEARCH_CONTRACT_VERSION = 4
 
 
 @dataclass(frozen=True, slots=True)
@@ -103,15 +110,23 @@ async def run_baseline_search(
     max_wall_time_s: float | None = None,
     run_id: str | None = None,
     resume: bool = True,
+    agent_config: AgentSearchConfig | None = None,
 ) -> RunResult:
-    """Run RandomPolicy or the frozen heuristic with identical evidence."""
+    """Run a baseline or bounded agent policy over identical evidence."""
 
-    if policy_name not in {"random", "heuristic"}:
+    if policy_name not in {"random", "heuristic", "agent"}:
         raise ValueError(f"unknown policy: {policy_name!r}")
+    if policy_name == "agent" and agent_config is None:
+        raise ValueError("agent_config is required for the agent policy")
+    if policy_name != "agent" and agent_config is not None:
+        raise ValueError("agent_config is only valid for the agent policy")
     registry, essentiality, evaluators = load_standard_evaluators(artifacts)
     evaluator_ids = active_evaluator_ids(evaluators)
     metadata = {
-        "application": f"yggdrisil-ecoli=={__version__}",
+        "application": {
+            "distribution": f"yggdrisil-ecoli=={__version__}",
+            "source_sha256": _application_source_hash(),
+        },
         "search_contract": SEARCH_CONTRACT_VERSION,
         "framework": _installed_revision("yggdrisil"),
         "evaluators": evaluator_ids,
@@ -120,6 +135,12 @@ async def run_baseline_search(
         "bundle_size": bundle_size,
         "n_proposals": n_proposals,
     }
+    if agent_config is not None:
+        if agent_config.bundle_size != bundle_size:
+            raise ValueError("agent bundle_size must match the search bundle_size")
+        if agent_config.max_actions != n_proposals:
+            raise ValueError("agent max_actions must match n_proposals")
+        metadata["agent"] = agent_config.metadata(registry)
     graph = SQLiteStateGraph[GenomeState, DeleteGenes](graph_path)
     try:
         validate_search_resume(
@@ -132,18 +153,31 @@ async def run_baseline_search(
         policy: Policy[DeleteGenes]
         if policy_name == "random":
             policy = RandomPolicy(
-                RandomDeletionSampler(registry, bundle_size=bundle_size),
+                deletion_sampler(registry, bundle_size=bundle_size),
                 n_proposals=n_proposals,
                 seed=seed,
             )
-        else:
-            policy = SimpleHeuristicPolicy(
+        elif policy_name == "heuristic":
+            policy = make_heuristic_policy(
                 registry=registry,
                 essentiality=essentiality,
                 evaluator_ids=evaluator_ids,
                 bundle_size=bundle_size,
                 n_proposals=n_proposals,
                 seed=seed,
+            )
+        else:
+            assert agent_config is not None
+            modules = next(
+                evaluator
+                for evaluator in evaluators
+                if isinstance(evaluator, ModuleEvaluator)
+            )
+            policy = make_agent_policy(
+                registry=registry,
+                essentiality=essentiality,
+                modules=modules,
+                config=agent_config,
             )
         return await Runner(
             problem,
@@ -215,10 +249,24 @@ def _installed_revision(name: str) -> str:
     return identity
 
 
+def _application_source_hash() -> str:
+    """Fingerprint the exact local package source used by this search."""
+
+    package_root = Path(__file__).resolve().parent
+    digest = hashlib.sha256()
+    for path in sorted(package_root.rglob("*.py")):
+        digest.update(str(path.relative_to(package_root)).encode())
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+    return digest.hexdigest()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--graph", type=Path, default=Path("runs/search.sqlite"))
-    parser.add_argument("--policy", choices=("random", "heuristic"), default="random")
+    parser.add_argument(
+        "--policy", choices=("random", "heuristic", "agent"), default="random"
+    )
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--bundle-size", type=int, default=1)
     parser.add_argument("--n-proposals", type=int, default=2)
@@ -227,12 +275,47 @@ def main() -> None:
     parser.add_argument("--max-wall-time-s", type=float)
     parser.add_argument("--run-id")
     parser.add_argument(
+        "--model",
+        help="fixed OpenRouter model id for --policy agent, for example vendor/model",
+    )
+    parser.add_argument(
+        "--agent-mode",
+        choices=("closed-book", "tool-rich"),
+        default="closed-book",
+    )
+    parser.add_argument("--max-agent-requests", type=int, default=1)
+    parser.add_argument("--max-model-requests", type=int, default=6)
+    parser.add_argument("--max-agent-tool-calls", type=int, default=16)
+    parser.add_argument("--max-agent-output-tokens", type=int, default=800)
+    parser.add_argument(
+        "--max-agent-cost-usd",
+        type=Decimal,
+        default=Decimal("0.02"),
+        help="maximum estimated cost per navigator or explorer invocation",
+    )
+    parser.add_argument(
         "--new-run",
         action="store_true",
         help="start a new run over the existing shared DAG",
     )
     parser.add_argument("--data-dir", type=Path, default=Path("data"))
     args = parser.parse_args()
+    if args.policy == "agent" and args.model is None:
+        parser.error("--model is required with --policy agent")
+    agent_config = None
+    if args.policy == "agent":
+        agent_config = AgentSearchConfig(
+            model=args.model,
+            mode=args.agent_mode,
+            seed=args.seed,
+            bundle_size=args.bundle_size,
+            max_actions=args.n_proposals,
+            max_navigator_requests=args.max_agent_requests,
+            max_model_requests=args.max_model_requests,
+            max_tool_calls=args.max_agent_tool_calls,
+            max_output_tokens=args.max_agent_output_tokens,
+            max_cost_per_call_usd=args.max_agent_cost_usd,
+        )
     try:
         result = asyncio.run(
             run_baseline_search(
@@ -247,9 +330,16 @@ def main() -> None:
                 max_wall_time_s=args.max_wall_time_s,
                 run_id=args.run_id,
                 resume=not args.new_run,
+                agent_config=agent_config,
             )
         )
-    except (DataValidationError, GraphError, OSError, ValueError) as exc:
+    except (
+        AgentPolicyError,
+        DataValidationError,
+        GraphError,
+        OSError,
+        ValueError,
+    ) as exc:
         raise SystemExit(str(exc)) from exc
     print(json.dumps(asdict(result), indent=2, sort_keys=True))
 
