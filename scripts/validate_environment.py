@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run pre-agent biological sanity checks and write a human-readable report."""
+"""Run the fixed biological sanity panel against local real artifacts."""
 
 from __future__ import annotations
 
@@ -8,9 +8,8 @@ import asyncio
 import json
 import random
 from pathlib import Path
-from typing import Any, cast
 
-from yggdrisil import EvaluationResult, Evaluator, EvaluatorSuite
+from yggdrisil import EvaluationResult, EvaluatorSuite
 
 from yggdrisil_ecoli.data.registry import file_sha256
 from yggdrisil_ecoli.problem import EcoliProblem
@@ -18,18 +17,12 @@ from yggdrisil_ecoli.search import SearchArtifacts, load_standard_evaluators
 from yggdrisil_ecoli.state import GenomeState
 
 
-async def validate(args: argparse.Namespace) -> dict[str, Any]:
-    artifacts = SearchArtifacts(
-        registry=args.registry,
-        essentiality_summary=args.essentiality_summary,
-        essentiality_observations=args.essentiality_observations,
-        kegg_modules=args.kegg_modules,
-        iml1515=args.iml1515,
-    )
+async def validate(data_dir: Path, seed: int) -> dict[str, object]:
+    artifacts = SearchArtifacts(data_dir)
     registry, _essentiality, evaluators = load_standard_evaluators(artifacts)
     problem = EcoliProblem(registry)
     suite = EvaluatorSuite(list(evaluators), concurrent=True)
-    rng = random.Random(args.seed)
+    rng = random.Random(seed)
     universe = sorted(registry.search_universe)
     cases = {
         "wild_type": frozenset(),
@@ -39,164 +32,74 @@ async def validate(args: argparse.Namespace) -> dict[str, Any]:
         "random_5": frozenset(rng.sample(universe, 5)),
         "random_20": frozenset(rng.sample(universe, 20)),
     }
-    results: dict[str, Any] = {}
-    for name, deleted in cases.items():
+    evaluated: dict[str, dict[str, EvaluationResult]] = {}
+    report_cases: dict[str, object] = {}
+    for case, deleted in cases.items():
         state = GenomeState(deleted)
-        # Exercise the same canonical key used by the search graph.
         problem.state_key(state)
-        evaluated = await suite.evaluate(state)
-        results[name] = {
+        results = await suite.evaluate(state)
+        evaluated[case] = {
+            evaluator.name: result
+            for evaluator, result in zip(evaluators, results, strict=True)
+        }
+        report_cases[case] = {
             "deleted_genes": sorted(deleted),
-            "scores": {
-                evaluator.name: _score_payload(evaluator, result)
-                for evaluator, result in zip(evaluators, evaluated, strict=True)
+            "evaluations": {
+                name: {"metrics": result.metrics, **result.metadata}
+                for name, result in evaluated[case].items()
             },
         }
 
-    failures = []
-    wild_type = _scores(results, "wild_type")
-    if wild_type["genome_size"]["metrics"] != {
+    failures: list[str] = []
+    wild_type = evaluated["wild_type"]
+    if wild_type["genome_size"].metrics != {
         "genes_deleted": 0,
         "genes_remaining": len(registry),
     }:
-        failures.append("wild-type genome size is inconsistent with the registry")
-    if wild_type["module_retention"]["metrics"]["n_broken"] != 0:
-        failures.append("wild type breaks one or more frozen WT-complete modules")
-    wild_growth = wild_type["fba"]["metrics"]["growth_rate"]
+        failures.append("wild-type genome size disagrees with the registry")
+    if wild_type["module_retention"].metrics["n_broken"] != 0:
+        failures.append("wild type breaks a frozen WT-complete module")
+    wild_growth = wild_type["fba"].metrics["growth_rate"]
     if not isinstance(wild_growth, (int, float)) or wild_growth <= 0:
         failures.append("wild type has no positive FBA biomass solution")
-    trp_a_growth = _scores(results, "metabolic_and_rule_trpA")["fba"]["metrics"][
-        "growth_rate"
+    if evaluated["metabolic_and_rule_trpA"]["fba"].metrics["growth_rate"] != 0.0:
+        failures.append("b1260 deletion did not eliminate iML1515 biomass")
+    dna_a_coverage = evaluated["known_essential_dnaA"]["fba"].metadata[
+        "coverage"
     ]
-    if trp_a_growth != 0.0:
-        failures.append("b1260 deletion did not eliminate biomass in iML1515")
-    dna_a_coverage = _scores(results, "known_essential_dnaA")["fba"]["coverage"]
-    if dna_a_coverage["deleted_genes_unmodeled"] != 1:
+    if not isinstance(dna_a_coverage, dict) or (
+        dna_a_coverage.get("deleted_genes_unmodeled") != 1
+    ):
         failures.append("non-model b3702 was not reported as uncovered by FBA")
+
     return {
-        "schema_version": 1,
-        "seed": args.seed,
+        "schema_version": 2,
+        "seed": seed,
         "status": "passed" if not failures else "failed",
         "failures": failures,
         "artifacts": {
-            "registry_sha256": file_sha256(args.registry),
-            "essentiality_summary_sha256": file_sha256(args.essentiality_summary),
-            "kegg_modules_sha256": file_sha256(args.kegg_modules),
-            "iml1515_sha256": file_sha256(args.iml1515),
+            "registry_sha256": file_sha256(artifacts.registry),
+            "essentiality_sha256": file_sha256(artifacts.essentiality),
+            "kegg_modules_sha256": file_sha256(artifacts.kegg_modules),
+            "iml1515_sha256": file_sha256(artifacts.iml1515),
         },
-        "cases": results,
+        "cases": report_cases,
     }
-
-
-def _score_payload(
-    evaluator: Evaluator[GenomeState], result: EvaluationResult
-) -> dict[str, object]:
-    details = result.metadata.get("details", {})
-    coverage = result.metadata.get("coverage", {})
-    provenance = result.metadata.get("provenance", {})
-    if not all(isinstance(value, dict) for value in (details, coverage, provenance)):
-        raise TypeError(f"malformed scientific evaluation: {evaluator.name}")
-    return {
-        "scorer": evaluator.name,
-        "version": evaluator.version,
-        "metrics": {**result.metrics, **details},
-        "coverage": coverage,
-        "provenance": provenance,
-    }
-
-
-def _scores(results: dict[str, Any], case: str) -> dict[str, Any]:
-    case_result = results[case]
-    if not isinstance(case_result, dict) or not isinstance(
-        case_result.get("scores"), dict
-    ):
-        raise TypeError(f"malformed validation result for {case}")
-    return cast(dict[str, Any], case_result["scores"])
-
-
-def _render_text(report: dict[str, Any]) -> str:
-    lines = [
-        "Yggdrisil Minimal E. coli — environment validation",
-        f"status: {report['status']}",
-        f"seed: {report['seed']}",
-        "",
-    ]
-    cases = report["cases"]
-    if not isinstance(cases, dict):
-        raise TypeError("malformed validation report")
-    for name, raw_case in cases.items():
-        if not isinstance(raw_case, dict) or not isinstance(
-            raw_case.get("scores"), dict
-        ):
-            raise TypeError(f"malformed validation case: {name}")
-        scores = raw_case["scores"]
-        size = scores["genome_size"]["metrics"]
-        essentiality = scores["essentiality"]["metrics"]
-        modules = scores["module_retention"]["metrics"]
-        fba = scores["fba"]["metrics"]
-        lines.extend(
-            [
-                str(name),
-                f"  deleted: {size['genes_deleted']}",
-                (
-                    "  essentiality: "
-                    f"essential={essentiality['n_essential_deleted']}, "
-                    "conditional="
-                    f"{essentiality['n_conditional_essential_deleted']}, "
-                    f"unknown={essentiality['n_unknown_deleted']}"
-                ),
-                (
-                    f"  modules: complete={modules['n_complete']}, "
-                    f"broken={modules['n_broken']}"
-                ),
-                (f"  FBA: feasible={fba['feasible']}, growth={fba['growth_rate']}"),
-                "",
-            ]
-        )
-    failures = report["failures"]
-    if failures:
-        lines.append("Failures:")
-        lines.extend(f"- {failure}" for failure in failures)
-    return "\n".join(lines).rstrip() + "\n"
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--registry",
-        type=Path,
-        default=Path("data/processed/gene_registry.parquet"),
-    )
-    parser.add_argument(
-        "--essentiality-summary",
-        type=Path,
-        default=Path("data/processed/essentiality_summary.parquet"),
-    )
-    parser.add_argument(
-        "--essentiality-observations",
-        type=Path,
-        default=Path("data/processed/essentiality_observations.parquet"),
-    )
-    parser.add_argument(
-        "--kegg-modules",
-        type=Path,
-        default=Path("data/processed/kegg_modules.json"),
-    )
-    parser.add_argument(
-        "--iml1515", type=Path, default=Path("data/external/iML1515.json")
-    )
-    parser.add_argument(
-        "--output", type=Path, default=Path("data/processed/environment_validation")
-    )
+    parser.add_argument("--data-dir", type=Path, default=Path("data"))
+    parser.add_argument("--output", type=Path)
     parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
-    report = asyncio.run(validate(args))
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.with_suffix(".json").write_text(
-        json.dumps(report, indent=2, sort_keys=True) + "\n"
-    )
-    args.output.with_suffix(".txt").write_text(_render_text(report))
-    print(_render_text(report), end="")
+    output = args.output or args.data_dir / "processed" / "environment_validation.json"
+    report = asyncio.run(validate(args.data_dir, args.seed))
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+    print(f"environment validation: {report['status']} ({output})")
+    for failure in report["failures"]:
+        print(f"- {failure}")
     if report["status"] != "passed":
         raise SystemExit(1)
 

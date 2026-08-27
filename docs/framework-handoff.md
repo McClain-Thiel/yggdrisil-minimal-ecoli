@@ -27,13 +27,13 @@ concept was added to the framework.
 - `RandomPolicy` and `SimpleHeuristicPolicy` run against the same problem and
   evaluations. Their decisions and proposals are persisted by the framework.
 - The search entrypoint refuses an accidental resume when policy identity,
-  seed, bundle size, proposal count, application, or framework commit differs.
+  seed, bundle size, proposal count, or application differs.
   `--new-run` still shares existing DAG states; independent experiments use
   separate graph files.
 
-The VCS dependency and `YGGDRISIL_COMMIT` runtime metadata use the same full
-commit. Update both deliberately when adopting a later framework revision and
-run the search integration and resume tests before changing the lockfile.
+The VCS dependency uses an exact full commit. Update it deliberately when
+adopting a later framework revision, then run the integration and resume tests;
+the local `uv.lock` is generated and intentionally ignored.
 
 ## Integration details to recheck
 

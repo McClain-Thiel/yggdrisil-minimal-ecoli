@@ -42,10 +42,6 @@ dev = [
 ]
 
 [project.scripts]
-yggdrisil-ecoli-build-registry = "yggdrisil_ecoli.data_build:main"
-yggdrisil-ecoli-audit-crosswalks = "yggdrisil_ecoli.data.audit:main"
-yggdrisil-ecoli-build-essentiality = "yggdrisil_ecoli.essentiality_build:main"
-yggdrisil-ecoli-build-modules = "yggdrisil_ecoli.module_build:main"
 yggdrisil-ecoli-search = "yggdrisil_ecoli.search:main"
 
 [tool.setuptools.packages.find]

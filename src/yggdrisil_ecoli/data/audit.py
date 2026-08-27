@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import argparse
 import json
 import os
 import tempfile
@@ -184,22 +183,3 @@ def _atomic_text(path: Path, content: str) -> None:
 
 def _percent(mapped: int, total: int) -> float:
     return 100.0 * mapped / total if total else 0.0
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "registry",
-        nargs="?",
-        type=Path,
-        default=Path("data/processed/gene_registry.parquet"),
-    )
-    args = parser.parse_args()
-    report = audit_registry(GeneRegistry.from_parquet(args.registry))
-    print(report.render_text(), end="")
-    if report.fatal_errors:
-        raise SystemExit(1)
-
-
-if __name__ == "__main__":
-    main()

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import argparse
 import time
 from datetime import UTC, datetime
 from pathlib import Path
@@ -127,39 +126,3 @@ def build_registry(
     print(audit.render_text(), end="")
     print(f"\nWrote {registry_path}")
     return registry_path
-
-
-def _parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--data-dir", type=Path, default=Path("data"))
-    parser.add_argument("--include-kegg", action="store_true")
-    parser.add_argument("--accept-kegg-terms", action="store_true")
-    parser.add_argument(
-        "--iml1515-json",
-        type=Path,
-        help="frozen publication-supplement iML1515 JSON artifact to crosswalk",
-    )
-    parser.add_argument(
-        "--refresh",
-        action="store_true",
-        help="replace cached raw snapshots from their recorded URLs",
-    )
-    return parser
-
-
-def main() -> None:
-    args = _parser().parse_args()
-    try:
-        build_registry(
-            args.data_dir,
-            include_kegg=args.include_kegg,
-            accept_kegg_terms=args.accept_kegg_terms,
-            iml1515_json=args.iml1515_json,
-            refresh=args.refresh,
-        )
-    except ValueError as exc:
-        raise SystemExit(str(exc)) from exc
-
-
-if __name__ == "__main__":
-    main()

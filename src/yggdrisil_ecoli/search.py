@@ -27,22 +27,31 @@ from yggdrisil_ecoli.policies import RandomDeletionSampler, SimpleHeuristicPolic
 from yggdrisil_ecoli.problem import EcoliProblem
 from yggdrisil_ecoli.scorers.base import active_evaluator_ids
 from yggdrisil_ecoli.scorers.essentiality import EssentialityScorer
-from yggdrisil_ecoli.scorers.modules import ModuleCatalog, ModuleRetentionScorer
+from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 from yggdrisil_ecoli.state import GenomeState
 
-YGGDRISIL_COMMIT = "d114144e4696989aacb85a4159c4177909deef1f"
-
-
 @dataclass(frozen=True, slots=True)
 class SearchArtifacts:
-    registry: Path = Path("data/processed/gene_registry.parquet")
-    essentiality_summary: Path = Path("data/processed/essentiality_summary.parquet")
-    essentiality_observations: Path = Path(
-        "data/processed/essentiality_observations.parquet"
-    )
-    kegg_modules: Path = Path("data/processed/kegg_modules.json")
-    iml1515: Path = Path("data/external/iML1515.json")
+    """Conventional artifact paths rooted at one local data directory."""
+
+    data_dir: Path = Path("data")
+
+    @property
+    def registry(self) -> Path:
+        return self.data_dir / "processed" / "gene_registry.parquet"
+
+    @property
+    def essentiality(self) -> Path:
+        return self.data_dir / "processed" / "essentiality.parquet"
+
+    @property
+    def kegg_modules(self) -> Path:
+        return self.data_dir / "processed" / "kegg_modules.json"
+
+    @property
+    def iml1515(self) -> Path:
+        return self.data_dir / "external" / "iML1515.json"
 
 
 DEFAULT_SEARCH_ARTIFACTS = SearchArtifacts()
@@ -57,32 +66,20 @@ def load_standard_evaluators(
 ]:
     """Load the four automatic scorers from frozen local artifacts."""
 
-    from yggdrisil_ecoli.scorers.fba import FBAEvaluator, FBAScorer
+    from yggdrisil_ecoli.scorers.fba import FBAScorer
 
     registry = GeneRegistry.from_parquet(artifacts.registry)
-    essentiality = EssentialityDataset.from_parquet(
-        artifacts.essentiality_summary,
-        artifacts.essentiality_observations,
-    )
-    modules = ModuleCatalog.from_json(artifacts.kegg_modules)
+    essentiality = EssentialityDataset.from_parquet(artifacts.essentiality)
+    modules = ModuleEvaluator.from_json(artifacts.kegg_modules, registry)
     evaluators: tuple[Evaluator[GenomeState], ...] = (
         GenomeSizeScorer(registry),
         EssentialityScorer(
             registry=registry,
             dataset=essentiality,
-            artifact_hash=file_sha256(artifacts.essentiality_summary),
+            artifact_hash=file_sha256(artifacts.essentiality),
         ),
-        ModuleRetentionScorer(
-            registry=registry,
-            catalog=modules,
-            artifact_hash=file_sha256(artifacts.kegg_modules),
-        ),
-        FBAScorer(
-            FBAEvaluator(
-                model_path=artifacts.iml1515,
-                registry=registry,
-            )
-        ),
+        modules,
+        FBAScorer(model_path=artifacts.iml1515, registry=registry),
     )
     return registry, essentiality, evaluators
 
@@ -107,7 +104,6 @@ async def run_baseline_search(
         raise ValueError(f"unknown policy: {policy_name!r}")
     metadata = {
         "application": "yggdrisil-ecoli",
-        "framework_commit": YGGDRISIL_COMMIT,
         "policy": policy_name,
         "seed": seed,
         "bundle_size": bundle_size,
@@ -206,41 +202,11 @@ def main() -> None:
         action="store_true",
         help="start a new run over the existing shared DAG",
     )
-    parser.add_argument(
-        "--registry",
-        type=Path,
-        default=DEFAULT_SEARCH_ARTIFACTS.registry,
-    )
-    parser.add_argument(
-        "--essentiality-summary",
-        type=Path,
-        default=DEFAULT_SEARCH_ARTIFACTS.essentiality_summary,
-    )
-    parser.add_argument(
-        "--essentiality-observations",
-        type=Path,
-        default=DEFAULT_SEARCH_ARTIFACTS.essentiality_observations,
-    )
-    parser.add_argument(
-        "--kegg-modules",
-        type=Path,
-        default=DEFAULT_SEARCH_ARTIFACTS.kegg_modules,
-    )
-    parser.add_argument(
-        "--iml1515",
-        type=Path,
-        default=DEFAULT_SEARCH_ARTIFACTS.iml1515,
-    )
+    parser.add_argument("--data-dir", type=Path, default=Path("data"))
     args = parser.parse_args()
     result = asyncio.run(
         run_baseline_search(
-            artifacts=SearchArtifacts(
-                registry=args.registry,
-                essentiality_summary=args.essentiality_summary,
-                essentiality_observations=args.essentiality_observations,
-                kegg_modules=args.kegg_modules,
-                iml1515=args.iml1515,
-            ),
+            artifacts=SearchArtifacts(args.data_dir),
             graph_path=args.graph,
             policy_name=args.policy,
             seed=args.seed,

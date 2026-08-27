@@ -2,15 +2,9 @@
 
 from __future__ import annotations
 
-import hashlib
-import json
+from yggdrisil import stable_hash
 
 from yggdrisil_ecoli.actions import DeleteGenes
-from yggdrisil_ecoli.constants import (
-    ASSEMBLY_ACCESSION,
-    ORGANISM_NAME,
-    REFERENCE_ACCESSION,
-)
 from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.registry import GeneRegistry
 from yggdrisil_ecoli.state import GenomeState, genome_state_key
@@ -30,7 +24,6 @@ class EcoliProblem:
         self.registry = registry
         self.max_genes_per_action = max_genes_per_action
         self.initial_state = GenomeState(deleted_genes=frozenset())
-        self._universe_hash = _stable_hash(sorted(registry.search_universe))
 
     def state_key(self, state: GenomeState) -> str:
         self.validate_state(state)
@@ -69,15 +62,9 @@ class EcoliProblem:
         return GenomeState(deleted_genes=state.deleted_genes.union(action.genes))
 
     def problem_fingerprint(self) -> dict[str, object]:
+        """Identify the deletion universe and action constraint for safe resume."""
+
         return {
-            "organism": ORGANISM_NAME,
-            "assembly": ASSEMBLY_ACCESSION,
-            "reference_accession": REFERENCE_ACCESSION,
-            "search_universe_hash": self._universe_hash,
+            "search_universe": stable_hash(sorted(self.registry.search_universe)),
             "max_genes_per_action": self.max_genes_per_action,
         }
-
-
-def _stable_hash(value: object) -> str:
-    payload = json.dumps(value, separators=(",", ":"), sort_keys=True).encode()
-    return hashlib.sha256(payload).hexdigest()

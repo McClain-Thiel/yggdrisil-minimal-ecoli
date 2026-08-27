@@ -30,22 +30,11 @@ the numerical FBA stack is pinned directly in `pyproject.toml`:
 uv sync --extra dev --extra data --extra fba
 ```
 
-Fetch the exact iML1515 model from the Monk et al. publication supplement, then
-build the NCBI registry with optional KEGG and model crosswalks:
+Build the exact iML1515 model, canonical registry, essentiality table, and KEGG
+module catalog in dependency order:
 
 ```bash
-uv run python scripts/fetch_iml1515.py
-uv run python scripts/build_gene_registry.py \
-  --include-kegg \
-  --accept-kegg-terms \
-  --iml1515-json data/external/iML1515.json
-```
-
-Build the Choe et al. experimental-essentiality artifact and KEGG module catalog:
-
-```bash
-uv run python scripts/build_essentiality_data.py
-uv run python scripts/build_kegg_modules.py --accept-kegg-terms
+uv run python scripts/build_data.py --accept-kegg-terms
 ```
 
 Run the fixed biological sanity panel:
@@ -86,7 +75,8 @@ explicit academic-use acknowledgement and are not redistributed.
 
 - Strict GFF3 parsing and an immutable, typed Parquet gene registry.
 - Audited, left-joined KEGG/KO and iML1515 crosswalks.
-- Frozen Choe 2023 observations with condition-aware summary classes.
+- One-row-per-gene Choe 2023 evidence with condition-aware summary classes and
+  explicit unknown coverage.
 - A KEGG module grammar supporting AND, OR, optional terms, and module
   references, with exact minimal missing-KO sets.
 - Copy-on-score COBRApy gene deletion with explicit medium, objective, ATPM,
