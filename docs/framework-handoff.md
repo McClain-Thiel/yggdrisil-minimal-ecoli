@@ -26,8 +26,10 @@ concept was added to the framework.
   never defines a combined reward.
 - `RandomPolicy` and `SimpleHeuristicPolicy` run against the same problem and
   evaluations. Their decisions and proposals are persisted by the framework.
-- The search entrypoint refuses an accidental resume when policy identity,
-  seed, bundle size, proposal count, or application differs.
+- The search entrypoint refuses an accidental resume when policy settings,
+  application/search contract, installed framework revision, or any active
+  evaluator identity differs. Evaluator identities include artifact and
+  configuration hashes.
   `--new-run` still shares existing DAG states; independent experiments use
   separate graph files.
 

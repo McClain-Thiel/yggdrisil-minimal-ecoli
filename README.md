@@ -62,9 +62,10 @@ uv run yggdrisil-ecoli-search \
 Both policies use the same four-evaluator suite. Yggdrisil evaluates and caches
 every state before the next policy call. Inspect a completed or active graph
 with `uv run yggdrisil inspect runs/random.sqlite`. Reopening a graph resumes
-its latest run only when the policy, seed, bundle size, and proposal count
-match. Use a separate graph for independent comparisons. `--new-run` creates a
-new run over the states already present in that same shared DAG.
+only when its policy settings, application/framework revisions, and exact
+evaluator/artifact identities match. Use a separate graph for independent
+comparisons. `--new-run` creates a new run over the states already present in
+that same shared DAG.
 
 Generated scientific data are gitignored. Each build records source URLs,
 versions, access times, content hashes, row counts, mapping gaps, and output
