@@ -9,6 +9,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from yggdrisil import (
+    Evaluator,
+    EvaluatorSuite,
     GraphError,
     Policy,
     RandomPolicy,
@@ -21,10 +23,9 @@ from yggdrisil import (
 from yggdrisil_ecoli.actions import DeleteGenes
 from yggdrisil_ecoli.data.essentiality import EssentialityDataset
 from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
-from yggdrisil_ecoli.evaluators import active_evaluator_ids, framework_evaluator_suite
 from yggdrisil_ecoli.policies import RandomDeletionSampler, SimpleHeuristicPolicy
 from yggdrisil_ecoli.problem import EcoliProblem
-from yggdrisil_ecoli.scorers.base import Scorer
+from yggdrisil_ecoli.scorers.base import active_evaluator_ids
 from yggdrisil_ecoli.scorers.essentiality import EssentialityScorer
 from yggdrisil_ecoli.scorers.modules import ModuleCatalog, ModuleRetentionScorer
 from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
@@ -47,9 +48,13 @@ class SearchArtifacts:
 DEFAULT_SEARCH_ARTIFACTS = SearchArtifacts()
 
 
-def load_standard_suite(
+def load_standard_evaluators(
     artifacts: SearchArtifacts,
-) -> tuple[GeneRegistry, EssentialityDataset, tuple[Scorer, ...]]:
+) -> tuple[
+    GeneRegistry,
+    EssentialityDataset,
+    tuple[Evaluator[GenomeState], ...],
+]:
     """Load the four automatic scorers from frozen local artifacts."""
 
     from yggdrisil_ecoli.scorers.fba import FBAEvaluator, FBAScorer
@@ -60,7 +65,7 @@ def load_standard_suite(
         artifacts.essentiality_observations,
     )
     modules = ModuleCatalog.from_json(artifacts.kegg_modules)
-    scorers: tuple[Scorer, ...] = (
+    evaluators: tuple[Evaluator[GenomeState], ...] = (
         GenomeSizeScorer(registry),
         EssentialityScorer(
             registry=registry,
@@ -79,7 +84,7 @@ def load_standard_suite(
             )
         ),
     )
-    return registry, essentiality, scorers
+    return registry, essentiality, evaluators
 
 
 async def run_baseline_search(
@@ -116,7 +121,7 @@ async def run_baseline_search(
             resume=resume,
             expected_metadata=metadata,
         )
-        registry, essentiality, scorers = load_standard_suite(artifacts)
+        registry, essentiality, evaluators = load_standard_evaluators(artifacts)
         problem = EcoliProblem(registry, max_genes_per_action=bundle_size)
         policy: Policy[DeleteGenes]
         if policy_name == "random":
@@ -129,7 +134,7 @@ async def run_baseline_search(
             policy = SimpleHeuristicPolicy(
                 registry=registry,
                 essentiality=essentiality,
-                evaluator_ids=active_evaluator_ids(scorers),
+                evaluator_ids=active_evaluator_ids(evaluators),
                 bundle_size=bundle_size,
                 n_proposals=n_proposals,
                 seed=seed,
@@ -143,7 +148,7 @@ async def run_baseline_search(
                 max_steps=max_steps,
                 max_wall_time_s=max_wall_time_s,
             ),
-            evaluators=framework_evaluator_suite(scorers),
+            evaluators=EvaluatorSuite(list(evaluators), concurrent=True),
             run_id=run_id,
             resume=resume,
             metadata=metadata,

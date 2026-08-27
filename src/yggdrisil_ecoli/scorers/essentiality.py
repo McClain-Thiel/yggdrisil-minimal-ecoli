@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from yggdrisil import EvaluationResult
+
 from yggdrisil_ecoli.data.essentiality import EssentialityDataset
 from yggdrisil_ecoli.data.registry import GeneRegistry
-from yggdrisil_ecoli.scorers.base import ScoreResult
+from yggdrisil_ecoli.scorers.base import scientific_evaluation
 from yggdrisil_ecoli.state import GenomeState
 
 
@@ -88,14 +90,13 @@ class EssentialityScorer:
     ) -> None:
         self.registry = registry
         self.dataset = dataset
-        self.config_hash = artifact_hash
+        self.artifact_hash = artifact_hash
+        self.config = {"artifact_sha256": artifact_hash}
 
-    async def score(self, state: GenomeState) -> ScoreResult:
+    async def evaluate(self, state: GenomeState) -> EvaluationResult:
         result = score_essentiality(state.deleted_genes, self.registry, self.dataset)
-        return ScoreResult(
-            scorer=self.name,
-            version=self.version,
-            metrics=result.metrics(),
+        return scientific_evaluation(
+            result.metrics(),
             coverage=result.coverage(),
-            provenance={"artifact_hash": self.config_hash},
+            provenance={"artifact_hash": self.artifact_hash},
         )

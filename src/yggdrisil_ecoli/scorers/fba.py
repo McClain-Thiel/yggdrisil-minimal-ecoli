@@ -15,10 +15,11 @@ from typing import Iterator, Mapping
 
 from cobra import Model
 from cobra.io import load_json_model
+from yggdrisil import EvaluationResult
 
 from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
-from yggdrisil_ecoli.scorers.base import ScoreResult
+from yggdrisil_ecoli.scorers.base import scientific_evaluation
 from yggdrisil_ecoli.state import GenomeState
 
 IML1515_OBJECTIVE_REACTION = "BIOMASS_Ec_iML1515_core_75p37M"
@@ -291,28 +292,20 @@ class FBAScorer:
 
     def __init__(self, evaluator: FBAEvaluator) -> None:
         self.evaluator = evaluator
-        self.config_hash = hashlib.sha256(
-            (
-                evaluator.model_sha256
-                + ":"
-                + evaluator.registry_mapping_hash
-                + ":"
-                + evaluator.environment.config_hash()
-                + ":"
-                + evaluator.cobra_version
-                + ":"
-                + evaluator.optlang_version
-                + ":"
-                + evaluator.solver_package_version
-            ).encode()
-        ).hexdigest()
+        self.config = {
+            "model_sha256": evaluator.model_sha256,
+            "registry_mapping_sha256": evaluator.registry_mapping_hash,
+            "environment_config_sha256": evaluator.environment.config_hash(),
+            "cobra_version": evaluator.cobra_version,
+            "optlang_version": evaluator.optlang_version,
+            "solver_package": evaluator.solver_package,
+            "solver_package_version": evaluator.solver_package_version,
+        }
 
-    async def score(self, state: GenomeState) -> ScoreResult:
+    async def evaluate(self, state: GenomeState) -> EvaluationResult:
         result = await self.evaluator.score_deleted_async(state.deleted_genes)
-        return ScoreResult(
-            scorer=self.name,
-            version=self.version,
-            metrics=result.metrics(),
+        return scientific_evaluation(
+            result.metrics(),
             coverage=result.coverage(),
             provenance=result.provenance(),
         )

@@ -10,43 +10,25 @@ import random
 from pathlib import Path
 from typing import Any, cast
 
-from yggdrisil_ecoli.data.essentiality import EssentialityDataset
-from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
+from yggdrisil import EvaluationResult, Evaluator, EvaluatorSuite
+
+from yggdrisil_ecoli.data.registry import file_sha256
 from yggdrisil_ecoli.problem import EcoliProblem
-from yggdrisil_ecoli.scorers.base import ScoreCache, ScorerSuite
-from yggdrisil_ecoli.scorers.essentiality import EssentialityScorer
-from yggdrisil_ecoli.scorers.fba import FBAEvaluator, FBAScorer
-from yggdrisil_ecoli.scorers.modules import ModuleCatalog, ModuleRetentionScorer
-from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
+from yggdrisil_ecoli.search import SearchArtifacts, load_standard_evaluators
 from yggdrisil_ecoli.state import GenomeState
 
 
 async def validate(args: argparse.Namespace) -> dict[str, Any]:
-    registry = GeneRegistry.from_parquet(args.registry)
-    essentiality = EssentialityDataset.from_parquet(
-        args.essentiality_summary, args.essentiality_observations
+    artifacts = SearchArtifacts(
+        registry=args.registry,
+        essentiality_summary=args.essentiality_summary,
+        essentiality_observations=args.essentiality_observations,
+        kegg_modules=args.kegg_modules,
+        iml1515=args.iml1515,
     )
-    modules = ModuleCatalog.from_json(args.kegg_modules)
-    fba = FBAEvaluator(model_path=args.iml1515, registry=registry)
+    registry, _essentiality, evaluators = load_standard_evaluators(artifacts)
     problem = EcoliProblem(registry)
-    cache = ScoreCache(args.cache)
-    suite = ScorerSuite(
-        (
-            GenomeSizeScorer(registry),
-            EssentialityScorer(
-                registry=registry,
-                dataset=essentiality,
-                artifact_hash=file_sha256(args.essentiality_summary),
-            ),
-            ModuleRetentionScorer(
-                registry=registry,
-                catalog=modules,
-                artifact_hash=file_sha256(args.kegg_modules),
-            ),
-            FBAScorer(fba),
-        ),
-        cache,
-    )
+    suite = EvaluatorSuite(list(evaluators), concurrent=True)
     rng = random.Random(args.seed)
     universe = sorted(registry.search_universe)
     cases = {
@@ -60,17 +42,16 @@ async def validate(args: argparse.Namespace) -> dict[str, Any]:
     results: dict[str, Any] = {}
     for name, deleted in cases.items():
         state = GenomeState(deleted)
-        # Exercise the same canonical key from both the problem and scorer suite.
+        # Exercise the same canonical key used by the search graph.
         problem.state_key(state)
-        scored = await suite.score(state)
+        evaluated = await suite.evaluate(state)
         results[name] = {
             "deleted_genes": sorted(deleted),
             "scores": {
-                scorer_name: result.model_dump(mode="json")
-                for scorer_name, result in scored.items()
+                evaluator.name: _score_payload(evaluator, result)
+                for evaluator, result in zip(evaluators, evaluated, strict=True)
             },
         }
-    cache.close()
 
     failures = []
     wild_type = _scores(results, "wild_type")
@@ -104,6 +85,23 @@ async def validate(args: argparse.Namespace) -> dict[str, Any]:
             "iml1515_sha256": file_sha256(args.iml1515),
         },
         "cases": results,
+    }
+
+
+def _score_payload(
+    evaluator: Evaluator[GenomeState], result: EvaluationResult
+) -> dict[str, object]:
+    details = result.metadata.get("details", {})
+    coverage = result.metadata.get("coverage", {})
+    provenance = result.metadata.get("provenance", {})
+    if not all(isinstance(value, dict) for value in (details, coverage, provenance)):
+        raise TypeError(f"malformed scientific evaluation: {evaluator.name}")
+    return {
+        "scorer": evaluator.name,
+        "version": evaluator.version,
+        "metrics": {**result.metrics, **details},
+        "coverage": coverage,
+        "provenance": provenance,
     }
 
 
@@ -186,9 +184,6 @@ def main() -> None:
     )
     parser.add_argument(
         "--iml1515", type=Path, default=Path("data/external/iML1515.json")
-    )
-    parser.add_argument(
-        "--cache", type=Path, default=Path("data/interim/validation_cache.sqlite")
     )
     parser.add_argument(
         "--output", type=Path, default=Path("data/processed/environment_validation")

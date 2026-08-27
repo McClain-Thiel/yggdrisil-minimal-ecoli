@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 from yggdrisil import (
+    EvaluationResult,
+    EvaluatorSuite,
     GraphError,
     RandomPolicy,
     RunLimits,
@@ -20,13 +22,12 @@ from yggdrisil_ecoli.data.essentiality import (
     EssentialitySummary,
 )
 from yggdrisil_ecoli.data.gff import parse_ncbi_gff
-from yggdrisil_ecoli.evaluators import (
-    active_evaluator_ids,
-    framework_evaluator_suite,
-)
 from yggdrisil_ecoli.policies import RandomDeletionSampler, SimpleHeuristicPolicy
 from yggdrisil_ecoli.problem import EcoliProblem
-from yggdrisil_ecoli.scorers.base import ScoreResult
+from yggdrisil_ecoli.scorers.base import (
+    active_evaluator_ids,
+    scientific_evaluation,
+)
 from yggdrisil_ecoli.search import validate_search_resume
 from yggdrisil_ecoli.state import GenomeState
 
@@ -37,15 +38,13 @@ FIXTURES = Path(__file__).parent / "fixtures"
 class _CountingScorer:
     name: str = "evidence"
     version: str = "1"
-    config_hash: str = "fixture-config"
+    config: str = "fixture-config"
     calls: int = 0
 
-    async def score(self, state: GenomeState) -> ScoreResult:
+    async def evaluate(self, state: GenomeState) -> EvaluationResult:
         self.calls += 1
-        return ScoreResult(
-            scorer=self.name,
-            version=self.version,
-            metrics={
+        return scientific_evaluation(
+            {
                 "genes_deleted": len(state.deleted_genes),
                 "deleted_gene_ids": sorted(state.deleted_genes),
             },
@@ -58,10 +57,10 @@ class _CountingScorer:
 class _StateEvidenceScorer:
     name: str
     metric: str
-    config_hash: str = "fixture-config"
+    config: str = "fixture-config"
     version: str = "1"
 
-    async def score(self, state: GenomeState) -> ScoreResult:
+    async def evaluate(self, state: GenomeState) -> EvaluationResult:
         if self.name == "essentiality":
             value: object = int("b0001" in state.deleted_genes)
         else:
@@ -69,26 +68,18 @@ class _StateEvidenceScorer:
         metrics = {self.metric: value}
         if self.name == "fba":
             metrics["growth_rate"] = 1.0 if value is True else 0.0
-        return ScoreResult(
-            scorer=self.name,
-            version=self.version,
-            metrics=metrics,
-        )
+        return scientific_evaluation(metrics)
 
 
 @dataclass
 class _FixedScorer:
     name: str
     metrics: dict[str, object]
-    config_hash: str
+    config: str
     version: str = "1"
 
-    async def score(self, state: GenomeState) -> ScoreResult:
-        return ScoreResult(
-            scorer=self.name,
-            version=self.version,
-            metrics=self.metrics,
-        )
+    async def evaluate(self, state: GenomeState) -> EvaluationResult:
+        return scientific_evaluation(self.metrics)
 
 
 @pytest.mark.asyncio
@@ -110,7 +101,7 @@ async def test_runner_persists_serializable_states_actions_and_evidence(
         ),
         graph,
         RunLimits(max_states=3, max_steps=3),
-        evaluators=framework_evaluator_suite((scorer,)),
+        evaluators=EvaluatorSuite([scorer], concurrent=True),
         run_id="integration",
     ).run()
 
@@ -137,7 +128,7 @@ async def test_runner_persists_serializable_states_actions_and_evidence(
 @pytest.mark.asyncio
 async def test_framework_suite_uses_yggdrisil_cache(tmp_path: Path) -> None:
     scorer = _CountingScorer()
-    suite = framework_evaluator_suite((scorer,))
+    suite = EvaluatorSuite([scorer], concurrent=True)
     graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "cache.sqlite")
     state = GenomeState(frozenset({"b0001"}))
     graph.add_state("state", state)
@@ -181,12 +172,11 @@ async def test_simple_heuristic_avoids_infeasible_parent_and_essential_gene(
             action=action,
         )
         children.append(node)
-    suite = framework_evaluator_suite(
-        scorers := (
-            _StateEvidenceScorer("essentiality", "n_essential_deleted"),
-            _StateEvidenceScorer("fba", "feasible"),
-        )
+    scorers = (
+        _StateEvidenceScorer("essentiality", "n_essential_deleted"),
+        _StateEvidenceScorer("fba", "feasible"),
     )
+    suite = EvaluatorSuite(list(scorers), concurrent=True)
     for node in graph.states():
         await suite.evaluate_cached(graph, node.state_id)
     policy = SimpleHeuristicPolicy(
@@ -293,10 +283,10 @@ async def test_heuristic_selects_active_cached_identity_after_config_reversion(
             "config-b",
         ),
     )
-    await framework_evaluator_suite(active).evaluate_cached(graph, "root")
-    await framework_evaluator_suite(inactive).evaluate_cached(graph, "root")
+    await EvaluatorSuite(list(active), concurrent=True).evaluate_cached(graph, "root")
+    await EvaluatorSuite(list(inactive), concurrent=True).evaluate_cached(graph, "root")
     # Reverting to A is a cache hit, so A remains older than B.
-    await framework_evaluator_suite(active).evaluate_cached(graph, "root")
+    await EvaluatorSuite(list(active), concurrent=True).evaluate_cached(graph, "root")
     policy = SimpleHeuristicPolicy(
         registry=registry,
         essentiality=essentiality,

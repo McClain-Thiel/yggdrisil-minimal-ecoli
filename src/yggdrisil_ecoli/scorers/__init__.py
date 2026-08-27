@@ -1,6 +1,5 @@
 """Independent evidence evaluators for candidate deletion sets."""
 
-from yggdrisil_ecoli.scorers.base import ScoreCache, ScoreResult, ScorerSuite
 from yggdrisil_ecoli.scorers.essentiality import (
     EssentialityResult,
     EssentialityScorer,
@@ -20,8 +19,5 @@ __all__ = [
     "ModuleCatalog",
     "ModuleRetentionResult",
     "ModuleRetentionScorer",
-    "ScoreCache",
-    "ScoreResult",
-    "ScorerSuite",
     "score_essentiality",
 ]

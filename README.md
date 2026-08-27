@@ -92,9 +92,9 @@ explicit academic-use acknowledgement and are not redistributed.
   solver, provenance, coverage, and GPR diagnostics.
 - `GenomeState`, `DeleteGenes`, and thin monotonic problem semantics,
   registered for safe Yggdrisil persistence.
-- Independent size, essentiality, module-retention, and FBA scorers.
-- A Yggdrisil evaluator adapter that keeps scalar metrics separate from
-  structured details, coverage, and provenance.
+- Independent size, essentiality, module-retention, and FBA evaluators using
+  Yggdrisil's native evaluator contract. A small shared helper keeps scalar
+  metrics separate from structured details, coverage, and provenance.
 - Concurrent search-time evaluation and SQLite DAG caching keyed by state,
   scorer version, and source/configuration fingerprints.
 - Fixed-seed `RandomPolicy` and a deliberately small heuristic baseline that

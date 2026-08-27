@@ -7,6 +7,8 @@ import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from yggdrisil import EvaluationResult
+
 from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.kegg_modules import (
     Expression,
@@ -17,7 +19,7 @@ from yggdrisil_ecoli.data.kegg_modules import (
     referenced_modules,
 )
 from yggdrisil_ecoli.data.registry import GeneRegistry
-from yggdrisil_ecoli.scorers.base import ScoreResult
+from yggdrisil_ecoli.scorers.base import scientific_evaluation
 from yggdrisil_ecoli.state import GenomeState
 
 
@@ -275,16 +277,16 @@ class ModuleRetentionScorer:
         self.catalog = catalog
         self.artifact_hash = artifact_hash
         self.registry_ko_mapping_hash = catalog.validate_registry(registry)
-        self.config_hash = hashlib.sha256(
-            f"{artifact_hash}:{self.registry_ko_mapping_hash}".encode()
-        ).hexdigest()
+        self.config = {
+            "artifact_sha256": artifact_hash,
+            "registry_ko_mapping_sha256": self.registry_ko_mapping_hash,
+            "parser_semantics_version": catalog.parser_semantics_version,
+        }
 
-    async def score(self, state: GenomeState) -> ScoreResult:
+    async def evaluate(self, state: GenomeState) -> EvaluationResult:
         result = self.catalog.score_deleted(state.deleted_genes, self.registry)
-        return ScoreResult(
-            scorer=self.name,
-            version=self.version,
-            metrics=result.metrics(),
+        return scientific_evaluation(
+            result.metrics(),
             coverage=result.coverage(),
             provenance={
                 "artifact_hash": self.artifact_hash,

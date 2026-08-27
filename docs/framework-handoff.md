@@ -17,11 +17,10 @@ concept was added to the framework.
   bundle.
 - `EcoliProblem` owns direct-child validation, monotonic application, stable
   state keys, and an explicit problem fingerprint.
-- Scorers accept `GenomeState` and return separate `ScoreResult` objects with
-  metrics, coverage, and provenance.
-- `ScorerEvaluator` adapts these results to framework `EvaluationResult`s.
-  Scalars remain metrics; lists and nested structures move to `details`, while
-  coverage and provenance retain their own metadata fields.
+- Scientific evaluators implement Yggdrisil's `Evaluator` protocol directly.
+  Scalars remain metrics; a small application helper moves lists and nested
+  structures to `details`, while coverage and provenance retain their own
+  metadata fields.
 - The framework `EvaluatorSuite(concurrent=True)` and `Runner(evaluators=...)`
   own search-time scheduling and persistent cache records. The application
   never defines a combined reward.
@@ -57,9 +56,6 @@ compact canonical gene evidence and require structured `DeleteGenes` output.
 
 - Add the compact Navigator/Explorer context and closed-book tool configuration,
   then exercise `NavigatorExplorerPolicy` with fake agents before a live model.
-- Decide whether the standalone `ScorerSuite` used by the biological sanity
-  script should be retired in favor of a graph-backed validation report. Search
-  execution already uses the framework cache.
 - Add published whole-cell-model and current-vEcoli crosswalk discovery.
 - Add published reduced-genome baselines and interval-to-registry derivation.
 - Add expensive whole-cell simulation only after cached cheap evidence gates
