@@ -38,6 +38,12 @@ fba = [
     "optlang==1.9.1",
     "swiglpk==5.0.13",
 ]
+rba = [
+    "RBApy==3.0.3",
+    "RBAtools==2.0.1",
+    "setuptools==80.10.2",
+    "swiglpk==5.0.13",
+]
 dev = [
     "build>=1.2",
     "mypy>=1.13",
@@ -54,6 +60,10 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 yggdrisil_ecoli = ["py.typed"]
+
+[tool.uv]
+# RBAtools pulls SBtab's obsolete openpyxl cap; this evaluator uses no SBtab workbook APIs.
+override-dependencies = ["openpyxl>=3.1"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -74,5 +84,17 @@ strict = true
 warn_unreachable = true
 
 [[tool.mypy.overrides]]
-module = ["cobra", "cobra.*", "openpyxl", "openpyxl.*", "pyarrow", "pyarrow.*"]
+module = [
+    "cobra",
+    "cobra.*",
+    "openpyxl",
+    "openpyxl.*",
+    "pyarrow",
+    "pyarrow.*",
+    "rba",
+    "rba.*",
+    "rbatools",
+    "rbatools.*",
+    "swiglpk",
+]
 ignore_missing_imports = true
