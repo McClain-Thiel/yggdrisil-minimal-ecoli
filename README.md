@@ -177,6 +177,54 @@ variables. It predicts balanced growth rather than complete cellular viability,
 so candidates still require an untouched comparison and selective vEcoli/WCM
 simulation or experiments.
 
+## Validate frozen finalists with vEcoli
+
+The offline vEcoli workflow freezes five candidates without loading MDS42,
+MS56, or any whole-cell result: the deepest jointly FBA/RBA-feasible state and
+four deletion-count-competitive, genotype-diverse states. It maps every deleted
+b-number through the registry to an exact vEcoli gene ID, installs a hash-checked
+multi-knockout adapter into an exact vEcoli checkout, follows one daughter per
+division, and stops each lineage at nondivision or generation 20.
+
+First make a checkpointed copy of the completed graph; do not select from a
+database with live SQLite sidecars. Then prepare the manifest and workflow:
+
+```bash
+sqlite3 runs/resource-search.sqlite \
+  '.backup runs/vecoli/source-graph-snapshot.sqlite'
+
+uv run python scripts/prepare_vecoli_finalists.py \
+  --graph runs/vecoli/source-graph-snapshot.sqlite \
+  --registry data/processed/gene_registry.parquet \
+  --vecoli-checkout /absolute/path/to/vEcoli \
+  --output-root /absolute/path/to/runs/vecoli/output \
+  --manifest runs/vecoli/manifest.json \
+  --config runs/vecoli/workflow.json
+```
+
+The checkout must be the commit and lock recorded in
+[the validation contract](docs/vecoli-finalist-validation.md). Install it with
+`uv sync --frozen --extra dev` and use the official Nextflow launcher: vEcoli's
+`.env` pins Nextflow 25.10.4, whereas package-manager wrappers may ignore
+`NXF_VER`. Run the generated config from the vEcoli checkout, then summarize the
+durable daughter states and task failures:
+
+```bash
+uv run --frozen --env-file .env runscripts/workflow.py \
+  --config /absolute/path/to/runs/vecoli/workflow.json
+
+uv run python scripts/summarize_vecoli_finalists.py \
+  --manifest runs/vecoli/manifest.json \
+  --output runs/vecoli/results.json
+```
+
+Run one generation first and reuse its operon-disabled ParCa `simData.cPickle`
+through `--sim-data-path` for the 20-generation workflow. The result separates
+biological nondivision from model exceptions, resource failures, and incomplete
+orchestration. See
+[vEcoli finalist validation](docs/vecoli-finalist-validation.md) for the complete
+selection, knockout, provenance, and interpretation contract.
+
 ## Development gates
 
 ```bash

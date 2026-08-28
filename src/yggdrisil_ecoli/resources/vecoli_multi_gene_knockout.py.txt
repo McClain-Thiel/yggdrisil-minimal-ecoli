@@ -1,0 +1,116 @@
+"""Exact multi-gene knockout variant for pinned vEcoli finalist validation."""
+
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from reconstruction.ecoli.simulation_data import SimulationDataEcoli
+
+
+def apply_variant(
+    sim_data: "SimulationDataEcoli", params: dict[str, Any]
+) -> "SimulationDataEcoli":
+    """Set final expression to zero for exact, single-cistron vEcoli gene IDs."""
+
+    raw_gene_ids = params.get("gene_ids")
+    if (
+        not isinstance(raw_gene_ids, list)
+        or not raw_gene_ids
+        or any(not isinstance(item, str) or not item for item in raw_gene_ids)
+    ):
+        raise ValueError("gene_ids must be a nonempty list of strings")
+    gene_ids = tuple(raw_gene_ids)
+    if len(gene_ids) != len(set(gene_ids)):
+        raise ValueError("gene_ids contains duplicates")
+
+    transcription = sim_data.process.transcription
+    cistrons = transcription.cistron_data.struct_array
+    rnas = transcription.rna_data.struct_array
+    cistron_to_tu = transcription.cistron_tu_mapping_matrix
+    rna_indices = []
+    rna_ids = []
+    for gene_id in gene_ids:
+        cistron_matches = [
+            index
+            for index, candidate in enumerate(cistrons["gene_id"])
+            if candidate == gene_id
+        ]
+        if len(cistron_matches) != 1:
+            raise ValueError(
+                f"{gene_id}: expected exactly one vEcoli cistron, "
+                f"found {len(cistron_matches)}"
+            )
+        cistron_index = cistron_matches[0]
+        tu_indices = cistron_to_tu[cistron_index].nonzero()[-1].tolist()
+        if len(tu_indices) != 1:
+            raise ValueError(
+                f"{gene_id}: expected one RNA for the target cistron; "
+                "run ParCa with operons disabled"
+            )
+        rna_index = int(tu_indices[0])
+        member_cistrons = cistron_to_tu[:, rna_index].nonzero()[0].tolist()
+        if member_cistrons != [cistron_index]:
+            raise ValueError(
+                f"{gene_id}: target RNA contains untargeted operon partners; "
+                "run ParCa with operons disabled"
+            )
+        rna_indices.append(rna_index)
+        rna_ids.append(str(rnas["id"][rna_index]))
+
+    if len(rna_indices) != len(set(rna_indices)):
+        raise ValueError("multiple requested genes map to the same vEcoli RNA")
+    sim_data.adjust_final_expression(rna_indices, [0.0] * len(rna_indices))
+    _verify_zero_expression(sim_data, rna_indices)
+    sim_data.yggdrisil_knockout_gene_ids = gene_ids
+    sim_data.yggdrisil_knockout_rna_ids = tuple(rna_ids)
+    sim_data.yggdrisil_knockout_rna_indices = tuple(rna_indices)
+    return sim_data
+
+
+def _verify_zero_expression(
+    sim_data: "SimulationDataEcoli", rna_indices: list[int]
+) -> None:
+    transcription = sim_data.process.transcription
+    regulation = sim_data.process.transcription_regulation
+    arrays = {
+        **{
+            f"rna_synth_prob[{condition}]": values
+            for condition, values in transcription.rna_synth_prob.items()
+        },
+        **{
+            f"rna_expression[{condition}]": values
+            for condition, values in transcription.rna_expression.items()
+        },
+        "exp_free": transcription.exp_free,
+        "exp_ppgpp": transcription.exp_ppgpp,
+        "basal_prob": regulation.basal_prob,
+    }
+    nonzero = [
+        f"{name}[{index}]={values[index]!r}"
+        for name, values in arrays.items()
+        for index in rna_indices
+        if float(values[index]) != 0.0
+    ]
+    targeted = set(rna_indices)
+    nonzero.extend(
+        f"attenuation_basal_prob_adjustments[{position}]={value!r}"
+        for position, (index, value) in enumerate(
+            zip(
+                transcription.attenuated_rna_indices,
+                transcription.attenuation_basal_prob_adjustments,
+            )
+        )
+        if int(index) in targeted and float(value) != 0.0
+    )
+    delta_prob = regulation.delta_prob
+    nonzero.extend(
+        f"delta_prob[deltaV][{position}]={value!r}"
+        for position, (index, value) in enumerate(
+            zip(delta_prob["deltaI"], delta_prob["deltaV"])
+        )
+        if int(index) in targeted and float(value) != 0.0
+    )
+    if nonzero:
+        raise RuntimeError(
+            "vEcoli knockout left nonzero expression parameters: "
+            + ", ".join(nonzero[:20])
+        )

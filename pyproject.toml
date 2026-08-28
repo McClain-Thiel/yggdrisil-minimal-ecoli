@@ -59,7 +59,7 @@ yggdrisil-ecoli-search = "yggdrisil_ecoli.search:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-yggdrisil_ecoli = ["py.typed"]
+yggdrisil_ecoli = ["py.typed", "resources/*.txt"]
 
 [tool.uv]
 # RBAtools pulls SBtab's obsolete openpyxl cap; this evaluator uses no SBtab workbook APIs.
