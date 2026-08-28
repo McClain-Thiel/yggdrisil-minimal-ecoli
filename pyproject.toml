@@ -21,7 +21,7 @@ classifiers = [
 dependencies = [
     "pydantic>=2.10",
     "pyarrow>=18",
-    "yggdrisil @ git+https://github.com/McClain-Thiel/yggdrisil.git@736f9416ba08562f5e338941934fee348fb2c5e9",
+    "yggdrisil @ git+https://github.com/McClain-Thiel/yggdrisil.git@bf390ddcee567ff705085273394a4b929a8c0005",
 ]
 
 [project.optional-dependencies]
@@ -36,6 +36,12 @@ data = [
 fba = [
     "cobra==0.32.1",
     "optlang==1.9.1",
+    "swiglpk==5.0.13",
+]
+rba = [
+    "RBApy==3.0.3",
+    "RBAtools==2.0.1",
+    "setuptools==80.10.2",
     "swiglpk==5.0.13",
 ]
 dev = [
@@ -54,6 +60,10 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 yggdrisil_ecoli = ["py.typed"]
+
+[tool.uv]
+# RBAtools pulls SBtab's obsolete openpyxl cap; this evaluator uses no SBtab workbook APIs.
+override-dependencies = ["openpyxl>=3.1"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -74,5 +84,24 @@ strict = true
 warn_unreachable = true
 
 [[tool.mypy.overrides]]
-module = ["cobra", "cobra.*", "openpyxl", "openpyxl.*", "pyarrow", "pyarrow.*"]
+module = [
+    "cobra",
+    "cobra.*",
+    "openpyxl",
+    "openpyxl.*",
+    "numpy",
+    "numpy.*",
+    "openai",
+    "openai.*",
+    "pyarrow",
+    "pyarrow.*",
+    "pypdf",
+    "pypdf.*",
+    "rba",
+    "rba.*",
+    "rbatools",
+    "rbatools.*",
+    "swiglpk",
+]
 ignore_missing_imports = true
+follow_imports = "skip"

@@ -122,16 +122,25 @@ def test_posthoc_rediscovery_metrics_keep_truth_outside_search() -> None:
     assert scores["MS56"]["published_deletion_interval_recall"] is None
 
 
-def test_posthoc_viability_uses_fba_not_essentiality_or_module_evidence() -> None:
+def test_posthoc_viability_requires_fba_and_resource_allocation() -> None:
     evidence = {
         "essentiality": _evaluation("essentiality", {"n_essential_deleted": 3}),
         "fba": _evaluation("fba", {"feasible": True, "growth_rate": 0.1}),
         "module_retention": _evaluation("modules", {"n_broken": 8}),
+        "resource_allocation": _evaluation(
+            "resource", {"feasible_at_growth_floor": True}
+        ),
     }
 
     assert _viable(evidence)
 
     evidence["fba"] = _evaluation("fba", {"feasible": True, "growth_rate": 0.0})
+    assert not _viable(evidence)
+
+    evidence["fba"] = _evaluation("fba", {"feasible": True, "growth_rate": 0.1})
+    evidence["resource_allocation"] = _evaluation(
+        "resource", {"feasible_at_growth_floor": False}
+    )
     assert not _viable(evidence)
 
 

@@ -16,7 +16,7 @@ from yggdrisil.types import EvaluationRecord, ProposalEvent, StateNode
 from yggdrisil_ecoli.actions import DeleteGenes
 from yggdrisil_ecoli.state import GenomeState
 
-SCHEDULER_VERSION = 1
+SCHEDULER_VERSION = 2
 
 
 @dataclass(frozen=True, slots=True)
@@ -64,6 +64,7 @@ class OpenSetConfig:
             "viability": {
                 "fba_feasible": True,
                 "growth_rate": ">0",
+                "resource_allocation_feasible_at_growth_floor": True,
             },
             "ranking_evidence_only": [
                 "essentiality",
@@ -101,7 +102,12 @@ class RecoverableOpenSetSelector:
         candidate_page_size: int,
         public_gene_id: Callable[[str], str] = str,
     ) -> None:
-        missing = {"essentiality", "fba", "module_retention"} - set(evaluator_ids)
+        missing = {
+            "essentiality",
+            "fba",
+            "module_retention",
+            "resource_allocation",
+        } - set(evaluator_ids)
         if missing:
             raise ValueError(f"missing evaluator identities: {sorted(missing)}")
         if max_action_size < 1:
@@ -197,7 +203,8 @@ class RecoverableOpenSetSelector:
     def _is_viable(self, records: Sequence[EvaluationRecord]) -> bool:
         active = self._active_records(records)
         fba = active.get("fba")
-        if fba is None:
+        resource = active.get("resource_allocation")
+        if fba is None or resource is None:
             return False
         growth = fba.metrics.get("growth_rate")
         return (
@@ -205,6 +212,7 @@ class RecoverableOpenSetSelector:
             and isinstance(growth, (int, float))
             and not isinstance(growth, bool)
             and growth > 0
+            and resource.metrics.get("feasible_at_growth_floor") is True
         )
 
     def _active_records(
@@ -336,6 +344,10 @@ class RecoverableOpenSetSelector:
             and event.child_id is not None
             and any(
                 record.evaluator_id == self.evaluator_ids["fba"]
+                for record in child_records
+            )
+            and any(
+                record.evaluator_id == self.evaluator_ids["resource_allocation"]
                 for record in child_records
             )
         )
