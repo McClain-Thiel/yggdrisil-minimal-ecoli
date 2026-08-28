@@ -69,8 +69,9 @@ uv run yggdrisil-ecoli-search \
 
 Run a bounded model-backed search by naming an exact OpenRouter model. There is
 no default model, so an accidental invocation cannot spend credits. This smoke
-configuration permits at most one navigator request, sixteen local tool calls, 800
-output tokens, and an estimated $0.02 per navigator or explorer invocation:
+configuration uses deterministic open-set navigation, two deletion alternatives per
+selected parent, sixteen local tool calls, 800 output tokens, and an estimated $0.02
+per explorer invocation:
 
 ```bash
 uv run --extra agents --extra fba yggdrisil-ecoli-search \
@@ -79,8 +80,10 @@ uv run --extra agents --extra fba yggdrisil-ecoli-search \
   --agent-mode closed-book \
   --model openai/gpt-4o-mini-2024-07-18 \
   --seed 101 \
-  --bundle-size 1 \
-  --n-proposals 1 \
+  --bundle-size 20 \
+  --n-proposals 2 \
+  --open-set-width 16 \
+  --parents-per-step 4 \
   --max-states 10
 ```
 
@@ -88,8 +91,11 @@ uv run --extra agents --extra fba yggdrisil-ecoli-search \
 exposes only categorical experimental/model coverage. Prompts and tool returns
 contain no locus tags, symbols, descriptions, literature, current-vEcoli, or
 published whole-cell-model membership. `tool-rich` exposes the existing gene,
-essentiality, and KEGG inspection tools. Use separate graph files for every
-model, seed, and exposure mode.
+essentiality, and KEGG inspection tools. The action limit is a ceiling rather
+than a fixed bundle size. Viable parents remain reopenable after lethal children;
+the scheduler keeps a diverse active window, rotates candidate pages, rejects
+duplicate sibling actions, and supplies progressively smaller 20/10/5/1 fallback
+guidance. Use separate graph files for every model, seed, and exposure mode.
 
 Both policies use the same four-evaluator suite. Yggdrisil evaluates and caches
 every state before the next policy call. Inspect a completed or active graph
@@ -141,10 +147,11 @@ explicit academic-use acknowledgement and are not redistributed.
 - Concurrent search-time evaluation and SQLite DAG caching keyed by state,
   scorer version, and source/configuration fingerprints.
 - Fixed-seed `RandomPolicy` and a deliberately small heuristic baseline that
-  avoids known essential genes and FBA-infeasible parent states.
-- A bounded OpenRouter navigator/explorer policy with fixed model identity,
-  prompt/config provenance, per-call usage limits, and closed-book versus
-  tool-rich evidence modes.
+  expands FBA-positive parents without treating experimental essentiality as a
+  deletion ban.
+- A bounded OpenRouter explorer with deterministic recoverable open-set scheduling,
+  fixed model identity, prompt/config provenance, per-call usage limits, and
+  closed-book versus tool-rich evidence modes.
 - A post-hoc, agent-invisible MDS42/MS56 rediscovery evaluator built from a
   complete-genome alignment and the original published MS56 deletion table.
 - Canonical-only gene inspection, set analysis, and frozen-module inspection

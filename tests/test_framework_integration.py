@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -144,7 +145,7 @@ async def test_framework_suite_uses_yggdrisil_cache(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
-async def test_simple_heuristic_avoids_infeasible_parent_and_essential_gene(
+async def test_simple_heuristic_accepts_fba_positive_parent_with_essential_deletion(
     tmp_path: Path,
 ) -> None:
     registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
@@ -162,7 +163,7 @@ async def test_simple_heuristic_avoids_infeasible_parent_and_essential_gene(
         problem.initial_state,
     )
     children = []
-    for gene in ("b0002", "b0003"):
+    for gene in ("b0001", "b0002"):
         action = DeleteGenes(genes=(gene,))
         state = problem.apply(problem.initial_state, action)
         node, _edge, _node_created, _edge_created = graph.add_transition(
@@ -197,12 +198,36 @@ async def test_simple_heuristic_avoids_infeasible_parent_and_essential_gene(
         ),
     )
 
+    assert decisions
     proposal = decisions[0].proposals[0]
-    viable_child = next(
-        node for node in children if node.state.deleted_genes == frozenset({"b0003"})
+    fba_positive_child = next(
+        node for node in children if node.state.deleted_genes == frozenset({"b0001"})
     )
-    assert proposal.parent_id == viable_child.state_id
-    assert proposal.action.genes == ("b0002",)
+    assert proposal.parent_id == fba_positive_child.state_id
+
+
+def test_deletion_sampler_does_not_silently_exclude_essential_genes() -> None:
+    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
+    essentiality = EssentialityDataset(
+        (
+            _essentiality_summary("b0001", "essential"),
+            _essentiality_summary("b0002", "nonessential"),
+            _essentiality_summary("b0003", "nonessential"),
+        )
+    )
+    state = GenomeState(frozenset({"b0002", "b0003"}))
+
+    default_actions = deletion_sampler(registry, essentiality=essentiality)(
+        state, random.Random(0)
+    )
+    filtered_actions = deletion_sampler(
+        registry,
+        essentiality=essentiality,
+        exclude_known_essential=True,
+    )(GenomeState(frozenset({"b0002"})), random.Random(0))
+
+    assert default_actions == (DeleteGenes(genes=("b0001",)),)
+    assert filtered_actions == (DeleteGenes(genes=("b0003",)),)
 
 
 def _essentiality_summary(

@@ -6,7 +6,7 @@ import hashlib
 import json
 import os
 from collections import Counter
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from contextvars import ContextVar
 from dataclasses import dataclass
 from decimal import Decimal
@@ -19,20 +19,24 @@ from yggdrisil import NavigatorExplorerPolicy
 from yggdrisil.agents import (
     ExplorerContext,
     ExplorerResult,
-    NavigatorContext,
 )
 
 from yggdrisil_ecoli.actions import DeleteGenes
 from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.essentiality import EssentialityDataset
 from yggdrisil_ecoli.data.registry import GeneRegistry
+from yggdrisil_ecoli.open_set import (
+    OpenSetConfig,
+    RecoverableOpenSetSelector,
+)
 from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.state import GenomeState
 from yggdrisil_ecoli.tools.genes import GeneTools
 
 AgentMode = Literal["closed-book", "tool-rich"]
-PROMPT_VERSION = 2
+PROMPT_VERSION = 5
 BLIND_MAP_VERSION = 1
+MAX_CANDIDATE_PAGE_SIZE = 100
 
 
 class AgentPolicyError(RuntimeError):
@@ -48,7 +52,9 @@ class AgentSearchConfig:
     seed: int = 0
     bundle_size: int = 1
     max_actions: int = 2
-    max_navigator_requests: int = 1
+    open_set_width: int = 16
+    parents_per_step: int = 4
+    fallback_action_caps: tuple[int, ...] = (20, 10, 5, 1)
     max_model_requests: int = 6
     max_tool_calls: int = 16
     max_output_tokens: int = 800
@@ -67,19 +73,36 @@ class AgentSearchConfig:
         for name in (
             "bundle_size",
             "max_actions",
-            "max_navigator_requests",
+            "open_set_width",
+            "parents_per_step",
             "max_model_requests",
             "max_tool_calls",
             "max_output_tokens",
         ):
             if getattr(self, name) < 1:
                 raise ValueError(f"{name} must be positive")
+        if self.bundle_size > 20:
+            raise ValueError("bundle_size must not exceed 20 for agent search")
+        self.open_set_config
         if self.max_cost_per_call_usd <= 0:
             raise ValueError("max_cost_per_call_usd must be positive")
 
     @property
+    def candidate_preview_count(self) -> int:
+        requested = max(8, self.bundle_size * self.max_actions * 2)
+        return min(MAX_CANDIDATE_PAGE_SIZE, requested)
+
+    @property
     def model_ref(self) -> str:
         return f"openrouter:{self.model}"
+
+    @property
+    def open_set_config(self) -> OpenSetConfig:
+        return OpenSetConfig(
+            active_width=self.open_set_width,
+            parents_per_step=self.parents_per_step,
+            fallback_action_caps=self.fallback_action_caps,
+        )
 
     def metadata(self, registry: GeneRegistry) -> dict[str, object]:
         schedule = _CandidateSchedule(registry, self.seed)
@@ -103,7 +126,9 @@ class AgentSearchConfig:
             "seed": self.seed,
             "bundle_size": self.bundle_size,
             "max_actions": self.max_actions,
-            "max_navigator_requests": self.max_navigator_requests,
+            "candidate_preview_count": self.candidate_preview_count,
+            "candidate_preview_rotation": "run_step_mod_remaining_pages",
+            "scheduler": self.open_set_config.metadata(self.bundle_size),
             "max_model_requests": self.max_model_requests,
             "max_tool_calls": self.max_tool_calls,
             "max_output_tokens": self.max_output_tokens,
@@ -186,6 +211,7 @@ class _AgentGeneTools:
         state: GenomeState,
         mode: AgentMode,
         blind: _BlindGeneMap | None,
+        max_genes_per_action: int,
     ) -> None:
         self.registry = registry
         self.essentiality = essentiality
@@ -194,6 +220,8 @@ class _AgentGeneTools:
         self.state = state
         self.mode = mode
         self.blind = blind
+        self.max_genes_per_action = max_genes_per_action
+        self.exposed_public_ids: set[str] = set()
         self.rich = GeneTools(
             registry=registry,
             essentiality=essentiality,
@@ -214,13 +242,14 @@ class _AgentGeneTools:
     def list_candidates(self, page: int = 0, count: int = 24) -> dict[str, object]:
         if page < 0:
             raise ValueError("page must be non-negative")
-        if count < 1 or count > 50:
-            raise ValueError("count must be between 1 and 50")
+        if count < 1 or count > MAX_CANDIDATE_PAGE_SIZE:
+            raise ValueError(f"count must be between 1 and {MAX_CANDIDATE_PAGE_SIZE}")
         available = [
             gene for gene in self.schedule.genes if gene not in self.state.deleted_genes
         ]
         start = page * count
         genes = available[start : start + count]
+        self.exposed_public_ids.update(self.public(gene) for gene in genes)
         return {
             "page": page,
             "count": len(genes),
@@ -229,9 +258,19 @@ class _AgentGeneTools:
         }
 
     def inspect_gene(self, public: str) -> dict[str, object]:
+        self._require_exposed(public)
         return self._gene_evidence(self.canonical(public), detailed=True)
 
     def analyze_bundle(self, public_ids: list[str]) -> dict[str, object]:
+        if not 1 <= len(public_ids) <= self.max_genes_per_action:
+            raise ValueError(
+                "deletion bundle must contain 1 to "
+                f"{self.max_genes_per_action} exposed gene ids"
+            )
+        if len(set(public_ids)) != len(public_ids):
+            raise ValueError("deletion bundle contains duplicate gene ids")
+        for public in public_ids:
+            self._require_exposed(public)
         canonical = [self.canonical(gene) for gene in public_ids]
         if self.mode == "tool-rich":
             return self.rich.analyze_gene_set(canonical)
@@ -267,8 +306,20 @@ class _AgentGeneTools:
     ) -> dict[str, object]:
         if self.mode != "tool-rich":
             raise ValueError("module details are unavailable in closed-book mode")
+        for public in public_deleted_ids or ():
+            self._require_exposed(public)
         deleted = [self.canonical(gene) for gene in public_deleted_ids or ()]
         return self.rich.get_module_info(module_id, deleted_genes=deleted)
+
+    def require_action_gene(self, canonical: str) -> None:
+        self.registry.require(canonical)
+        self._require_exposed(self.public(canonical))
+
+    def _require_exposed(self, public: str) -> None:
+        if public not in self.exposed_public_ids:
+            raise ValueError(
+                f"gene identifier was not exposed in this invocation: {public}"
+            )
 
     def _gene_evidence(
         self, canonical: str, *, detailed: bool = False
@@ -332,6 +383,7 @@ def make_agent_policy(
     registry: GeneRegistry,
     essentiality: EssentialityDataset,
     modules: ModuleEvaluator,
+    evaluator_ids: Mapping[str, str],
     config: AgentSearchConfig,
 ) -> NavigatorExplorerPolicy[GenomeState, DeleteGenes]:
     """Build a bounded OpenRouter navigator/explorer policy."""
@@ -339,7 +391,7 @@ def make_agent_policy(
     _load_openrouter_key()
     from pydantic_ai import UsageLimits
     from pydantic_ai.models.openrouter import OpenRouterModelSettings
-    from yggdrisil.agents.pydantic_ai import make_explorer, make_navigator
+    from yggdrisil.agents.pydantic_ai import make_explorer
 
     schedule = _CandidateSchedule(registry, config.seed)
     blind = (
@@ -355,6 +407,7 @@ def make_agent_policy(
             state=state,
             mode=config.mode,
             blind=blind,
+            max_genes_per_action=config.bundle_size,
         )
 
     settings = OpenRouterModelSettings(
@@ -372,18 +425,6 @@ def make_agent_policy(
         request_limit=config.max_model_requests,
         tool_calls_limit=config.max_tool_calls,
         output_tokens_limit=config.max_model_requests * config.max_output_tokens,
-    )
-    navigator = make_navigator(
-        config.model_ref,
-        instructions=(
-            "Navigate an E. coli genome-deletion search. Select only existing "
-            "frontier state ids. Prefer states with zero essential deletions, "
-            "feasible positive FBA growth, fewer remaining genes, and fewer "
-            "broken modules. Unknown evidence is risk, not proof of safety."
-        ),
-        prompt=lambda context: _format_navigator_prompt(
-            context, config.max_navigator_requests
-        ),
     )
     action_type = _bounded_action_type(config.mode, config.bundle_size)
     tool_functions: list[Callable[..., Any]] = [analyze_deletion_bundle]
@@ -404,14 +445,15 @@ def make_agent_policy(
             "Only propose identifiers returned in the candidate preview or by "
             "list_deletion_candidates in this invocation. Do not inspect every "
             "candidate: shortlist using the preview, then batch-check only the "
-            "final bundle. Avoid essential genes and prefer experimentally "
-            "nonessential candidates. Return direct deletion actions only."
+            "final action. Treat essentiality, module retention, and unknown "
+            "annotations as uncertain ranking evidence, not prohibitions: empirical "
+            "datasets can disagree, so they may be deleted while pursuing a smaller "
+            "FBA-positive genome. Return direct deletion actions only."
         ),
         prompt=lambda context: _format_explorer_prompt(context, toolkit, config),
     )
-    for component in (navigator, explorer):
-        component.agent.model_settings = settings
-        component.agent = _UsageLimitedAgent(component.agent, limits)
+    explorer.agent.model_settings = settings
+    explorer.agent = _UsageLimitedAgent(explorer.agent, limits)
 
     def translate(action: DeleteGenes | _BlindDeleteGenes) -> DeleteGenes:
         if isinstance(action, DeleteGenes):
@@ -419,21 +461,33 @@ def make_agent_policy(
         assert blind is not None
         return DeleteGenes(genes=tuple(blind.canonical(gene) for gene in action.genes))
 
+    selector = RecoverableOpenSetSelector(
+        evaluator_ids=evaluator_ids,
+        max_action_size=config.bundle_size,
+        config=config.open_set_config,
+        seed=config.seed,
+        candidate_count=len(registry.search_universe),
+        candidate_page_size=config.candidate_preview_count,
+        public_gene_id=blind.public if blind is not None else str,
+    )
     bound_explorer = _BoundExplorer(
         explorer,
         toolkit,
         translate,
+        attempted_actions=selector.attempted_actions,
         max_actions=config.max_actions,
         max_genes_per_action=config.bundle_size,
     )
     return NavigatorExplorerPolicy(
-        navigator,
+        None,
         bound_explorer,
         goal=(
             "Minimize the MG1655 protein-coding genome for aerobic M9 glucose "
             "at 37 C while retaining predicted viability."
         ),
-        max_requests=config.max_navigator_requests,
+        max_requests=config.parents_per_step,
+        request_selector=selector,
+        tolerate_explorer_failures=True,
     )
 
 
@@ -457,6 +511,7 @@ class _BoundExplorer(Generic[SourceAction]):
         toolkit: Callable[[GenomeState], _AgentGeneTools],
         translate: Callable[[SourceAction], DeleteGenes],
         *,
+        attempted_actions: Callable[[str], frozenset[tuple[str, ...]]] | None = None,
         max_actions: int,
         max_genes_per_action: int,
     ) -> None:
@@ -464,13 +519,18 @@ class _BoundExplorer(Generic[SourceAction]):
         self.model = inner.model
         self.toolkit = toolkit
         self.translate = translate
+        self.attempted_actions = attempted_actions or (lambda _state_id: frozenset())
         self.max_actions = max_actions
         self.max_genes_per_action = max_genes_per_action
+        self._prepared_toolkits: dict[str, _AgentGeneTools] = {}
 
     async def explore(
         self, context: ExplorerContext[GenomeState]
     ) -> ExplorerResult[DeleteGenes]:
-        toolkit = self.toolkit(context.state)
+        toolkit = self._prepared_toolkits.pop(
+            context.state_id,
+            None,
+        ) or self.toolkit(context.state)
         token = _ACTIVE_TOOLS.set(toolkit)
         try:
             result = await self.inner.explore(context)
@@ -478,15 +538,20 @@ class _BoundExplorer(Generic[SourceAction]):
             _ACTIVE_TOOLS.reset(token)
         actions: list[DeleteGenes] = []
         rejected: list[str] = []
+        seen = set(self.attempted_actions(context.state_id))
         for action in result.actions[: self.max_actions]:
             try:
                 translated = self.translate(action)
                 if len(translated.genes) > self.max_genes_per_action:
                     raise ValueError("action exceeds the configured bundle size")
                 for gene in translated.genes:
-                    toolkit.registry.require(gene)
+                    toolkit.require_action_gene(gene)
                     if gene in context.state.deleted_genes:
                         raise ValueError("action includes an already deleted gene")
+                signature = tuple(sorted(translated.genes))
+                if signature in seen:
+                    raise ValueError("action duplicates a previous sibling proposal")
+                seen.add(signature)
                 actions.append(translated)
             except (DataValidationError, KeyError, ValueError) as exc:
                 rejected.append(str(exc))
@@ -497,7 +562,14 @@ class _BoundExplorer(Generic[SourceAction]):
         return ExplorerResult(actions=actions, note=note, trace=result.trace)
 
     def format_prompt(self, context: ExplorerContext[GenomeState]) -> str:
-        return self.inner.format_prompt(context)
+        toolkit = self.toolkit(context.state)
+        token = _ACTIVE_TOOLS.set(toolkit)
+        try:
+            prompt = self.inner.format_prompt(context)
+        finally:
+            _ACTIVE_TOOLS.reset(token)
+        self._prepared_toolkits[context.state_id] = toolkit
+        return prompt
 
 
 class _UsageLimitedAgent:
@@ -514,37 +586,20 @@ class _UsageLimitedAgent:
             raise AgentPolicyError(f"{type(exc).__name__}: {exc}") from exc
 
 
-def _format_navigator_prompt(context: NavigatorContext, max_requests: int) -> str:
-    recent = []
-    for item in context.recent:
-        recent.append(
-            {
-                "state_id": item["state_id"],
-                "created_step": item["created_step"],
-                "evaluations": _scalar_evaluations(item.get("evaluations", [])),
-                "note": context.summaries.get(str(item["state_id"])),
-            }
-        )
-    return "\n".join(
-        [
-            f"GOAL: {context.goal}",
-            f"STEP: {context.status.step}",
-            f"SELECT_AT_MOST: {max_requests}",
-            f"FRONTIER_IDS: {json.dumps(context.frontier_ids)}",
-            f"RECENT_STATES: {json.dumps(recent, sort_keys=True)}",
-            "Select existing frontier state ids with the strongest viable evidence.",
-        ]
-    )
-
-
 def _format_explorer_prompt(
     context: ExplorerContext[GenomeState],
     toolkit_factory: Callable[[GenomeState], _AgentGeneTools],
     config: AgentSearchConfig,
 ) -> str:
-    toolkit = toolkit_factory(context.state)
+    active_toolkit = _ACTIVE_TOOLS.get()
+    toolkit = (
+        active_toolkit
+        if active_toolkit is not None and active_toolkit.state == context.state
+        else toolkit_factory(context.state)
+    )
     deleted = toolkit.deleted_public_ids()
     shown_deleted = deleted[:64]
+    preview_page = _candidate_preview_page(context.guidance)
     return "\n".join(
         [
             f"GOAL: {context.goal}",
@@ -555,9 +610,20 @@ def _format_explorer_prompt(
             "CURRENT_EVALUATIONS: "
             + json.dumps(_scalar_evaluations(context.evaluations), sort_keys=True),
             "CANDIDATE_PREVIEW: "
-            + json.dumps(toolkit.list_candidates(page=0, count=8), sort_keys=True),
+            + json.dumps(
+                toolkit.list_candidates(
+                    page=preview_page,
+                    count=config.candidate_preview_count,
+                ),
+                sort_keys=True,
+            ),
             f"Return at most {config.max_actions} direct deletion actions; each action "
             f"must contain 1 to {config.bundle_size} candidate gene ids.",
+            "The maximum is a ceiling, not a target. Choose each action size "
+            "independently from the strength and confidence of its evidence; a "
+            "one-gene action is valid even when the maximum is 20. Prefer two "
+            "distinct alternatives when the evidence supports them.",
+            f"SCHEDULER_GUIDANCE: {context.guidance or '(none)'}",
             "Use at most one analyze_deletion_bundle call on the final proposed "
             "bundle; do not call it separately for every candidate.",
         ]
@@ -580,6 +646,16 @@ def _scalar_evaluations(records: Sequence[Any]) -> list[dict[str, object]]:
         }
         summaries.append({"evaluator": evaluator, "metrics": scalar_metrics})
     return summaries
+
+
+def _candidate_preview_page(guidance: str | None) -> int:
+    prefix = "CANDIDATE_PREVIEW_PAGE:"
+    for line in (guidance or "").splitlines():
+        if line.startswith(prefix):
+            raw = line.removeprefix(prefix).strip()
+            if raw.isdigit():
+                return int(raw)
+    return 0
 
 
 def _require_tools() -> _AgentGeneTools:

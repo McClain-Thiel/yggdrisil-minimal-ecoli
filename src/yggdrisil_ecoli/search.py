@@ -41,7 +41,7 @@ from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 from yggdrisil_ecoli.state import GenomeState
 
-SEARCH_CONTRACT_VERSION = 4
+SEARCH_CONTRACT_VERSION = 5
 
 
 @dataclass(frozen=True, slots=True)
@@ -177,6 +177,7 @@ async def run_baseline_search(
                 registry=registry,
                 essentiality=essentiality,
                 modules=modules,
+                evaluator_ids=evaluator_ids,
                 config=agent_config,
             )
         return await Runner(
@@ -283,7 +284,15 @@ def main() -> None:
         choices=("closed-book", "tool-rich"),
         default="closed-book",
     )
-    parser.add_argument("--max-agent-requests", type=int, default=1)
+    parser.add_argument("--open-set-width", type=int, default=16)
+    parser.add_argument(
+        "--parents-per-step",
+        "--max-agent-requests",
+        dest="parents_per_step",
+        type=int,
+        default=4,
+        help="viable parent states expanded per search step",
+    )
     parser.add_argument("--max-model-requests", type=int, default=6)
     parser.add_argument("--max-agent-tool-calls", type=int, default=16)
     parser.add_argument("--max-agent-output-tokens", type=int, default=800)
@@ -291,7 +300,7 @@ def main() -> None:
         "--max-agent-cost-usd",
         type=Decimal,
         default=Decimal("0.02"),
-        help="maximum estimated cost per navigator or explorer invocation",
+        help="maximum estimated cost per explorer invocation",
     )
     parser.add_argument(
         "--new-run",
@@ -310,7 +319,8 @@ def main() -> None:
             seed=args.seed,
             bundle_size=args.bundle_size,
             max_actions=args.n_proposals,
-            max_navigator_requests=args.max_agent_requests,
+            open_set_width=args.open_set_width,
+            parents_per_step=args.parents_per_step,
             max_model_requests=args.max_model_requests,
             max_tool_calls=args.max_agent_tool_calls,
             max_output_tokens=args.max_agent_output_tokens,
