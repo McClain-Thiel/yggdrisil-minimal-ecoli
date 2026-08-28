@@ -16,11 +16,15 @@ from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
 from yggdrisil_ecoli.rba_build import (
     MODEL_STRUCTURE_PATH,
-    PUBLISHED_WILD_TYPE_MAX_GROWTH_RATE_H,
     RBA_ARTIFACT_MANIFEST,
+    RBA_EXPECTED_LP_DIMENSIONS,
+    RBA_EXPECTED_REGISTRY_MAPPING,
+    RBA_EXPECTED_STRUCTURE_DIMENSIONS,
     RBA_GROWTH_FLOOR_H,
     RBA_MODEL_FILES,
     RBA_MODELS_COMMIT,
+    RBA_NUMERICAL_DEPENDENCIES,
+    RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H,
 )
 from yggdrisil_ecoli.scorers.base import scientific_evaluation
 from yggdrisil_ecoli.state import GenomeState
@@ -74,6 +78,7 @@ class RBAScorer:
         self._session: Any = SessionRBA(str(self.artifact_dir), lp_solver=solver)
         _glpk_problem(self._session.Problem)
         self._session.set_growth_rate(RBA_GROWTH_FLOOR_H)
+        self.model_dimensions = _validate_loaded_dimensions(self._session)
         self._lock = threading.Lock()
         self._variables_by_gene = self._build_variable_map()
         self.registry_mapping_sha256 = _sha256_json(
@@ -89,6 +94,16 @@ class RBAScorer:
                 for variable in variables
             }
         )
+        mapping_dimensions = {
+            "genes": sum(bool(value) for value in self._variables_by_gene.values()),
+            "variables": len(modeled_variables),
+        }
+        if mapping_dimensions != RBA_EXPECTED_REGISTRY_MAPPING:
+            raise DataValidationError(
+                "RBA registry mapping dimensions differ from the pinned snapshot: "
+                f"expected={RBA_EXPECTED_REGISTRY_MAPPING}, "
+                f"actual={mapping_dimensions}"
+            )
         self._base_lower_bounds = _plain_float_mapping(
             self._session.Problem.get_lb(modeled_variables)
         )
@@ -100,9 +115,10 @@ class RBAScorer:
             "registry_mapping_sha256": self.registry_mapping_sha256,
             "rba_models_commit": RBA_MODELS_COMMIT,
             "growth_rate_floor_h": RBA_GROWTH_FLOOR_H,
-            "published_wild_type_max_growth_rate_h": (
-                PUBLISHED_WILD_TYPE_MAX_GROWTH_RATE_H
+            "repository_wild_type_max_growth_rate_h": (
+                RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H
             ),
+            "model_dimensions": self.model_dimensions,
             "solver": self.solver,
             **{
                 f"{name.lower()}_version": package_version
@@ -138,9 +154,10 @@ class RBAScorer:
                 "registry_mapping_sha256": self.registry_mapping_sha256,
                 "rba_models_commit": RBA_MODELS_COMMIT,
                 "growth_rate_floor_h": RBA_GROWTH_FLOOR_H,
-                "published_wild_type_max_growth_rate_h": (
-                    PUBLISHED_WILD_TYPE_MAX_GROWTH_RATE_H
+                "repository_wild_type_max_growth_rate_h": (
+                    RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H
                 ),
+                "model_dimensions": self.model_dimensions,
                 "solver": self.solver,
                 "dependency_versions": dict(sorted(self.dependency_versions.items())),
                 "artifact_dependency_versions": dict(
@@ -181,8 +198,8 @@ class RBAScorer:
         metrics: dict[str, object] = {
             "feasible_at_growth_floor": feasible,
             "growth_rate_floor_h": RBA_GROWTH_FLOOR_H,
-            "published_wild_type_max_growth_rate_h": (
-                PUBLISHED_WILD_TYPE_MAX_GROWTH_RATE_H
+            "repository_wild_type_max_growth_rate_h": (
+                RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H
             ),
             "solver_status": {
                 "status": status,
@@ -295,10 +312,12 @@ def _validated_manifest(artifact_dir: Path) -> dict[str, object]:
         raise DataValidationError("RBA artifact does not use the pinned model commit")
     if provenance.get("growth_floor_h") != RBA_GROWTH_FLOOR_H:
         raise DataValidationError("RBA artifact has an unexpected growth floor")
-    if provenance.get("published_wild_type_max_growth_rate_h") != (
-        PUBLISHED_WILD_TYPE_MAX_GROWTH_RATE_H
+    if provenance.get("repository_wild_type_max_growth_rate_h") != (
+        RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H
     ):
         raise DataValidationError("RBA artifact has an unexpected WT reference")
+    if provenance.get("model_dimensions") != RBA_EXPECTED_STRUCTURE_DIMENSIONS:
+        raise DataValidationError("RBA artifact has unexpected model dimensions")
     expected_sources = {item.path: item.sha256 for item in RBA_MODEL_FILES}
     source_records = provenance.get("source_files")
     if not isinstance(source_records, list):
@@ -378,7 +397,10 @@ def _runtime_dependency_versions() -> dict[str, str]:
         "swiglpk": "5.0.13",
     }
     try:
-        installed = {package: version(package) for package in expected}
+        installed = {
+            package: version(package)
+            for package in (*expected, *RBA_NUMERICAL_DEPENDENCIES)
+        }
     except PackageNotFoundError as exc:
         raise DataValidationError(
             "RBA scoring requires the project's pinned 'rba' extra"
@@ -393,6 +415,19 @@ def _runtime_dependency_versions() -> dict[str, str]:
             f"RBA runtime differs from the pinned environment: mismatched={mismatched}"
         )
     return installed
+
+
+def _validate_loaded_dimensions(session: Any) -> dict[str, int]:
+    dimensions = {
+        "rows": len(session.Problem.LP.row_names),
+        "columns": len(session.Problem.LP.col_names),
+    }
+    if dimensions != RBA_EXPECTED_LP_DIMENSIONS:
+        raise DataValidationError(
+            "loaded RBA LP dimensions differ from the pinned snapshot: "
+            f"expected={RBA_EXPECTED_LP_DIMENSIONS}, actual={dimensions}"
+        )
+    return dimensions
 
 
 def _glpk_problem(problem: Any) -> Any:

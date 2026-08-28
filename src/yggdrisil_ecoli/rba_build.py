@@ -27,7 +27,25 @@ RBA_MODEL_BASE_URL = (
 RBA_ARTIFACT_MANIFEST = "rba_artifact_manifest.json"
 MODEL_STRUCTURE_PATH = "other/ModelStructure.json"
 RBA_GROWTH_FLOOR_H = 0.1
-PUBLISHED_WILD_TYPE_MAX_GROWTH_RATE_H = 0.5986785888671875
+RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H = 0.5986785888671875
+RBA_REPOSITORY_WT_GROWTH_PATH = "outputs/growth_rate.out"
+RBA_EXPECTED_STRUCTURE_DIMENSIONS = {
+    "mathematical_constraints": 8_378,
+    "mathematical_variables": 7_378,
+    "proteins": 1_447,
+    "processes": 7,
+    "enzymes": 3_445,
+    "reactions": 3_926,
+}
+RBA_EXPECTED_LP_DIMENSIONS = {"rows": 8_386, "columns": 7_384}
+RBA_EXPECTED_REGISTRY_MAPPING = {"genes": 1_441, "variables": 3_407}
+RBA_NUMERICAL_DEPENDENCIES = (
+    "lxml",
+    "numpy",
+    "pandas",
+    "python-libsbml",
+    "scipy",
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -97,6 +115,10 @@ RBA_MODEL_FILES = (
         "README.rst",
         "18ac95423921ca560f0cf53d27d7d16f46c53412bffc9ec88ee47a8fb21d43b4",
     ),
+    _PinnedFile(
+        RBA_REPOSITORY_WT_GROWTH_PATH,
+        "007906fff17975251ecb85f89a57d2e7d44268165ffc0e85c01d34a22f05d0dc",
+    ),
 )
 
 
@@ -136,6 +158,12 @@ def build_rba_artifact(
     generated_path = artifact_dir / MODEL_STRUCTURE_PATH
     generated_path.parent.mkdir(parents=True, exist_ok=True)
     _generate_model_structure(artifact_dir, generated_path)
+    model_dimensions = _validated_model_dimensions(
+        json.loads(generated_path.read_text())
+    )
+    repository_wt_reference = _read_repository_wt_reference(
+        artifact_dir / RBA_REPOSITORY_WT_GROWTH_PATH
+    )
     generated_sha256 = file_sha256(generated_path)
     dependency_versions = _dependency_versions()
     provenance = {
@@ -151,10 +179,9 @@ def build_rba_artifact(
             }
         ],
         "dependencies": dependency_versions,
+        "model_dimensions": model_dimensions,
         "growth_floor_h": RBA_GROWTH_FLOOR_H,
-        "published_wild_type_max_growth_rate_h": (
-            PUBLISHED_WILD_TYPE_MAX_GROWTH_RATE_H
-        ),
+        "repository_wild_type_max_growth_rate_h": repository_wt_reference,
     }
     provenance_sha256 = _sha256_json(provenance)
     manifest = {
@@ -196,6 +223,7 @@ def _generate_model_structure(artifact_dir: Path, destination: Path) -> None:
     try:
         subprocess.run(command, check=True, env=environment)  # noqa: S603
         payload = json.loads(temporary.read_text())
+        _validated_model_dimensions(payload)
         atomic_json(destination, payload)
     except subprocess.CalledProcessError as exc:
         raise DataValidationError("RBA ModelStructure generation failed") from exc
@@ -226,7 +254,10 @@ def _dependency_versions() -> dict[str, str]:
         "swiglpk": "5.0.13",
     }
     try:
-        installed = {package: version(package) for package in expected}
+        installed = {
+            package: version(package)
+            for package in (*expected, *RBA_NUMERICAL_DEPENDENCIES)
+        }
     except PackageNotFoundError as exc:
         raise DataValidationError(
             "RBA artifact building requires the project's pinned 'rba' extra"
@@ -242,6 +273,43 @@ def _dependency_versions() -> dict[str, str]:
             f"mismatched={mismatched}"
         )
     return installed
+
+
+def _validated_model_dimensions(payload: object) -> dict[str, int]:
+    if not isinstance(payload, dict):
+        raise DataValidationError("RBA ModelStructure must be a JSON object")
+    statistics = payload.get("ModelStatistics")
+    if not isinstance(statistics, dict):
+        raise DataValidationError("RBA ModelStructure lacks ModelStatistics")
+    dimensions = {
+        "mathematical_constraints": statistics.get(
+            "Mathematical constraints constraints"
+        ),
+        "mathematical_variables": statistics.get("Mathematical constraints variables"),
+        "proteins": statistics.get("Proteins Total"),
+        "processes": statistics.get("Processes Total"),
+        "enzymes": statistics.get("Enzymes Total"),
+        "reactions": statistics.get("Reactions Total"),
+    }
+    if dimensions != RBA_EXPECTED_STRUCTURE_DIMENSIONS:
+        raise DataValidationError(
+            "RBA model dimensions differ from the pinned snapshot: "
+            f"expected={RBA_EXPECTED_STRUCTURE_DIMENSIONS}, actual={dimensions}"
+        )
+    return {name: int(value) for name, value in dimensions.items()}
+
+
+def _read_repository_wt_reference(path: Path) -> float:
+    try:
+        fields = path.read_text().strip().split("\t")
+        value = float(fields[1]) if fields[0] == "growth_rate" else float("nan")
+    except (OSError, IndexError, ValueError) as exc:
+        raise DataValidationError("invalid repository WT growth-rate output") from exc
+    if value != RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H:
+        raise DataValidationError(
+            "repository WT growth-rate output differs from the pinned reference"
+        )
+    return value
 
 
 def _sha256_json(value: object) -> str:
@@ -264,10 +332,14 @@ def _bundle_sha256(artifact_dir: Path, provenance: dict[str, object]) -> str:
 
 __all__ = [
     "MODEL_STRUCTURE_PATH",
-    "PUBLISHED_WILD_TYPE_MAX_GROWTH_RATE_H",
     "RBA_ARTIFACT_MANIFEST",
+    "RBA_EXPECTED_LP_DIMENSIONS",
+    "RBA_EXPECTED_REGISTRY_MAPPING",
+    "RBA_EXPECTED_STRUCTURE_DIMENSIONS",
     "RBA_GROWTH_FLOOR_H",
     "RBA_MODEL_FILES",
     "RBA_MODELS_COMMIT",
+    "RBA_NUMERICAL_DEPENDENCIES",
+    "RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H",
     "build_rba_artifact",
 ]

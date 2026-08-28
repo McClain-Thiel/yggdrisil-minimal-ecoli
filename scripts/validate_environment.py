@@ -27,6 +27,7 @@ async def validate(data_dir: Path, seed: int) -> dict[str, object]:
     cases = {
         "wild_type": frozenset(),
         "known_essential_dnaA": frozenset({"b3702"}),
+        "resource_essential_rpsT": frozenset({"b0023"}),
         "known_nonessential_thrA": frozenset({"b0002"}),
         "metabolic_and_rule_trpA": frozenset({"b1260"}),
         "random_5": frozenset(rng.sample(universe, 5)),
@@ -62,6 +63,8 @@ async def validate(data_dir: Path, seed: int) -> dict[str, object]:
     wild_growth = wild_type["fba"].metrics["growth_rate"]
     if not isinstance(wild_growth, (int, float)) or wild_growth <= 0:
         failures.append("wild type has no positive FBA biomass solution")
+    if wild_type["resource_allocation"].metrics["feasible_at_growth_floor"] is not True:
+        failures.append("wild type is infeasible at the RBA growth floor")
     if evaluated["metabolic_and_rule_trpA"]["fba"].metrics["growth_rate"] != 0.0:
         failures.append("b1260 deletion did not eliminate iML1515 biomass")
     dna_a_coverage = evaluated["known_essential_dnaA"]["fba"].metadata["coverage"]
@@ -69,9 +72,31 @@ async def validate(data_dir: Path, seed: int) -> dict[str, object]:
         dna_a_coverage.get("deleted_genes_unmodeled") != 1
     ):
         failures.append("non-model b3702 was not reported as uncovered by FBA")
+    if (
+        evaluated["resource_essential_rpsT"]["resource_allocation"].metrics[
+            "feasible_at_growth_floor"
+        ]
+        is not False
+    ):
+        failures.append("b0023 deletion did not fail the RBA growth floor")
+    neutral_resource = evaluated["known_nonessential_thrA"]["resource_allocation"]
+    if neutral_resource.metrics["feasible_at_growth_floor"] is not True:
+        failures.append("modeled b0002 control did not pass the RBA growth floor")
+    neutral_coverage = neutral_resource.metadata["coverage"]
+    if not isinstance(neutral_coverage, dict) or (
+        neutral_coverage.get("deleted_genes_modeled") != 1
+    ):
+        failures.append("b0002 was not reported as modeled by RBA")
+    rps_t_fba_coverage = evaluated["resource_essential_rpsT"]["fba"].metadata[
+        "coverage"
+    ]
+    if not isinstance(rps_t_fba_coverage, dict) or (
+        rps_t_fba_coverage.get("deleted_genes_unmodeled") != 1
+    ):
+        failures.append("FBA unexpectedly modeled the RBA-only b0023 control")
 
     return {
-        "schema_version": 2,
+        "schema_version": 3,
         "seed": seed,
         "status": "passed" if not failures else "failed",
         "failures": failures,
@@ -80,6 +105,9 @@ async def validate(data_dir: Path, seed: int) -> dict[str, object]:
             "essentiality_sha256": file_sha256(artifacts.essentiality),
             "kegg_modules_sha256": file_sha256(artifacts.kegg_modules),
             "iml1515_sha256": file_sha256(artifacts.iml1515),
+            "rba_manifest_sha256": file_sha256(
+                artifacts.rba / "rba_artifact_manifest.json"
+            ),
         },
         "cases": report_cases,
     }

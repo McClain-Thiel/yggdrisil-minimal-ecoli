@@ -24,6 +24,9 @@ identity or silently translated outside the registry layer.
 - Choe et al. 2023 Table S1 contributes experimental essentiality observations
   in LB and aerobic M9 with 0.2% glucose at 37 °C. It never changes registry
   membership.
+- The RBAgroup E. coli K-12 WT model contributes enzyme and cellular-process
+  capacity constraints. It is frozen at one Git commit and never changes the
+  canonical search universe.
 - Published-WCM and current-vEcoli membership remain absent until their
   independent discovery milestones are complete.
 
@@ -83,6 +86,10 @@ is safe.
   the catalog, registry, gene-to-KO, and fixed-background source hashes.
 - `iML1515.json` is a local, hash-validated publication artifact. FBA reports
   model coverage separately for every deletion set.
+- `rba_ecoli_k12_wt/` contains the locally acquired, hash-validated RBA model
+  and generated model structure. Resource-allocation evaluation reports modeled
+  and unmodeled deleted genes separately and tests feasibility at the fixed
+  0.1 h^-1 growth floor; absence from the RBA model is not evidence of safety.
 
 All derived scorer results retain artifact/configuration fingerprints. A result
 is invalidated when its state, scorer version, source artifact, crosswalk,

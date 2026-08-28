@@ -130,7 +130,13 @@ def _evaluator_ids(raw: object) -> dict[str, str]:
         for key, value in raw.items()
         if isinstance(key, str) and isinstance(value, str)
     }
-    required = {"essentiality", "fba", "genome_size", "module_retention"}
+    required = {
+        "essentiality",
+        "fba",
+        "genome_size",
+        "module_retention",
+        "resource_allocation",
+    }
     if required - evaluator_ids.keys():
         raise ValueError("run metadata lacks required evaluator identities")
     return evaluator_ids
@@ -150,12 +156,14 @@ def _active_evidence(
 
 def _viable(evidence: dict[str, EvaluationRecord]) -> bool:
     fba = evidence["fba"].metrics
+    resource = evidence["resource_allocation"].metrics
     growth = fba.get("growth_rate")
     return (
         fba.get("feasible") is True
         and isinstance(growth, (int, float))
         and not isinstance(growth, bool)
         and growth > 0
+        and resource.get("feasible_at_growth_floor") is True
     )
 
 
@@ -166,14 +174,20 @@ def _candidate_summary(
 ) -> dict[str, object]:
     essentiality = evidence["essentiality"].metrics
     fba = evidence["fba"]
+    resource = evidence["resource_allocation"]
     modules = evidence["module_retention"].metrics
     fba_coverage = _metadata_dict(fba.metadata, "coverage")
+    resource_coverage = _metadata_dict(resource.metadata, "coverage")
     module_coverage = _metadata_dict(evidence["module_retention"].metadata, "coverage")
     return {
         "state_id": state_id,
         "genes_deleted": len(state.deleted_genes),
         "deleted_gene_ids": sorted(state.deleted_genes),
         "growth_rate": fba.metrics.get("growth_rate"),
+        "resource_feasible_at_growth_floor": resource.metrics.get(
+            "feasible_at_growth_floor"
+        ),
+        "resource_growth_rate_floor_h": resource.metrics.get("growth_rate_floor_h"),
         "essential_deleted": essentiality.get("n_essential_deleted"),
         "conditional_essential_deleted": essentiality.get(
             "n_conditional_essential_deleted"
@@ -184,6 +198,10 @@ def _candidate_summary(
         "modules_broken": modules.get("n_broken"),
         "fba_modeled_deletions": fba_coverage.get("deleted_genes_modeled"),
         "fba_unmodeled_deletions": fba_coverage.get("deleted_genes_unmodeled"),
+        "resource_modeled_deletions": resource_coverage.get("deleted_genes_modeled"),
+        "resource_unmodeled_deletions": resource_coverage.get(
+            "deleted_genes_unmodeled"
+        ),
         "deletions_with_ko": module_coverage.get("deleted_genes_with_ko"),
         "deletions_without_ko": len(
             _list(module_coverage.get("deleted_genes_without_ko"))
@@ -282,7 +300,7 @@ def main() -> None:
     parser.add_argument(
         "--validation",
         type=Path,
-        help="held-out reduced-genome labels loaded only for post-hoc scoring",
+        help="agent-invisible reduced-genome controls loaded only for scoring",
     )
     args = parser.parse_args()
     validation = None

@@ -24,7 +24,11 @@ from yggdrisil_ecoli.data.essentiality import (
     SourceCall,
 )
 from yggdrisil_ecoli.data.gff import parse_ncbi_gff
-from yggdrisil_ecoli.policies import deletion_sampler, make_heuristic_policy
+from yggdrisil_ecoli.policies import (
+    deletion_sampler,
+    make_heuristic_policy,
+    viability_eligibility,
+)
 from yggdrisil_ecoli.problem import EcoliProblem
 from yggdrisil_ecoli.scorers.base import (
     active_evaluator_ids,
@@ -65,6 +69,8 @@ class _StateEvidenceScorer:
     async def evaluate(self, state: GenomeState) -> EvaluationResult:
         if self.name == "essentiality":
             value: object = int("b0001" in state.deleted_genes)
+        elif self.name == "fba":
+            value = True
         else:
             value = "b0002" not in state.deleted_genes
         metrics = {self.metric: value}
@@ -145,7 +151,7 @@ async def test_framework_suite_uses_yggdrisil_cache(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
-async def test_simple_heuristic_accepts_fba_positive_parent_with_essential_deletion(
+async def test_simple_heuristic_accepts_resource_feasible_parent_with_essential_deletion(
     tmp_path: Path,
 ) -> None:
     registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
@@ -176,6 +182,7 @@ async def test_simple_heuristic_accepts_fba_positive_parent_with_essential_delet
     scorers = (
         _StateEvidenceScorer("essentiality", "n_essential_deleted"),
         _StateEvidenceScorer("fba", "feasible"),
+        _StateEvidenceScorer("resource_allocation", "feasible_at_growth_floor"),
     )
     suite = EvaluatorSuite(list(scorers), concurrent=True)
     for node in graph.states():
@@ -200,10 +207,69 @@ async def test_simple_heuristic_accepts_fba_positive_parent_with_essential_delet
 
     assert decisions
     proposal = decisions[0].proposals[0]
-    fba_positive_child = next(
+    viable_child = next(
         node for node in children if node.state.deleted_genes == frozenset({"b0001"})
     )
-    assert proposal.parent_id == fba_positive_child.state_id
+    assert proposal.parent_id == viable_child.state_id
+
+
+@pytest.mark.asyncio
+async def test_random_policy_never_expands_resource_infeasible_parent(
+    tmp_path: Path,
+) -> None:
+    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
+    problem = EcoliProblem(registry)
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "random-gate.sqlite")
+    root = graph.add_state(
+        problem.state_key(problem.initial_state), problem.initial_state
+    )
+    children = []
+    for gene in ("b0001", "b0002"):
+        action = DeleteGenes(genes=(gene,))
+        state = problem.apply(problem.initial_state, action)
+        node, _edge, _node_created, _edge_created = graph.add_transition(
+            parent_id=root.state_id,
+            child_id=problem.state_key(state),
+            child=state,
+            action=action,
+        )
+        children.append(node)
+    scorers = (
+        _StateEvidenceScorer("fba", "feasible"),
+        _StateEvidenceScorer("resource_allocation", "feasible_at_growth_floor"),
+    )
+    suite = EvaluatorSuite(list(scorers), concurrent=True)
+    for node in graph.states():
+        await suite.evaluate_cached(graph, node.state_id)
+    blocked_id = next(
+        node.state_id
+        for node in children
+        if node.state.deleted_genes == frozenset({"b0002"})
+    )
+    policy = RandomPolicy(
+        deletion_sampler(registry),
+        n_proposals=4,
+        seed=11,
+        eligible=viability_eligibility(active_evaluator_ids(scorers)),
+    )
+
+    for step in range(20):
+        decisions = await policy.step(
+            graph.readonly(),
+            RunStatus(
+                step=step,
+                unique_states=len(graph),
+                edges=graph.edge_count(),
+                elapsed_s=0,
+                limits=RunLimits(max_states=10),
+            ),
+        )
+        assert all(
+            proposal.parent_id != blocked_id
+            for decision in decisions
+            for proposal in decision.proposals
+        )
+    graph.close()
 
 
 def test_deletion_sampler_does_not_silently_exclude_essential_genes() -> None:
@@ -326,6 +392,11 @@ async def test_heuristic_selects_active_cached_identity_after_config_reversion(
             {"feasible": True, "growth_rate": 1.0},
             "config-a",
         ),
+        _FixedScorer(
+            "resource_allocation",
+            {"feasible_at_growth_floor": True},
+            "config-a",
+        ),
     )
     inactive = (
         _FixedScorer(
@@ -336,6 +407,11 @@ async def test_heuristic_selects_active_cached_identity_after_config_reversion(
         _FixedScorer(
             "fba",
             {"feasible": False, "growth_rate": 0.0},
+            "config-b",
+        ),
+        _FixedScorer(
+            "resource_allocation",
+            {"feasible_at_growth_floor": False},
             "config-b",
         ),
     )

@@ -26,6 +26,7 @@ EVALUATOR_IDS = {
     "essentiality": "essentiality-fixture",
     "fba": "fba-fixture",
     "module_retention": "modules-fixture",
+    "resource_allocation": "resource-fixture",
 }
 
 
@@ -146,6 +147,26 @@ def test_active_window_favors_diverse_deletion_sets(tmp_path: Path) -> None:
     assert len(requests) == 2
     assert {request.state_id for request in requests} <= states
     assert _distance(chosen[0], chosen[1]) == 1.0
+    graph.close()
+
+
+def test_fba_positive_resource_infeasible_state_is_not_reopened(
+    tmp_path: Path,
+) -> None:
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "resource.sqlite")
+    graph.save_run("run_a", step=0, status="running", config={}, metadata={})
+    viable = _add_state(graph, "viable", ("b0001",))
+    _add_state(
+        graph,
+        "resource-lethal",
+        ("b0001", "b0002"),
+        growth=1.0,
+        resource_feasible=False,
+    )
+
+    requests = _selector().select(graph.readonly(), _status("run_a", step=0))
+
+    assert [request.state_id for request in requests] == [viable]
     graph.close()
 
 
@@ -370,6 +391,7 @@ def _add_state(
     genes: tuple[str, ...],
     *,
     growth: float = 1.0,
+    resource_feasible: bool = True,
     essential: int = 0,
     broken: int = 0,
 ) -> str:
@@ -383,6 +405,10 @@ def _add_state(
         },
         "fba": {"feasible": True, "growth_rate": growth},
         "module_retention": {"n_broken": broken},
+        "resource_allocation": {
+            "feasible_at_growth_floor": resource_feasible,
+            "growth_rate_floor_h": 0.1,
+        },
     }
     for name, metrics in evaluations.items():
         graph.add_evaluation(

@@ -1,18 +1,25 @@
 from __future__ import annotations
 
+import asyncio
 import importlib.util
+import json
 from pathlib import Path
 
 import pytest
 from yggdrisil import evaluator_identity
 
+import yggdrisil_ecoli.rba_build as rba_build
+from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
 from yggdrisil_ecoli.rba_build import (
-    PUBLISHED_WILD_TYPE_MAX_GROWTH_RATE_H,
     RBA_ARTIFACT_MANIFEST,
+    RBA_EXPECTED_LP_DIMENSIONS,
+    RBA_EXPECTED_REGISTRY_MAPPING,
+    RBA_EXPECTED_STRUCTURE_DIMENSIONS,
     RBA_GROWTH_FLOOR_H,
     RBA_MODEL_FILES,
     RBA_MODELS_COMMIT,
+    RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H,
     build_rba_artifact,
 )
 from yggdrisil_ecoli.scorers.rba import RBAScorer
@@ -71,9 +78,7 @@ async def test_wild_type_is_feasible_at_fixed_growth_floor(
     assert result.metrics == {
         "feasible_at_growth_floor": True,
         "growth_rate_floor_h": RBA_GROWTH_FLOOR_H,
-        "published_wild_type_max_growth_rate_h": (
-            PUBLISHED_WILD_TYPE_MAX_GROWTH_RATE_H
-        ),
+        "repository_wild_type_max_growth_rate_h": (RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H),
     }
     assert result.metadata["details"]["solver_status"]["status"] == "optimal"
     assert result.metadata["provenance"]["rba_models_commit"] == RBA_MODELS_COMMIT
@@ -86,6 +91,28 @@ async def test_wild_type_is_feasible_at_fixed_growth_floor(
         "swiglpk": "5.0.13",
     }
     assert dependency_versions["setuptools"] == "80.10.2"
+    assert set(dependency_versions) >= {
+        "lxml",
+        "numpy",
+        "pandas",
+        "python-libsbml",
+        "scipy",
+    }
+    assert result.metadata["provenance"]["model_dimensions"] == (
+        RBA_EXPECTED_LP_DIMENSIONS
+    )
+
+
+async def test_neutral_modeled_deletion_remains_feasible(scorer: RBAScorer) -> None:
+    assert scorer.variables_for_gene("b0002") == (
+        "R_ASPK_duplicate_2_enzyme",
+        "R_HSDy_duplicate_2_enzyme",
+    )
+
+    result = await scorer.evaluate(GenomeState(frozenset({"b0002"})))
+
+    assert result.metrics["feasible_at_growth_floor"] is True
+    assert result.metadata["coverage"]["deleted_genes_modeled"] == 1
 
 
 async def test_fba_unmodeled_translation_gene_is_rba_infeasible(
@@ -157,6 +184,28 @@ async def test_infeasible_sibling_does_not_contaminate_repeated_solves(
     assert feasibility == [False, True, False, True, False]
 
 
+async def test_concurrent_evaluations_are_isolated_and_deterministic(
+    scorer: RBAScorer,
+) -> None:
+    variables = list(scorer._base_lower_bounds)
+    lower_before = dict(scorer._session.Problem.get_lb(variables))
+    upper_before = dict(scorer._session.Problem.get_ub(variables))
+    states = [
+        GenomeState(frozenset()),
+        GenomeState(frozenset({"b0023"})),
+        GenomeState(frozenset({"b0002"})),
+        GenomeState(frozenset({"b1260"})),
+    ] * 3
+
+    results = await asyncio.gather(*(scorer.evaluate(state) for state in states))
+
+    assert [result.metrics["feasible_at_growth_floor"] for result in results] == (
+        [True, False, True, False] * 3
+    )
+    assert dict(scorer._session.Problem.get_lb(variables)) == lower_before
+    assert dict(scorer._session.Problem.get_ub(variables)) == upper_before
+
+
 def test_artifact_and_mapping_participate_in_evaluator_identity(
     scorer: RBAScorer,
 ) -> None:
@@ -166,3 +215,28 @@ def test_artifact_and_mapping_participate_in_evaluator_identity(
     assert config_hash
     assert len(scorer.artifact_bundle_sha256) == 64
     assert len(scorer.registry_mapping_sha256) == 64
+    assert scorer.model_dimensions == RBA_EXPECTED_LP_DIMENSIONS
+    assert (
+        len([gene for gene in scorer._variables_by_gene.values() if gene])
+        == (RBA_EXPECTED_REGISTRY_MAPPING["genes"])
+    )
+
+
+def test_artifact_records_expected_structure_dimensions() -> None:
+    manifest = json.loads((ARTIFACT_DIR / RBA_ARTIFACT_MANIFEST).read_text())
+
+    assert manifest["provenance"]["model_dimensions"] == (
+        RBA_EXPECTED_STRUCTURE_DIMENSIONS
+    )
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {},
+        {"ModelStatistics": {"Proteins Total": 1}},
+    ],
+)
+def test_builder_rejects_malformed_or_changed_dimensions(payload: object) -> None:
+    with pytest.raises(DataValidationError, match="ModelStructure|dimensions"):
+        rba_build._validated_model_dimensions(payload)

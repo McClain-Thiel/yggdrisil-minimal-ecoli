@@ -33,7 +33,11 @@ from yggdrisil_ecoli.agent_policy import (
 from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.essentiality import EssentialityDataset
 from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
-from yggdrisil_ecoli.policies import deletion_sampler, make_heuristic_policy
+from yggdrisil_ecoli.policies import (
+    deletion_sampler,
+    make_heuristic_policy,
+    viability_eligibility,
+)
 from yggdrisil_ecoli.problem import EcoliProblem
 from yggdrisil_ecoli.scorers.base import active_evaluator_ids
 from yggdrisil_ecoli.scorers.essentiality import EssentialityScorer
@@ -41,7 +45,7 @@ from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 from yggdrisil_ecoli.state import GenomeState
 
-SEARCH_CONTRACT_VERSION = 5
+SEARCH_CONTRACT_VERSION = 6
 
 
 @dataclass(frozen=True, slots=True)
@@ -66,6 +70,10 @@ class SearchArtifacts:
     def iml1515(self) -> Path:
         return self.data_dir / "external" / "iML1515.json"
 
+    @property
+    def rba(self) -> Path:
+        return self.data_dir / "external" / "rba_ecoli_k12_wt"
+
 
 DEFAULT_SEARCH_ARTIFACTS = SearchArtifacts()
 
@@ -77,9 +85,10 @@ def load_standard_evaluators(
     EssentialityDataset,
     tuple[Evaluator[GenomeState], ...],
 ]:
-    """Load the four automatic scorers from frozen local artifacts."""
+    """Load the five automatic scorers from frozen local artifacts."""
 
     from yggdrisil_ecoli.scorers.fba import FBAScorer
+    from yggdrisil_ecoli.scorers.rba import RBAScorer
 
     registry = GeneRegistry.from_parquet(artifacts.registry)
     essentiality = EssentialityDataset.from_parquet(artifacts.essentiality)
@@ -93,6 +102,7 @@ def load_standard_evaluators(
         ),
         modules,
         FBAScorer(model_path=artifacts.iml1515, registry=registry),
+        RBAScorer.from_artifact(artifacts.rba, registry=registry),
     )
     return registry, essentiality, evaluators
 
@@ -156,6 +166,7 @@ async def run_baseline_search(
                 deletion_sampler(registry, bundle_size=bundle_size),
                 n_proposals=n_proposals,
                 seed=seed,
+                eligible=viability_eligibility(evaluator_ids),
             )
         elif policy_name == "heuristic":
             policy = make_heuristic_policy(
