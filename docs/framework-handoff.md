@@ -1,7 +1,7 @@
 # Yggdrisil framework handoff
 
 The application is pinned to Yggdrisil commit
-`2bec2d729c4d9b41c29de406b13066baca0e06c1`. Runner-owned evaluator scheduling,
+`67983c5c0821c57e6b0f60449b3e608b981455e2`. Runner-owned evaluator scheduling,
 resume backfill, and opt-in concurrent suites landed through
 [Yggdrisil PR #1](https://github.com/McClain-Thiel/yggdrisil/pull/1). Canonical
 evaluator identities landed through
@@ -12,6 +12,13 @@ Agent request, token, cache, tool-call, and cost accounting is persisted through
 [Yggdrisil PR #3](https://github.com/McClain-Thiel/yggdrisil/pull/3), which also
 adds a generic best-first eligibility predicate so the application does not own
 a policy implementation.
+[Yggdrisil PR #4](https://github.com/McClain-Thiel/yggdrisil/pull/4) adds
+run-scoped deterministic exploration selection, non-leaf reopening, retryable
+empty decisions, opt-in partial explorer-failure tolerance, and durable
+failure/timeout provenance. It also preserves manual run-viewer pan and zoom
+during live polling and fits wide search graphs without cropping. The application
+owns the biological open-set ranking and recovery guidance; the framework remains
+domain-independent.
 
 ## Stable application boundary
 

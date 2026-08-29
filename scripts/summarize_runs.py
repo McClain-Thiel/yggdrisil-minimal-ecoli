@@ -149,12 +149,10 @@ def _active_evidence(
 
 
 def _viable(evidence: dict[str, EvaluationRecord]) -> bool:
-    essential = evidence["essentiality"].metrics.get("n_essential_deleted")
     fba = evidence["fba"].metrics
     growth = fba.get("growth_rate")
     return (
-        essential == 0
-        and fba.get("feasible") is True
+        fba.get("feasible") is True
         and isinstance(growth, (int, float))
         and not isinstance(growth, bool)
         and growth > 0

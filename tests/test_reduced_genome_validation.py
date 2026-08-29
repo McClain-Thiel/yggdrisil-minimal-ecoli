@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 
 import pytest
+from yggdrisil.types import EvaluationRecord
 
 from scripts.build_reduced_genome_validation import (
     Interval,
@@ -11,7 +12,7 @@ from scripts.build_reduced_genome_validation import (
     genes_in_intervals,
     load_ncbi_sequence,
 )
-from scripts.summarize_runs import score_rediscovery
+from scripts.summarize_runs import _viable, score_rediscovery
 from yggdrisil_ecoli.data.registry import GeneRecord, GeneRegistry
 
 
@@ -119,3 +120,28 @@ def test_posthoc_rediscovery_metrics_keep_truth_outside_search() -> None:
     }
     assert scores["MS56"]["published_deletion_gene_precision"] == 2 / 3
     assert scores["MS56"]["published_deletion_interval_recall"] is None
+
+
+def test_posthoc_viability_uses_fba_not_essentiality_or_module_evidence() -> None:
+    evidence = {
+        "essentiality": _evaluation("essentiality", {"n_essential_deleted": 3}),
+        "fba": _evaluation("fba", {"feasible": True, "growth_rate": 0.1}),
+        "module_retention": _evaluation("modules", {"n_broken": 8}),
+    }
+
+    assert _viable(evidence)
+
+    evidence["fba"] = _evaluation("fba", {"feasible": True, "growth_rate": 0.0})
+    assert not _viable(evidence)
+
+
+def _evaluation(name: str, metrics: dict[str, float | int | bool]) -> EvaluationRecord:
+    return EvaluationRecord(
+        evaluation_id=f"{name}-evaluation",
+        evaluator_id=f"{name}-identity",
+        state_id="state",
+        evaluator=name,
+        version="1",
+        config_hash="fixture",
+        metrics=metrics,
+    )
