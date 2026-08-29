@@ -1,7 +1,7 @@
 # Yggdrisil framework handoff
 
 The application is pinned to Yggdrisil commit
-`4a7e8e1b43e51ac4ca3701b042fd457f27d98676`. Runner-owned evaluator scheduling,
+`48cd2b70c96306d0b475d26a8900425a67bfaf58`. Runner-owned evaluator scheduling,
 resume backfill, and opt-in concurrent suites landed through
 [Yggdrisil PR #1](https://github.com/McClain-Thiel/yggdrisil/pull/1). Canonical
 evaluator identities landed through
