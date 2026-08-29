@@ -21,7 +21,7 @@ classifiers = [
 dependencies = [
     "pydantic>=2.10",
     "pyarrow>=18",
-    "yggdrisil @ git+https://github.com/McClain-Thiel/yggdrisil.git@48cd2b70c96306d0b475d26a8900425a67bfaf58",
+    "yggdrisil @ git+https://github.com/McClain-Thiel/yggdrisil.git@67983c5c0821c57e6b0f60449b3e608b981455e2",
 ]
 
 [project.optional-dependencies]
