@@ -29,6 +29,9 @@ from yggdrisil_ecoli.rba_build import (
 from yggdrisil_ecoli.scorers.base import scientific_evaluation
 from yggdrisil_ecoli.state import GenomeState
 
+RBA_GLPK_SIMPLEX_METHOD = "dual-primal"
+RBA_GLPK_PRESOLVE = True
+
 
 class RBAScorer:
     """Test deletion sets at a fixed growth floor in the pinned RBA model."""
@@ -76,8 +79,15 @@ class RBAScorer:
 
         self._swiglpk: Any = swiglpk
         self._session: Any = SessionRBA(str(self.artifact_dir), lp_solver=solver)
-        _glpk_problem(self._session.Problem)
+        _glpk_solver(self._session.Problem)
         self._session.set_growth_rate(RBA_GROWTH_FLOOR_H)
+        glpk_solver = _glpk_solver(self._session.Problem)
+        # The default primal method can spend tens of minutes on otherwise small
+        # deletion sets. GLP_DUALP preserves the same LP and falls back to primal
+        # only if the dual method cannot start. Presolve is required for reliable
+        # feasibility statuses from this scaled model with the clean basis below.
+        glpk_solver.glpk_simplex_params.meth = swiglpk.GLP_DUALP
+        glpk_solver.glpk_simplex_params.presolve = swiglpk.GLP_ON
         self.model_dimensions = _validate_loaded_dimensions(self._session)
         self._lock = threading.Lock()
         self._variables_by_gene = self._build_variable_map()
@@ -120,6 +130,8 @@ class RBAScorer:
             ),
             "model_dimensions": self.model_dimensions,
             "solver": self.solver,
+            "simplex_method": RBA_GLPK_SIMPLEX_METHOD,
+            "presolve": RBA_GLPK_PRESOLVE,
             **{
                 f"{name.lower()}_version": package_version
                 for name, package_version in sorted(self.dependency_versions.items())
@@ -159,6 +171,8 @@ class RBAScorer:
                 ),
                 "model_dimensions": self.model_dimensions,
                 "solver": self.solver,
+                "simplex_method": RBA_GLPK_SIMPLEX_METHOD,
+                "presolve": RBA_GLPK_PRESOLVE,
                 "dependency_versions": dict(sorted(self.dependency_versions.items())),
                 "artifact_dependency_versions": dict(
                     sorted(self.artifact_dependency_versions.items())
@@ -433,16 +447,23 @@ def _validate_loaded_dimensions(session: Any) -> dict[str, int]:
 def _glpk_problem(problem: Any) -> Any:
     """Reach the pinned RBAtools 2.0.1 GLPK handle for a clean basis reset."""
 
+    return _glpk_solver(problem).glpkLP
+
+
+def _glpk_solver(problem: Any) -> Any:
+    """Reach the pinned RBAtools 2.0.1 GLPK solver configuration."""
+
     try:
         solver = problem.LP._lp_solver
-        glpk_problem = solver.glpkLP
+        solver.glpkLP
+        solver.glpk_simplex_params
     except AttributeError as exc:
         raise DataValidationError(
-            "pinned RBAtools GLPK internals changed; cannot reset the solver basis"
+            "pinned RBAtools GLPK internals changed; cannot configure the solver"
         ) from exc
     if solver.name != "swiglpk":
         raise DataValidationError("RBA problem is not backed by pinned swiglpk")
-    return glpk_problem
+    return solver
 
 
 __all__ = ["RBAScorer"]
