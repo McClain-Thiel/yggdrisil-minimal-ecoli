@@ -29,12 +29,16 @@ from yggdrisil_ecoli.open_set import (
     OpenSetConfig,
     RecoverableOpenSetSelector,
 )
+from yggdrisil_ecoli.policies import ViabilityGate
 from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.state import GenomeState
 from yggdrisil_ecoli.tools.genes import GeneTools
 
 AgentMode = Literal["closed-book", "tool-rich"]
+AgentActionSizeMode = Literal["variable-1-max", "fixed-max"]
+SchedulerMode = Literal["recoverable", "frontier-only"]
 PROMPT_VERSION = 6
+FIXED_ACTION_PROMPT_VERSION = 7
 BLIND_MAP_VERSION = 1
 MAX_CANDIDATE_PAGE_SIZE = 100
 
@@ -55,6 +59,9 @@ class AgentSearchConfig:
     open_set_width: int = 16
     parents_per_step: int = 4
     fallback_action_caps: tuple[int, ...] = (20, 10, 5, 1)
+    action_size_mode: AgentActionSizeMode = "variable-1-max"
+    scheduler_mode: SchedulerMode = "recoverable"
+    viability_gate: ViabilityGate = "fba-rba"
     max_model_requests: int = 6
     max_tool_calls: int = 16
     max_output_tokens: int = 800
@@ -83,6 +90,12 @@ class AgentSearchConfig:
                 raise ValueError(f"{name} must be positive")
         if self.bundle_size > 20:
             raise ValueError("bundle_size must not exceed 20 for agent search")
+        if self.action_size_mode not in {"variable-1-max", "fixed-max"}:
+            raise ValueError(f"unknown action size mode: {self.action_size_mode!r}")
+        if self.scheduler_mode not in {"recoverable", "frontier-only"}:
+            raise ValueError(f"unknown scheduler mode: {self.scheduler_mode!r}")
+        if self.viability_gate not in {"fba-rba", "fba-only"}:
+            raise ValueError(f"unknown viability gate: {self.viability_gate!r}")
         self.open_set_config
         if self.max_cost_per_call_usd <= 0:
             raise ValueError("max_cost_per_call_usd must be positive")
@@ -102,6 +115,8 @@ class AgentSearchConfig:
             active_width=self.open_set_width,
             parents_per_step=self.parents_per_step,
             fallback_action_caps=self.fallback_action_caps,
+            recover_nonleaf=self.scheduler_mode == "recoverable",
+            viability_gate=self.viability_gate,
         )
 
     def metadata(
@@ -128,14 +143,22 @@ class AgentSearchConfig:
             "provider": "openrouter",
             "model": self.model,
             "mode": self.mode,
-            "prompt_version": PROMPT_VERSION,
+            "prompt_version": (
+                FIXED_ACTION_PROMPT_VERSION
+                if self.action_size_mode == "fixed-max"
+                else PROMPT_VERSION
+            ),
             "pydantic_ai": version("pydantic-ai"),
             "seed": self.seed,
             "bundle_size": self.bundle_size,
+            "action_size_mode": self.action_size_mode,
             "max_actions": self.max_actions,
             "candidate_preview_count": self.candidate_preview_count,
             "candidate_preview_rotation": "run_step_mod_remaining_pages",
-            "scheduler": self.open_set_config.metadata(self.bundle_size),
+            "scheduler": self.open_set_config.metadata(
+                self.bundle_size,
+                fixed_action_size=self.action_size_mode == "fixed-max",
+            ),
             "max_model_requests": self.max_model_requests,
             "max_tool_calls": self.max_tool_calls,
             "max_output_tokens": self.max_output_tokens,
@@ -448,7 +471,11 @@ def make_agent_policy(
         tool_calls_limit=config.max_tool_calls,
         output_tokens_limit=config.max_model_requests * config.max_output_tokens,
     )
-    action_type = _bounded_action_type(config.mode, config.bundle_size)
+    action_type = _bounded_action_type(
+        config.mode,
+        config.bundle_size,
+        fixed=config.action_size_mode == "fixed-max",
+    )
     tool_functions: list[Callable[..., Any]] = [analyze_deletion_bundle]
     if config.mode == "tool-rich":
         tool_functions = [
@@ -492,6 +519,7 @@ def make_agent_policy(
         candidate_count=len(schedule.genes),
         candidate_page_size=config.candidate_preview_count,
         public_gene_id=blind.public if blind is not None else str,
+        fixed_action_size=config.action_size_mode == "fixed-max",
     )
     bound_explorer = _BoundExplorer(
         explorer,
@@ -500,6 +528,9 @@ def make_agent_policy(
         attempted_actions=selector.attempted_actions,
         max_actions=config.max_actions,
         max_genes_per_action=config.bundle_size,
+        min_genes_per_action=(
+            config.bundle_size if config.action_size_mode == "fixed-max" else 1
+        ),
     )
     return NavigatorExplorerPolicy(
         None,
@@ -537,6 +568,7 @@ class _BoundExplorer(Generic[SourceAction]):
         attempted_actions: Callable[[str], frozenset[tuple[str, ...]]] | None = None,
         max_actions: int,
         max_genes_per_action: int,
+        min_genes_per_action: int = 1,
     ) -> None:
         self.inner = inner
         self.model = inner.model
@@ -545,6 +577,7 @@ class _BoundExplorer(Generic[SourceAction]):
         self.attempted_actions = attempted_actions or (lambda _state_id: frozenset())
         self.max_actions = max_actions
         self.max_genes_per_action = max_genes_per_action
+        self.min_genes_per_action = min_genes_per_action
         self._prepared_toolkits: dict[str, _AgentGeneTools] = {}
 
     async def explore(
@@ -565,6 +598,8 @@ class _BoundExplorer(Generic[SourceAction]):
         for action in result.actions[: self.max_actions]:
             try:
                 translated = self.translate(action)
+                if len(translated.genes) < self.min_genes_per_action:
+                    raise ValueError("action is smaller than the configured minimum")
                 if len(translated.genes) > self.max_genes_per_action:
                     raise ValueError("action exceeds the configured bundle size")
                 for gene in translated.genes:
@@ -640,12 +675,7 @@ def _format_explorer_prompt(
                 ),
                 sort_keys=True,
             ),
-            f"Return at most {config.max_actions} direct deletion actions; each action "
-            f"must contain 1 to {config.bundle_size} candidate gene ids.",
-            "The maximum is a ceiling, not a target. Choose each action size "
-            "independently from the strength and confidence of its evidence; a "
-            "one-gene action is valid even when the maximum is 20. Prefer two "
-            "distinct alternatives when the evidence supports them.",
+            *_action_size_instructions(config),
             f"SCHEDULER_GUIDANCE: {context.guidance or '(none)'}",
             "Use at most one analyze_deletion_bundle call on the final proposed "
             "bundle; do not call it separately for every candidate.",
@@ -723,10 +753,31 @@ def _mapping_hash(mapping: dict[str, str]) -> str:
     return hashlib.sha256(payload).hexdigest()
 
 
+def _action_size_instructions(config: AgentSearchConfig) -> tuple[str, ...]:
+    if config.action_size_mode == "fixed-max":
+        return (
+            (
+                f"Return at most {config.max_actions} direct deletion actions; each "
+                f"action must contain exactly {config.bundle_size} candidate gene ids."
+            ),
+        )
+    return (
+        f"Return at most {config.max_actions} direct deletion actions; each action "
+        f"must contain 1 to {config.bundle_size} candidate gene ids.",
+        "The maximum is a ceiling, not a target. Choose each action size "
+        "independently from the strength and confidence of its evidence; a "
+        "one-gene action is valid even when the maximum is 20. Prefer two "
+        "distinct alternatives when the evidence supports them.",
+    )
+
+
 def _bounded_action_type(
-    mode: AgentMode, bundle_size: int
+    mode: AgentMode, bundle_size: int, *, fixed: bool = False
 ) -> type[DeleteGenes] | type[_BlindDeleteGenes]:
-    gene_tuple = Annotated[tuple[str, ...], Field(min_length=1, max_length=bundle_size)]
+    minimum = bundle_size if fixed else 1
+    gene_tuple = Annotated[
+        tuple[str, ...], Field(min_length=minimum, max_length=bundle_size)
+    ]
     base: type[BaseModel] = _BlindDeleteGenes if mode == "closed-book" else DeleteGenes
     model = create_model(
         f"{mode.title().replace('-', '')}DeleteGenes{bundle_size}",

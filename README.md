@@ -111,6 +111,12 @@ The optional WCM comparison universe constrains every policy and the problem
 boundary, participates in the run fingerprint, and does not reveal canonical
 identifiers to a closed-book model.
 
+Experimental runs can additionally declare `--viability-gate fba-only`,
+`--scheduler-mode frontier-only`, `--agent-action-size-mode fixed-max`, or
+`--baseline-action-size-mode uniform-1-max`. These are ablation controls and are
+persisted in run metadata; defaults retain the FBA+RBA recoverable search. See
+[the baseline and ablation plan](docs/experiment-plan.md) before comparing arms.
+
 All policies use the same five-evaluator suite. Yggdrisil evaluates and caches
 every state before the next policy call. Inspect a completed or active graph
 with `uv run yggdrisil inspect runs/random.sqlite`. Reopening a graph resumes

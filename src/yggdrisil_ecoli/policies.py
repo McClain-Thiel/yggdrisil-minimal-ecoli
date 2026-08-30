@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import random
 from collections.abc import Callable, Iterable, Mapping, Sequence
+from typing import Literal
 
 from yggdrisil import BestFirstPolicy
 from yggdrisil.types import EvaluationRecord, StateNode
@@ -15,6 +16,8 @@ from yggdrisil_ecoli.state import GenomeState
 
 DeletionSampler = Callable[[GenomeState, random.Random], Sequence[DeleteGenes]]
 Eligibility = Callable[[StateNode[GenomeState], Sequence[EvaluationRecord]], bool]
+ActionSizeMode = Literal["fixed-max", "uniform-1-max"]
+ViabilityGate = Literal["fba-rba", "fba-only"]
 
 
 def deletion_sampler(
@@ -24,6 +27,7 @@ def deletion_sampler(
     essentiality: EssentialityDataset | None = None,
     exclude_known_essential: bool = False,
     candidate_genes: Iterable[str] | None = None,
+    action_size_mode: ActionSizeMode = "fixed-max",
 ) -> DeletionSampler:
     """Build a direct-child sampler over the canonical search universe.
 
@@ -33,6 +37,8 @@ def deletion_sampler(
 
     if bundle_size < 1:
         raise ValueError("bundle_size must be positive")
+    if action_size_mode not in {"fixed-max", "uniform-1-max"}:
+        raise ValueError(f"unknown action size mode: {action_size_mode!r}")
     if exclude_known_essential and essentiality is None:
         raise ValueError(
             "essentiality is required when exclude_known_essential is enabled"
@@ -60,7 +66,8 @@ def deletion_sampler(
         ]
         if not available:
             return ()
-        count = min(bundle_size, len(available))
+        maximum = min(bundle_size, len(available))
+        count = maximum if action_size_mode == "fixed-max" else rng.randint(1, maximum)
         return (DeleteGenes(genes=tuple(rng.sample(available, count))),)
 
     return sample
@@ -76,10 +83,12 @@ def make_heuristic_policy(
     seed: int = 0,
     exclude_known_essential: bool = False,
     candidate_genes: Iterable[str] | None = None,
+    action_size_mode: ActionSizeMode = "fixed-max",
+    viability_gate: ViabilityGate = "fba-rba",
 ) -> BestFirstPolicy[GenomeState, DeleteGenes]:
     """Build the framework best-first baseline over active scientific evidence."""
 
-    eligible = viability_eligibility(evaluator_ids)
+    eligible = viability_eligibility(evaluator_ids, gate=viability_gate)
 
     def priority(
         node: StateNode[GenomeState], records: Sequence[EvaluationRecord]
@@ -93,6 +102,7 @@ def make_heuristic_policy(
             essentiality=essentiality,
             exclude_known_essential=exclude_known_essential,
             candidate_genes=candidate_genes,
+            action_size_mode=action_size_mode,
         ),
         priority,
         n_proposals=n_proposals,
@@ -101,28 +111,55 @@ def make_heuristic_policy(
     )
 
 
-def viability_eligibility(evaluator_ids: Mapping[str, str]) -> Eligibility:
-    """Require positive FBA growth and fixed-floor resource feasibility."""
+def evaluations_are_viable(
+    records: Sequence[EvaluationRecord],
+    evaluator_ids: Mapping[str, str],
+    *,
+    gate: ViabilityGate = "fba-rba",
+) -> bool:
+    """Apply one explicit mechanistic parent-eligibility gate."""
 
-    missing = {"fba", "resource_allocation"} - set(evaluator_ids)
+    if gate not in {"fba-rba", "fba-only"}:
+        raise ValueError(f"unknown viability gate: {gate!r}")
+    required = {"fba"}
+    if gate == "fba-rba":
+        required.add("resource_allocation")
+    missing = required - set(evaluator_ids)
     if missing:
         raise ValueError(f"missing evaluator identities: {sorted(missing)}")
+    by_id = {record.evaluator_id: record for record in records}
+    fba = by_id.get(evaluator_ids["fba"])
+    if fba is None:
+        return False
+    growth = fba.metrics.get("growth_rate")
+    fba_positive = (
+        fba.metrics.get("feasible") is True
+        and isinstance(growth, (int, float))
+        and not isinstance(growth, bool)
+        and growth > 0
+    )
+    if not fba_positive or gate == "fba-only":
+        return fba_positive
+    resource = by_id.get(evaluator_ids["resource_allocation"])
+    return (
+        resource is not None
+        and resource.metrics.get("feasible_at_growth_floor") is True
+    )
+
+
+def viability_eligibility(
+    evaluator_ids: Mapping[str, str],
+    *,
+    gate: ViabilityGate = "fba-rba",
+) -> Eligibility:
+    """Build a framework eligibility callback for the configured hard gate."""
+
+    evaluations_are_viable((), evaluator_ids, gate=gate)
 
     def eligible(
         node: StateNode[GenomeState], records: Sequence[EvaluationRecord]
     ) -> bool:
-        by_id = {record.evaluator_id: record for record in records}
-        fba = by_id.get(evaluator_ids["fba"])
-        resource = by_id.get(evaluator_ids["resource_allocation"])
-        if fba is None or resource is None:
-            return False
-        growth = fba.metrics.get("growth_rate")
-        return (
-            fba.metrics.get("feasible") is True
-            and isinstance(growth, (int, float))
-            and not isinstance(growth, bool)
-            and growth > 0
-            and resource.metrics.get("feasible_at_growth_floor") is True
-        )
+        del node
+        return evaluations_are_viable(records, evaluator_ids, gate=gate)
 
     return eligible

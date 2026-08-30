@@ -14,9 +14,10 @@ from yggdrisil.agents import ExplorationRequest
 from yggdrisil.types import EvaluationRecord, ProposalEvent, StateNode
 
 from yggdrisil_ecoli.actions import DeleteGenes
+from yggdrisil_ecoli.policies import ViabilityGate, evaluations_are_viable
 from yggdrisil_ecoli.state import GenomeState
 
-SCHEDULER_VERSION = 2
+SCHEDULER_VERSION = 3
 
 
 @dataclass(frozen=True, slots=True)
@@ -26,6 +27,8 @@ class OpenSetConfig:
     active_width: int = 16
     parents_per_step: int = 4
     fallback_action_caps: tuple[int, ...] = (20, 10, 5, 1)
+    recover_nonleaf: bool = True
+    viability_gate: ViabilityGate = "fba-rba"
 
     def __post_init__(self) -> None:
         for name in ("active_width", "parents_per_step"):
@@ -37,16 +40,24 @@ class OpenSetConfig:
             cap < 1 for cap in self.fallback_action_caps
         ):
             raise ValueError("fallback_action_caps must contain positive values")
+        if self.viability_gate not in {"fba-rba", "fba-only"}:
+            raise ValueError(f"unknown viability gate: {self.viability_gate!r}")
 
-    def metadata(self, max_action_size: int) -> dict[str, object]:
+    def metadata(
+        self, max_action_size: int, *, fixed_action_size: bool = False
+    ) -> dict[str, object]:
         return {
-            "type": "recoverable_open_set",
+            "type": (
+                "recoverable_open_set" if self.recover_nonleaf else "frontier_open_set"
+            ),
             "version": SCHEDULER_VERSION,
             "active_width": self.active_width,
             "parents_per_step": self.parents_per_step,
             "fallback_action_caps": list(self.fallback_action_caps),
             "effective_fallback_action_caps": list(
-                _effective_caps(max_action_size, self.fallback_action_caps)
+                (max_action_size,)
+                if fixed_action_size
+                else _effective_caps(max_action_size, self.fallback_action_caps)
             ),
             "ordering": {
                 "exploitation": [
@@ -64,7 +75,9 @@ class OpenSetConfig:
             "viability": {
                 "fba_feasible": True,
                 "growth_rate": ">0",
-                "resource_allocation_feasible_at_growth_floor": True,
+                "resource_allocation_feasible_at_growth_floor": (
+                    True if self.viability_gate == "fba-rba" else "not_a_gate"
+                ),
             },
             "ranking_evidence_only": [
                 "essentiality",
@@ -83,10 +96,11 @@ class _Candidate:
 
 
 class RecoverableOpenSetSelector:
-    """Keep every viable state recoverable until a global runner limit stops.
+    """Schedule a diverse set of viable states under a declared recovery mode.
 
-    Structural leaves are deliberately irrelevant: a viable state stays open after
-    gaining children, so lethal children cannot make their parent unreachable.
+    By default, structural leaves are deliberately irrelevant: a viable state stays
+    open after gaining children, so lethal children cannot make its parent
+    unreachable. The frontier-only mode exists as an explicit ablation.
     """
 
     model: str | None = None
@@ -101,13 +115,12 @@ class RecoverableOpenSetSelector:
         candidate_count: int,
         candidate_page_size: int,
         public_gene_id: Callable[[str], str] = str,
+        fixed_action_size: bool = False,
     ) -> None:
-        missing = {
-            "essentiality",
-            "fba",
-            "module_retention",
-            "resource_allocation",
-        } - set(evaluator_ids)
+        required = {"essentiality", "fba", "module_retention"}
+        if config.viability_gate == "fba-rba":
+            required.add("resource_allocation")
+        missing = required - set(evaluator_ids)
         if missing:
             raise ValueError(f"missing evaluator identities: {sorted(missing)}")
         if max_action_size < 1:
@@ -121,6 +134,7 @@ class RecoverableOpenSetSelector:
         self.candidate_count = candidate_count
         self.candidate_page_size = candidate_page_size
         self.public_gene_id = public_gene_id
+        self.fixed_action_size = fixed_action_size
         self._attempted: dict[str, frozenset[tuple[str, ...]]] = {}
 
     def attempted_actions(self, state_id: str) -> frozenset[tuple[str, ...]]:
@@ -168,7 +182,8 @@ class RecoverableOpenSetSelector:
         }
 
         candidates: list[_Candidate] = []
-        for node in graph.states():
+        nodes = graph.states() if self.config.recover_nonleaf else graph.frontier()
+        for node in nodes:
             state_attempts = attempts[node.state_id]
             records = tuple(graph.evaluations(node.state_id))
             if not self._is_viable(records):
@@ -201,18 +216,10 @@ class RecoverableOpenSetSelector:
         ]
 
     def _is_viable(self, records: Sequence[EvaluationRecord]) -> bool:
-        active = self._active_records(records)
-        fba = active.get("fba")
-        resource = active.get("resource_allocation")
-        if fba is None or resource is None:
-            return False
-        growth = fba.metrics.get("growth_rate")
-        return (
-            fba.metrics.get("feasible") is True
-            and isinstance(growth, (int, float))
-            and not isinstance(growth, bool)
-            and growth > 0
-            and resource.metrics.get("feasible_at_growth_floor") is True
+        return evaluations_are_viable(
+            records,
+            self.evaluator_ids,
+            gate=self.config.viability_gate,
         )
 
     def _active_records(
@@ -280,9 +287,13 @@ class RecoverableOpenSetSelector:
         events: Sequence[ProposalEvent[DeleteGenes]],
         step: int,
     ) -> str:
-        caps = _effective_caps(
-            self.max_action_size,
-            self.config.fallback_action_caps,
+        caps = (
+            (self.max_action_size,)
+            if self.fixed_action_size
+            else _effective_caps(
+                self.max_action_size,
+                self.config.fallback_action_caps,
+            )
         )
         preferred_cap = caps[min(candidate.attempts, len(caps) - 1)]
         remaining = max(
@@ -311,17 +322,28 @@ class RecoverableOpenSetSelector:
                     ),
                 }
             )
+        action_guidance = (
+            f"Every action must contain exactly {self.max_action_size} genes."
+            if self.fixed_action_size
+            else (
+                "The fallback ceiling is guidance, not a required bundle size. "
+                f"Choose any action size from 1 to {self.max_action_size} according "
+                "to the strength and confidence of the evidence."
+            )
+        )
+        recovery_guidance = (
+            "Learn from lethal siblings by choosing different genes."
+            if self.fixed_action_size
+            else "Learn from lethal siblings by choosing a smaller action or different genes."
+        )
         return "\n".join(
             [
                 f"RECOVERY_ATTEMPT: {candidate.attempts + 1}",
                 f"GLOBAL_MAX_ACTION_SIZE: {self.max_action_size}",
                 f"SUGGESTED_FALLBACK_CEILING: {preferred_cap}",
                 f"CANDIDATE_PREVIEW_PAGE: {preview_page}",
-                "The fallback ceiling is guidance, not a required bundle size. "
-                f"Choose any action size from 1 to {self.max_action_size} according "
-                "to the strength and confidence of the evidence.",
-                "Do not repeat an exact previous sibling action. Learn from lethal "
-                "siblings by choosing a smaller action or different genes.",
+                action_guidance,
+                "Do not repeat an exact previous sibling action. " + recovery_guidance,
                 "PREVIOUS_SIBLING_OUTCOMES: " + json.dumps(history, sort_keys=True),
             ]
         )
@@ -339,17 +361,14 @@ class RecoverableOpenSetSelector:
         child_records = (
             graph.evaluations(event.child_id) if event.child_id is not None else ()
         )
+        required = {self.evaluator_ids["fba"]}
+        if self.config.viability_gate == "fba-rba":
+            required.add(self.evaluator_ids["resource_allocation"])
+        evaluated = {record.evaluator_id for record in child_records}
         return (
             event.outcome in {"created", "reused"}
             and event.child_id is not None
-            and any(
-                record.evaluator_id == self.evaluator_ids["fba"]
-                for record in child_records
-            )
-            and any(
-                record.evaluator_id == self.evaluator_ids["resource_allocation"]
-                for record in child_records
-            )
+            and required <= evaluated
         )
 
 

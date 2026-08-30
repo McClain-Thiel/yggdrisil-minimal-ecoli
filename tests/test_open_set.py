@@ -170,6 +170,54 @@ def test_fba_positive_resource_infeasible_state_is_not_reopened(
     graph.close()
 
 
+def test_fba_only_ablation_reopens_resource_infeasible_state(tmp_path: Path) -> None:
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "fba-only.sqlite")
+    graph.save_run("run_a", step=0, status="running", config={}, metadata={})
+    state_id = _add_state(
+        graph,
+        "resource-infeasible",
+        ("b0001",),
+        growth=1.0,
+        resource_feasible=False,
+    )
+    selector = RecoverableOpenSetSelector(
+        evaluator_ids=EVALUATOR_IDS,
+        max_action_size=20,
+        config=OpenSetConfig(viability_gate="fba-only"),
+        seed=3,
+        candidate_count=400,
+        candidate_page_size=100,
+    )
+
+    requests = selector.select(graph.readonly(), _status("run_a", step=0))
+
+    assert [request.state_id for request in requests] == [state_id]
+    graph.close()
+
+
+def test_frontier_only_ablation_cannot_reopen_viable_nonleaf(tmp_path: Path) -> None:
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "frontier.sqlite")
+    graph.save_run("run_a", step=0, status="running", config={}, metadata={})
+    parent = _add_state(graph, "parent", ("b0001",))
+    lethal = _add_state(graph, "lethal", ("b0001", "b0002"), growth=0.0)
+    graph.add_edge(parent, lethal, DeleteGenes(genes=("b0002",)))
+    selector = RecoverableOpenSetSelector(
+        evaluator_ids=EVALUATOR_IDS,
+        max_action_size=20,
+        config=OpenSetConfig(recover_nonleaf=False),
+        seed=3,
+        candidate_count=400,
+        candidate_page_size=100,
+    )
+
+    assert selector.select(graph.readonly(), _status("run_a", step=0)) == []
+    assert (
+        _selector().select(graph.readonly(), _status("run_a", step=0))[0].state_id
+        == parent
+    )
+    graph.close()
+
+
 def test_failed_model_call_does_not_consume_attempt_but_valid_empty_does(
     tmp_path: Path,
 ) -> None:

@@ -39,7 +39,7 @@ def test_agent_config_requires_fixed_model_and_has_secret_free_metadata() -> Non
     assert metadata["blind_map_sha256"]
     assert metadata["scheduler"] == {
         "type": "recoverable_open_set",
-        "version": 2,
+        "version": 3,
         "active_width": 16,
         "parents_per_step": 4,
         "fallback_action_caps": [20, 10, 5, 1],
@@ -68,6 +68,7 @@ def test_agent_config_requires_fixed_model_and_has_secret_free_metadata() -> Non
             "unknown_evidence",
         ],
     }
+    assert metadata["action_size_mode"] == "variable-1-max"
     assert "key" not in str(metadata).lower()
     with pytest.raises(ValueError, match="fixed OpenRouter model"):
         AgentSearchConfig(model="openrouter/free")
@@ -98,6 +99,14 @@ def test_agent_output_schema_enforces_bundle_size() -> None:
 
     with pytest.raises(ValidationError, match="at most 1 item"):
         action_type(genes=("g0001", "g0002"))
+
+
+def test_fixed_action_ablation_requires_exact_bundle_size() -> None:
+    action_type = _bounded_action_type("closed-book", 2, fixed=True)
+
+    with pytest.raises(ValidationError, match="at least 2 items"):
+        action_type(genes=("g0001",))
+    assert action_type(genes=("g0001", "g0002")).genes == ("g0001", "g0002")
 
 
 @pytest.mark.asyncio
@@ -285,6 +294,56 @@ def test_prompt_treats_action_size_as_a_ceiling_and_rotates_preview() -> None:
     assert "maximum is a ceiling, not a target" in prompt
     assert "one-gene action is valid" in prompt
     assert "full-size" not in prompt
+
+
+def test_fixed_action_ablation_is_explicit_in_prompt_and_metadata() -> None:
+    registry, essentiality, modules = _evidence()
+    config = AgentSearchConfig(
+        model="openai/gpt-5.6-sol",
+        mode="closed-book",
+        seed=11,
+        bundle_size=2,
+        action_size_mode="fixed-max",
+        scheduler_mode="frontier-only",
+        viability_gate="fba-only",
+    )
+    blind = _BlindGeneMap(registry, config.seed)
+    schedule = _CandidateSchedule(registry, config.seed)
+
+    def toolkit(state: GenomeState) -> _AgentGeneTools:
+        return _AgentGeneTools(
+            registry=registry,
+            essentiality=essentiality,
+            modules=modules,
+            schedule=schedule,
+            state=state,
+            mode="closed-book",
+            blind=blind,
+            max_genes_per_action=config.bundle_size,
+        )
+
+    prompt = _format_explorer_prompt(
+        ExplorerContext(
+            goal="minimize",
+            state_id="state",
+            state=GenomeState(frozenset()),
+            lineage=[],
+            guidance=None,
+        ),
+        toolkit,
+        config,
+    )
+    metadata = config.metadata(registry)
+
+    assert "exactly 2 candidate gene ids" in prompt
+    assert metadata["action_size_mode"] == "fixed-max"
+    assert metadata["scheduler"]["type"] == "frontier_open_set"
+    assert metadata["scheduler"]["effective_fallback_action_caps"] == [2]
+    assert metadata["scheduler"]["viability"] == {
+        "fba_feasible": True,
+        "growth_rate": ">0",
+        "resource_allocation_feasible_at_growth_floor": "not_a_gate",
+    }
 
 
 def test_closed_book_tools_reject_unexposed_ids_and_unbounded_analysis() -> None:

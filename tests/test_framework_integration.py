@@ -269,6 +269,14 @@ async def test_random_policy_never_expands_resource_infeasible_parent(
             for decision in decisions
             for proposal in decision.proposals
         )
+    blocked = graph.get_state(blocked_id)
+    blocked_records = graph.evaluations(blocked_id)
+    assert viability_eligibility(active_evaluator_ids(scorers), gate="fba-only")(
+        blocked, blocked_records
+    )
+    assert not viability_eligibility(active_evaluator_ids(scorers), gate="fba-rba")(
+        blocked, blocked_records
+    )
     graph.close()
 
 
@@ -304,6 +312,22 @@ def test_deletion_sampler_respects_configured_candidate_universe() -> None:
         DeleteGenes(genes=("b0002",)),
     )
     assert sampler(GenomeState(frozenset({"b0002"})), random.Random(0)) == ()
+
+
+def test_uniform_action_size_baseline_samples_one_to_configured_maximum() -> None:
+    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
+    sampler = deletion_sampler(
+        registry,
+        bundle_size=3,
+        action_size_mode="uniform-1-max",
+    )
+
+    sizes = {
+        len(sampler(GenomeState(frozenset()), random.Random(seed))[0].genes)
+        for seed in range(20)
+    }
+
+    assert sizes == {1, 2, 3}
 
 
 def _essentiality_summary(

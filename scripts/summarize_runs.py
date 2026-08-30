@@ -16,6 +16,7 @@ from yggdrisil.types import EvaluationRecord
 
 from yggdrisil_ecoli.actions import DeleteGenes
 from yggdrisil_ecoli.data.io import atomic_json
+from yggdrisil_ecoli.policies import ViabilityGate
 from yggdrisil_ecoli.state import GenomeState
 
 _CANONICAL_ID = re.compile(r"\bb\d{4}\b")
@@ -36,10 +37,11 @@ def summarize_run(
         if run is None:
             raise ValueError(f"graph has no runs: {path}")
         evaluator_ids = _evaluator_ids(run.metadata.get("evaluators"))
+        viability_gate = _viability_gate(run.metadata.get("viability_gate"))
         viable = []
         for node in graph.states():
             evidence = _active_evidence(graph.evaluations(node.state_id), evaluator_ids)
-            if _viable(evidence):
+            if _viable(evidence, gate=viability_gate):
                 viable.append((node, evidence))
         candidate = max(
             viable,
@@ -97,6 +99,7 @@ def summarize_run(
             "states": len(graph),
             "edges": graph.edge_count(),
             "policy": run.metadata.get("policy"),
+            "viability_gate": viability_gate,
             "agent": agent if isinstance(agent, dict) else None,
             "decision_counts": dict(sorted(role_counts.items())),
             "scientific_tool_calls": dict(sorted(tool_counts.items())),
@@ -154,16 +157,28 @@ def _active_evidence(
     return {name: by_id[identity] for name, identity in evaluator_ids.items()}
 
 
-def _viable(evidence: dict[str, EvaluationRecord]) -> bool:
+def _viability_gate(raw: object) -> ViabilityGate:
+    if raw is None:
+        return "fba-rba"
+    if raw not in {"fba-rba", "fba-only"}:
+        raise ValueError(f"unknown run viability gate: {raw!r}")
+    return raw
+
+
+def _viable(
+    evidence: dict[str, EvaluationRecord], *, gate: ViabilityGate = "fba-rba"
+) -> bool:
     fba = evidence["fba"].metrics
     resource = evidence["resource_allocation"].metrics
     growth = fba.get("growth_rate")
-    return (
+    fba_positive = (
         fba.get("feasible") is True
         and isinstance(growth, (int, float))
         and not isinstance(growth, bool)
         and growth > 0
-        and resource.get("feasible_at_growth_floor") is True
+    )
+    return fba_positive and (
+        gate == "fba-only" or resource.get("feasible_at_growth_floor") is True
     )
 
 

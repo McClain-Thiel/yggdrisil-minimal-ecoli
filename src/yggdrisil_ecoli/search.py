@@ -35,6 +35,8 @@ from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.essentiality import EssentialityDataset
 from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
 from yggdrisil_ecoli.policies import (
+    ActionSizeMode,
+    ViabilityGate,
     deletion_sampler,
     make_heuristic_policy,
     viability_eligibility,
@@ -46,7 +48,7 @@ from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 from yggdrisil_ecoli.state import GenomeState
 
-SEARCH_CONTRACT_VERSION = 7
+SEARCH_CONTRACT_VERSION = 8
 
 
 @dataclass(frozen=True, slots=True)
@@ -127,6 +129,8 @@ async def run_baseline_search(
     resume: bool = True,
     agent_config: AgentSearchConfig | None = None,
     candidate_universe_name: str = "all",
+    baseline_action_size_mode: ActionSizeMode = "fixed-max",
+    viability_gate: ViabilityGate = "fba-rba",
 ) -> RunResult:
     """Run a baseline or bounded agent policy over identical evidence."""
 
@@ -155,13 +159,20 @@ async def run_baseline_search(
         "seed": seed,
         "bundle_size": bundle_size,
         "n_proposals": n_proposals,
+        "viability_gate": viability_gate,
         "candidate_universe": candidate_universe.metadata(),
     }
+    if policy_name != "agent":
+        metadata["baseline_action_size_mode"] = baseline_action_size_mode
     if agent_config is not None:
         if agent_config.bundle_size != bundle_size:
             raise ValueError("agent bundle_size must match the search bundle_size")
         if agent_config.max_actions != n_proposals:
             raise ValueError("agent max_actions must match n_proposals")
+        if agent_config.viability_gate != viability_gate:
+            raise ValueError(
+                "agent viability_gate must match the search viability_gate"
+            )
         metadata["agent"] = agent_config.metadata(
             registry,
             candidate_genes=candidate_universe.genes,
@@ -186,10 +197,11 @@ async def run_baseline_search(
                     registry,
                     bundle_size=bundle_size,
                     candidate_genes=candidate_universe.genes,
+                    action_size_mode=baseline_action_size_mode,
                 ),
                 n_proposals=n_proposals,
                 seed=seed,
-                eligible=viability_eligibility(evaluator_ids),
+                eligible=viability_eligibility(evaluator_ids, gate=viability_gate),
             )
         elif policy_name == "heuristic":
             policy = make_heuristic_policy(
@@ -200,6 +212,8 @@ async def run_baseline_search(
                 n_proposals=n_proposals,
                 seed=seed,
                 candidate_genes=candidate_universe.genes,
+                action_size_mode=baseline_action_size_mode,
+                viability_gate=viability_gate,
             )
         else:
             assert agent_config is not None
@@ -326,6 +340,12 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--bundle-size", type=int, default=1)
     parser.add_argument("--n-proposals", type=int, default=2)
+    parser.add_argument(
+        "--baseline-action-size-mode",
+        choices=("fixed-max", "uniform-1-max"),
+        default="fixed-max",
+        help="non-agent action sizing; uniform samples an integer from 1 to the maximum",
+    )
     parser.add_argument("--max-states", type=int, default=10)
     parser.add_argument("--max-steps", type=int, default=10)
     parser.add_argument("--max-wall-time-s", type=float)
@@ -344,6 +364,23 @@ def main() -> None:
         "--agent-mode",
         choices=("closed-book", "tool-rich"),
         default="closed-book",
+    )
+    parser.add_argument(
+        "--agent-action-size-mode",
+        choices=("variable-1-max", "fixed-max"),
+        default="variable-1-max",
+    )
+    parser.add_argument(
+        "--scheduler-mode",
+        choices=("recoverable", "frontier-only"),
+        default="recoverable",
+        help="agent parent selection; frontier-only is a recovery ablation",
+    )
+    parser.add_argument(
+        "--viability-gate",
+        choices=("fba-rba", "fba-only"),
+        default="fba-rba",
+        help="hard parent-expansion gate; all evaluators are still recorded",
     )
     parser.add_argument("--open-set-width", type=int, default=16)
     parser.add_argument(
@@ -380,6 +417,9 @@ def main() -> None:
             seed=args.seed,
             bundle_size=args.bundle_size,
             max_actions=args.n_proposals,
+            action_size_mode=args.agent_action_size_mode,
+            scheduler_mode=args.scheduler_mode,
+            viability_gate=args.viability_gate,
             open_set_width=args.open_set_width,
             parents_per_step=args.parents_per_step,
             max_model_requests=args.max_model_requests,
@@ -403,6 +443,8 @@ def main() -> None:
                 resume=not args.new_run,
                 agent_config=agent_config,
                 candidate_universe_name=args.candidate_universe,
+                baseline_action_size_mode=args.baseline_action_size_mode,
+                viability_gate=args.viability_gate,
             )
         )
     except (
