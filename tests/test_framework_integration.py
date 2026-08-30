@@ -296,6 +296,16 @@ def test_deletion_sampler_does_not_silently_exclude_essential_genes() -> None:
     assert filtered_actions == (DeleteGenes(genes=("b0003",)),)
 
 
+def test_deletion_sampler_respects_configured_candidate_universe() -> None:
+    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
+    sampler = deletion_sampler(registry, candidate_genes={"b0002"})
+
+    assert sampler(GenomeState(frozenset()), random.Random(0)) == (
+        DeleteGenes(genes=("b0002",)),
+    )
+    assert sampler(GenomeState(frozenset({"b0002"})), random.Random(0)) == ()
+
+
 def _essentiality_summary(
     gene: str,
     classification: EssentialityClass,

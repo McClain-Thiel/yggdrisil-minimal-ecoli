@@ -75,6 +75,24 @@ def test_agent_config_requires_fixed_model_and_has_secret_free_metadata() -> Non
         AgentSearchConfig(model="openai/gpt-5.6-sol", bundle_size=21)
 
 
+def test_agent_mapping_and_schedule_are_scoped_to_candidate_universe() -> None:
+    registry, _essentiality, _modules = _evidence()
+    candidates = {"b0001", "b0003"}
+    schedule = _CandidateSchedule(registry, 7, candidates)
+    blind = _BlindGeneMap(registry, 7, candidates)
+    metadata = AgentSearchConfig(
+        model="openai/gpt-5.6-sol",
+        seed=7,
+    ).metadata(registry, candidate_genes=candidates)
+
+    assert set(schedule.genes) == candidates
+    assert {blind.canonical("g0001"), blind.canonical("g0002")} == candidates
+    with pytest.raises(ValueError, match="unknown blinded"):
+        blind.canonical("g0003")
+    assert metadata["candidate_order_sha256"] == schedule.fingerprint
+    assert metadata["blind_map_sha256"] == blind.fingerprint
+
+
 def test_agent_output_schema_enforces_bundle_size() -> None:
     action_type = _bounded_action_type("closed-book", 1)
 

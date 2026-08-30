@@ -42,6 +42,15 @@ CHOE_2023_MEMBER = "msystems.00896-22-s0002.xlsx"
 CHOE_2023_MEMBER_SHA256 = (
     "b1b27667bb9671e0cf031c46bb91e99077e759f4ccd5f75642c809e4d8b9595e"
 )
+WCM_1219_SOURCE_COMMIT = "47e3997bac61d481fa0e2fa0d48c1b6ca98762b0"
+WCM_1219_GENE_LIST_URL = (
+    "https://raw.githubusercontent.com/ioanagherman/surrogateMinesweeperEcoli/"
+    f"{WCM_1219_SOURCE_COMMIT}/WCM2022/wcm2022_submit/wcEcoli/utils/"
+    "gene_name_id_touse.csv"
+)
+WCM_1219_GENE_LIST_SHA256 = (
+    "c1c64097b4f6bf2a969af5705efdec833900698d3f4fbcacbae2101d17df96fb"
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -122,6 +131,17 @@ CHOE_2023_SUPPLEMENT_BUNDLE = SourceSpec(
     filename="PMC9948719_supplementary_files.zip",
     source_version="Choe et al. 2023; DOI 10.1128/msystems.00896-22",
     redistribution="CC-BY-4.0 supplementary data",
+)
+WCM_1219_GENE_LIST = SourceSpec(
+    name="gherman_2025_wcm_1219_gene_list",
+    url=WCM_1219_GENE_LIST_URL,
+    filename="wcm_1219_gene_name_id_touse.csv",
+    source_version=(
+        f"surrogateMinesweeperEcoli commit {WCM_1219_SOURCE_COMMIT}; "
+        "DOI 10.1016/j.cels.2025.101392"
+    ),
+    redistribution="upstream source snapshot retained locally and not vendored",
+    expected_sha256=WCM_1219_GENE_LIST_SHA256,
 )
 
 

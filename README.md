@@ -14,7 +14,9 @@ continue independently.
 ## Scientific scope
 
 - Reference: chromosome `NC_000913.3`, assembly `GCF_000005845.2` (`ASM584v2`).
-- Search universe: NCBI-annotated protein-coding genes only.
+- Canonical universe: 4,290 NCBI-annotated protein-coding genes.
+- Candidate universe: either all canonical genes or the pinned 1,216-gene
+  canonical intersection with the 1,219-gene WCM universe used for EMine-737.
 - Canonical identity: MG1655 `b` locus tags; symbols are display metadata.
 - Environment: aerobic M9 minimal medium with glucose at 37 °C.
 - Outputs: separate evidence results. There is deliberately no combined
@@ -46,7 +48,12 @@ artifact:
 ```bash
 uv run python scripts/build_data.py --accept-kegg-terms
 uv run --extra rba python scripts/build_rba.py
+uv run --extra data python scripts/build_wcm_candidate_universe.py
 ```
+
+The WCM source contains 1,219 genes. Exactly 1,216 map to this application's
+protein-coding registry; the three legacy split-gene identifiers outside the
+registry and every source/artifact hash remain explicit in the generated JSON.
 
 Run the fixed biological sanity panel:
 
@@ -81,6 +88,7 @@ uv run --extra agents --extra fba --extra rba yggdrisil-ecoli-search \
   --graph runs/agent-closed.sqlite \
   --policy agent \
   --agent-mode closed-book \
+  --candidate-universe wcm-1219 \
   --model openai/gpt-4o-mini-2024-07-18 \
   --seed 101 \
   --bundle-size 20 \
@@ -99,6 +107,9 @@ than a fixed bundle size. Viable parents remain reopenable after lethal children
 the scheduler keeps a diverse active window, rotates candidate pages, rejects
 duplicate sibling actions, and supplies progressively smaller 20/10/5/1 fallback
 guidance. Use separate graph files for every model, seed, and exposure mode.
+The optional WCM comparison universe constrains every policy and the problem
+boundary, participates in the run fingerprint, and does not reveal canonical
+identifiers to a closed-book model.
 
 All policies use the same five-evaluator suite. Yggdrisil evaluates and caches
 every state before the next policy call. Inspect a completed or active graph

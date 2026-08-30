@@ -12,6 +12,7 @@ source snapshots. Local manifests are the run-specific provenance record.
 | Experimental essentiality | Choe et al. 2023 Table S1, DOI `10.1128/msystems.00896-22` | Workbook SHA-256 `b1b27667bb9671e0cf031c46bb91e99077e759f4ccd5f75642c809e4d8b9595e` | Supplies condition-specific LB/M9 classifications; canonical genes without a measurement remain unknown. |
 | MDS42 agent-invisible calibration/rediscovery control | NCBI nucleotide records `AP012306` and `NC_000913.3` | Wrapper record length and SHA-256, minimap2 version/parameters, reference registry SHA-256 | Calibrates permissiveness of the RBA gate and later measures closed-book rediscovery; never loaded by an agent policy, but no longer an untouched evaluator-level validation set. |
 | MS56 agent-invisible calibration/rediscovery control | Park et al. 2014 Supplementary Table S3, DOI `10.1007/s00253-014-5739-y` | Supplement PDF SHA-256 and exact locus-tag extraction | Calibrates permissiveness of the RBA gate and later measures closed-book rediscovery after intersection with the canonical universe; never loaded by an agent policy, but no longer an untouched evaluator-level validation set. |
+| WCM comparison universe | Gherman et al. 2025 code release at commit `47e3997bac61d481fa0e2fa0d48c1b6ca98762b0`, DOI `10.1016/j.cels.2025.101392` | Source SHA-256 `c1c64097b4f6bf2a969af5705efdec833900698d3f4fbcacbae2101d17df96fb`, exact 1,219 rows, explicit three-ID mapping gap, registry and output hashes | Optionally restricts every policy to the 1,216 canonical protein-coding genes shared with the EMine WCM universe. Closed-book identifiers remain blinded. |
 
 NCBI data are fetched from NCBI. KEGG access is optional, rate-limited below
 three requests per second, gated by `--accept-kegg-terms`, and its response
@@ -24,8 +25,10 @@ Reduced-genome source files and generated labels remain under the gitignored
 identifiers, while each local validation artifact records the exact source,
 registry, aligner, and output inputs used for a comparison.
 
-Published whole-cell-model and current vEcoli crosswalks are intentionally
-deferred and are not exposed in the search registry.
+WCM comparison membership is a separate, pinned action-space artifact; it does
+not modify the canonical registry or expose canonical identifiers in
+closed-book runs. A current-vEcoli downstream functional-coverage audit remains
+deferred.
 
 The numerical environment pins COBRApy 0.32.1, Optlang 1.9.1, RBApy 3.0.3,
 RBAtools 2.0.1, and swiglpk 5.0.13 directly in `pyproject.toml`. Runtime versions

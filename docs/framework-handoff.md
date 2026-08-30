@@ -68,6 +68,7 @@ compact canonical gene evidence and require structured `DeleteGenes` output.
 
 ## Deferred work
 
-- Add published whole-cell-model and current-vEcoli crosswalk discovery.
-- Add selective vEcoli/WCM simulation for a predeclared finalist set after the
-  cached FBA and RBA evidence gates are stable.
+- Audit current-vEcoli downstream functional coverage separately from the
+  pinned published-WCM candidate universe.
+- Extend terminal validation beyond the completed predeclared vEcoli finalist
+  panel to matched WCM-universe benchmarks and additional conditions.

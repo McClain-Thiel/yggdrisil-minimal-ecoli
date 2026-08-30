@@ -30,6 +30,7 @@ from yggdrisil_ecoli.agent_policy import (
     AgentSearchConfig,
     make_agent_policy,
 )
+from yggdrisil_ecoli.data.candidate_universe import CandidateUniverse
 from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.essentiality import EssentialityDataset
 from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
@@ -45,7 +46,7 @@ from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 from yggdrisil_ecoli.state import GenomeState
 
-SEARCH_CONTRACT_VERSION = 6
+SEARCH_CONTRACT_VERSION = 7
 
 
 @dataclass(frozen=True, slots=True)
@@ -73,6 +74,10 @@ class SearchArtifacts:
     @property
     def rba(self) -> Path:
         return self.data_dir / "external" / "rba_ecoli_k12_wt"
+
+    @property
+    def wcm_candidate_universe(self) -> Path:
+        return self.data_dir / "processed" / "wcm_1219_candidate_universe.json"
 
 
 DEFAULT_SEARCH_ARTIFACTS = SearchArtifacts()
@@ -121,6 +126,7 @@ async def run_baseline_search(
     run_id: str | None = None,
     resume: bool = True,
     agent_config: AgentSearchConfig | None = None,
+    candidate_universe_name: str = "all",
 ) -> RunResult:
     """Run a baseline or bounded agent policy over identical evidence."""
 
@@ -131,6 +137,11 @@ async def run_baseline_search(
     if policy_name != "agent" and agent_config is not None:
         raise ValueError("agent_config is only valid for the agent policy")
     registry, essentiality, evaluators = load_standard_evaluators(artifacts)
+    candidate_universe = load_candidate_universe(
+        artifacts,
+        registry=registry,
+        name=candidate_universe_name,
+    )
     evaluator_ids = active_evaluator_ids(evaluators)
     metadata = {
         "application": {
@@ -144,13 +155,17 @@ async def run_baseline_search(
         "seed": seed,
         "bundle_size": bundle_size,
         "n_proposals": n_proposals,
+        "candidate_universe": candidate_universe.metadata(),
     }
     if agent_config is not None:
         if agent_config.bundle_size != bundle_size:
             raise ValueError("agent bundle_size must match the search bundle_size")
         if agent_config.max_actions != n_proposals:
             raise ValueError("agent max_actions must match n_proposals")
-        metadata["agent"] = agent_config.metadata(registry)
+        metadata["agent"] = agent_config.metadata(
+            registry,
+            candidate_genes=candidate_universe.genes,
+        )
     graph = SQLiteStateGraph[GenomeState, DeleteGenes](graph_path)
     try:
         validate_search_resume(
@@ -159,11 +174,19 @@ async def run_baseline_search(
             resume=resume,
             expected_metadata=metadata,
         )
-        problem = EcoliProblem(registry, max_genes_per_action=bundle_size)
+        problem = EcoliProblem(
+            registry,
+            max_genes_per_action=bundle_size,
+            candidate_genes=candidate_universe.genes,
+        )
         policy: Policy[DeleteGenes]
         if policy_name == "random":
             policy = RandomPolicy(
-                deletion_sampler(registry, bundle_size=bundle_size),
+                deletion_sampler(
+                    registry,
+                    bundle_size=bundle_size,
+                    candidate_genes=candidate_universe.genes,
+                ),
                 n_proposals=n_proposals,
                 seed=seed,
                 eligible=viability_eligibility(evaluator_ids),
@@ -176,6 +199,7 @@ async def run_baseline_search(
                 bundle_size=bundle_size,
                 n_proposals=n_proposals,
                 seed=seed,
+                candidate_genes=candidate_universe.genes,
             )
         else:
             assert agent_config is not None
@@ -190,6 +214,7 @@ async def run_baseline_search(
                 modules=modules,
                 evaluator_ids=evaluator_ids,
                 config=agent_config,
+                candidate_genes=candidate_universe.genes,
             )
         return await Runner(
             problem,
@@ -207,6 +232,25 @@ async def run_baseline_search(
         ).run()
     finally:
         graph.close()
+
+
+def load_candidate_universe(
+    artifacts: SearchArtifacts,
+    *,
+    registry: GeneRegistry,
+    name: str,
+) -> CandidateUniverse:
+    """Resolve one explicit deletion universe for every policy arm."""
+
+    if name == "all":
+        return CandidateUniverse.full_registry(registry)
+    if name == "wcm-1219":
+        return CandidateUniverse.from_json(
+            artifacts.wcm_candidate_universe,
+            registry=registry,
+            registry_path=artifacts.registry,
+        )
+    raise ValueError(f"unknown candidate universe: {name!r}")
 
 
 def validate_search_resume(
@@ -287,6 +331,12 @@ def main() -> None:
     parser.add_argument("--max-wall-time-s", type=float)
     parser.add_argument("--run-id")
     parser.add_argument(
+        "--candidate-universe",
+        choices=("all", "wcm-1219"),
+        default="all",
+        help="genes eligible for deletion; wcm-1219 uses the pinned EMine universe",
+    )
+    parser.add_argument(
         "--model",
         help="fixed OpenRouter model id for --policy agent, for example vendor/model",
     )
@@ -352,6 +402,7 @@ def main() -> None:
                 run_id=args.run_id,
                 resume=not args.new_run,
                 agent_config=agent_config,
+                candidate_universe_name=args.candidate_universe,
             )
         )
     except (

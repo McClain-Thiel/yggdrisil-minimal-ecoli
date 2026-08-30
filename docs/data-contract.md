@@ -27,8 +27,10 @@ identity or silently translated outside the registry layer.
 - The RBAgroup E. coli K-12 WT model contributes enzyme and cellular-process
   capacity constraints. It is frozen at one Git commit and never changes the
   canonical search universe.
-- Published-WCM and current-vEcoli membership remain absent until their
-  independent discovery milestones are complete.
+- The Gherman et al. 2025 WCM gene list may define a separate candidate
+  universe for controlled EMine comparisons. It never changes registry rows.
+- Current-vEcoli downstream functional membership remains absent pending a
+  dedicated coverage audit.
 
 Crosswalk sources may annotate canonical genes, but they may not create new
 members of the search universe.
@@ -52,8 +54,7 @@ published MG1655 deletion intervals:
 
 Protein-coding type and reference accession are validated once at the GFF3
 boundary and recorded in the source manifest rather than repeated on every row.
-Published-WCM and current-vEcoli data remain held out and are not registry
-columns.
+WCM candidate membership and current-vEcoli data are not registry columns.
 
 ## Build failures
 
@@ -90,6 +91,9 @@ is safe.
   and generated model structure. Resource-allocation evaluation reports modeled
   and unmodeled deleted genes separately and tests feasibility at the fixed
   0.1 h^-1 growth floor; absence from the RBA model is not evidence of safety.
+- `wcm_1219_candidate_universe.json` contains the canonical intersection with
+  the exact 1,219-gene WCM list used for EMine-737. Its 1,216 genes constrain
+  deletion eligibility only; all five evaluators still score every state.
 
 All derived scorer results retain artifact/configuration fingerprints. A result
 is invalidated when its state, scorer version, source artifact, crosswalk,

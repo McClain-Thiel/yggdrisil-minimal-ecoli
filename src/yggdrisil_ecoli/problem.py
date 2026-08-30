@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from yggdrisil import stable_hash
 
 from yggdrisil_ecoli.actions import DeleteGenes
@@ -18,11 +20,22 @@ class EcoliProblem:
         registry: GeneRegistry,
         *,
         max_genes_per_action: int | None = None,
+        candidate_genes: Iterable[str] | None = None,
     ) -> None:
         if max_genes_per_action is not None and max_genes_per_action < 1:
             raise ValueError("max_genes_per_action must be positive")
         self.registry = registry
         self.max_genes_per_action = max_genes_per_action
+        self.candidate_genes = frozenset(
+            registry.search_universe if candidate_genes is None else candidate_genes
+        )
+        if not self.candidate_genes:
+            raise ValueError("candidate_genes must not be empty")
+        outside = sorted(self.candidate_genes - registry.search_universe)
+        if outside:
+            raise DataValidationError(
+                f"candidate genes outside the canonical registry: {outside}"
+            )
         self.initial_state = GenomeState(deleted_genes=frozenset())
 
     def state_key(self, state: GenomeState) -> str:
@@ -30,19 +43,19 @@ class EcoliProblem:
         return genome_state_key(state)
 
     def validate_state(self, state: GenomeState) -> None:
-        outside = sorted(state.deleted_genes - self.registry.search_universe)
+        outside = sorted(state.deleted_genes - self.candidate_genes)
         if outside:
             raise DataValidationError(
-                f"state contains genes outside the search universe: {outside}"
+                f"state contains genes outside the candidate universe: {outside}"
             )
 
     def validate_action(self, state: GenomeState, action: DeleteGenes) -> None:
         self.validate_state(state)
         requested = frozenset(action.genes)
-        outside = sorted(requested - self.registry.search_universe)
+        outside = sorted(requested - self.candidate_genes)
         if outside:
             raise DataValidationError(
-                f"action contains genes outside the search universe: {outside}"
+                f"action contains genes outside the candidate universe: {outside}"
             )
         already_deleted = sorted(requested.intersection(state.deleted_genes))
         if already_deleted:
@@ -65,6 +78,6 @@ class EcoliProblem:
         """Identify the deletion universe and action constraint for safe resume."""
 
         return {
-            "search_universe": stable_hash(sorted(self.registry.search_universe)),
+            "search_universe": stable_hash(sorted(self.candidate_genes)),
             "max_genes_per_action": self.max_genes_per_action,
         }

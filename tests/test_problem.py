@@ -35,9 +35,22 @@ def test_action_rejects_empty_malformed_duplicate_and_redeleted_genes() -> None:
         DeleteGenes(genes=("thrA",))
     with pytest.raises(ValidationError):
         DeleteGenes(genes=("b0001", "b0001"))
-    with pytest.raises(DataValidationError, match="outside the search universe"):
+    with pytest.raises(DataValidationError, match="outside the candidate universe"):
         problem.apply(problem.initial_state, DeleteGenes(genes=("b9999",)))
     with pytest.raises(DataValidationError, match="already deleted"):
         problem.apply(GenomeState(frozenset({"b0001"})), DeleteGenes(genes=("b0001",)))
     with pytest.raises(DataValidationError, match="max_genes_per_action"):
         problem.apply(problem.initial_state, DeleteGenes(genes=("b0001", "b0002")))
+
+
+def test_problem_rejects_genes_outside_configured_candidate_universe() -> None:
+    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
+    problem = EcoliProblem(registry, candidate_genes={"b0001", "b0003"})
+
+    assert problem.apply(
+        problem.initial_state,
+        DeleteGenes(genes=("b0003",)),
+    ).deleted_genes == frozenset({"b0003"})
+    with pytest.raises(DataValidationError, match="candidate universe"):
+        problem.apply(problem.initial_state, DeleteGenes(genes=("b0002",)))
+    assert problem.problem_fingerprint() != EcoliProblem(registry).problem_fingerprint()

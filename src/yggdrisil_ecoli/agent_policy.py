@@ -6,7 +6,7 @@ import hashlib
 import json
 import os
 from collections import Counter
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from contextvars import ContextVar
 from dataclasses import dataclass
 from decimal import Decimal
@@ -104,10 +104,17 @@ class AgentSearchConfig:
             fallback_action_caps=self.fallback_action_caps,
         )
 
-    def metadata(self, registry: GeneRegistry) -> dict[str, object]:
-        schedule = _CandidateSchedule(registry, self.seed)
+    def metadata(
+        self,
+        registry: GeneRegistry,
+        *,
+        candidate_genes: Iterable[str] | None = None,
+    ) -> dict[str, object]:
+        schedule = _CandidateSchedule(registry, self.seed, candidate_genes)
         blind = (
-            _BlindGeneMap(registry, self.seed) if self.mode == "closed-book" else None
+            _BlindGeneMap(registry, self.seed, candidate_genes)
+            if self.mode == "closed-book"
+            else None
         )
         tool_names = ["analyze_deletion_bundle"]
         if self.mode == "tool-rich":
@@ -168,9 +175,15 @@ class _BlindDeleteGenes(BaseModel):
 
 
 class _BlindGeneMap:
-    def __init__(self, registry: GeneRegistry, seed: int) -> None:
+    def __init__(
+        self,
+        registry: GeneRegistry,
+        seed: int,
+        candidate_genes: Iterable[str] | None = None,
+    ) -> None:
+        universe = _candidate_genes(registry, candidate_genes)
         canonical = sorted(
-            registry.search_universe,
+            universe,
             key=lambda gene: _seeded_digest("blind", seed, gene),
         )
         self._to_public = {
@@ -190,10 +203,16 @@ class _BlindGeneMap:
 
 
 class _CandidateSchedule:
-    def __init__(self, registry: GeneRegistry, seed: int) -> None:
+    def __init__(
+        self,
+        registry: GeneRegistry,
+        seed: int,
+        candidate_genes: Iterable[str] | None = None,
+    ) -> None:
+        universe = _candidate_genes(registry, candidate_genes)
         self.genes = tuple(
             sorted(
-                registry.search_universe,
+                universe,
                 key=lambda gene: _seeded_digest("candidate", seed, gene),
             )
         )
@@ -385,6 +404,7 @@ def make_agent_policy(
     modules: ModuleEvaluator,
     evaluator_ids: Mapping[str, str],
     config: AgentSearchConfig,
+    candidate_genes: Iterable[str] | None = None,
 ) -> NavigatorExplorerPolicy[GenomeState, DeleteGenes]:
     """Build a bounded OpenRouter navigator/explorer policy."""
 
@@ -393,9 +413,11 @@ def make_agent_policy(
     from pydantic_ai.models.openrouter import OpenRouterModelSettings
     from yggdrisil.agents.pydantic_ai import make_explorer
 
-    schedule = _CandidateSchedule(registry, config.seed)
+    schedule = _CandidateSchedule(registry, config.seed, candidate_genes)
     blind = (
-        _BlindGeneMap(registry, config.seed) if config.mode == "closed-book" else None
+        _BlindGeneMap(registry, config.seed, candidate_genes)
+        if config.mode == "closed-book"
+        else None
     )
 
     def toolkit(state: GenomeState) -> _AgentGeneTools:
@@ -467,7 +489,7 @@ def make_agent_policy(
         max_action_size=config.bundle_size,
         config=config.open_set_config,
         seed=config.seed,
-        candidate_count=len(registry.search_universe),
+        candidate_count=len(schedule.genes),
         candidate_page_size=config.candidate_preview_count,
         public_gene_id=blind.public if blind is not None else str,
     )
@@ -680,6 +702,20 @@ def _load_openrouter_key() -> None:
 
 def _seeded_digest(namespace: str, seed: int, gene: str) -> bytes:
     return hashlib.sha256(f"{namespace}:{seed}:{gene}".encode()).digest()
+
+
+def _candidate_genes(
+    registry: GeneRegistry, candidate_genes: Iterable[str] | None
+) -> frozenset[str]:
+    selected = frozenset(
+        registry.search_universe if candidate_genes is None else candidate_genes
+    )
+    if not selected:
+        raise ValueError("candidate_genes must not be empty")
+    outside = sorted(selected - registry.search_universe)
+    if outside:
+        raise ValueError(f"candidate genes outside the canonical registry: {outside}")
+    return selected
 
 
 def _mapping_hash(mapping: dict[str, str]) -> str:

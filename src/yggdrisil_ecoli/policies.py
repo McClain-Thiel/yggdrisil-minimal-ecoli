@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import random
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 
 from yggdrisil import BestFirstPolicy
 from yggdrisil.types import EvaluationRecord, StateNode
@@ -23,6 +23,7 @@ def deletion_sampler(
     bundle_size: int = 1,
     essentiality: EssentialityDataset | None = None,
     exclude_known_essential: bool = False,
+    candidate_genes: Iterable[str] | None = None,
 ) -> DeletionSampler:
     """Build a direct-child sampler over the canonical search universe.
 
@@ -36,7 +37,15 @@ def deletion_sampler(
         raise ValueError(
             "essentiality is required when exclude_known_essential is enabled"
         )
-    universe = tuple(sorted(registry.search_universe))
+    selected = frozenset(
+        registry.search_universe if candidate_genes is None else candidate_genes
+    )
+    if not selected:
+        raise ValueError("candidate_genes must not be empty")
+    outside = sorted(selected - registry.search_universe)
+    if outside:
+        raise ValueError(f"candidate genes outside the canonical registry: {outside}")
+    universe = tuple(sorted(selected))
 
     def sample(state: GenomeState, rng: random.Random) -> Sequence[DeleteGenes]:
         available = [
@@ -66,6 +75,7 @@ def make_heuristic_policy(
     n_proposals: int = 1,
     seed: int = 0,
     exclude_known_essential: bool = False,
+    candidate_genes: Iterable[str] | None = None,
 ) -> BestFirstPolicy[GenomeState, DeleteGenes]:
     """Build the framework best-first baseline over active scientific evidence."""
 
@@ -82,6 +92,7 @@ def make_heuristic_policy(
             bundle_size=bundle_size,
             essentiality=essentiality,
             exclude_known_essential=exclude_known_essential,
+            candidate_genes=candidate_genes,
         ),
         priority,
         n_proposals=n_proposals,
