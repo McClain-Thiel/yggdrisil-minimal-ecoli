@@ -13,7 +13,7 @@ from statistics import mean, median
 from typing import Any
 
 from yggdrisil import SQLiteStateGraph
-from yggdrisil.types import EvaluationRecord
+from yggdrisil.types import EvaluationRecord, StateNode
 
 from yggdrisil_ecoli.actions import DeleteGenes
 from yggdrisil_ecoli.data.io import atomic_json
@@ -40,6 +40,7 @@ def summarize_run(
         evaluator_ids = _evaluator_ids(run.metadata.get("evaluators"))
         viability_gate = _viability_gate(run.metadata.get("viability_gate"))
         viable = []
+        jointly_viable = []
         gate_counts: Counter[str] = Counter()
         for node in graph.states():
             evidence = _active_evidence(graph.evaluations(node.state_id), evaluator_ids)
@@ -57,15 +58,10 @@ def summarize_run(
             )
             if _viable(evidence, gate=viability_gate):
                 viable.append((node, evidence))
-        candidate = max(
-            viable,
-            key=lambda item: (
-                len(item[0].state.deleted_genes),
-                _number(item[1]["fba"].metrics.get("growth_rate")),
-                item[0].state_id,
-            ),
-            default=None,
-        )
+            if fba_positive and resource_feasible:
+                jointly_viable.append((node, evidence))
+        candidate = _best_candidate(viable)
+        joint_candidate = _best_candidate(jointly_viable)
         decisions = graph.decisions(run.run_id)
         proposal_events = graph.proposal_events(run_id=run.run_id)
         action_sizes = [len(event.action.genes) for event in proposal_events]
@@ -151,6 +147,15 @@ def summarize_run(
                 if candidate is not None
                 else None
             ),
+            "deepest_jointly_viable_candidate": (
+                _candidate_summary(
+                    joint_candidate[0].state_id,
+                    joint_candidate[0].state,
+                    joint_candidate[1],
+                )
+                if joint_candidate is not None
+                else None
+            ),
         }
         if candidate is not None and validation is not None:
             result["rediscovery"] = score_rediscovery(
@@ -179,6 +184,20 @@ def _evaluator_ids(raw: object) -> dict[str, str]:
     if required - evaluator_ids.keys():
         raise ValueError("run metadata lacks required evaluator identities")
     return evaluator_ids
+
+
+def _best_candidate(
+    candidates: list[tuple[StateNode[GenomeState], dict[str, EvaluationRecord]]],
+) -> tuple[StateNode[GenomeState], dict[str, EvaluationRecord]] | None:
+    return max(
+        candidates,
+        key=lambda item: (
+            len(item[0].state.deleted_genes),
+            _number(item[1]["fba"].metrics.get("growth_rate")),
+            item[0].state_id,
+        ),
+        default=None,
+    )
 
 
 def _active_evidence(
