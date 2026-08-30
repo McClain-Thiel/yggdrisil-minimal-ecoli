@@ -1,5 +1,8 @@
 # Baseline and ablation plan
 
+The paper-facing phased execution and statistical checklist is maintained in
+[`publication-experiment-checklist.md`](publication-experiment-checklist.md).
+
 This prospective plan applies to runs started after the seed-101 Sol/Qwen
 comparison. It does not retroactively preregister earlier exploratory results.
 Every arm uses a separate SQLite graph and records the application source hash,
