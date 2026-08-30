@@ -9,6 +9,7 @@ import re
 from collections import Counter
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
+from statistics import mean, median
 from typing import Any
 
 from yggdrisil import SQLiteStateGraph
@@ -39,8 +40,21 @@ def summarize_run(
         evaluator_ids = _evaluator_ids(run.metadata.get("evaluators"))
         viability_gate = _viability_gate(run.metadata.get("viability_gate"))
         viable = []
+        gate_counts: Counter[str] = Counter()
         for node in graph.states():
             evidence = _active_evidence(graph.evaluations(node.state_id), evaluator_ids)
+            fba_positive = _fba_positive(evidence)
+            resource_feasible = (
+                evidence["resource_allocation"].metrics.get("feasible_at_growth_floor")
+                is True
+            )
+            gate_counts.update(
+                {
+                    "fba_positive": fba_positive,
+                    "resource_feasible": resource_feasible,
+                    "jointly_viable": fba_positive and resource_feasible,
+                }
+            )
             if _viable(evidence, gate=viability_gate):
                 viable.append((node, evidence))
         candidate = max(
@@ -53,6 +67,8 @@ def summarize_run(
             default=None,
         )
         decisions = graph.decisions(run.run_id)
+        proposal_events = graph.proposal_events(run_id=run.run_id)
+        action_sizes = [len(event.action.genes) for event in proposal_events]
         role_counts = Counter(decision.role for decision in decisions)
         tool_counts: Counter[str] = Counter()
         usage_counts: Counter[str] = Counter()
@@ -102,6 +118,26 @@ def summarize_run(
             "viability_gate": viability_gate,
             "agent": agent if isinstance(agent, dict) else None,
             "decision_counts": dict(sorted(role_counts.items())),
+            "state_gate_counts": {
+                **dict(sorted(gate_counts.items())),
+                "declared_gate_viable": len(viable),
+            },
+            "proposal_events": {
+                "count": len(proposal_events),
+                "outcomes": dict(
+                    sorted(Counter(event.outcome for event in proposal_events).items())
+                ),
+                "action_size": (
+                    {
+                        "minimum": min(action_sizes),
+                        "maximum": max(action_sizes),
+                        "mean": mean(action_sizes),
+                        "median": median(action_sizes),
+                    }
+                    if action_sizes
+                    else None
+                ),
+            },
             "scientific_tool_calls": dict(sorted(tool_counts.items())),
             "model_usage": {
                 **dict(sorted(usage_counts.items())),
@@ -168,17 +204,21 @@ def _viability_gate(raw: object) -> ViabilityGate:
 def _viable(
     evidence: dict[str, EvaluationRecord], *, gate: ViabilityGate = "fba-rba"
 ) -> bool:
-    fba = evidence["fba"].metrics
     resource = evidence["resource_allocation"].metrics
+    fba_positive = _fba_positive(evidence)
+    return fba_positive and (
+        gate == "fba-only" or resource.get("feasible_at_growth_floor") is True
+    )
+
+
+def _fba_positive(evidence: dict[str, EvaluationRecord]) -> bool:
+    fba = evidence["fba"].metrics
     growth = fba.get("growth_rate")
-    fba_positive = (
+    return (
         fba.get("feasible") is True
         and isinstance(growth, (int, float))
         and not isinstance(growth, bool)
         and growth > 0
-    )
-    return fba_positive and (
-        gate == "fba-only" or resource.get("feasible_at_growth_floor") is True
     )
 
 
