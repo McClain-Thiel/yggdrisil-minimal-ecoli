@@ -23,8 +23,11 @@ from yggdrisil_ecoli.rba_build import (
     build_rba_artifact,
 )
 from yggdrisil_ecoli.scorers.rba import (
-    RBA_GLPK_PRESOLVE,
-    RBA_GLPK_SIMPLEX_METHOD,
+    RBA_FEASIBILITY_TOLERANCE,
+    RBA_MATRIX_BACKEND,
+    RBA_SOLVER,
+    RBA_SOLVER_METHOD,
+    RBA_SOLVER_PRESOLVE,
     RBAScorer,
 )
 from yggdrisil_ecoli.state import GenomeState
@@ -53,6 +56,11 @@ def registry() -> GeneRegistry:
 @pytest.fixture(scope="module")
 def scorer(registry: GeneRegistry) -> RBAScorer:
     return RBAScorer.from_artifact(ARTIFACT_DIR, registry=registry)
+
+
+def test_only_pinned_highs_solver_is_accepted(registry: GeneRegistry) -> None:
+    with pytest.raises(DataValidationError, match="only the pinned scipy-highs"):
+        RBAScorer(artifact_dir=ARTIFACT_DIR, registry=registry, solver="swiglpk")
 
 
 def test_builder_reuses_sources_without_changing_semantic_identity(
@@ -220,66 +228,45 @@ def test_artifact_and_mapping_participate_in_evaluator_identity(
     assert len(scorer.artifact_bundle_sha256) == 64
     assert len(scorer.registry_mapping_sha256) == 64
     assert scorer.model_dimensions == RBA_EXPECTED_LP_DIMENSIONS
-    assert scorer.config["simplex_method"] == RBA_GLPK_SIMPLEX_METHOD
-    assert scorer.config["presolve"] is RBA_GLPK_PRESOLVE
-    assert (
-        scorer._session.Problem.LP._lp_solver.glpk_simplex_params.meth
-        == scorer._swiglpk.GLP_DUALP
-    )
-    assert (
-        scorer._session.Problem.LP._lp_solver.glpk_simplex_params.presolve
-        == scorer._swiglpk.GLP_ON
-    )
+    assert scorer.config["solver"] == RBA_SOLVER
+    assert scorer.config["solver_method"] == RBA_SOLVER_METHOD
+    assert scorer.config["matrix_backend"] == RBA_MATRIX_BACKEND
+    assert scorer.config["solver_presolve"] is RBA_SOLVER_PRESOLVE
+    assert scorer.config["feasibility_tolerance"] == RBA_FEASIBILITY_TOLERANCE
     assert (
         len([gene for gene in scorer._variables_by_gene.values() if gene])
         == (RBA_EXPECTED_REGISTRY_MAPPING["genes"])
     )
 
 
-async def test_dual_simplex_resolves_recorded_random_baseline_stress_state(
+async def test_highs_resolves_recorded_random_baseline_stress_states(
     scorer: RBAScorer,
 ) -> None:
-    deleted_genes = frozenset(
-        {
-            "b0019",
-            "b0109",
-            "b0331",
-            "b0480",
-            "b0524",
-            "b0596",
-            "b0639",
-            "b0752",
-            "b0874",
-            "b0885",
-            "b1124",
-            "b1190",
-            "b1474",
-            "b1516",
-            "b1623",
-            "b2061",
-            "b2095",
-            "b2235",
-            "b2253",
-            "b2373",
-            "b2670",
-            "b2683",
-            "b2810",
-            "b2890",
-            "b2957",
-            "b3117",
-            "b3528",
-            "b3736",
-            "b3744",
-            "b4015",
-            "b4088",
-            "b4105",
-        }
+    stress_states = [
+        frozenset(
+            "b0019 b0109 b0331 b0480 b0524 b0596 b0639 b0752 b0874 b0885 "
+            "b1124 b1190 b1474 b1516 b1623 b2061 b2095 b2235 b2253 b2373 "
+            "b2670 b2683 b2810 b2890 b2957 b3117 b3528 b3736 b3744 b4015 "
+            "b4088 b4105".split()
+        ),
+        frozenset(
+            "b0064 b0661 b0885 b0978 b1326 b1385 b1415 b1488 b1854 b2039 "
+            "b2341 b2379 b2889 b3449 b3453 b3617 b3648 b3709 b3779 b3789 "
+            "b3833 b3849 b3883 b3903 b3988 b4474".split()
+        ),
+        frozenset("b0451 b1004 b1884 b2315 b2917 b3650 b3736 b4020".split()),
+    ]
+
+    results = await asyncio.gather(
+        *(scorer.evaluate(GenomeState(deletions)) for deletions in stress_states)
     )
 
-    result = await scorer.evaluate(GenomeState(deleted_genes))
-
-    assert result.metrics["feasible_at_growth_floor"] is False
-    assert result.metadata["coverage"] == {
+    assert [result.metrics["feasible_at_growth_floor"] for result in results] == [
+        False,
+        False,
+        False,
+    ]
+    assert results[0].metadata["coverage"] == {
         "deleted_genes_total": 32,
         "deleted_genes_modeled": 26,
         "deleted_genes_unmodeled": 6,

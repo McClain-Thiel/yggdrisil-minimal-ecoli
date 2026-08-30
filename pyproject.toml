@@ -101,6 +101,8 @@ module = [
     "rba.*",
     "rbatools",
     "rbatools.*",
+    "scipy",
+    "scipy.*",
     "swiglpk",
 ]
 ignore_missing_imports = true

@@ -38,11 +38,13 @@ predeclared shortlist in the WCM's 1,219-gene universe.
 - Source of record: the RBAgroup E. coli K-12 WT model at Git commit
   `973f00e0618493e6df6af52bdde55686168fda62`, with a pinned SHA-256 for every
   downloaded model file.
-- Environment: the model's published medium and constraints, GLPK's
-  dual-with-primal-fallback simplex method with presolve enabled, RBApy 3.0.3,
-  RBAtools 2.0.1, and swiglpk 5.0.13. The method avoids pathological runtimes
-  observed with RBAtools' default primal simplex on random multi-gene deletions;
-  both the method and presolve setting participate in evaluator identity.
+- Environment: the model's published medium and constraints, SciPy's HiGHS LP
+  solver, RBApy 3.0.3, RBAtools 2.0.1, and swiglpk 5.0.13 as RBAtools' matrix
+  construction backend. HiGHS avoids pathological runtimes and unreliable
+  fallback statuses observed with GLPK on random multi-gene deletions. Presolve
+  and the 1e-7 primal/dual feasibility tolerance are explicit; the solver,
+  method, matrix backend, presolve, and tolerance participate in evaluator
+  identity.
 - Deletion semantics: canonical MG1655 `b`-number knockouts disable every RBA
   enzyme and process machine that requires the encoded protein. Unknown genes
   are rejected by the mapper and reported as uncovered, never inferred safe.

@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
-import threading
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
@@ -29,8 +28,11 @@ from yggdrisil_ecoli.rba_build import (
 from yggdrisil_ecoli.scorers.base import scientific_evaluation
 from yggdrisil_ecoli.state import GenomeState
 
-RBA_GLPK_SIMPLEX_METHOD = "dual-primal"
-RBA_GLPK_PRESOLVE = True
+RBA_SOLVER = "scipy-highs"
+RBA_SOLVER_METHOD = "highs"
+RBA_MATRIX_BACKEND = "swiglpk"
+RBA_SOLVER_PRESOLVE = True
+RBA_FEASIBILITY_TOLERANCE = 1e-7
 
 
 class RBAScorer:
@@ -44,10 +46,12 @@ class RBAScorer:
         *,
         artifact_dir: str | Path,
         registry: GeneRegistry,
-        solver: str = "swiglpk",
+        solver: str = RBA_SOLVER,
     ) -> None:
-        if solver != "swiglpk":
-            raise DataValidationError("v1 RBA supports only the pinned swiglpk solver")
+        if solver != RBA_SOLVER:
+            raise DataValidationError(
+                f"v1 RBA supports only the pinned {RBA_SOLVER} solver"
+            )
         self.artifact_dir = Path(artifact_dir)
         self.registry = registry
         self.solver = solver
@@ -70,26 +74,23 @@ class RBAScorer:
             )
 
         try:
-            import swiglpk
+            import numpy
             from rbatools.rba_session import SessionRBA
+            from scipy.optimize import linprog
+            from scipy.sparse import vstack
         except ImportError as exc:  # pragma: no cover - optional dependency guard
             raise DataValidationError(
                 "RBA scoring requires the project's pinned 'rba' extra"
             ) from exc
 
-        self._swiglpk: Any = swiglpk
-        self._session: Any = SessionRBA(str(self.artifact_dir), lp_solver=solver)
-        _glpk_solver(self._session.Problem)
+        self._numpy: Any = numpy
+        self._linprog: Any = linprog
+        self._vstack: Any = vstack
+        self._session: Any = SessionRBA(
+            str(self.artifact_dir), lp_solver=RBA_MATRIX_BACKEND
+        )
         self._session.set_growth_rate(RBA_GROWTH_FLOOR_H)
-        glpk_solver = _glpk_solver(self._session.Problem)
-        # The default primal method can spend tens of minutes on otherwise small
-        # deletion sets. GLP_DUALP preserves the same LP and falls back to primal
-        # only if the dual method cannot start. Presolve is required for reliable
-        # feasibility statuses from this scaled model with the clean basis below.
-        glpk_solver.glpk_simplex_params.meth = swiglpk.GLP_DUALP
-        glpk_solver.glpk_simplex_params.presolve = swiglpk.GLP_ON
         self.model_dimensions = _validate_loaded_dimensions(self._session)
-        self._lock = threading.Lock()
         self._variables_by_gene = self._build_variable_map()
         self.registry_mapping_sha256 = _sha256_json(
             [
@@ -120,6 +121,7 @@ class RBAScorer:
         self._base_upper_bounds = _plain_float_mapping(
             self._session.Problem.get_ub(modeled_variables)
         )
+        self._prepare_highs_problem()
         self.config = {
             "artifact_bundle_sha256": self.artifact_bundle_sha256,
             "registry_mapping_sha256": self.registry_mapping_sha256,
@@ -130,8 +132,10 @@ class RBAScorer:
             ),
             "model_dimensions": self.model_dimensions,
             "solver": self.solver,
-            "simplex_method": RBA_GLPK_SIMPLEX_METHOD,
-            "presolve": RBA_GLPK_PRESOLVE,
+            "solver_method": RBA_SOLVER_METHOD,
+            "matrix_backend": RBA_MATRIX_BACKEND,
+            "solver_presolve": RBA_SOLVER_PRESOLVE,
+            "feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
             **{
                 f"{name.lower()}_version": package_version
                 for name, package_version in sorted(self.dependency_versions.items())
@@ -144,7 +148,7 @@ class RBAScorer:
         artifact_dir: str | Path,
         *,
         registry: GeneRegistry,
-        solver: str = "swiglpk",
+        solver: str = RBA_SOLVER,
     ) -> RBAScorer:
         """Load a scorer from a validated local artifact directory."""
 
@@ -171,8 +175,10 @@ class RBAScorer:
                 ),
                 "model_dimensions": self.model_dimensions,
                 "solver": self.solver,
-                "simplex_method": RBA_GLPK_SIMPLEX_METHOD,
-                "presolve": RBA_GLPK_PRESOLVE,
+                "solver_method": RBA_SOLVER_METHOD,
+                "matrix_backend": RBA_MATRIX_BACKEND,
+                "solver_presolve": RBA_SOLVER_PRESOLVE,
+                "feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
                 "dependency_versions": dict(sorted(self.dependency_versions.items())),
                 "artifact_dependency_versions": dict(
                     sorted(self.artifact_dependency_versions.items())
@@ -206,8 +212,7 @@ class RBAScorer:
             }
         )
 
-        with self._lock:
-            status, solution_type = self._solve_with_knockouts(knocked_out_variables)
+        status, solution_type = self._solve_with_knockouts(knocked_out_variables)
         feasible = status in {"optimal", "feasible"}
         metrics: dict[str, object] = {
             "feasible_at_growth_floor": feasible,
@@ -231,33 +236,57 @@ class RBAScorer:
         return metrics, coverage
 
     def _solve_with_knockouts(self, variables: list[str]) -> tuple[str, str]:
-        problem = self._session.Problem
-        zero_bounds = dict.fromkeys(variables, 0.0)
-        if variables:
-            problem.set_lb(zero_bounds, log_change=False)
-            problem.set_ub(zero_bounds, log_change=False)
-        try:
-            # GLPK can otherwise retain an invalid basis after an infeasible sibling.
-            # A standard basis makes every candidate independent and deterministic.
-            self._swiglpk.glp_std_basis(_glpk_problem(problem))
-            problem.solve_lp(feasible_stati=["optimal", "feasible"])
-            return str(problem.SolutionStatus), str(problem.SolutionType)
-        finally:
-            if variables:
-                problem.set_ub(
-                    {
-                        variable: self._base_upper_bounds[variable]
-                        for variable in variables
-                    },
-                    log_change=False,
-                )
-                problem.set_lb(
-                    {
-                        variable: self._base_lower_bounds[variable]
-                        for variable in variables
-                    },
-                    log_change=False,
-                )
+        bounds = self._base_bounds.copy()
+        for variable in variables:
+            bounds[self._variable_indices[variable]] = 0.0
+        result = self._linprog(
+            self._objective,
+            A_ub=self._a_ub,
+            b_ub=self._b_ub,
+            A_eq=self._a_eq,
+            b_eq=self._b_eq,
+            bounds=bounds,
+            method=RBA_SOLVER_METHOD,
+            options={
+                "presolve": RBA_SOLVER_PRESOLVE,
+                "primal_feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
+                "dual_feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
+            },
+        )
+        if result.status == 0:
+            return "optimal", "HiGHS"
+        if result.status == 2:
+            return "infeasible", "HiGHS"
+        raise DataValidationError(
+            "RBA HiGHS solve did not establish feasibility: "
+            f"status={result.status}, message={result.message}"
+        )
+
+    def _prepare_highs_problem(self) -> None:
+        lp = self._session.Problem.LP
+        matrix = lp.A.tocsr()
+        rhs = self._numpy.asarray(lp.b, dtype=float)
+        row_signs = self._numpy.asarray(lp.row_signs)
+        unexpected = sorted(set(row_signs) - {"E", "L", "G"})
+        if unexpected:
+            raise DataValidationError(f"RBA LP has unknown row signs: {unexpected}")
+        equal = self._numpy.flatnonzero(row_signs == "E")
+        less = self._numpy.flatnonzero(row_signs == "L")
+        greater = self._numpy.flatnonzero(row_signs == "G")
+        self._a_eq = matrix[equal]
+        self._b_eq = rhs[equal]
+        self._a_ub = self._vstack([matrix[less], -matrix[greater]], format="csr")
+        self._b_ub = self._numpy.concatenate([rhs[less], -rhs[greater]])
+        self._objective = self._numpy.asarray(lp.f, dtype=float)
+        self._base_bounds = self._numpy.column_stack(
+            (
+                self._numpy.asarray(lp.LB, dtype=float),
+                self._numpy.asarray(lp.UB, dtype=float),
+            )
+        )
+        self._variable_indices = {
+            str(variable): index for index, variable in enumerate(lp.col_names)
+        }
 
     def _build_variable_map(self) -> dict[str, tuple[str, ...]]:
         structure = self._session.ModelStructure
@@ -442,28 +471,6 @@ def _validate_loaded_dimensions(session: Any) -> dict[str, int]:
             f"expected={RBA_EXPECTED_LP_DIMENSIONS}, actual={dimensions}"
         )
     return dimensions
-
-
-def _glpk_problem(problem: Any) -> Any:
-    """Reach the pinned RBAtools 2.0.1 GLPK handle for a clean basis reset."""
-
-    return _glpk_solver(problem).glpkLP
-
-
-def _glpk_solver(problem: Any) -> Any:
-    """Reach the pinned RBAtools 2.0.1 GLPK solver configuration."""
-
-    try:
-        solver = problem.LP._lp_solver
-        solver.glpkLP
-        solver.glpk_simplex_params
-    except AttributeError as exc:
-        raise DataValidationError(
-            "pinned RBAtools GLPK internals changed; cannot configure the solver"
-        ) from exc
-    if solver.name != "swiglpk":
-        raise DataValidationError("RBA problem is not backed by pinned swiglpk")
-    return solver
 
 
 __all__ = ["RBAScorer"]
