@@ -75,9 +75,11 @@ Canonical agent configuration:
 
 - candidate universe: `wcm-1219` (1,216 mapped genes)
 - maximum action size: 20, model-selected from 1--20
-- four proposals per step, open-set width 16, four parents per step
+- four proposals per selected parent (up to 16 per step), open-set width 16,
+  four parents per step
 - 193 states, 48 steps, and 7,200 seconds maximum wall time
-- six model requests, 16 tool calls, and 8,000 output tokens per explorer call
+- at most six model requests and 16 tool calls per explorer invocation, with an
+  8,000-output-token cap per model request
 - closed-book identifiers and evidence
 - recoverable scheduler
 - joint FBA-positive plus HiGHS-RBA-feasible expansion gate
