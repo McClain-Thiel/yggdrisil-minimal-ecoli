@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build held-out reduced-genome labels from primary source artifacts."""
+"""Build agent-invisible reduced-genome controls from primary sources."""
 
 from __future__ import annotations
 
@@ -204,7 +204,7 @@ def build_validation(
     mds42_path: Path,
     ms56_pdf_path: Path,
 ) -> dict[str, object]:
-    """Build the complete held-out validation payload."""
+    """Build the agent-invisible calibration and rediscovery payload."""
 
     registry = GeneRegistry.from_parquet(registry_path)
     reference = load_ncbi_sequence(reference_path, REFERENCE_ACCESSION)
@@ -297,7 +297,7 @@ def main() -> None:
         ms56_pdf_path=args.ms56_pdf,
     )
     atomic_json(args.output, payload)
-    print(f"Wrote held-out validation labels to {args.output}")
+    print(f"Wrote agent-invisible calibration/rediscovery labels to {args.output}")
 
 
 if __name__ == "__main__":

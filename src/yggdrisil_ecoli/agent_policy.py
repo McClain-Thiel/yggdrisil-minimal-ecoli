@@ -34,7 +34,7 @@ from yggdrisil_ecoli.state import GenomeState
 from yggdrisil_ecoli.tools.genes import GeneTools
 
 AgentMode = Literal["closed-book", "tool-rich"]
-PROMPT_VERSION = 5
+PROMPT_VERSION = 6
 BLIND_MAP_VERSION = 1
 MAX_CANDIDATE_PAGE_SIZE = 100
 
@@ -448,7 +448,8 @@ def make_agent_policy(
             "final action. Treat essentiality, module retention, and unknown "
             "annotations as uncertain ranking evidence, not prohibitions: empirical "
             "datasets can disagree, so they may be deleted while pursuing a smaller "
-            "FBA-positive genome. Return direct deletion actions only."
+            "genome that remains both FBA-positive and feasible under the active "
+            "resource-allocation growth floor. Return direct deletion actions only."
         ),
         prompt=lambda context: _format_explorer_prompt(context, toolkit, config),
     )

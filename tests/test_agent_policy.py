@@ -39,7 +39,7 @@ def test_agent_config_requires_fixed_model_and_has_secret_free_metadata() -> Non
     assert metadata["blind_map_sha256"]
     assert metadata["scheduler"] == {
         "type": "recoverable_open_set",
-        "version": 1,
+        "version": 2,
         "active_width": 16,
         "parents_per_step": 4,
         "fallback_action_caps": [20, 10, 5, 1],
@@ -57,7 +57,11 @@ def test_agent_config_requires_fixed_model_and_has_secret_free_metadata() -> Non
             "diversity": "alternating_jaccard_distance_slots",
             "scheduling": "fewest_completed_attempts_first",
         },
-        "viability": {"fba_feasible": True, "growth_rate": ">0"},
+        "viability": {
+            "fba_feasible": True,
+            "growth_rate": ">0",
+            "resource_allocation_feasible_at_growth_floor": True,
+        },
         "ranking_evidence_only": [
             "essentiality",
             "module_retention",

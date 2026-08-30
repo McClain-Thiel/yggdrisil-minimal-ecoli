@@ -14,6 +14,7 @@ from yggdrisil_ecoli.data.registry import GeneRegistry
 from yggdrisil_ecoli.state import GenomeState
 
 DeletionSampler = Callable[[GenomeState, random.Random], Sequence[DeleteGenes]]
+Eligibility = Callable[[StateNode[GenomeState], Sequence[EvaluationRecord]], bool]
 
 
 def deletion_sampler(
@@ -68,24 +69,7 @@ def make_heuristic_policy(
 ) -> BestFirstPolicy[GenomeState, DeleteGenes]:
     """Build the framework best-first baseline over active scientific evidence."""
 
-    missing = {"fba"} - set(evaluator_ids)
-    if missing:
-        raise ValueError(f"missing evaluator identities: {sorted(missing)}")
-
-    def eligible(
-        node: StateNode[GenomeState], records: Sequence[EvaluationRecord]
-    ) -> bool:
-        by_id = {record.evaluator_id: record for record in records}
-        fba = by_id.get(evaluator_ids["fba"])
-        if fba is None:
-            return False
-        growth = fba.metrics.get("growth_rate")
-        return (
-            fba.metrics.get("feasible") is True
-            and isinstance(growth, (int, float))
-            and not isinstance(growth, bool)
-            and growth > 0
-        )
+    eligible = viability_eligibility(evaluator_ids)
 
     def priority(
         node: StateNode[GenomeState], records: Sequence[EvaluationRecord]
@@ -104,3 +88,30 @@ def make_heuristic_policy(
         seed=seed,
         eligible=eligible,
     )
+
+
+def viability_eligibility(evaluator_ids: Mapping[str, str]) -> Eligibility:
+    """Require positive FBA growth and fixed-floor resource feasibility."""
+
+    missing = {"fba", "resource_allocation"} - set(evaluator_ids)
+    if missing:
+        raise ValueError(f"missing evaluator identities: {sorted(missing)}")
+
+    def eligible(
+        node: StateNode[GenomeState], records: Sequence[EvaluationRecord]
+    ) -> bool:
+        by_id = {record.evaluator_id: record for record in records}
+        fba = by_id.get(evaluator_ids["fba"])
+        resource = by_id.get(evaluator_ids["resource_allocation"])
+        if fba is None or resource is None:
+            return False
+        growth = fba.metrics.get("growth_rate")
+        return (
+            fba.metrics.get("feasible") is True
+            and isinstance(growth, (int, float))
+            and not isinstance(growth, bool)
+            and growth > 0
+            and resource.metrics.get("feasible_at_growth_floor") is True
+        )
+
+    return eligible

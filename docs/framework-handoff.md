@@ -55,10 +55,10 @@ Core `Problem` requires `initial_state`, `state_key`, and `apply`, with optional
 validation hooks. `EcoliProblem` already satisfies that boundary directly.
 
 Each newly inserted or restored state receives `genome_size`, `essentiality`,
-`module_retention`, and `fba` evaluations before policy execution. Changing a
-scorer version or configuration hash creates a new evaluation identity and is
-backfilled on resume. A scorer failure leaves valid transition provenance
-intact and is retried through evaluation backfill.
+`module_retention`, `fba`, and `resource_allocation` evaluations before policy
+execution. Changing a scorer version or configuration hash creates a new
+evaluation identity and is backfilled on resume. A scorer failure leaves valid
+transition provenance intact and is retried through evaluation backfill.
 
 Explorer traces belong in Yggdrisil decisions, not inside `GenomeState`, or the
 same deletion set would acquire multiple identities. The current
@@ -69,5 +69,5 @@ compact canonical gene evidence and require structured `DeleteGenes` output.
 ## Deferred work
 
 - Add published whole-cell-model and current-vEcoli crosswalk discovery.
-- Add expensive whole-cell simulation only after cached cheap evidence gates
-  are stable.
+- Add selective vEcoli/WCM simulation for a predeclared finalist set after the
+  cached FBA and RBA evidence gates are stable.
