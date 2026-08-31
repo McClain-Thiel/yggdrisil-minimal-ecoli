@@ -31,6 +31,20 @@ then extend informative arms to 500 states.
 2. `random-uniform`: random viable parents and a uniform action size from 1 to 20.
 3. `heuristic-fixed20`: deepest viable structural-frontier parent and 20-gene actions.
 4. `heuristic-uniform`: the same frontier policy with uniform 1-to-20-gene actions.
+5. `evolutionary-uniform`: a 32-member viable population, tournament selection,
+   union crossover between viable deletion sets, and uniform 1-to-20-gene
+   mutation. This is the stronger generic black-box comparator.
+6. `minesweeper-matched20`: a clean-room adaptation of the published
+   [Minesweeper](https://doi.org/10.1038/s41467-020-14545-0) strategy. It screens
+   seeded non-overlapping 20-gene segments, combines viable segments, bisects
+   lethal bundles, and finally tries single genes. Genes called essential in
+   both Choe conditions are omitted, using evidence also exposed to the agent.
+
+The matched Minesweeper arm deliberately keeps the common 20-gene action cap
+and 193-state budget. It is not presented as an exact reproduction of the
+published algorithm, whose native stages use much larger batches and many more
+fitness evaluations. The implementation is based on the methods description,
+not copied from the GPL-3.0 reference code.
 
 The heuristic's inability to reopen a viable non-leaf is part of the baseline,
 not an implementation failure. Report early termination as an outcome.

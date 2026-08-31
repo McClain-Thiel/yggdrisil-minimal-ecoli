@@ -47,8 +47,9 @@ from yggdrisil_ecoli.scorers.essentiality import EssentialityScorer
 from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 from yggdrisil_ecoli.state import GenomeState
+from yggdrisil_ecoli.strong_baselines import EvolutionaryPolicy, MinesweeperPolicy
 
-SEARCH_CONTRACT_VERSION = 8
+SEARCH_CONTRACT_VERSION = 9
 
 
 @dataclass(frozen=True, slots=True)
@@ -130,11 +131,18 @@ async def run_baseline_search(
     agent_config: AgentSearchConfig | None = None,
     candidate_universe_name: str = "all",
     baseline_action_size_mode: ActionSizeMode = "fixed-max",
+    baseline_population_size: int = 32,
     viability_gate: ViabilityGate = "fba-rba",
 ) -> RunResult:
     """Run a baseline or bounded agent policy over identical evidence."""
 
-    if policy_name not in {"random", "heuristic", "agent"}:
+    if policy_name not in {
+        "random",
+        "heuristic",
+        "evolutionary",
+        "minesweeper",
+        "agent",
+    }:
         raise ValueError(f"unknown policy: {policy_name!r}")
     if policy_name == "agent" and agent_config is None:
         raise ValueError("agent_config is required for the agent policy")
@@ -147,6 +155,33 @@ async def run_baseline_search(
         name=candidate_universe_name,
     )
     evaluator_ids = active_evaluator_ids(evaluators)
+    strong_policy: Policy[DeleteGenes] | None = None
+    baseline_metadata: dict[str, object] | None = None
+    if policy_name == "evolutionary":
+        evolutionary = EvolutionaryPolicy(
+            candidate_genes=candidate_universe.genes,
+            evaluator_ids=evaluator_ids,
+            max_action_size=bundle_size,
+            n_proposals=n_proposals,
+            seed=seed,
+            population_size=baseline_population_size,
+            action_size_mode=baseline_action_size_mode,
+            viability_gate=viability_gate,
+        )
+        strong_policy = evolutionary
+        baseline_metadata = evolutionary.metadata()
+    elif policy_name == "minesweeper":
+        minesweeper = MinesweeperPolicy(
+            candidate_genes=candidate_universe.genes,
+            essentiality=essentiality,
+            evaluator_ids=evaluator_ids,
+            max_action_size=bundle_size,
+            n_proposals=n_proposals,
+            seed=seed,
+            viability_gate=viability_gate,
+        )
+        strong_policy = minesweeper
+        baseline_metadata = minesweeper.metadata()
     metadata = {
         "application": {
             "distribution": f"yggdrisil-ecoli=={__version__}",
@@ -162,8 +197,10 @@ async def run_baseline_search(
         "viability_gate": viability_gate,
         "candidate_universe": candidate_universe.metadata(),
     }
-    if policy_name != "agent":
+    if policy_name in {"random", "heuristic", "evolutionary"}:
         metadata["baseline_action_size_mode"] = baseline_action_size_mode
+    if baseline_metadata is not None:
+        metadata["baseline"] = baseline_metadata
     if agent_config is not None:
         if agent_config.bundle_size != bundle_size:
             raise ValueError("agent bundle_size must match the search bundle_size")
@@ -215,6 +252,9 @@ async def run_baseline_search(
                 action_size_mode=baseline_action_size_mode,
                 viability_gate=viability_gate,
             )
+        elif policy_name in {"evolutionary", "minesweeper"}:
+            assert strong_policy is not None
+            policy = strong_policy
         else:
             assert agent_config is not None
             modules = next(
@@ -335,7 +375,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--graph", type=Path, default=Path("runs/search.sqlite"))
     parser.add_argument(
-        "--policy", choices=("random", "heuristic", "agent"), default="random"
+        "--policy",
+        choices=("random", "heuristic", "evolutionary", "minesweeper", "agent"),
+        default="random",
     )
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--bundle-size", type=int, default=1)
@@ -345,6 +387,12 @@ def main() -> None:
         choices=("fixed-max", "uniform-1-max"),
         default="fixed-max",
         help="non-agent action sizing; uniform samples an integer from 1 to the maximum",
+    )
+    parser.add_argument(
+        "--baseline-population-size",
+        type=int,
+        default=32,
+        help="viable population retained by the evolutionary baseline",
     )
     parser.add_argument("--max-states", type=int, default=10)
     parser.add_argument("--max-steps", type=int, default=10)
@@ -444,6 +492,7 @@ def main() -> None:
                 agent_config=agent_config,
                 candidate_universe_name=args.candidate_universe,
                 baseline_action_size_mode=args.baseline_action_size_mode,
+                baseline_population_size=args.baseline_population_size,
                 viability_gate=args.viability_gate,
             )
         )

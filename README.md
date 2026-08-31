@@ -75,6 +75,27 @@ uv run yggdrisil-ecoli-search \
   --policy heuristic \
   --seed 17 \
   --max-states 10
+
+uv run --extra fba --extra rba yggdrisil-ecoli-search \
+  --graph runs/evolutionary.sqlite \
+  --policy evolutionary \
+  --candidate-universe wcm-1219 \
+  --seed 101 \
+  --bundle-size 20 \
+  --n-proposals 4 \
+  --baseline-action-size-mode uniform-1-max \
+  --max-states 193 \
+  --max-steps 48
+
+uv run --extra fba --extra rba yggdrisil-ecoli-search \
+  --graph runs/minesweeper.sqlite \
+  --policy minesweeper \
+  --candidate-universe wcm-1219 \
+  --seed 101 \
+  --bundle-size 20 \
+  --n-proposals 4 \
+  --max-states 193 \
+  --max-steps 48
 ```
 
 Run a bounded model-backed search by naming an exact OpenRouter model. There is
@@ -174,6 +195,10 @@ explicit academic-use acknowledgement and are not redistributed.
 - Fixed-seed `RandomPolicy` and a deliberately small heuristic baseline that
   expands parents that are FBA-positive and RBA-feasible at 0.1 h^-1 without
   treating experimental essentiality as a deletion ban.
+- Two stronger no-LLM comparators: steady-state constrained evolution with
+  union crossover, and a clean-room, 20-gene-capped Minesweeper-style segment,
+  combination, and lethal-bundle-bisection policy. Both reconstruct all search
+  state from the persisted DAG for exact resume behavior.
 - A bounded OpenRouter explorer with deterministic recoverable open-set scheduling,
   fixed model identity, prompt/config provenance, per-call usage limits, and
   closed-book versus tool-rich evidence modes.

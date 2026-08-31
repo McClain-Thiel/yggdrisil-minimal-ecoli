@@ -112,6 +112,13 @@ account-level stop guard.
 - [ ] Extend heuristic-uniform to seeds 606--1010.
 - [ ] Run random-fixed20 at seeds 101--1010.
 - [ ] Run heuristic-fixed20 at seeds 101--1010.
+- [ ] Run evolutionary-uniform at seeds 101--505 under the common 193-state
+  budget.
+- [ ] Run matched-cap Minesweeper at seeds 101--505 under the common 193-state
+  budget.
+- [ ] If matched-cap Minesweeper is competitive, predeclare and run a free
+  500/1,000/5,000-state scaling curve rather than spending additional LLM
+  budget first.
 
 The heuristic's `no_proposals` termination after a lethal frontier child is a
 method outcome, not a failed run.
