@@ -127,6 +127,34 @@ async def test_minesweeper_screens_combines_and_bisects_without_known_essentials
     graph.close()
 
 
+@pytest.mark.asyncio
+async def test_minesweeper_fills_partial_final_screening_batch(tmp_path: Path) -> None:
+    genes = {f"b{index:04d}" for index in range(1, 9)}
+    essentiality = _essentiality(genes, essential=set())
+    scorers = (_GateScorer("fba"), _GateScorer("resource_allocation"))
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "partial.sqlite")
+    result = await Runner(
+        _TestProblem(frozenset(genes), max_action_size=2),
+        MinesweeperPolicy(
+            candidate_genes=genes,
+            essentiality=essentiality,
+            evaluator_ids=active_evaluator_ids(scorers),
+            max_action_size=2,
+            n_proposals=3,
+            seed=101,
+        ),
+        graph,
+        RunLimits(max_states=7, max_steps=2),
+        evaluators=EvaluatorSuite(list(scorers), concurrent=True),
+        run_id="partial-screen",
+    ).run()
+
+    assert result.unique_states == 7
+    final_decision = graph.decisions(run_id=result.run_id, newest=True)[0]
+    assert final_decision.output == {"phase": "segment_screen_and_combine"}
+    graph.close()
+
+
 def test_minesweeper_seeded_order_is_reproducible() -> None:
     genes = {f"b{index:04d}" for index in range(1, 10)}
     essentiality = _essentiality(genes, essential={"b0009"})

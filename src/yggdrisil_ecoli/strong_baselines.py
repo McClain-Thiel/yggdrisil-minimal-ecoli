@@ -223,14 +223,16 @@ class MinesweeperPolicy:
         reserved = set(existing).union(attempted)
 
         screening = self._screening_proposals(root, reserved)
-        if screening:
+        if len(screening) >= self.n_proposals:
             return [self._decision("segment_screen", screening[: self.n_proposals])]
 
         viable_segments = self._viable_root_segments(graph, root, materialized)
         combinations = self._combination_proposals(ranked, viable_segments, reserved)
         splits = self._split_proposals(graph, materialized, reserved)
-        selected = _interleave(combinations, splits, self.n_proposals)
-        phase = "combine_and_bisect"
+        selected = screening + _interleave(
+            combinations, splits, self.n_proposals - len(screening)
+        )
+        phase = "segment_screen_and_combine" if screening else "combine_and_bisect"
         if not selected:
             selected = self._singleton_proposals(ranked, reserved)
             phase = "singleton_cleanup"
