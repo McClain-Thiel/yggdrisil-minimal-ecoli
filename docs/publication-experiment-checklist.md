@@ -100,8 +100,10 @@ account-level stop guard.
 
 - [x] Tranche A: first five fresh Sol plus Qwen seed pairs. All ten arms
   completed for USD 24.4075 of authenticated account usage.
-- [ ] Tranche B: first five Sol scheduler plus gate ablation pairs; reserve
-  approximately USD 30 total.
+- [x] Tranche B1: first five Sol scheduler-ablation pairs. The frontier-only
+  arms completed for USD 0.173545400 of authenticated account usage.
+- [ ] Tranche B2: first five Sol gate-ablation pairs. This requires a new
+  authorization and account top-up.
 - [ ] Tranche C: first five Sol action-size plus evidence-exposure pairs; reserve
   approximately USD 45 total.
 - [ ] Authorize the second five seeds symmetrically only after the first-five
@@ -173,8 +175,14 @@ lexicographically smaller state ID.
 Run every arm at the same ten seeds and change exactly one factor from canonical
 Sol.
 
-- [ ] **Scheduler:** `recoverable` versus `frontier-only`. This tests reopening
-  viable non-leaf states after lethal or empty branches.
+- [x] **Scheduler, seeds 101--505:** `recoverable` versus `frontier-only`.
+  Frontier-only found 0--40 deletions, while recoverable found 211--268. The
+  mean paired improvement was 223.2 deletions (run-level bootstrap 95% interval
+  201.0--249.2; exact two-sided sign-flip p=0.0625). Recoverable won all five
+  pairs. The frozen archive has SHA-256
+  `6526366194d9eb24ccca23248d15643a62abc8f711d196aa407584b6be7daf29`.
+- [ ] **Scheduler, seeds 606--1010:** extend both the canonical reference and
+  frontier-only arm under the locked ten-seed protocol.
 - [ ] **Gate:** `fba-rba` versus `fba-only`. Evaluate RBA on every state in both
   arms. Use the common joint gate for the cross-arm primary endpoint and report
   the FBA-only winner separately.

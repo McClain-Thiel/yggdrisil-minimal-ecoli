@@ -232,6 +232,8 @@ uv run mypy src scripts
 uv build
 ```
 
-See [the data contract](docs/data-contract.md), [source ledger](docs/sources.md),
-and [framework handoff](docs/framework-handoff.md) for the pinned integration
-boundary and remaining agent work.
+See [the research log](docs/research-log.md),
+[publication experiment checklist](docs/publication-experiment-checklist.md),
+[data contract](docs/data-contract.md), [source ledger](docs/sources.md), and
+[framework handoff](docs/framework-handoff.md) for results, planned inference,
+the pinned integration boundary, and remaining work.
