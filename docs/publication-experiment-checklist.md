@@ -43,8 +43,9 @@ tolerances.
 - [x] Re-run all free uniform baselines under evaluator ID
   `130077fc55e8d98ff558c10907f8b803fbb3b27151a37f170be79cef7f55993d`.
 - [x] Retrospectively rescore the saved Sol and Qwen trajectories.
-- [ ] Re-run Sol and Qwen from scratch because post-hoc rescoring cannot repair
-  parent selection and feedback from the old gate.
+- [x] Re-run the first five paired Sol and Qwen seeds from scratch because
+  post-hoc rescoring cannot repair parent selection and feedback from the old
+  gate. The second five remain pending.
 
 Retrospective rescoring changes the newer WCM-universe seed-101 headline from
 190 to 189 joint-feasible deletions for Sol and from 220 to 205 for Qwen. These
@@ -57,19 +58,20 @@ states, proposals, genes, and serial WCM generations are not independent
 replicates.
 
 - [ ] Use the ten locked seed blocks `101, 202, 303, 404, 505, 606, 707, 808,
-  909, 1010` for every confirmatory arm.
-- [ ] Run the first five seeds as a budget checkpoint, but commit in advance to
+  909, 1010` for every confirmatory arm. Seeds 101--505 are complete for Sol,
+  Qwen, random-uniform, and heuristic-uniform.
+- [x] Run the first five seeds as a budget checkpoint, but commit in advance to
   all ten for confirmatory inference; do not stop because interim results are
   favorable or unfavorable.
-- [ ] Interleave or randomize arm order within each seed block to limit provider
+- [x] Interleave model order within each seed block to limit provider
   drift and calendar-time effects.
-- [ ] Use a fresh SQLite graph for every arm and seed. Never use `--new-run` as
-  a substitute for an independent graph.
-- [ ] Freeze the application and framework commits, evaluator identities,
+- [x] Use a fresh SQLite graph for every first-five model arm and seed. Never
+  use `--new-run` as a substitute for an independent graph.
+- [x] Freeze the application and framework commits, evaluator identities,
   artifact hashes, candidate-universe hash, prompt version, model/provider ID,
-  tool manifest, and all limits before launch.
-- [ ] Run paid calls serially and enforce an authenticated account-level budget
-  cap. Response-reported costs are secondary audit data.
+  tool manifest, and all limits before the first-five launch.
+- [x] Run first-five paid calls serially and enforce an authenticated
+  account-level budget cap. Response-reported costs are secondary audit data.
 
 Canonical agent configuration:
 
@@ -93,8 +95,8 @@ These are planning reserves based on the exploratory seed-101 costs, not
 guaranteed prices. Each tranche requires a new explicit authorization and an
 account-level stop guard.
 
-- [ ] Tranche A: first five fresh Sol plus Qwen seed pairs; reserve approximately
-  USD 30 total.
+- [x] Tranche A: first five fresh Sol plus Qwen seed pairs. All ten arms
+  completed for USD 24.4075 of authenticated account usage.
 - [ ] Tranche B: first five Sol scheduler plus gate ablation pairs; reserve
   approximately USD 30 total.
 - [ ] Tranche C: first five Sol action-size plus evidence-exposure pairs; reserve
@@ -116,10 +118,24 @@ method outcome, not a failed run.
 
 ## Phase 2: corrected model comparison
 
+- [x] Fresh `openai/gpt-5.6-sol` canonical runs at seeds 101--505.
+- [x] Fresh `qwen/qwen3.6-35b-a3b` canonical runs at seeds 101--505.
 - [ ] Fresh `openai/gpt-5.6-sol` canonical runs at all ten seeds.
 - [ ] Fresh `qwen/qwen3.6-35b-a3b` canonical runs at all ten seeds.
-- [ ] Analyze the first five complete paired seed blocks before authorizing the
+- [x] Analyze the first five complete paired seed blocks before authorizing the
   second five, without changing endpoints, prompts, or stopping rules.
+
+At the first-five checkpoint, jointly feasible deletion counts were
+211--268 for Sol (mean 236.8) and 239--293 for Qwen (mean 263.4), versus
+24--46 for paired random-uniform runs (mean 34.2). Both model arms exceeded
+random in all five seed blocks. The mean paired differences were 202.6 genes
+for Sol and 229.2 for Qwen; the respective run-level bootstrap 95% intervals
+were [188.0, 224.4] and [212.8, 245.6]. Exact two-sided p-values are 0.0625
+before and 0.125 after Holm adjustment, and remain explicitly
+non-confirmatory at five seeds.
+The frozen bundle is
+`runs/archive/wcm1216-sol-qwen-highs-seeds101-505-20260830-first-five.tar.gz`
+(SHA-256 `852805895077ab937b2af3edd16e671db56858bf89830d4839b8420437c50f9e`).
 
 The primary endpoint is the deletion count of the most-deleted state passing
 the common final FBA plus HiGHS-RBA gate. Break ties by higher FBA growth, then
@@ -150,13 +166,13 @@ scientific task and action space.
 
 ## Outcomes captured for every run
 
-- [ ] Best jointly feasible deletion count (primary).
-- [ ] Normalized area under best-feasible-deletions versus evaluated-states.
-- [ ] Number and fraction of jointly feasible states.
-- [ ] FBA growth and fraction of WT growth.
-- [ ] RBA and FBA modeled/unmodeled deletion coverage.
-- [ ] Essential, conditional, ambiguous, and unknown deletion counts.
-- [ ] Complete and broken modules.
+- [x] Best jointly feasible deletion count (primary).
+- [x] Normalized area under best-feasible-deletions versus evaluated-states.
+- [x] Number and fraction of jointly feasible states.
+- [x] FBA growth and fraction of WT growth.
+- [x] RBA and FBA modeled/unmodeled deletion coverage.
+- [x] Essential, conditional, ambiguous, and unknown deletion counts.
+- [x] Complete and broken modules.
 - [ ] Action-size distribution, lethal-child rate, recovery count, duplicate
   and rejection rate, empty/invalid model outputs, and terminal branches.
 - [ ] Wall time, requests, tokens, account spend, cost-to-best, and deletions per
@@ -171,14 +187,15 @@ replace an unfavorable seed.
 
 ## Statistical analysis
 
-- [ ] Show every run as a point and report median, IQR, range, and mean.
-- [ ] Estimate paired seed-block differences with 10,000 paired bootstrap
-  resamples and 95% confidence intervals. Never bootstrap individual DAG
-  states.
-- [ ] Report the median paired deletion difference and paired probability of
+- [x] Preserve every first-five run and report median, IQR, range, and mean.
+- [x] Estimate first-five paired seed-block differences with 10,000 paired
+  bootstrap resamples and 95% confidence intervals. Never bootstrap individual
+  DAG states.
+- [x] Report the median paired deletion difference and paired probability of
   superiority as effect sizes.
-- [ ] Use an exact paired sign-flip/permutation test for confirmatory contrasts.
-- [ ] Holm-correct the primary family: Sol versus random and Qwen versus random.
+- [x] Use an exact paired sign-flip/permutation test for the predeclared primary
+  contrasts, labeling the five-seed result non-confirmatory.
+- [x] Holm-correct the primary family: Sol versus random and Qwen versus random.
 - [ ] Holm-correct the ablation family: canonical Sol versus scheduler, gate,
   action-size, and evidence-exposure arms.
 - [ ] Keep Sol-versus-Qwen and secondary endpoints descriptive unless promoted
