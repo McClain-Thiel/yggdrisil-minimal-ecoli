@@ -46,6 +46,9 @@ tolerances.
 - [x] Re-run the first five paired Sol and Qwen seeds from scratch because
   post-hoc rescoring cannot repair parent selection and feedback from the old
   gate. The second five remain pending.
+- [x] Add a provenance-recorded HiGHS interior-point/no-presolve fallback after
+  a matched-cap Minesweeper state reproducibly returned automatic-method status
+  not set. The exact state is a regression test; unresolved LPs still fail.
 
 Retrospective rescoring changes the newer WCM-universe seed-101 headline from
 190 to 189 joint-feasible deletions for Sol and from 220 to 205 for Qwen. These
@@ -112,9 +115,9 @@ account-level stop guard.
 - [ ] Extend heuristic-uniform to seeds 606--1010.
 - [ ] Run random-fixed20 at seeds 101--1010.
 - [ ] Run heuristic-fixed20 at seeds 101--1010.
-- [ ] Run evolutionary-uniform at seeds 101--505 under the common 193-state
+- [x] Run evolutionary-uniform at seeds 101--505 under the common 193-state
   budget.
-- [ ] Run matched-cap Minesweeper at seeds 101--505 under the common 193-state
+- [x] Run matched-cap Minesweeper at seeds 101--505 under the common 193-state
   budget.
 - [ ] If matched-cap Minesweeper is competitive, predeclare and run a free
   500/1,000/5,000-state scaling curve rather than spending additional LLM
@@ -122,6 +125,23 @@ account-level stop guard.
 
 The heuristic's `no_proposals` termination after a lethal frontier child is a
 method outcome, not a failed run.
+
+At the first-five strong-baseline checkpoint, evolutionary search found 50--80
+jointly feasible deletions (mean 66.8) and matched-cap Minesweeper found
+111--207 (mean 161.0), versus random's 24--46 (mean 34.2). Minesweeper beat
+evolutionary and random in all five paired seeds, but Sol (211--268; mean
+236.8) and Qwen (239--293; mean 263.4) beat Minesweeper in every seed. The
+mean Sol-minus-Minesweeper and Qwen-minus-Minesweeper effects were 75.8 and
+102.4 deletions. These remain descriptive at `n=5`; every exact two-sided
+paired sign-flip p-value is 0.0625.
+
+All ten final strong-baseline graphs contain exactly 193 states and five final
+evaluator records per state. The 15 prior Sol/Qwen/random primary states were
+re-evaluated with final RBA evaluator
+`b75d336f1a247101fa0683592ca63eb62eaa386ee57a26a6d27486980d962681`;
+all remained feasible without fallback. The frozen strong-baseline bundle is
+`runs/archive/wcm1216-strong-baselines-highs-seeds101-505-20260831.tar.gz`
+(SHA-256 `fb51760f9cabf632787c331ff3e9e4bf2a85fabec7cb243d54340711e884f762`).
 
 ## Phase 2: corrected model comparison
 

@@ -183,8 +183,10 @@ explicit academic-use acknowledgement and are not redistributed.
   solver, provenance, coverage, and GPR diagnostics.
 - Fixed-growth RBA feasibility with protein, enzyme, translation, chaperone,
   secretion, compartment, and proteome-allocation constraints; modeled and
-  unmodeled deletions remain explicit, and the pinned SciPy HiGHS solver plus
-  RBAtools matrix backend participate in evaluator identity.
+  unmodeled deletions remain explicit. The pinned SciPy HiGHS solver uses a
+  recorded interior-point/no-presolve fallback only for indeterminate numerical
+  statuses; its ordered methods and RBAtools matrix backend participate in
+  evaluator identity.
 - `GenomeState`, `DeleteGenes`, and thin monotonic problem semantics,
   registered for safe Yggdrisil persistence.
 - Independent size, essentiality, module-retention, FBA, and RBA evaluators using
