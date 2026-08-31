@@ -33,13 +33,14 @@ RBA_SOLVER_METHOD = "highs"
 RBA_MATRIX_BACKEND = "swiglpk"
 RBA_SOLVER_PRESOLVE = True
 RBA_FEASIBILITY_TOLERANCE = 1e-7
+RBA_SOLVER_FALLBACKS = (("highs-ipm", True), ("highs", False))
 
 
 class RBAScorer:
     """Test deletion sets at a fixed growth floor in the pinned RBA model."""
 
     name = "resource_allocation"
-    version = "1"
+    version = "2"
 
     def __init__(
         self,
@@ -50,7 +51,7 @@ class RBAScorer:
     ) -> None:
         if solver != RBA_SOLVER:
             raise DataValidationError(
-                f"v1 RBA supports only the pinned {RBA_SOLVER} solver"
+                f"RBA supports only the pinned {RBA_SOLVER} solver"
             )
         self.artifact_dir = Path(artifact_dir)
         self.registry = registry
@@ -133,6 +134,7 @@ class RBAScorer:
             "model_dimensions": self.model_dimensions,
             "solver": self.solver,
             "solver_method": RBA_SOLVER_METHOD,
+            "solver_fallbacks": _solver_fallback_metadata(),
             "matrix_backend": RBA_MATRIX_BACKEND,
             "solver_presolve": RBA_SOLVER_PRESOLVE,
             "feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
@@ -176,6 +178,7 @@ class RBAScorer:
                 "model_dimensions": self.model_dimensions,
                 "solver": self.solver,
                 "solver_method": RBA_SOLVER_METHOD,
+                "solver_fallbacks": _solver_fallback_metadata(),
                 "matrix_backend": RBA_MATRIX_BACKEND,
                 "solver_presolve": RBA_SOLVER_PRESOLVE,
                 "feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
@@ -212,7 +215,9 @@ class RBAScorer:
             }
         )
 
-        status, solution_type = self._solve_with_knockouts(knocked_out_variables)
+        status, solution_type, solver_attempts = self._solve_with_knockouts(
+            knocked_out_variables
+        )
         feasible = status in {"optimal", "feasible"}
         metrics: dict[str, object] = {
             "feasible_at_growth_floor": feasible,
@@ -223,6 +228,9 @@ class RBAScorer:
             "solver_status": {
                 "status": status,
                 "solution_type": solution_type,
+                "method": solver_attempts[-1]["method"],
+                "presolve": solver_attempts[-1]["presolve"],
+                "attempts": solver_attempts,
             },
             "modeled_variables_by_gene": modeled_variables_by_gene,
             "knocked_out_variable_ids": knocked_out_variables,
@@ -235,28 +243,42 @@ class RBAScorer:
         }
         return metrics, coverage
 
-    def _solve_with_knockouts(self, variables: list[str]) -> tuple[str, str]:
+    def _solve_with_knockouts(
+        self, variables: list[str]
+    ) -> tuple[str, str, list[dict[str, object]]]:
         bounds = self._base_bounds.copy()
         for variable in variables:
             bounds[self._variable_indices[variable]] = 0.0
-        result = self._linprog(
-            self._objective,
-            A_ub=self._a_ub,
-            b_ub=self._b_ub,
-            A_eq=self._a_eq,
-            b_eq=self._b_eq,
-            bounds=bounds,
-            method=RBA_SOLVER_METHOD,
-            options={
-                "presolve": RBA_SOLVER_PRESOLVE,
-                "primal_feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
-                "dual_feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
-            },
-        )
-        if result.status == 0:
-            return "optimal", "HiGHS"
-        if result.status == 2:
-            return "infeasible", "HiGHS"
+        attempts: list[dict[str, object]] = []
+        methods = ((RBA_SOLVER_METHOD, RBA_SOLVER_PRESOLVE), *RBA_SOLVER_FALLBACKS)
+        for method, presolve in methods:
+            result = self._linprog(
+                self._objective,
+                A_ub=self._a_ub,
+                b_ub=self._b_ub,
+                A_eq=self._a_eq,
+                b_eq=self._b_eq,
+                bounds=bounds,
+                method=method,
+                options={
+                    "presolve": presolve,
+                    "primal_feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
+                    "dual_feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
+                },
+            )
+            attempts.append(
+                {
+                    "method": method,
+                    "presolve": presolve,
+                    "status_code": int(result.status),
+                }
+            )
+            if result.status == 0:
+                return "optimal", "HiGHS", attempts
+            if result.status == 2:
+                return "infeasible", "HiGHS", attempts
+            if result.status != 4:
+                break
         raise DataValidationError(
             "RBA HiGHS solve did not establish feasibility: "
             f"status={result.status}, message={result.message}"
@@ -430,6 +452,13 @@ def _sha256_json(value: object) -> str:
 
 def _plain_float_mapping(values: dict[str, Any]) -> dict[str, float]:
     return {name: float(value) for name, value in values.items()}
+
+
+def _solver_fallback_metadata() -> list[dict[str, object]]:
+    return [
+        {"method": method, "presolve": presolve}
+        for method, presolve in RBA_SOLVER_FALLBACKS
+    ]
 
 
 def _runtime_dependency_versions() -> dict[str, str]:

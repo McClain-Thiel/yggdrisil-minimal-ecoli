@@ -26,6 +26,7 @@ from yggdrisil_ecoli.scorers.rba import (
     RBA_FEASIBILITY_TOLERANCE,
     RBA_MATRIX_BACKEND,
     RBA_SOLVER,
+    RBA_SOLVER_FALLBACKS,
     RBA_SOLVER_METHOD,
     RBA_SOLVER_PRESOLVE,
     RBAScorer,
@@ -230,6 +231,10 @@ def test_artifact_and_mapping_participate_in_evaluator_identity(
     assert scorer.model_dimensions == RBA_EXPECTED_LP_DIMENSIONS
     assert scorer.config["solver"] == RBA_SOLVER
     assert scorer.config["solver_method"] == RBA_SOLVER_METHOD
+    assert scorer.config["solver_fallbacks"] == [
+        {"method": method, "presolve": presolve}
+        for method, presolve in RBA_SOLVER_FALLBACKS
+    ]
     assert scorer.config["matrix_backend"] == RBA_MATRIX_BACKEND
     assert scorer.config["solver_presolve"] is RBA_SOLVER_PRESOLVE
     assert scorer.config["feasibility_tolerance"] == RBA_FEASIBILITY_TOLERANCE
@@ -270,6 +275,35 @@ async def test_highs_resolves_recorded_random_baseline_stress_states(
         "deleted_genes_total": 32,
         "deleted_genes_modeled": 26,
         "deleted_genes_unmodeled": 6,
+    }
+
+
+async def test_highs_ipm_fallback_resolves_recorded_status_not_set_state(
+    scorer: RBAScorer,
+) -> None:
+    deletions = frozenset(
+        "b0241 b0325 b0351 b0394 b0443 b0451 b0494 b0529 b0555 b0583 "
+        "b0654 b0809 b0887 b1019 b1125 b1126 b1198 b1297 b1298 b1325 "
+        "b1393 b1622 b1704 b1745 b1771 b1814 b1832 b1849 b1884 b2047 "
+        "b2065 b2096 b2154 b2175 b2243 b2251 b2260 b2306 b2371 b2378 "
+        "b2498 b2508 b2563 b2676 b2708 b2712 b2719 b2784 b2800 b2866 "
+        "b2889 b2927 b3032 b3093 b3132 b3146 b3349 b3458 b3460 b3475 "
+        "b3477 b3544 b3654 b3662 b3704 b3726 b3732 b3748 b3826 b3918 "
+        "b3927 b3934 b3940 b4084 b4153 b4154 b4171 b4207 b4208 b4401".split()
+    )
+
+    result = await scorer.evaluate(GenomeState(deletions))
+
+    assert result.metrics["feasible_at_growth_floor"] is False
+    assert result.metadata["details"]["solver_status"] == {
+        "status": "infeasible",
+        "solution_type": "HiGHS",
+        "method": "highs-ipm",
+        "presolve": True,
+        "attempts": [
+            {"method": "highs", "presolve": True, "status_code": 4},
+            {"method": "highs-ipm", "presolve": True, "status_code": 2},
+        ],
     }
 
 

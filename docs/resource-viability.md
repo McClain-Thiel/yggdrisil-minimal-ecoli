@@ -42,9 +42,12 @@ predeclared shortlist in the WCM's 1,219-gene universe.
   solver, RBApy 3.0.3, RBAtools 2.0.1, and swiglpk 5.0.13 as RBAtools' matrix
   construction backend. HiGHS avoids pathological runtimes and unreliable
   fallback statuses observed with GLPK on random multi-gene deletions. Presolve
-  and the 1e-7 primal/dual feasibility tolerance are explicit; the solver,
-  method, matrix backend, presolve, and tolerance participate in evaluator
-  identity.
+  and the 1e-7 primal/dual feasibility tolerance are explicit. A numerical
+  status-not-set result is retried with HiGHS interior-point and then with
+  presolve disabled; every attempt is recorded, and unresolved results still
+  fail rather than being assigned a biological class. The solver, ordered
+  fallback methods, matrix backend, presolve, and tolerance participate in
+  evaluator identity.
 - Deletion semantics: canonical MG1655 `b`-number knockouts disable every RBA
   enzyme and process machine that requires the encoded protein. Unknown genes
   are rejected by the mapper and reported as uncovered, never inferred safe.
