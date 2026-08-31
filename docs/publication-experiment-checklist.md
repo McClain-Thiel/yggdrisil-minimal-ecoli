@@ -121,6 +121,8 @@ account-level stop guard.
   budget.
 - [x] Run matched-cap Minesweeper at seeds 101--505 under the common 193-state
   budget.
+- [x] Extend evolutionary-uniform and matched-cap Minesweeper symmetrically to
+  seeds 606--1010 under the unchanged 193-state budget.
 - [ ] If matched-cap Minesweeper is competitive, predeclare and run a free
   500/1,000/5,000-state scaling curve rather than spending additional LLM
   budget first.
@@ -144,6 +146,15 @@ re-evaluated with final RBA evaluator
 all remained feasible without fallback. The frozen strong-baseline bundle is
 `runs/archive/wcm1216-strong-baselines-highs-seeds101-505-20260831.tar.gz`
 (SHA-256 `fb51760f9cabf632787c331ff3e9e4bf2a85fabec7cb243d54340711e884f762`).
+
+The second-five strong-baseline block found evolutionary endpoints of 54--89
+(ten-seed mean 65.9) and Minesweeper endpoints of 95--141 (ten-seed mean
+139.9). Minesweeper exceeded evolutionary search in all ten paired seeds. Its
+ten-seed mean paired advantage was 74.0 deletions (run-level bootstrap 95%
+interval 57.3--92.0; exact two-sided sign-flip p=0.001953125). This establishes
+the relative strength of the structural baselines but does not update the
+five-seed Sol/Qwen-versus-Minesweeper inference. The second-five archive has
+SHA-256 `c03657c8eb5039c7be7f7ce5b0cec9e8eb69628a9d5b4e9d19919b1a3bbb31c2`.
 
 ## Phase 2: corrected model comparison
 
