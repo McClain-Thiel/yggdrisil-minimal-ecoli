@@ -191,10 +191,12 @@ Qwen-minus-Minesweeper was +135.9 (102.9--165.6). Both agents won all ten
 pairs. Exact two-sided paired sign-flip p-values were `0.001953125`, and both
 Holm-adjusted primary p-values were `0.00390625`.
 
-The first-five trajectories used the preceding HiGHS evaluator identity; all
-selected first-five endpoints were independently rescored feasible under the
-final evaluator. Pool primary deletion counts only, not trajectory-level
-outcomes, until a homogeneous final-identity rerun is available. The
+The first-five trajectories used the preceding HiGHS evaluator identity. The
+final revision only added retries for indeterminate status 4; every first-five
+RBA record was already classified `optimal` or `infeasible` by the unchanged
+primary solve, and all selected endpoints were independently rescored feasible
+under the final evaluator. Repeating the paid model calls is unnecessary; a
+free full-state rescore remains useful as an explicit equivalence audit. The
 second-five archive has SHA-256
 `789513783a138e55dfd6f747c57f48c04c7c9301b5aa3349d4fdd14e9cb28302`.
 
@@ -295,11 +297,11 @@ cohort. For the fresh corrected comparison:
 
 If the checklist succeeds, the defensible central claim is:
 
-> At a fixed computational budget, agent-guided recoverable search finds more
-> extensively reduced genomes satisfying metabolic and resource-allocation
-> constraints than random or structural-frontier baselines; scheduler,
-> evidence, action-size, and gate ablations explain the improvement, and a
-> predeclared subset sustains division in a pinned whole-cell model.
+> At a fixed scientific-evaluation budget, agent-guided recoverable search
+> finds more extensively reduced genomes satisfying metabolic and resource-
+> allocation constraints than random or structural-frontier baselines;
+> scheduler, evidence, action-size, and gate ablations explain the improvement,
+> and a predeclared subset sustains division in a pinned whole-cell model.
 
 This remains an in-silico genome-design result. Wet-lab construction is required
 for a claim of biological viability.

@@ -153,7 +153,7 @@ class MinesweeperPolicy:
     closed-book agent to omit only genes classified essential in both media.
     """
 
-    version = "1"
+    version = "2"
 
     def __init__(
         self,
@@ -227,14 +227,31 @@ class MinesweeperPolicy:
             return [self._decision("segment_screen", screening[: self.n_proposals])]
 
         viable_segments = self._viable_root_segments(graph, root, materialized)
-        combinations = self._combination_proposals(ranked, viable_segments, reserved)
-        splits = self._split_proposals(graph, materialized, reserved)
+        remaining = self.n_proposals - len(screening)
+        combinations = self._combination_proposals(
+            ranked,
+            viable_segments,
+            reserved,
+            limit=remaining,
+        )
+        splits = self._split_proposals(
+            graph,
+            materialized,
+            reserved,
+            limit=remaining,
+        )
         selected = screening + _interleave(
-            combinations, splits, self.n_proposals - len(screening)
+            combinations,
+            splits,
+            remaining,
         )
         phase = "segment_screen_and_combine" if screening else "combine_and_bisect"
         if not selected:
-            selected = self._singleton_proposals(ranked, reserved)
+            selected = self._singleton_proposals(
+                ranked,
+                reserved,
+                limit=self.n_proposals,
+            )
             phase = "singleton_cleanup"
         if not selected:
             return []
@@ -280,7 +297,11 @@ class MinesweeperPolicy:
         ranked: Sequence[StateNode[GenomeState]],
         segments: Sequence[tuple[str, ...]],
         reserved: set[frozenset[str]],
+        *,
+        limit: int,
     ) -> list[Proposal[DeleteGenes]]:
+        if limit <= 0:
+            return []
         proposals: list[Proposal[DeleteGenes]] = []
         for parent in ranked:
             for segment in segments:
@@ -300,6 +321,8 @@ class MinesweeperPolicy:
                         metadata={"operator": "segment_combine"},
                     )
                 )
+                if len(proposals) == limit:
+                    return proposals
         return proposals
 
     def _split_proposals(
@@ -307,7 +330,11 @@ class MinesweeperPolicy:
         graph: ReadOnlyStateGraph[GenomeState, DeleteGenes],
         events: Sequence[ProposalEvent[DeleteGenes]],
         reserved: set[frozenset[str]],
+        *,
+        limit: int,
     ) -> list[Proposal[DeleteGenes]]:
+        if limit <= 0:
+            return []
         proposals: list[Proposal[DeleteGenes]] = []
         blocked = sorted(events, key=lambda event: event.sequence_index, reverse=True)
         for event in blocked:
@@ -335,13 +362,19 @@ class MinesweeperPolicy:
                         },
                     )
                 )
+                if len(proposals) == limit:
+                    return proposals
         return proposals
 
     def _singleton_proposals(
         self,
         ranked: Sequence[StateNode[GenomeState]],
         reserved: set[frozenset[str]],
+        *,
+        limit: int,
     ) -> list[Proposal[DeleteGenes]]:
+        if limit <= 0:
+            return []
         proposals: list[Proposal[DeleteGenes]] = []
         for parent in ranked:
             for gene in self.ordered_genes:
@@ -358,6 +391,8 @@ class MinesweeperPolicy:
                         metadata={"operator": "singleton_cleanup"},
                     )
                 )
+                if len(proposals) == limit:
+                    return proposals
         return proposals
 
     def _decision(

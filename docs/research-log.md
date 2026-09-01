@@ -218,16 +218,19 @@ multi-generation WCM evidence. The current benchmark finalists have not yet
 been simulated in vEcoli.
 
 The first-five model trajectories used the preceding HiGHS evaluator identity.
-Their selected primary states were independently rescored feasible under the
-final evaluator. Primary deletion endpoints are pooled, but trajectory-level
-outcomes are not pooled across identities.
+The final revision only added retries for indeterminate status 4. Every stored
+first-five RBA result was already classified `optimal` or `infeasible` by the
+unchanged primary solve, and the selected primary states were independently
+rescored feasible under the final evaluator. The stored policy-visible
+feasibility decisions are equivalent; a free all-state rescore can document
+that equivalence without repeating paid model calls.
 
 ### Decision
 
 Use matched-cap Minesweeper as the paper's primary non-agent comparator. Keep
-Qwen-versus-Sol descriptive. Complete the scheduler, gate, action-size, and
-evidence/tool ablations, then predeclare current finalists for vEcoli before
-reading any new WCM outcomes.
+Qwen-versus-Sol descriptive. Measure the Minesweeper state-budget scaling
+curve, replicate the gate and pure no-tool interventions, then predeclare
+current finalists for vEcoli before reading any new WCM outcomes.
 
 ### Preserved evidence
 

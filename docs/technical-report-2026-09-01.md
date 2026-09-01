@@ -57,11 +57,13 @@ across repeated lineages. Those are different computational budgets and
 validation standards, so the designs must not be ranked as if they came from
 one experiment [Gherman et al., 2025](https://pure.hw.ac.uk/ws/portalfiles/portal/160646316/PIIS240547122500225X.pdf).
 
-The present evidence is promising for a computational methods paper. The
-highest-priority work before a strong submission is to predeclare current
-finalists and run them in vEcoli, complete the gate/action/evidence ablations,
-extend the scheduler ablation to ten seeds, and remove the remaining
-first-five versus second-five evaluator-identity caveat described below.
+The present evidence supports a computational methods paper when framed as a
+sample-efficiency result under a fixed scientific-evaluation budget. The
+highest-priority work before a strong submission is to measure the matched-cap
+Minesweeper scaling curve, predeclare current finalists and run them in
+vEcoli, and replicate the gate and pure tool-access ablations. Extending the
+scheduler intervention and the remaining action/evidence experiments would
+strengthen mechanism attribution but is secondary to those tests.
 
 ## 1. Scientific context
 
@@ -300,19 +302,22 @@ lineage seeds 101, 202, and 303. All 15 lineages recorded division through 20
 of 20 generations, for 300 recorded divisions. vEcoli is the maintained
 Vivarium port of the Covert Lab E. coli WCM ([official
 repository](https://github.com/CovertLab/vEcoli)). RBA mapped only 4--11 of the
-1,470--1,597 deletions in each of those old designs, and vEcoli itself does not
-represent every deleted gene. These genotypes are not the current 1,216-gene
-benchmark finalists, and the result remains model evidence, not wet-lab
-viability.
+1,470--1,597 deletions in each of those old designs. In contrast, the vEcoli
+adapter mapped every requested canonical deletion one-to-one to a unique
+cistron and RNA, set all audited expression parameters to zero, and rejected
+ambiguous mappings. This establishes complete knockout execution in that
+simulation, not complete mechanistic representation of every deleted gene's
+function. These genotypes are not the current 1,216-gene benchmark finalists,
+and the result remains model evidence, not wet-lab viability.
 
 ## 4. Interpretation
 
 ### What the experiment supports
 
-1. **Search-performance claim.** Under the same 193-state budget, common
-   candidate universe, and common FBA+RBA endpoint, both closed-book agent
-   policies outperform the strongest structural baseline tested across all ten
-   paired seeds.
+1. **Search-performance claim.** Under the same maximum 193-state scientific-
+   evaluation budget, common candidate universe, and common FBA+RBA endpoint,
+   both closed-book agent policies outperform the strongest structural
+   baseline tested across all ten paired seeds.
 2. **Recovery mechanism.** The five-seed scheduler intervention shows that
    reopening viable non-leaf states is necessary for deep search in this
    setup; a frontier-only policy collapses after lethal descendants.
@@ -331,8 +336,8 @@ viability.
 1. **Biological viability.** FBA and RBA are constrained mechanistic models,
    not observations of a cell. RBA feasibility at 0.1 h^-1 is an operational
    gate, not proof of division.
-2. **A new minimal genome.** The search stops at a fixed compute budget, not at
-   a proof of minimality. Genes outside the 1,216-gene action space are always
+2. **A new minimal genome.** The search stops at a fixed search cap, not at a
+   proof of minimality. Genes outside the 1,216-gene action space are always
    retained.
 3. **Superiority to EMine-737.** EMine-737 is smaller within the WCM universe
    and has direct multi-generation WCM validation. The present comparison is
@@ -352,12 +357,14 @@ viability.
   under the protocol, not sufficient for life.
 - **Numerical revision.** The production RBA gate was changed from GLPK to
   HiGHS after GLPK false positives and pathological runtimes were found. The
-  first five model trajectories used the preceding HiGHS evaluator identity;
-  their selected endpoints were independently rescored feasible under the
-  final identity. Endpoint counts are pooled, but trajectory AUC and other
-  path-dependent measures are not pooled across the two identities. A fully
-  homogeneous confirmatory panel requires rerunning seeds 101--505 with the
-  final evaluator.
+  first five model trajectories used the preceding HiGHS evaluator identity.
+  The final revision only added retries for indeterminate numerical status 4;
+  every stored first-five RBA result was directly classified `optimal` or
+  `infeasible` by the unchanged primary solve, and every selected endpoint was
+  independently rescored feasible under the final identity. The policy-visible
+  feasibility decisions are therefore equivalent for the stored trajectories.
+  A free full-state rescore can make this equivalence explicit, but repeating
+  the paid model calls is not required.
 - **Comparator fidelity.** Equalizing states makes the algorithmic comparison
   interpretable but intentionally departs from the published Minesweeper
   compute regime.
@@ -393,21 +400,23 @@ computational genome-design methods manuscript.
 
 It is not yet a complete paper package. The minimum high-value additions are:
 
-1. rerun the first five Sol/Qwen trajectories under the exact final RBA
-   identity, or prospectively justify and preserve the present endpoint-only
-   pooling;
-2. extend the recoverable-versus-frontier scheduler ablation to ten seeds;
-3. run a predeclared 500/1,000/5,000-state matched-cap Minesweeper scaling
+1. run a predeclared 500/1,000/5,000-state matched-cap Minesweeper scaling
    curve and report both evaluator-budget and compute/cost-normalized results;
-4. complete the one-factor FBA-only, fixed-action-size, tool-rich, and
-   closed-book-no-tool ablations with the same run-level analysis;
-5. predeclare one finalist per independent seed and method before viewing new
+2. predeclare one finalist per independent seed and method before viewing new
    vEcoli outcomes, then simulate multiple lineage seeds with matched WT,
    benign-deletion, essential-deletion, and workflow controls;
-6. report overlap/diversity and functional enrichment across independent
+3. replicate the one-factor FBA-only gate experiment and implement the same-
+   evidence closed-book/no-tool comparison before assigning causal importance
+   to RBA feedback or tool use;
+4. report overlap/diversity and functional enrichment across independent
    finalists, rather than presenting only the deepest genotype; and
-7. reserve biological viability claims for wet-lab construction and growth
+5. reserve biological viability claims for wet-lab construction and growth
    measurements.
+
+Extending the five-seed scheduler intervention to ten seeds and running the
+fixed-action-size and broader tool-rich conditions remain useful secondary
+ablations, but they are not prerequisites for the central fixed-evaluation-
+budget search claim.
 
 If those items hold, the strongest defensible central claim is:
 

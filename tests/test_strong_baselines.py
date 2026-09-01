@@ -180,6 +180,39 @@ def test_minesweeper_seeded_order_is_reproducible() -> None:
     )
 
 
+def test_minesweeper_bounds_internal_candidate_generation(tmp_path: Path) -> None:
+    genes = {f"b{index:04d}" for index in range(1, 101)}
+    policy = MinesweeperPolicy(
+        candidate_genes=genes,
+        essentiality=_essentiality(genes, essential=set()),
+        evaluator_ids={"fba": "fba", "resource_allocation": "rba"},
+        max_action_size=2,
+        n_proposals=4,
+        seed=101,
+    )
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "bounded.sqlite")
+    root = graph.add_state(
+        genome_state_key(GenomeState(frozenset())), GenomeState(frozenset())
+    )
+
+    combinations = policy._combination_proposals(
+        [root],
+        policy.segments,
+        set(),
+        limit=4,
+    )
+    singletons = policy._singleton_proposals([root], set(), limit=4)
+
+    assert len(combinations) == len(singletons) == 4
+    assert [proposal.action.genes for proposal in combinations] == [
+        tuple(sorted(segment)) for segment in policy.segments[:4]
+    ]
+    assert [proposal.action.genes for proposal in singletons] == [
+        (gene,) for gene in policy.ordered_genes[:4]
+    ]
+    graph.close()
+
+
 @dataclass(frozen=True)
 class _TestProblem:
     candidate_genes: frozenset[str]
