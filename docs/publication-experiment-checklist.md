@@ -60,9 +60,9 @@ One complete from-scratch search run is the experimental unit. Evaluated
 states, proposals, genes, and serial WCM generations are not independent
 replicates.
 
-- [ ] Use the ten locked seed blocks `101, 202, 303, 404, 505, 606, 707, 808,
-  909, 1010` for every confirmatory arm. Seeds 101--505 are complete for Sol,
-  Qwen, random-uniform, and heuristic-uniform.
+- [x] Use the ten locked seed blocks `101, 202, 303, 404, 505, 606, 707, 808,
+  909, 1010` for the primary Sol, Qwen, and matched-cap Minesweeper comparison.
+  Secondary control and ablation arms are tracked separately below.
 - [x] Run the first five seeds as a budget checkpoint, but commit in advance to
   all ten for confirmatory inference; do not stop because interim results are
   favorable or unfavorable.
@@ -102,6 +102,9 @@ account-level stop guard.
   completed for USD 24.4075 of authenticated account usage.
 - [x] Tranche B1: first five Sol scheduler-ablation pairs. The frontier-only
   arms completed for USD 0.173545400 of authenticated account usage.
+- [x] Tranche A2: second-five fresh Sol plus Qwen seed pairs. All ten arms
+  completed for USD 24.15398255; combined first- and second-five model spend
+  was USD 48.56144675.
 - [ ] Tranche B2: first five Sol gate-ablation pairs. This requires a new
   authorization and account top-up.
 - [ ] Tranche C: first five Sol action-size plus evidence-exposure pairs; reserve
@@ -160,8 +163,8 @@ SHA-256 `c03657c8eb5039c7be7f7ce5b0cec9e8eb69628a9d5b4e9d19919b1a3bbb31c2`.
 
 - [x] Fresh `openai/gpt-5.6-sol` canonical runs at seeds 101--505.
 - [x] Fresh `qwen/qwen3.6-35b-a3b` canonical runs at seeds 101--505.
-- [ ] Fresh `openai/gpt-5.6-sol` canonical runs at all ten seeds.
-- [ ] Fresh `qwen/qwen3.6-35b-a3b` canonical runs at all ten seeds.
+- [x] Fresh `openai/gpt-5.6-sol` canonical runs at all ten seeds.
+- [x] Fresh `qwen/qwen3.6-35b-a3b` canonical runs at all ten seeds.
 - [x] Analyze the first five complete paired seed blocks before authorizing the
   second five, without changing endpoints, prompts, or stopping rules.
 
@@ -180,6 +183,20 @@ The frozen bundle is
 The primary endpoint is the deletion count of the most-deleted state passing
 the common final FBA plus HiGHS-RBA gate. Break ties by higher FBA growth, then
 lexicographically smaller state ID.
+
+Across all ten seeds, matched-cap Minesweeper averaged 139.9 deletions, Sol
+averaged 238.6, and Qwen averaged 275.8. Sol-minus-Minesweeper was +98.7 genes
+(paired-run bootstrap 95% interval 69.9--125.6), and
+Qwen-minus-Minesweeper was +135.9 (102.9--165.6). Both agents won all ten
+pairs. Exact two-sided paired sign-flip p-values were `0.001953125`, and both
+Holm-adjusted primary p-values were `0.00390625`.
+
+The first-five trajectories used the preceding HiGHS evaluator identity; all
+selected first-five endpoints were independently rescored feasible under the
+final evaluator. Pool primary deletion counts only, not trajectory-level
+outcomes, until a homogeneous final-identity rerun is available. The
+second-five archive has SHA-256
+`789513783a138e55dfd6f747c57f48c04c7c9301b5aa3349d4fdd14e9cb28302`.
 
 ## Phase 3: core Sol ablations
 
@@ -241,7 +258,8 @@ replace an unfavorable seed.
   superiority as effect sizes.
 - [x] Use an exact paired sign-flip/permutation test for the predeclared primary
   contrasts, labeling the five-seed result non-confirmatory.
-- [x] Holm-correct the primary family: Sol versus random and Qwen versus random.
+- [x] Holm-correct the final primary family: Sol versus matched-cap Minesweeper
+  and Qwen versus matched-cap Minesweeper.
 - [ ] Holm-correct the ablation family: canonical Sol versus scheduler, gate,
   action-size, and evidence-exposure arms.
 - [ ] Keep Sol-versus-Qwen and secondary endpoints descriptive unless promoted

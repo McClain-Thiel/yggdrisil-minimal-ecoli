@@ -168,3 +168,81 @@ the protected USD 1 reserve intact.
 The off-machine archive was downloaded after upload and matched the local
 SHA-256. Separate result and statistics files are also stored beside it in the
 bucket.
+
+## 2026-09-01 — Ten-seed closed-book model comparison
+
+### Status
+
+The locked Sol, Qwen, and matched-cap Minesweeper comparison is complete for
+all ten paired seeds `101, 202, 303, 404, 505, 606, 707, 808, 909, 1010`.
+Every planned second-five model arm completed; the authenticated USD 29 guard
+did not trigger.
+
+### Observed
+
+| Method | Ten-seed mean deletions | Range | Bootstrap 95% interval for mean |
+| --- | ---: | ---: | ---: |
+| Matched-cap Minesweeper | 139.9 | 95--207 | 120.1--161.0 |
+| Closed-book Sol | 238.6 | 211--268 | 227.7--250.1 |
+| Closed-book Qwen | 275.8 | 239--305 | 259.2--291.7 |
+
+Sol exceeded Minesweeper in all ten pairs. Its mean paired advantage was 98.7
+deletions with a run-level bootstrap interval of 69.9--125.6. Qwen also won all
+ten pairs, by 135.9 deletions with an interval of 102.9--165.6. Both exact
+two-sided paired sign-flip p-values are `0.001953125`; both Holm-adjusted
+primary p-values are `0.00390625`.
+
+Qwen exceeded Sol in eight of ten pairs. Its descriptive mean paired advantage
+was 37.2 deletions (bootstrap interval 17.4--55.4; unadjusted exact
+`p=0.01171875`). This was not a predeclared primary contrast.
+
+The second-five arms used application commit
+`8fea728af685ef0b036893e57e528a474028e203`, Yggdrisil commit
+`67983c5c0821c57e6b0f60449b3e608b981455e2`, and final RBA evaluator
+`b75d336f1a247101fa0683592ca63eb62eaa386ee57a26a6d27486980d962681`.
+All ten new mutable/frozen graph pairs passed SQLite integrity, foreign-key,
+logical-count, state-ID, and five-evaluations-per-state checks. The complete
+twenty-model-run authenticated OpenRouter spend was USD 48.56144675.
+
+### Inference
+
+At the common 193-state budget, the closed-book agent methods find
+substantially deeper jointly FBA-positive and RBA-feasible deletions than the
+strongest structural baseline tested. The effect is consistent across seeds
+and is large enough that neither primary result depends on an outlier.
+
+This is a search-performance result, not proof of biological viability or a
+new smallest genome. The deepest candidate deletes 305 of the 1,216 eligible
+WCM-intersection genes. EMine-737 deletes 482 of 1,219 WCM genes and has direct
+multi-generation WCM evidence. The current benchmark finalists have not yet
+been simulated in vEcoli.
+
+The first-five model trajectories used the preceding HiGHS evaluator identity.
+Their selected primary states were independently rescored feasible under the
+final evaluator. Primary deletion endpoints are pooled, but trajectory-level
+outcomes are not pooled across identities.
+
+### Decision
+
+Use matched-cap Minesweeper as the paper's primary non-agent comparator. Keep
+Qwen-versus-Sol descriptive. Complete the scheduler, gate, action-size, and
+evidence/tool ablations, then predeclare current finalists for vEcoli before
+reading any new WCM outcomes.
+
+### Preserved evidence
+
+- Second-five run directory:
+  `runs/confirmatory/wcm1216-sol-qwen-highs-seeds606-1010-20260901`
+- Frozen archive:
+  `runs/archive/wcm1216-sol-qwen-highs-seeds606-1010-20260901.tar.gz`
+- Archive SHA-256:
+  `789513783a138e55dfd6f747c57f48c04c7c9301b5aa3349d4fdd14e9cb28302`
+- Technical interpretation:
+  `docs/technical-report-2026-09-01.md`
+- Off-machine objects:
+  `01-search-evidence/wcm1216-sol-qwen-highs-seeds606-1010-20260901.tar.gz`
+  and the adjacent ten-seed result/statistics/integrity files in the project
+  Hugging Face bucket.
+
+The uploaded archive was downloaded after transfer and matched the local
+SHA-256 exactly.
