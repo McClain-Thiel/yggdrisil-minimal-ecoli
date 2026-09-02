@@ -45,7 +45,7 @@ tolerances.
 - [x] Retrospectively rescore the saved Sol and Qwen trajectories.
 - [x] Re-run the first five paired Sol and Qwen seeds from scratch because
   post-hoc rescoring cannot repair parent selection and feedback from the old
-  gate. The second five remain pending.
+  gate. The second five were subsequently completed under the locked design.
 - [x] Add a provenance-recorded HiGHS interior-point/no-presolve fallback after
   a matched-cap Minesweeper state reproducibly returned automatic-method status
   not set. The exact state is a regression test; unresolved LPs still fail.
@@ -109,7 +109,7 @@ account-level stop guard.
   authorization and account top-up.
 - [ ] Tranche C: first five Sol action-size plus evidence-exposure pairs; reserve
   approximately USD 45 total.
-- [ ] Authorize the second five seeds symmetrically only after the first-five
+- [x] Authorize the second five seeds symmetrically only after the first-five
   checkpoint; never extend only the favorable arm.
 
 ## Phase 1: free controls

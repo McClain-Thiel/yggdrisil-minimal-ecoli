@@ -36,6 +36,7 @@ from yggdrisil_ecoli.state import GenomeState
 ROOT = Path(__file__).parents[1]
 ARTIFACT_DIR = ROOT / "data" / "external" / "rba_ecoli_k12_wt"
 REGISTRY_PATH = ROOT / "data" / "processed" / "gene_registry.parquet"
+STATUS_UNKNOWN_FIXTURE = ROOT / "tests" / "fixtures" / "rba_status_unknown_seed505.json"
 RBA_DEPENDENCIES_AVAILABLE = all(
     importlib.util.find_spec(package) is not None
     for package in ("rba", "rbatools", "swiglpk")
@@ -303,6 +304,32 @@ async def test_highs_ipm_fallback_resolves_recorded_status_not_set_state(
         "attempts": [
             {"method": "highs", "presolve": True, "status_code": 4},
             {"method": "highs-ipm", "presolve": True, "status_code": 2},
+        ],
+    }
+
+
+async def test_no_presolve_ipm_resolves_recorded_scaling_state(
+    scorer: RBAScorer,
+) -> None:
+    fixture = json.loads(STATUS_UNKNOWN_FIXTURE.read_text())
+    result = await scorer.evaluate(
+        GenomeState(frozenset(map(str, fixture["deleted_genes"])))
+    )
+
+    assert fixture["state_id"] == (
+        "88bb59f9cb220f16d4c7a0c00fec2d1002920ed743b01819fd008b5f6d5a5bc1"
+    )
+    assert result.metrics["feasible_at_growth_floor"] is True
+    assert result.metadata["details"]["solver_status"] == {
+        "status": "optimal",
+        "solution_type": "HiGHS",
+        "method": "highs-ipm",
+        "presolve": False,
+        "attempts": [
+            {"method": "highs", "presolve": True, "status_code": 4},
+            {"method": "highs-ipm", "presolve": True, "status_code": 4},
+            {"method": "highs", "presolve": False, "status_code": 4},
+            {"method": "highs-ipm", "presolve": False, "status_code": 0},
         ],
     }
 

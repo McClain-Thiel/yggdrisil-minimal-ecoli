@@ -33,14 +33,18 @@ RBA_SOLVER_METHOD = "highs"
 RBA_MATRIX_BACKEND = "swiglpk"
 RBA_SOLVER_PRESOLVE = True
 RBA_FEASIBILITY_TOLERANCE = 1e-7
-RBA_SOLVER_FALLBACKS = (("highs-ipm", True), ("highs", False))
+RBA_SOLVER_FALLBACKS = (
+    ("highs-ipm", True),
+    ("highs", False),
+    ("highs-ipm", False),
+)
 
 
 class RBAScorer:
     """Test deletion sets at a fixed growth floor in the pinned RBA model."""
 
     name = "resource_allocation"
-    version = "2"
+    version = "3"
 
     def __init__(
         self,

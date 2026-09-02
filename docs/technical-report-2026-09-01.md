@@ -2,11 +2,12 @@
 
 **Status:** interim in-silico methods report
 
-**Evidence cutoff:** 1 September 2026
+**Evidence cutoff:** 2 September 2026
 
 **Application revisions:** first five
 `d87debf67379ff4826937e7e0b26918e2235d438`; second five
-`8fea728af685ef0b036893e57e528a474028e203`
+`8fea728af685ef0b036893e57e528a474028e203`; Minesweeper scaling
+`2032c5aba3df47dca71ff8736c8ea424ceb66f6b`
 
 **Yggdrisil revision:**
 `67983c5c0821c57e6b0f60449b3e608b981455e2`
@@ -196,7 +197,7 @@ RBA-models repository](https://github.com/RBAgroup/RBA-models).
 ### 2.4 Comparator
 
 The primary non-agent comparator is `minesweeper-matched20`, a clean-room,
-equal-budget adaptation of the published Minesweeper strategy. It:
+equal-state-budget adaptation of the published Minesweeper strategy. It:
 
 - shuffles the eligible set by the paired seed;
 - omits genes classified essential in both Choe conditions, evidence also
@@ -207,7 +208,10 @@ equal-budget adaptation of the published Minesweeper strategy. It:
 - finishes with singleton cleanup.
 
 It uses the same 193-state cap and the same five evaluators. This is a strong
-structural baseline, but it is not the native Minesweeper implementation. The
+structural baseline, but it is not the native Minesweeper implementation. Its
+prefilter has global access to the experimental-essentiality classification,
+whereas the closed-book agent sees that category only for identifiers exposed
+in its current invocation; this asymmetry favors the baseline. The
 published method used a WCM, larger stages, and thousands of simulations
 [Rees-Garbutt et al.,
 2020](https://www.nature.com/articles/s41467-020-14545-0). Accordingly, this
@@ -234,6 +238,34 @@ the mean difference, and an exact two-sided sign-flip test. The two
 model-versus-Minesweeper primary p-values form one family and are adjusted by
 Holm's method. Qwen versus Sol was not a predeclared primary comparison and is
 reported descriptively.
+
+### 2.6 Minesweeper scientific-evaluation scaling
+
+The matched-cap Minesweeper policy was subsequently run once per locked seed
+to a maximum of 5,000 states. Endpoints at 193, 500, 1,000, and 5,000 states
+are nested prefixes of each deterministic trajectory, not independent runs;
+as in the primary comparison, each state count includes the wild-type root.
+The candidate universe, 20-gene maximum action, four proposals per step,
+scientific evaluators, joint FBA+RBA endpoint, seeds, and tie-breaking rule are
+unchanged. The first 193 state IDs of every scaling graph must exactly match
+the corresponding frozen 193-state graph before the scaling result is
+accepted.
+
+This design measures how deletion depth changes with calls to the scientific
+evaluator suite. It does not equalize dollars, model tokens, wall-clock time,
+or total computation: Minesweeper makes no language-model calls, while its
+larger trajectories perform many more FBA and RBA evaluations. Comparisons
+between a larger Minesweeper prefix and a 193-state agent endpoint are
+therefore descriptive crossing points, not equal-compute hypothesis tests.
+
+Long trajectories were resumed under the same run ID at progressively larger
+1,000-state process boundaries to release native solver memory. Run limits are
+not policy inputs. The restart ledger retains commands, timestamps, state and
+evaluation counts, interruption recovery, and stderr; final analysis accepts
+only integrity-checked read-only backups with exactly five active evaluator
+records per state. The policy's version-2 implementation bounds temporary
+proposal generation but preserves candidate order, as tested by the exact
+193-state continuity requirement.
 
 ## 3. Results
 
@@ -393,8 +425,8 @@ and the result remains model evidence, not wet-lab viability.
 ## 6. Publication-readiness assessment
 
 The current result is more than a promising anecdote: it is a complete
-ten-pair comparison with a predeclared run-level endpoint, a strong equal-budget
-baseline, large effects, exact paired inference, provenance-complete graphs,
+ten-pair comparison with a predeclared run-level endpoint, a strong equal-state-
+budget baseline, large effects, exact paired inference, provenance-complete graphs,
 and off-machine preservation. That is a credible central result for a
 computational genome-design methods manuscript.
 
