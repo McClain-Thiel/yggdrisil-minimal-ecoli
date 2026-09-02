@@ -37,6 +37,9 @@ ROOT = Path(__file__).parents[1]
 ARTIFACT_DIR = ROOT / "data" / "external" / "rba_ecoli_k12_wt"
 REGISTRY_PATH = ROOT / "data" / "processed" / "gene_registry.parquet"
 STATUS_UNKNOWN_FIXTURE = ROOT / "tests" / "fixtures" / "rba_status_unknown_seed505.json"
+SECOND_STATUS_UNKNOWN_FIXTURE = (
+    ROOT / "tests" / "fixtures" / "rba_status_unknown_seed505_second.json"
+)
 RBA_DEPENDENCIES_AVAILABLE = all(
     importlib.util.find_spec(package) is not None
     for package in ("rba", "rbatools", "swiglpk")
@@ -233,8 +236,8 @@ def test_artifact_and_mapping_participate_in_evaluator_identity(
     assert scorer.config["solver"] == RBA_SOLVER
     assert scorer.config["solver_method"] == RBA_SOLVER_METHOD
     assert scorer.config["solver_fallbacks"] == [
-        {"method": method, "presolve": presolve}
-        for method, presolve in RBA_SOLVER_FALLBACKS
+        {"method": method, "presolve": presolve, **options}
+        for method, presolve, options in RBA_SOLVER_FALLBACKS
     ]
     assert scorer.config["matrix_backend"] == RBA_MATRIX_BACKEND
     assert scorer.config["solver_presolve"] is RBA_SOLVER_PRESOLVE
@@ -332,6 +335,39 @@ async def test_no_presolve_ipm_resolves_recorded_scaling_state(
             {"method": "highs-ipm", "presolve": False, "status_code": 0},
         ],
     }
+
+
+async def test_unscaled_primal_simplex_resolves_second_scaling_state(
+    scorer: RBAScorer,
+) -> None:
+    fixture = json.loads(SECOND_STATUS_UNKNOWN_FIXTURE.read_text())
+    result = await scorer.evaluate(
+        GenomeState(frozenset(map(str, fixture["deleted_genes"])))
+    )
+
+    assert fixture["state_id"] == (
+        "3a7c04e7f6d3b61d81db5b4987e11800ac7bd38f6f182ab4a03ceeb4f197f36a"
+    )
+    assert result.metrics["feasible_at_growth_floor"] is False
+    status = result.metadata["details"]["solver_status"]
+    assert status["status"] == "infeasible"
+    assert status["solution_type"] == "HiGHS"
+    assert status["method"] == "highs-ds"
+    assert status["presolve"] is False
+    assert status["attempts"][-1] == {
+        "method": "highs-ds",
+        "presolve": False,
+        "simplex_strategy": 4,
+        "simplex_scale_strategy": 0,
+        "status_code": 2,
+    }
+    assert [attempt["status_code"] for attempt in status["attempts"]] == [
+        4,
+        4,
+        4,
+        4,
+        2,
+    ]
 
 
 def test_artifact_records_expected_structure_dimensions() -> None:

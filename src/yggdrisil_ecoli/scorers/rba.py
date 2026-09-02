@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import warnings
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
@@ -33,10 +34,17 @@ RBA_SOLVER_METHOD = "highs"
 RBA_MATRIX_BACKEND = "swiglpk"
 RBA_SOLVER_PRESOLVE = True
 RBA_FEASIBILITY_TOLERANCE = 1e-7
-RBA_SOLVER_FALLBACKS = (
-    ("highs-ipm", True),
-    ("highs", False),
-    ("highs-ipm", False),
+# The final unscaled primal-simplex attempt resolves a pinned ill-scaled
+# infeasible state for which all default HiGHS strategies report Unknown.
+RBA_SOLVER_FALLBACKS: tuple[tuple[str, bool, dict[str, int]], ...] = (
+    ("highs-ipm", True, {}),
+    ("highs", False, {}),
+    ("highs-ipm", False, {}),
+    (
+        "highs-ds",
+        False,
+        {"simplex_strategy": 4, "simplex_scale_strategy": 0},
+    ),
 )
 
 
@@ -44,7 +52,7 @@ class RBAScorer:
     """Test deletion sets at a fixed growth floor in the pinned RBA model."""
 
     name = "resource_allocation"
-    version = "3"
+    version = "4"
 
     def __init__(
         self,
@@ -81,7 +89,7 @@ class RBAScorer:
         try:
             import numpy
             from rbatools.rba_session import SessionRBA
-            from scipy.optimize import linprog
+            from scipy.optimize import OptimizeWarning, linprog
             from scipy.sparse import vstack
         except ImportError as exc:  # pragma: no cover - optional dependency guard
             raise DataValidationError(
@@ -90,6 +98,7 @@ class RBAScorer:
 
         self._numpy: Any = numpy
         self._linprog: Any = linprog
+        self._optimize_warning: Any = OptimizeWarning
         self._vstack: Any = vstack
         self._session: Any = SessionRBA(
             str(self.artifact_dir), lp_solver=RBA_MATRIX_BACKEND
@@ -254,26 +263,39 @@ class RBAScorer:
         for variable in variables:
             bounds[self._variable_indices[variable]] = 0.0
         attempts: list[dict[str, object]] = []
-        methods = ((RBA_SOLVER_METHOD, RBA_SOLVER_PRESOLVE), *RBA_SOLVER_FALLBACKS)
-        for method, presolve in methods:
-            result = self._linprog(
-                self._objective,
-                A_ub=self._a_ub,
-                b_ub=self._b_ub,
-                A_eq=self._a_eq,
-                b_eq=self._b_eq,
-                bounds=bounds,
-                method=method,
-                options={
-                    "presolve": presolve,
-                    "primal_feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
-                    "dual_feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
-                },
-            )
+        methods = (
+            (RBA_SOLVER_METHOD, RBA_SOLVER_PRESOLVE, {}),
+            *RBA_SOLVER_FALLBACKS,
+        )
+        for method, presolve, fallback_options in methods:
+            options: dict[str, object] = {
+                "presolve": presolve,
+                "primal_feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
+                "dual_feasibility_tolerance": RBA_FEASIBILITY_TOLERANCE,
+                **fallback_options,
+            }
+            with warnings.catch_warnings():
+                if fallback_options:
+                    warnings.filterwarnings(
+                        "ignore",
+                        message="Unrecognized options detected",
+                        category=self._optimize_warning,
+                    )
+                result = self._linprog(
+                    self._objective,
+                    A_ub=self._a_ub,
+                    b_ub=self._b_ub,
+                    A_eq=self._a_eq,
+                    b_eq=self._b_eq,
+                    bounds=bounds,
+                    method=method,
+                    options=options,
+                )
             attempts.append(
                 {
                     "method": method,
                     "presolve": presolve,
+                    **fallback_options,
                     "status_code": int(result.status),
                 }
             )
@@ -460,8 +482,8 @@ def _plain_float_mapping(values: dict[str, Any]) -> dict[str, float]:
 
 def _solver_fallback_metadata() -> list[dict[str, object]]:
     return [
-        {"method": method, "presolve": presolve}
-        for method, presolve in RBA_SOLVER_FALLBACKS
+        {"method": method, "presolve": presolve, **options}
+        for method, presolve, options in RBA_SOLVER_FALLBACKS
     ]
 
 
