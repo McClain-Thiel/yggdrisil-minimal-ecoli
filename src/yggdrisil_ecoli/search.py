@@ -49,7 +49,7 @@ from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 from yggdrisil_ecoli.state import GenomeState
 from yggdrisil_ecoli.strong_baselines import EvolutionaryPolicy, MinesweeperPolicy
 
-SEARCH_CONTRACT_VERSION = 9
+SEARCH_CONTRACT_VERSION = 10
 
 
 @dataclass(frozen=True, slots=True)
@@ -410,8 +410,12 @@ def main() -> None:
     )
     parser.add_argument(
         "--agent-mode",
-        choices=("closed-book", "tool-rich"),
+        choices=("closed-book", "closed-book-no-tools", "tool-rich"),
         default="closed-book",
+        help=(
+            "evidence exposure; closed-book-no-tools retains the blinded preview "
+            "but removes bundle-analysis tools"
+        ),
     )
     parser.add_argument(
         "--agent-action-size-mode",

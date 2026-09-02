@@ -122,7 +122,9 @@ uv run --extra agents --extra fba --extra rba yggdrisil-ecoli-search \
 `closed-book` replaces canonical genes with a seeded opaque identifier map and
 exposes only categorical experimental/model coverage. Prompts and tool returns
 contain no locus tags, symbols, descriptions, literature, current-vEcoli, or
-published whole-cell-model membership. `tool-rich` exposes the existing gene,
+published whole-cell-model membership. `closed-book-no-tools` preserves that
+same blinded categorical preview but removes the aggregate bundle-analysis tool;
+it is the pure tool-access ablation. `tool-rich` exposes the existing gene,
 essentiality, and KEGG inspection tools. The action limit is a ceiling rather
 than a fixed bundle size. Viable parents remain reopenable after lethal children;
 the scheduler keeps a diverse active window, rotates candidate pages, rejects
@@ -203,7 +205,7 @@ explicit academic-use acknowledgement and are not redistributed.
   state from the persisted DAG for exact resume behavior.
 - A bounded OpenRouter explorer with deterministic recoverable open-set scheduling,
   fixed model identity, prompt/config provenance, per-call usage limits, and
-  closed-book versus tool-rich evidence modes.
+  closed-book, no-tool, and tool-rich evidence modes.
 - An agent-invisible MDS42/MS56 calibration and rediscovery evaluator built from
   a complete-genome alignment and the original published MS56 deletion table.
   These controls were used to calibrate the RBA growth floor and are therefore

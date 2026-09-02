@@ -58,8 +58,10 @@ closed-book recoverable arm. Change one declared factor at a time:
 1. Scheduler: `recoverable` versus `frontier-only`.
 2. Hard gate: `fba-rba` versus `fba-only`.
 3. Action sizing: model-selected `variable-1-max` versus `fixed-max`.
-4. Evidence exposure: `closed-book` versus `tool-rich`.
-5. Candidate universe: `wcm-1219` versus the full 4,290-gene registry.
+4. Tool access: `closed-book` versus `closed-book-no-tools`; the blinded
+   candidate preview is otherwise unchanged.
+5. Evidence exposure: `closed-book` versus `tool-rich`.
+6. Candidate universe: `wcm-1219` versus the full 4,290-gene registry.
 
 The existing closed-book, recoverable, variable-size, FBA+RBA arm is the
 reference and should not be rerun merely to spend equal money. Run ablations in

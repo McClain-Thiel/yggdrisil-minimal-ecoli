@@ -34,11 +34,12 @@ from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.state import GenomeState
 from yggdrisil_ecoli.tools.genes import GeneTools
 
-AgentMode = Literal["closed-book", "tool-rich"]
+AgentMode = Literal["closed-book", "closed-book-no-tools", "tool-rich"]
 AgentActionSizeMode = Literal["variable-1-max", "fixed-max"]
 SchedulerMode = Literal["recoverable", "frontier-only"]
 PROMPT_VERSION = 6
 FIXED_ACTION_PROMPT_VERSION = 7
+NO_TOOL_PROMPT_VERSION = 8
 BLIND_MAP_VERSION = 1
 MAX_CANDIDATE_PAGE_SIZE = 100
 
@@ -90,6 +91,8 @@ class AgentSearchConfig:
                 raise ValueError(f"{name} must be positive")
         if self.bundle_size > 20:
             raise ValueError("bundle_size must not exceed 20 for agent search")
+        if self.mode not in {"closed-book", "closed-book-no-tools", "tool-rich"}:
+            raise ValueError(f"unknown agent mode: {self.mode!r}")
         if self.action_size_mode not in {"variable-1-max", "fixed-max"}:
             raise ValueError(f"unknown action size mode: {self.action_size_mode!r}")
         if self.scheduler_mode not in {"recoverable", "frontier-only"}:
@@ -128,25 +131,22 @@ class AgentSearchConfig:
         schedule = _CandidateSchedule(registry, self.seed, candidate_genes)
         blind = (
             _BlindGeneMap(registry, self.seed, candidate_genes)
-            if self.mode == "closed-book"
+            if _is_blinded(self.mode)
             else None
         )
-        tool_names = ["analyze_deletion_bundle"]
-        if self.mode == "tool-rich":
-            tool_names = [
-                "list_deletion_candidates",
-                "inspect_gene_evidence",
-                "analyze_deletion_bundle",
-                "inspect_kegg_module",
-            ]
+        tool_names = [tool.__name__ for tool in _tool_functions(self.mode)]
         return {
             "provider": "openrouter",
             "model": self.model,
             "mode": self.mode,
             "prompt_version": (
-                FIXED_ACTION_PROMPT_VERSION
-                if self.action_size_mode == "fixed-max"
-                else PROMPT_VERSION
+                NO_TOOL_PROMPT_VERSION
+                if self.mode == "closed-book-no-tools"
+                else (
+                    FIXED_ACTION_PROMPT_VERSION
+                    if self.action_size_mode == "fixed-max"
+                    else PROMPT_VERSION
+                )
             ),
             "pydantic_ai": version("pydantic-ai"),
             "seed": self.seed,
@@ -368,7 +368,7 @@ class _AgentGeneTools:
     ) -> dict[str, object]:
         record = self.registry.require(canonical)
         essentiality = self.essentiality.record(canonical)
-        if self.mode == "closed-book":
+        if _is_blinded(self.mode):
             evidence: dict[str, object] = {
                 "gene_id": self.public(canonical),
                 "essentiality": essentiality.classification,
@@ -439,7 +439,7 @@ def make_agent_policy(
     schedule = _CandidateSchedule(registry, config.seed, candidate_genes)
     blind = (
         _BlindGeneMap(registry, config.seed, candidate_genes)
-        if config.mode == "closed-book"
+        if _is_blinded(config.mode)
         else None
     )
 
@@ -476,30 +476,12 @@ def make_agent_policy(
         config.bundle_size,
         fixed=config.action_size_mode == "fixed-max",
     )
-    tool_functions: list[Callable[..., Any]] = [analyze_deletion_bundle]
-    if config.mode == "tool-rich":
-        tool_functions = [
-            list_deletion_candidates,
-            inspect_gene_evidence,
-            analyze_deletion_bundle,
-            inspect_kegg_module,
-        ]
+    tool_functions = _tool_functions(config.mode)
     explorer = make_explorer(
         config.model_ref,
         action_type,
         tools=tool_functions,
-        instructions=(
-            "Explore one E. coli deletion state using only evidence in the prompt "
-            "and the supplied tools. Do not use web or literature knowledge. "
-            "Only propose identifiers returned in the candidate preview or by "
-            "list_deletion_candidates in this invocation. Do not inspect every "
-            "candidate: shortlist using the preview, then batch-check only the "
-            "final action. Treat essentiality, module retention, and unknown "
-            "annotations as uncertain ranking evidence, not prohibitions: empirical "
-            "datasets can disagree, so they may be deleted while pursuing a smaller "
-            "genome that remains both FBA-positive and feasible under the active "
-            "resource-allocation growth floor. Return direct deletion actions only."
-        ),
+        instructions=_explorer_instructions(config.mode),
         prompt=lambda context: _format_explorer_prompt(context, toolkit, config),
     )
     explorer.agent.model_settings = settings
@@ -658,29 +640,31 @@ def _format_explorer_prompt(
     deleted = toolkit.deleted_public_ids()
     shown_deleted = deleted[:64]
     preview_page = _candidate_preview_page(context.guidance)
-    return "\n".join(
-        [
-            f"GOAL: {context.goal}",
-            f"EVIDENCE_MODE: {config.mode}",
-            f"CURRENT_STATE_ID: {context.state_id}",
-            f"DELETED_GENE_COUNT: {len(deleted)}",
-            f"DELETED_GENE_IDS_FIRST_64: {json.dumps(shown_deleted)}",
-            "CURRENT_EVALUATIONS: "
-            + json.dumps(_scalar_evaluations(context.evaluations), sort_keys=True),
-            "CANDIDATE_PREVIEW: "
-            + json.dumps(
-                toolkit.list_candidates(
-                    page=preview_page,
-                    count=config.candidate_preview_count,
-                ),
-                sort_keys=True,
+    lines = [
+        f"GOAL: {context.goal}",
+        f"EVIDENCE_MODE: {config.mode}",
+        f"CURRENT_STATE_ID: {context.state_id}",
+        f"DELETED_GENE_COUNT: {len(deleted)}",
+        f"DELETED_GENE_IDS_FIRST_64: {json.dumps(shown_deleted)}",
+        "CURRENT_EVALUATIONS: "
+        + json.dumps(_scalar_evaluations(context.evaluations), sort_keys=True),
+        "CANDIDATE_PREVIEW: "
+        + json.dumps(
+            toolkit.list_candidates(
+                page=preview_page,
+                count=config.candidate_preview_count,
             ),
-            *_action_size_instructions(config),
-            f"SCHEDULER_GUIDANCE: {context.guidance or '(none)'}",
+            sort_keys=True,
+        ),
+        *_action_size_instructions(config),
+        f"SCHEDULER_GUIDANCE: {context.guidance or '(none)'}",
+    ]
+    if config.mode != "closed-book-no-tools":
+        lines.append(
             "Use at most one analyze_deletion_bundle call on the final proposed "
-            "bundle; do not call it separately for every candidate.",
-        ]
-    )
+            "bundle; do not call it separately for every candidate."
+        )
+    return "\n".join(lines)
 
 
 def _scalar_evaluations(records: Sequence[Any]) -> list[dict[str, object]]:
@@ -778,10 +762,56 @@ def _bounded_action_type(
     gene_tuple = Annotated[
         tuple[str, ...], Field(min_length=minimum, max_length=bundle_size)
     ]
-    base: type[BaseModel] = _BlindDeleteGenes if mode == "closed-book" else DeleteGenes
+    base: type[BaseModel] = _BlindDeleteGenes if _is_blinded(mode) else DeleteGenes
     model = create_model(
         f"{mode.title().replace('-', '')}DeleteGenes{bundle_size}",
         __base__=base,
         genes=(gene_tuple, ...),
     )
     return cast(type[DeleteGenes] | type[_BlindDeleteGenes], model)
+
+
+def _is_blinded(mode: AgentMode) -> bool:
+    return mode != "tool-rich"
+
+
+def _tool_functions(mode: AgentMode) -> list[Callable[..., Any]]:
+    if mode == "closed-book-no-tools":
+        return []
+    if mode == "closed-book":
+        return [analyze_deletion_bundle]
+    return [
+        list_deletion_candidates,
+        inspect_gene_evidence,
+        analyze_deletion_bundle,
+        inspect_kegg_module,
+    ]
+
+
+def _explorer_instructions(mode: AgentMode) -> str:
+    evidence_source = (
+        "the prompt"
+        if mode == "closed-book-no-tools"
+        else "the prompt and the supplied tools"
+    )
+    candidate_source = (
+        "the candidate preview in this invocation"
+        if mode == "closed-book-no-tools"
+        else ("the candidate preview or by list_deletion_candidates in this invocation")
+    )
+    checking = (
+        "shortlist using the preview"
+        if mode == "closed-book-no-tools"
+        else "shortlist using the preview, then batch-check only the final action"
+    )
+    return (
+        f"Explore one E. coli deletion state using only evidence in {evidence_source}. "
+        "Do not use web or literature knowledge. "
+        f"Only propose identifiers returned in {candidate_source}. "
+        f"Do not inspect every candidate: {checking}. "
+        "Treat essentiality, module retention, and unknown annotations as uncertain "
+        "ranking evidence, not prohibitions: empirical datasets can disagree, so "
+        "they may be deleted while pursuing a smaller genome that remains both "
+        "FBA-positive and feasible under the active resource-allocation growth "
+        "floor. Return direct deletion actions only."
+    )

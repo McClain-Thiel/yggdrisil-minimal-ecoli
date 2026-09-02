@@ -1,9 +1,12 @@
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from pydantic import ValidationError
 from yggdrisil.agents import ExplorerContext, ExplorerResult
+from yggdrisil.agents import pydantic_ai as yggdrisil_pydantic_ai
 
+import yggdrisil_ecoli.agent_policy as agent_policy
 from yggdrisil_ecoli.actions import DeleteGenes
 from yggdrisil_ecoli.agent_policy import (
     AgentPolicyError,
@@ -14,7 +17,9 @@ from yggdrisil_ecoli.agent_policy import (
     _BoundExplorer,
     _CandidateSchedule,
     _format_explorer_prompt,
+    _tool_functions,
     _UsageLimitedAgent,
+    make_agent_policy,
 )
 from yggdrisil_ecoli.data.essentiality import (
     EssentialityDataset,
@@ -74,6 +79,88 @@ def test_agent_config_requires_fixed_model_and_has_secret_free_metadata() -> Non
         AgentSearchConfig(model="openrouter/free")
     with pytest.raises(ValueError, match="must not exceed 20"):
         AgentSearchConfig(model="openai/gpt-5.6-sol", bundle_size=21)
+    with pytest.raises(ValueError, match="unknown agent mode"):
+        AgentSearchConfig(model="openai/gpt-5.6-sol", mode="invalid")  # type: ignore[arg-type]
+
+
+def test_no_tool_mode_is_blinded_and_records_empty_toolkit() -> None:
+    registry, _essentiality, _modules = _evidence()
+    config = AgentSearchConfig(
+        model="openai/gpt-5.6-sol",
+        mode="closed-book-no-tools",
+        seed=7,
+    )
+
+    metadata = config.metadata(registry)
+
+    assert metadata["blind_map_sha256"]
+    assert metadata["tools"] == []
+    assert metadata["prompt_version"] == 8
+    assert _tool_functions(config.mode) == []
+    action_type = _bounded_action_type(config.mode, 2)
+    assert action_type(genes=("g0001",)).genes == ("g0001",)
+    with pytest.raises(ValidationError, match="expected blinded gene ids"):
+        action_type(genes=("b0001",))
+
+
+def test_no_tool_policy_passes_no_tools_to_provider_adapter(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    registry, essentiality, modules = _evidence()
+    captured: dict[str, object] = {}
+
+    class FakeExplorer:
+        model = "fixture"
+
+        def __init__(self) -> None:
+            self.agent = SimpleNamespace(model_settings=None)
+
+        async def explore(
+            self, context: ExplorerContext[GenomeState]
+        ) -> ExplorerResult[object]:
+            return ExplorerResult(actions=[])
+
+        def format_prompt(self, context: ExplorerContext[GenomeState]) -> str:
+            return "fixture"
+
+    def fake_make_explorer(
+        model: str,
+        action_type: type[object],
+        *,
+        tools: list[object],
+        instructions: str,
+        prompt: object,
+    ) -> FakeExplorer:
+        captured.update(
+            model=model,
+            action_type=action_type,
+            tools=tools,
+            instructions=instructions,
+            prompt=prompt,
+        )
+        return FakeExplorer()
+
+    monkeypatch.setattr(agent_policy, "_load_openrouter_key", lambda: None)
+    monkeypatch.setattr(yggdrisil_pydantic_ai, "make_explorer", fake_make_explorer)
+
+    make_agent_policy(
+        registry=registry,
+        essentiality=essentiality,
+        modules=modules,
+        evaluator_ids={
+            "essentiality": "essentiality-id",
+            "fba": "fba-id",
+            "module_retention": "module-id",
+            "resource_allocation": "rba-id",
+        },
+        config=AgentSearchConfig(
+            model="openai/gpt-5.6-sol",
+            mode="closed-book-no-tools",
+        ),
+    )
+
+    assert captured["tools"] == []
+    assert "supplied tools" not in str(captured["instructions"])
 
 
 def test_agent_mapping_and_schedule_are_scoped_to_candidate_universe() -> None:
@@ -161,6 +248,62 @@ def test_closed_book_prompt_and_tools_hide_canonical_annotations() -> None:
         assert leaked not in str(evidence)
     assert blind.public("b0001") in prompt
     assert "g" in str(evidence)
+
+
+def test_no_tool_prompt_preserves_closed_book_preview_without_tool_instruction() -> (
+    None
+):
+    registry, essentiality, modules = _evidence()
+    state = GenomeState(frozenset({"b0001"}))
+
+    def prompt_for(mode: str) -> str:
+        config = AgentSearchConfig(
+            model="openai/gpt-5.6-sol",
+            mode=mode,  # type: ignore[arg-type]
+            seed=11,
+        )
+        blind = _BlindGeneMap(registry, config.seed)
+        schedule = _CandidateSchedule(registry, config.seed)
+
+        def toolkit(current: GenomeState) -> _AgentGeneTools:
+            return _AgentGeneTools(
+                registry=registry,
+                essentiality=essentiality,
+                modules=modules,
+                schedule=schedule,
+                state=current,
+                mode=config.mode,
+                blind=blind,
+                max_genes_per_action=config.bundle_size,
+            )
+
+        return _format_explorer_prompt(
+            ExplorerContext(
+                goal="minimize",
+                state_id="state",
+                state=state,
+                lineage=[],
+                guidance=None,
+            ),
+            toolkit,
+            config,
+        )
+
+    closed_book = prompt_for("closed-book")
+    no_tools = prompt_for("closed-book-no-tools")
+    closed_lines = [
+        line
+        for line in closed_book.splitlines()
+        if not line.startswith("EVIDENCE_MODE:")
+        and "analyze_deletion_bundle" not in line
+    ]
+    no_tool_lines = [
+        line for line in no_tools.splitlines() if not line.startswith("EVIDENCE_MODE:")
+    ]
+
+    assert no_tool_lines == closed_lines
+    assert "analyze_deletion_bundle" not in no_tools
+    assert "b000" not in no_tools
 
 
 def test_tool_rich_prompt_exposes_canonical_candidate_annotations() -> None:
@@ -448,14 +591,18 @@ async def test_bound_explorer_reuses_exact_prompt_toolkit() -> None:
     assert len(created) == 1
 
 
+@pytest.mark.parametrize("mode", ["closed-book", "closed-book-no-tools"])
 @pytest.mark.asyncio
-async def test_closed_book_action_rejects_valid_but_unexposed_blind_id() -> None:
+async def test_blinded_action_accepts_exposed_and_rejects_unexposed_id(
+    mode: str,
+) -> None:
     registry, essentiality, modules = _evidence()
     blind = _BlindGeneMap(registry, 23)
     schedule = _CandidateSchedule(registry, 23)
     exposed_gene, guessed_gene = schedule.genes[:2]
+    exposed_public = blind.public(exposed_gene)
     guessed_public = blind.public(guessed_gene)
-    action_type = _bounded_action_type("closed-book", 20)
+    action_type = _bounded_action_type(mode, 20)  # type: ignore[arg-type]
 
     def toolkit(state: GenomeState) -> _AgentGeneTools:
         tools = _AgentGeneTools(
@@ -464,7 +611,7 @@ async def test_closed_book_action_rejects_valid_but_unexposed_blind_id() -> None
             modules=modules,
             schedule=schedule,
             state=state,
-            mode="closed-book",
+            mode=mode,  # type: ignore[arg-type]
             blind=blind,
             max_genes_per_action=20,
         )
@@ -478,7 +625,12 @@ async def test_closed_book_action_rejects_valid_but_unexposed_blind_id() -> None
         async def explore(
             self, context: ExplorerContext[GenomeState]
         ) -> ExplorerResult[object]:
-            return ExplorerResult(actions=[action_type(genes=(guessed_public,))])
+            return ExplorerResult(
+                actions=[
+                    action_type(genes=(exposed_public,)),
+                    action_type(genes=(guessed_public,)),
+                ]
+            )
 
         def format_prompt(self, context: ExplorerContext[GenomeState]) -> str:
             return "fixture"
@@ -504,7 +656,7 @@ async def test_closed_book_action_rejects_valid_but_unexposed_blind_id() -> None
     )
 
     assert exposed_gene != guessed_gene
-    assert result.actions == []
+    assert result.actions == [DeleteGenes(genes=(exposed_gene,))]
     assert result.note == "adapter rejected 1 invalid action(s)"
     assert guessed_public not in result.note
     assert guessed_gene not in result.note
