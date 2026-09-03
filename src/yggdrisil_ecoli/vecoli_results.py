@@ -94,23 +94,26 @@ def summarize_vecoli_lineages(
 
 
 def _validate_manifest_provenance(manifest: dict[str, Any]) -> None:
-    application = _mapping(manifest.get("application"), "application provenance")
-    selection_source = Path(
-        _string(application.get("selection_source_path"), "selection source path")
-    )
-    if file_sha256(selection_source) != _string(
-        application.get("selection_source_sha256"), "selection source hash"
-    ):
-        raise ValueError("selection source hash no longer matches the manifest")
+    raw_application = manifest.get("application")
+    if raw_application is None:
+        _validate_combined_source_graphs(manifest.get("source_graphs"))
+    else:
+        application = _mapping(raw_application, "application provenance")
+        selection_source = Path(
+            _string(application.get("selection_source_path"), "selection source path")
+        )
+        if file_sha256(selection_source) != _string(
+            application.get("selection_source_sha256"), "selection source hash"
+        ):
+            raise ValueError("selection source hash no longer matches the manifest")
 
-    selection = _mapping(manifest.get("selection"), "selection")
-    graph_path = Path(_string(selection.get("graph_path"), "graph path"))
-    graph_files = _mapping(selection.get("graph_files"), "graph files")
-    expected_graph_hash = _string(graph_files.get(graph_path.name), "source graph hash")
-    if file_sha256(graph_path) != expected_graph_hash:
-        raise ValueError("source graph hash no longer matches the manifest")
-    if Path(f"{graph_path}-wal").exists() or Path(f"{graph_path}-shm").exists():
-        raise ValueError("source graph acquired SQLite sidecars after selection")
+        selection = _mapping(manifest.get("selection"), "selection")
+        graph_path = Path(_string(selection.get("graph_path"), "graph path"))
+        graph_files = _mapping(selection.get("graph_files"), "graph files")
+        expected_graph_hash = _string(
+            graph_files.get(graph_path.name), "source graph hash"
+        )
+        _validate_source_graph(graph_path, expected_graph_hash)
 
     registry = _mapping(manifest.get("registry"), "registry")
     registry_path = Path(_string(registry.get("path"), "registry path"))
@@ -140,6 +143,35 @@ def _validate_manifest_provenance(manifest: dict[str, Any]) -> None:
             raise ValueError(
                 "variant knockout audit hash no longer matches the manifest"
             )
+
+
+def _validate_combined_source_graphs(raw_graphs: object) -> None:
+    if not isinstance(raw_graphs, list) or not raw_graphs:
+        raise ValueError("combined manifest source_graphs must be a nonempty list")
+    for raw_record in raw_graphs:
+        record = _mapping(raw_record, "source graph record")
+        backup = _mapping(record.get("backup"), "source graph backup")
+        selection = _mapping(record.get("selection"), "source graph selection")
+        graph_path = Path(_string(selection.get("graph_path"), "graph path"))
+        frozen_path = Path(_string(backup.get("frozen_path"), "frozen graph path"))
+        if graph_path.resolve() != frozen_path.resolve():
+            raise ValueError("selection and backup graph paths differ")
+        graph_files = _mapping(selection.get("graph_files"), "graph files")
+        expected_graph_hash = _string(
+            graph_files.get(graph_path.name), "source graph hash"
+        )
+        if expected_graph_hash != _string(
+            backup.get("frozen_sha256"), "frozen graph hash"
+        ):
+            raise ValueError("selection and backup graph hashes differ")
+        _validate_source_graph(graph_path, expected_graph_hash)
+
+
+def _validate_source_graph(graph_path: Path, expected_hash: str) -> None:
+    if file_sha256(graph_path) != expected_hash:
+        raise ValueError("source graph hash no longer matches the manifest")
+    if Path(f"{graph_path}-wal").exists() or Path(f"{graph_path}-shm").exists():
+        raise ValueError("source graph acquired SQLite sidecars after selection")
 
 
 def _summarize_finalist(

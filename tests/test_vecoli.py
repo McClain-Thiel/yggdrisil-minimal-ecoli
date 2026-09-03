@@ -366,9 +366,34 @@ def test_lineage_summary_distinguishes_division_from_nondivision(
     assert finalist["generations"][0]["final_dry_mass_fold_change"] == 1.8
     assert result["all_biologically_failed"] is True
 
+    combined_payload = json.loads(manifest.read_text())
+    selection = combined_payload.pop("selection")
+    combined_payload.pop("application")
+    combined_payload["source_graphs"] = [
+        {
+            "backup": {
+                "frozen_path": str(graph),
+                "frozen_sha256": hashlib.sha256(graph.read_bytes()).hexdigest(),
+            },
+            "selection": selection,
+        }
+    ]
+    combined_manifest = tmp_path / "combined-manifest.json"
+    combined_manifest.write_text(json.dumps(combined_payload))
+
+    combined_result = summarize_vecoli_lineages(
+        combined_manifest, tmp_path / "combined-result.json"
+    )
+
+    assert combined_result["finalists"] == result["finalists"]
+
     graph.write_text("changed graph\n")
     with pytest.raises(ValueError, match="source graph hash"):
         summarize_vecoli_lineages(manifest, tmp_path / "changed-result.json")
+    with pytest.raises(ValueError, match="source graph hash"):
+        summarize_vecoli_lineages(
+            combined_manifest, tmp_path / "changed-combined-result.json"
+        )
 
 
 def _record(b_number: str, ecocyc_id: str | None) -> GeneRecord:
