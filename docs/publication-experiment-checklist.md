@@ -105,8 +105,8 @@ account-level stop guard.
 - [x] Tranche A2: second-five fresh Sol plus Qwen seed pairs. All ten arms
   completed for USD 24.15398255; combined first- and second-five model spend
   was USD 48.56144675.
-- [ ] Tranche B2: first five Sol gate-ablation pairs. This requires a new
-  authorization and account top-up.
+- [x] Tranche B2: first five Sol gate-ablation pairs. The five FBA-only arms
+  completed for USD 20.22001310 of authenticated account usage.
 - [ ] Tranche C: first five Sol action-size plus evidence-exposure pairs; reserve
   approximately USD 45 total.
 - [x] Authorize the second five seeds symmetrically only after the first-five
@@ -126,9 +126,15 @@ account-level stop guard.
   budget.
 - [x] Extend evolutionary-uniform and matched-cap Minesweeper symmetrically to
   seeds 606--1010 under the unchanged 193-state budget.
-- [ ] If matched-cap Minesweeper is competitive, predeclare and run a free
-  500/1,000/5,000-state scaling curve rather than spending additional LLM
-  budget first.
+- [x] Complete the predeclared free 500/1,000/5,000-state matched-cap
+  Minesweeper scaling curve. All ten seeds reached 5,000 states. Minesweeper
+  matched the paired 193-state Sol and Qwen endpoints after means of 642.2 and
+  930.5 evaluations, respectively, and exceeded both in all ten seeds by
+  5,000 states. The final download-verified archive has SHA-256
+  `806559aa6c37e1109946808a54df746aa6b359054f3b68c967badff23f3eab8b`.
+  Four definitive RBA-v3 graphs and six clean RBA-v4 restarts are combined
+  under the predeclared mixed-version audit; the six-seed v4-only sensitivity
+  analysis reaches the same conclusion.
 
 The heuristic's `no_proposals` termination after a lethal frontier child is a
 method outcome, not a failed run.
@@ -205,25 +211,25 @@ second-five archive has SHA-256
 Run every arm at the same ten seeds and change exactly one factor from canonical
 Sol.
 
-- [x] **Scheduler, seeds 101--505:** `recoverable` versus `frontier-only`.
-  Frontier-only found 0--40 deletions, while recoverable found 211--268. The
-  mean paired improvement was 223.2 deletions (run-level bootstrap 95% interval
-  201.0--249.2; exact two-sided sign-flip p=0.0625). Recoverable won all five
-  pairs. The frozen archive has SHA-256
-  `6526366194d9eb24ccca23248d15643a62abc8f711d196aa407584b6be7daf29`.
-- [ ] **Scheduler, seeds 606--1010:** extend both the canonical reference and
-  frontier-only arm under the locked ten-seed protocol.
-- [ ] **Gate:** `fba-rba` versus `fba-only`. Evaluate RBA on every state in both
-  arms. Use the common joint gate for the cross-arm primary endpoint and report
-  the FBA-only winner separately.
+- [x] **Scheduler, all ten seeds:** `recoverable` versus `frontier-only`.
+  Recoverable won all ten pairs by a mean of 228.8 deletions (run-level
+  bootstrap 95% interval 215.6--242.0; exact two-sided sign-flip
+  `p=0.001953125`).
+- [x] **Gate, seeds 101--505:** `fba-rba` versus `fba-only`. Under the common
+  joint endpoint, joint-gate search won all five pairs by a mean of 195.0
+  deletions (bootstrap 95% interval 166.2--226.4; descriptive exact
+  `p=0.0625`). Every deeper endpoint optimized by the FBA-only arm failed RBA.
 - [ ] **Action size:** `variable-1-max` versus `fixed-max`. This tests whether
   smaller recovery moves matter.
 - [ ] **Evidence exposure:** `closed-book` versus `tool-rich`. This changes both
   identifier/evidence exposure and available tools, so label it an
   evidence-exposure ablation rather than a pure tool-use effect.
-- [ ] Implement and test an optional `closed-book-no-tools` mode before claiming
-  a pure tool-use effect. It must preserve the same blinded preview and remove
-  only bundle-analysis tool access.
+- [x] Implement and test `closed-book-no-tools`; it preserves the same blinded
+  preview and removes only the aggregate bundle-analysis tool. Across five
+  paired Sol seeds, the canonical arm won 5/5 by a mean of 59.6 deletions
+  (bootstrap 95% interval 46.4--71.8; descriptive exact `p=0.0625`). The
+  panel spent USD 8.19110450 and passed all trace, identity, and integrity
+  audits.
 
 Candidate universe (`wcm-1219` versus all 4,290 genes) is a separate
 generalization study, not a clean one-factor ablation, because it changes the

@@ -2,12 +2,14 @@
 
 **Status:** interim in-silico methods report
 
-**Evidence cutoff:** 2 September 2026
+**Evidence cutoff:** 3 September 2026
 
 **Application revisions:** first five
 `d87debf67379ff4826937e7e0b26918e2235d438`; second five
 `8fea728af685ef0b036893e57e528a474028e203`; Minesweeper scaling
-`2032c5aba3df47dca71ff8736c8ea424ceb66f6b`
+policy `2032c5aba3df47dca71ff8736c8ea424ceb66f6b`; final numerical
+fallback `c4f77a4331c73562228f48f075c9a0fc1d29295c`; blinded no-tool
+intervention `6483b34d46f440514d6b4e08e77397b717e30b30`
 
 **Yggdrisil revision:**
 `67983c5c0821c57e6b0f60449b3e608b981455e2`
@@ -30,7 +32,7 @@ resource-balance-analysis (RBA) gate was:
 
 | Method | Mean deletions | 95% bootstrap interval for mean | Range | Mean fraction of eligible set deleted |
 | --- | ---: | ---: | ---: | ---: |
-| Matched-cap Minesweeper | 139.9 | 120.1--161.0 | 95--207 | 11.5% |
+| Matched-cap Minesweeper | 139.9 | 119.9--161.4 | 95--207 | 11.5% |
 | Closed-book Sol | 238.6 | 227.7--250.1 | 211--268 | 19.6% |
 | Closed-book Qwen | 275.8 | 259.2--291.7 | 239--305 | 22.7% |
 
@@ -60,11 +62,15 @@ one experiment [Gherman et al., 2025](https://pure.hw.ac.uk/ws/portalfiles/porta
 
 The present evidence supports a computational methods paper when framed as a
 sample-efficiency result under a fixed scientific-evaluation budget. The
-highest-priority work before a strong submission is to measure the matched-cap
-Minesweeper scaling curve, predeclare current finalists and run them in
-vEcoli, and replicate the gate and pure tool-access ablations. Extending the
-scheduler intervention and the remaining action/evidence experiments would
-strengthen mechanism attribution but is secondary to those tests.
+ten-seed Minesweeper scaling curve is complete: the agents retain a large
+advantage at 193 evaluations, while Minesweeper catches both agents when given
+hundreds to thousands of additional evaluations. The scheduler intervention
+is complete across ten paired seeds, and the gate and pure tool-access
+interventions are complete across five paired seeds. The remaining
+highest-priority experiment is the active, prospectively selected
+current-finalist vEcoli panel. Action-size, broader evidence-exposure, and
+candidate-diversity analyses would strengthen mechanism attribution and
+biological interpretation but are secondary to that panel.
 
 ## 1. Scientific context
 
@@ -267,6 +273,55 @@ records per state. The policy's version-2 implementation bounds temporary
 proposal generation but preserves candidate order, as tested by the exact
 193-state continuity requirement.
 
+The initial scaling attempt was stopped after seed 505 exposed a deterministic
+HiGHS status-4 result for one RBA linear program. Three configured solves were
+indeterminate, while `highs-ipm` without presolve returned an optimal solution
+whose independently checked maximum inequality violation was `9.94e-8`, below
+the pinned `1e-7` tolerance. That fourth path was added as evaluator version 3
+and covered by a real-artifact regression.
+
+The version-3 panel then exposed a different indeterminate state after 1,776
+seed-505 evaluations. All four automatic methods returned status 4. An
+unscaled primal-simplex solve (`highs-ds`, presolve disabled, simplex strategy
+4, scaling strategy 0) returned definitive infeasibility in about six seconds.
+A GLPK dual-simplex result claiming optimality was rejected because its
+independently computed maximum row violation was `1.77e-4`; an exact GLPK
+diagnostic did not finish and was not used. The new path became evaluator
+version 4 and the exact 335-deletion state became a regression fixture.
+
+Both superseded partial attempts are preserved as checksummed audit history.
+Seeds 101--404 had already completed 5,000 version-3 states, and all 20,000 of
+their RBA records were direct definitive `optimal` or `infeasible` outcomes
+before the appended fallback. They are therefore retained under an explicit
+mixed-version audit. Seeds 505--1010 were restarted from empty graphs under
+version 4. The final analysis reports both the ten-seed mixed-version curve and
+a six-seed version-4-only sensitivity analysis; no partial graph is resumed or
+migrated.
+
+### 2.7 Prospective whole-cell-model validation
+
+Before reading any new whole-cell-model outcome, one Sol and one Qwen endpoint
+were selected from each of search seeds 101, 202, and 303 by the same common
+primary rule: maximum deletions among states passing FBA and RBA, followed by
+higher FBA growth and state ID. The six fixed genotypes contain 211--287
+deletions. Every requested canonical deletion maps one-to-one to a vEcoli
+cistron; ambiguous or missing mappings would have rejected a candidate before
+simulation.
+
+Each genotype is simulated in pinned vEcoli commit
+`b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc` at lineage seeds 101, 202, and
+303 for at most 20 serial generations in the basal
+M9-glucose-minus-amino-acids condition. A single daughter is followed after
+each division. Maximum-duration nondivision, internal model exception,
+resource failure, orchestration failure, and completion of 20 generations are
+preserved as distinct terminal outcomes. No genotype is replaced after an
+unfavorable result.
+
+The genotype is the biological unit; the three lineage seeds are repeated
+simulations, and serial generations are not independent observations. The
+panel is therefore reported genotype by genotype without treating its 18
+lineage traces or individual divisions as biological replicates.
+
 ## 3. Results
 
 ### 3.1 Per-seed primary endpoints
@@ -305,18 +360,115 @@ The authenticated OpenRouter account-usage delta for the twenty paid model
 runs was USD 48.56144675. Graph-recorded provider cost is incomplete for Sol
 and must not be substituted for this account-level total.
 
-### 3.2 Scheduler ablation
+### 3.2 Secondary zero-model controls
 
-The first five Sol seeds were rerun with only the scheduler changed from
-recoverable to frontier-only. Frontier-only terminated after two to four
-states and found `20, 40, 8, 0, 0` deletions, whereas recoverable search found
-`233, 233, 211, 239, 268`. The mean paired improvement was 223.2 deletions
-(bootstrap interval 201.0--249.2), with five wins in five seeds. At `n=5`, the
-smallest possible two-sided sign-flip p-value is 0.0625, which is the observed
-value. This is large mechanistic evidence for state reopening, but remains a
-five-seed ablation until seeds 606--1010 are completed.
+The simpler controls establish that the matched Minesweeper adaptation is not
+a weak comparator:
 
-### 3.3 Relation to EMine-737 and whole-cell evidence
+| Method | Independent seeds | Mean best deletions | Range | Typical termination |
+| --- | ---: | ---: | ---: | --- |
+| Random-uniform | 5 | 34.2 | 24--46 | 193-state cap |
+| Structural heuristic-uniform | 5 | 0.0 | 0--0 | two states, `no_proposals` |
+| Evolutionary-uniform | 10 | 65.9 | 50--89 | 193-state cap |
+| Matched-cap Minesweeper | 10 | 139.9 | 95--207 | 193-state cap |
+
+The structural heuristic always proposed one lethal child and then stopped
+because it could expand only the structural frontier. This is a property of
+that deliberately small baseline, not evidence that the deletion space was
+exhausted. Minesweeper exceeded evolutionary search in every paired seed by a
+mean of 74.0 deletions (run-level bootstrap interval 57.3--92.0; exact
+two-sided sign-flip `p=0.001953125`). Random and heuristic were retained as
+screening controls; the stronger Minesweeper comparator is the declared
+model-versus-baseline contrast.
+
+### 3.3 Scheduler ablation
+
+All ten Sol seeds were rerun with only the scheduler changed from recoverable
+to frontier-only. Frontier-only found `20, 40, 8, 0, 0, 0, 0, 30, 0, 0`
+deletions, whereas recoverable search found
+`233, 233, 211, 239, 268, 241, 213, 268, 237, 243`. Recoverable search won all
+ten pairs. Its mean paired advantage was 228.8 deletions (run-level bootstrap
+95% interval 215.6--242.0; exact two-sided sign-flip `p=0.001953125`). This
+large one-factor intervention supports state reopening as an important search
+mechanism; it does not add independent biological-validity evidence.
+
+### 3.4 Viability-gate ablation
+
+The first five Sol seeds were rerun with only the search-time gate changed from
+joint FBA+RBA to FBA-only. For a comparable endpoint, both arms were then
+selected by the common joint gate. Joint-gate search found
+`233, 233, 211, 239, 268` deletions, while FBA-only search found
+`65, 60, 50, 9, 25`. The joint-gate arm won all five pairs by a mean of 195.0
+deletions (run-level bootstrap 95% interval 166.2--226.4; exact two-sided
+sign-flip `p=0.0625`, the minimum possible at `n=5`). The much deeper states
+that the FBA-only arm itself optimized—`412, 401, 414, 421, 393` deletions—all
+failed RBA. Thus resource-allocation feedback changes the trajectory rather
+than merely relabeling its final state. This is descriptive mechanistic
+evidence from five runs, not a standalone confirmatory test.
+
+### 3.5 Blinded bundle-analysis tool ablation
+
+The first five Sol seeds were rerun with the same seed-specific blinded
+categorical preview but no callable scientific tool. Canonical closed-book Sol
+found `233, 233, 211, 239, 268` jointly feasible deletions; the no-tool arm
+found `193, 168, 164, 175, 186`. Tool-enabled search won all five pairs by a
+mean of 59.6 deletions (run-level bootstrap 95% interval 46.4--71.8; exact
+two-sided sign-flip `p=0.0625`, descriptive at `n=5`). The intervention graphs
+contained no scientific tool calls and no canonical identifiers in model I/O,
+and their declared tool lists were empty. This isolates the contribution of
+the bounded aggregate bundle-analysis tool while holding the blinded preview
+constant; it does not compare every possible tool design.
+
+### 3.6 Numerical validation
+
+The original RBAtools/GLPK path was not accepted as a final evaluator. In a
+193-state seed-202 audit, it classified six solutions as feasible despite
+maximum primal violations of approximately `0.0093`--`0.0095`. HiGHS rejected
+all six; among its 32 feasible solutions, the maximum audited primal violation
+was `8.34e-8` under the declared `1e-7` tolerance. All primary graphs use a
+HiGHS evaluator, and superseded GLPK trajectories are retained only as audit
+history. The later status-4 fallback correction described in Section 2.6 did
+not reinterpret an infeasible solution as viable without validation: its
+accepted solution passed independent equality, inequality, and bound-residual
+checks.
+
+### 3.7 Minesweeper scientific-evaluation scaling
+
+The ten deterministic Minesweeper trajectories reached the following jointly
+FBA-positive and RBA-feasible deletion depths. Each larger state count is a
+nested prefix of the same seed-specific trajectory:
+
+| Evaluated states | Mean deletions | 95% bootstrap interval | Median | Range | Mean gain from 193 |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 193 | 139.9 | 119.9--161.4 | 136.5 | 95--207 | 0.0 |
+| 500 | 239.5 | 218.1--262.0 | 239.5 | 195--304 | 99.6 |
+| 1,000 | 324.7 | 279.3--367.6 | 333.5 | 218--411 | 184.8 |
+| 5,000 | 653.8 | 605.3--697.9 | 677.0 | 497--729 | 513.9 |
+
+At 193 evaluations, Minesweeper trailed Sol by 98.7 deletions and Qwen by
+135.9 deletions on average, with zero wins in either paired comparison. At 500
+evaluations, Minesweeper was nearly equal to Sol in the aggregate
+(`+0.9` deletions; 5/10 paired wins) but still trailed Qwen by 36.3 deletions
+(3/10 wins). At 1,000 evaluations, it exceeded the fixed 193-state Sol and
+Qwen endpoints by 86.1 and 48.9 deletions on average, with 8/10 and 7/10 wins.
+At 5,000 evaluations, it exceeded both fixed agent endpoints in all ten paired
+seeds.
+
+Minesweeper first matched the paired Sol endpoint after a mean of 642.2
+evaluations (median 482; range 196--1,709) and the paired Qwen endpoint after a
+mean of 930.5 evaluations (median 767; range 250--2,351). Every trajectory
+reached both paired agent endpoints by 5,000 states. The six-seed version-4-
+only sensitivity analysis shows the same monotonic pattern, with mean deletion
+depths of 122.3, 223.5, 305.3, and 635.7 at the four prefixes.
+
+These results resolve the principal state-budget fairness question. The agent
+advantage is a scientific-evaluation sample-efficiency result, not an
+unconditional claim that Minesweeper cannot find deeper candidates. The
+larger Minesweeper prefixes use about 2.6, 5.2, and 25.9 times as many state
+evaluations as the fixed 193-state agent runs. This analysis does not equalize
+wall-clock time, total computation, model tokens, or money.
+
+### 3.8 Relation to EMine-737 and whole-cell evidence
 
 The deepest current candidate removes 305 of the 1,216 eligible genes (25.1%)
 and leaves 911 genes in that subset. It does not delete genes outside the
@@ -350,7 +502,7 @@ and the result remains model evidence, not wet-lab viability.
    evaluation budget, common candidate universe, and common FBA+RBA endpoint,
    both closed-book agent policies outperform the strongest structural
    baseline tested across all ten paired seeds.
-2. **Recovery mechanism.** The five-seed scheduler intervention shows that
+2. **Recovery mechanism.** The ten-seed scheduler intervention shows that
    reopening viable non-leaf states is necessary for deep search in this
    setup; a frontier-only policy collapses after lethal descendants.
 3. **Information-boundary claim.** The result was obtained without exposing
@@ -358,10 +510,19 @@ and the result remains model evidence, not wet-lab viability.
    policy. The agent did receive blinded categorical evidence and a bounded
    aggregate bundle-analysis tool; "closed-book" does not mean
    "no scientific evidence."
-4. **Reproducibility claim.** Every run retains graph structure, evaluator
+4. **Mechanism interventions.** The five-seed gate and no-tool arms both
+   reduced the common jointly feasible endpoint in every paired seed. This
+   supports resource-allocation feedback and bounded bundle analysis as useful
+   components, while remaining descriptive at five runs each.
+5. **Reproducibility claim.** Every run retains graph structure, evaluator
    records, policy decisions, proposal events, model/tool traces, usage,
    revisions, artifact identities, and checksums. The uploaded archives were
    downloaded and hash-verified after transfer.
+6. **Budget-dependent baseline claim.** The completed scaling curve shows that
+   matched-cap Minesweeper catches the fixed 193-state agent endpoints with
+   hundreds to thousands of evaluations. This supports a sample-efficiency
+   claim and rules out an interpretation of unconditional algorithmic
+   superiority.
 
 ### What the experiment does not support
 
@@ -402,9 +563,11 @@ and the result remains model evidence, not wet-lab viability.
   compute regime.
 - **Compute metric.** The 193-state cap equalizes calls to the scientific
   evaluator suite, not dollars, tokens, or wall-clock compute. The structural
-  baseline is far cheaper than an LLM policy. A state-budget scaling curve and
-  cost-normalized analysis are required before claiming general computational
-  efficiency.
+  baseline is far cheaper than an LLM policy. The completed state-budget curve
+  shows that Minesweeper catches the agents with about 3--5 times as many
+  evaluations on average, then substantially exceeds them at 5,000 states.
+  A cost- or wall-clock-normalized analysis would still be required before
+  claiming general computational efficiency.
 - **Adaptive replication design.** The first-five results were already known
   when matched-cap Minesweeper was selected as the primary baseline and the
   second-five block was locked. The new five pairs replicate the direction and
@@ -415,9 +578,10 @@ and the result remains model evidence, not wet-lab viability.
   preserved, but future reruns may differ.
 - **Calibration reuse.** MDS42 and MS56 informed the RBA-floor decision and
   cannot be described as untouched viability tests.
-- **Multiple unfinished ablations.** Gate, action-size, evidence-exposure, and
-  pure no-tool ablations are still pending. Without them, the contribution of
-  individual agent components is not fully identified.
+- **Incomplete mechanism matrix.** Scheduler, gate, and pure no-tool
+  interventions are complete, but action-size and broader evidence-exposure
+  experiments remain pending. The five-seed gate and no-tool results are
+  descriptive and do not identify higher-order interactions among components.
 - **Current-finalist WCM gap.** The existing 300/300 division result belongs to
   an older cohort. The present Sol/Qwen endpoints require predeclared vEcoli
   testing with biological-unit-level analysis.
@@ -432,23 +596,27 @@ computational genome-design methods manuscript.
 
 It is not yet a complete paper package. The minimum high-value additions are:
 
-1. run a predeclared 500/1,000/5,000-state matched-cap Minesweeper scaling
-   curve and report both evaluator-budget and compute/cost-normalized results;
-2. predeclare one finalist per independent seed and method before viewing new
-   vEcoli outcomes, then simulate multiple lineage seeds with matched WT,
-   benign-deletion, essential-deletion, and workflow controls;
-3. replicate the one-factor FBA-only gate experiment and implement the same-
-   evidence closed-book/no-tool comparison before assigning causal importance
-   to RBA feedback or tool use;
-4. report overlap/diversity and functional enrichment across independent
+1. finish the predeclared current-finalist vEcoli panel across all six fixed
+   genotypes and three lineage seeds, retaining model exceptions separately
+   from biological nondivision;
+2. report a compute and wall-clock accounting alongside the completed
+   scientific-evaluation scaling curve if the manuscript makes any general
+   efficiency claim;
+3. report the fixed vEcoli panel by genotype, compare it with the separately
+   preserved workflow controls, and avoid treating an internal model exception
+   as biological nondivision;
+4. extend the five-seed gate and same-evidence no-tool interventions if formal
+   confirmatory mechanism inference is required, and run the locked
+   action-size comparison before assigning importance to smaller recovery
+   moves;
+5. report overlap/diversity and functional enrichment across independent
    finalists, rather than presenting only the deepest genotype; and
-5. reserve biological viability claims for wet-lab construction and growth
+6. reserve biological viability claims for wet-lab construction and growth
    measurements.
 
-Extending the five-seed scheduler intervention to ten seeds and running the
-fixed-action-size and broader tool-rich conditions remain useful secondary
-ablations, but they are not prerequisites for the central fixed-evaluation-
-budget search claim.
+Running the fixed-action-size and broader tool-rich conditions remains a
+useful secondary analysis, but it is not a prerequisite for the central
+fixed-evaluation-budget search claim.
 
 If those items hold, the strongest defensible central claim is:
 
@@ -473,9 +641,16 @@ Key preserved bundles are:
 | --- | --- | --- |
 | Sol/Qwen seeds 101--505 | `01-search-evidence/wcm1216-sol-qwen-highs-seeds101-505-20260830.tar.gz` | `852805895077ab937b2af3edd16e671db56858bf89830d4839b8420437c50f9e` |
 | Sol/Qwen seeds 606--1010 and formal ten-seed analysis | `01-search-evidence/wcm1216-sol-qwen-highs-seeds606-1010-20260901.tar.gz` | `789513783a138e55dfd6f747c57f48c04c7c9301b5aa3349d4fdd14e9cb28302` |
+| Random/heuristic controls and numerical audit | `01-search-evidence/wcm1216-free-baselines-five-seed-highs-20260830.tar.gz` | `1ebd08fab8627d1fc4ee00de5afd13730f3d6fc4db4e1162b8baafeadadbda94` |
 | Strong baselines seeds 101--505 | `01-search-evidence/wcm1216-strong-baselines-highs-seeds101-505-20260831.tar.gz` | `fb51760f9cabf632787c331ff3e9e4bf2a85fabec7cb243d54340711e884f762` |
 | Strong baselines seeds 606--1010 | `01-search-evidence/wcm1216-strong-baselines-highs-seeds606-1010-20260901.tar.gz` | `c03657c8eb5039c7be7f7ce5b0cec9e8eb69628a9d5b4e9d19919b1a3bbb31c2` |
 | Scheduler ablation seeds 101--505 | `01-search-evidence/wcm1216-sol-scheduler-ablation-highs-seeds101-505-20260831.tar.gz` | `6526366194d9eb24ccca23248d15643a62abc8f711d196aa407584b6be7daf29` |
+| Scheduler ablation seeds 606--1010 | `01-search-evidence/wcm1216-sol-scheduler-ablation-seeds606-1010-rba-v3-20260902.tar.gz` | `671019f736925d1bf24dc56e47a717aa2f06db814d7b5da7b7ce7e3c42842d72` |
+| FBA-only gate ablation seeds 101--505 | `04-audit-history/wcm1216-sol-gate-fba-only-seeds101-505-rba-v3-20260902.tar.gz` | `337aee5a3dbd67c9901405eef36f7405cd9b27b8f36faa175d3ab457299a441f` |
+| Blinded no-tool ablation seeds 101--505 | `04-audit-history/wcm1216-sol-no-analysis-tool-seeds101-505-rba-v3-20260902.tar.gz` | `fdaabcf6ce29294b5adc2c110d77adf939029b18b2b7fb3538af90a3773e3b12` |
+| Superseded Minesweeper scaling attempt and solver diagnostics | `04-audit-history/wcm1216-minesweeper-states500-5000-seeds101-1010-20260901-superseded-rba-v2.tar.gz` | `f8c651ce26c12e160b561580157e9e95c8a4f80432f1dd0b053cad3614ee3ccb` |
+| Second Minesweeper scaling incident and complete RBA-v3 graphs | `04-audit-history/wcm1216-minesweeper-states500-5000-seeds101-1010-rba-v3-second-incident-20260902.tar.zst` | `35d8a6c7463c49153994fc2b35acee3c12896519654af46f2ed671163457d301` |
+| Final ten-seed Minesweeper scaling curve | `01-search-evidence/wcm1216-minesweeper-scaling-193-5000-ten-seed-rba-v3-v4-20260903.tar.zst` | `806559aa6c37e1109946808a54df746aa6b359054f3b68c967badff23f3eab8b` |
 
 The second-five model archive contains ten new mutable and read-only frozen
 graphs, per-arm logs, budget snapshots, exact runner/analyzer/finalizer code,
