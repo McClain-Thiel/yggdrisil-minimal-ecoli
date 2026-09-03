@@ -284,18 +284,24 @@ such a test to cross 0.05; ten is the planned minimum for more stable intervals.
 The previous WCM experiment is complete and should remain a distinct validation
 cohort. For the fresh corrected comparison:
 
-- [ ] Select finalists before reading new vEcoli outcomes.
+- [x] Select finalists before reading new vEcoli outcomes. Six genotypes were
+  fixed: Sol and Qwen endpoints at search seeds 101, 202, and 303.
 - [ ] Select at least five independently discovered genotypes per claimed
   method—for example, the deterministic primary winner from the first five
-  locked seeds rather than five states cherry-picked from one graph.
-- [ ] Run each finalist at three or more lineage seeds for up to 20 generations,
-  with matched WT, benign-deletion, essential-deletion, and orchestration
-  controls.
-- [ ] Treat candidate genotype as the biological/statistical unit and lineage
+  locked seeds rather than five states cherry-picked from one graph. The
+  completed prospective panel has three genotypes per method.
+- [x] Run each of the six fixed finalists at lineage seeds 101, 202, and 303
+  for up to 20 generations. One 211-deletion Sol candidate reached 20/20 in
+  all three lineages. Preserve all other terminal reasons without replacement.
+- [ ] Run contemporaneous matched WT, benign-deletion, essential-deletion, and
+  orchestration controls. Prior workflow controls are preserved separately but
+  are not a substitute for a matched prospective control panel.
+- [x] Treat candidate genotype as the biological/statistical unit and lineage
   seed as a repeated measure. Do not call serial generations independent
   replicates.
-- [ ] Analyze survival to generation 20, division time, mass doubling, temporal
-  trends, and model/workflow failures separately.
+- [ ] Complete the deeper temporal analysis. Generation-20 completion and
+  terminal classes are analyzed separately, but division time, mass doubling,
+  and longitudinal trends remain to be reported.
 - [ ] Explain or supersede the stale seed-101 intermediate `status.json` that
   shows one lineage at 19/20 while the later final results record 20/20.
 
@@ -306,8 +312,9 @@ If the checklist succeeds, the defensible central claim is:
 > At a fixed scientific-evaluation budget, agent-guided recoverable search
 > finds more extensively reduced genomes satisfying metabolic and resource-
 > allocation constraints than random or structural-frontier baselines;
-> scheduler, evidence, action-size, and gate ablations explain the improvement,
-> and a predeclared subset sustains division in a pinned whole-cell model.
+> scheduler, gate, and blinded-tool interventions explain part of the
+> improvement, and one of six prospectively fixed candidates sustains 20
+> generations across three lineage seeds in a pinned whole-cell model.
 
 This remains an in-silico genome-design result. Wet-lab construction is required
 for a claim of biological viability.

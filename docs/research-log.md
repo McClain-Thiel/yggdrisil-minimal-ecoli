@@ -490,3 +490,81 @@ verified, and tested again. The archive is
 `wcm1216-minesweeper-scaling-193-5000-ten-seed-rba-v3-v4-20260903.tar.zst`;
 its SHA-256 is
 `806559aa6c37e1109946808a54df746aa6b359054f3b68c967badff23f3eab8b`.
+
+## 2026-09-03 — Prospective current-finalist vEcoli panel complete
+
+### Fixed panel and outcomes
+
+All 18 predeclared simulations are complete: six fixed Sol/Qwen genotypes at
+lineage seeds 101, 202, and 303, with no candidate replacement. The candidate
+selection hash remained
+`fd5e0248895a122c93d6278ab378be34d385cf6a5f2a3848c87a2450f1de4cce`.
+
+The completed generations by genotype were:
+
+| Method | Search seed | Deletions | Lineage 101 | Lineage 202 | Lineage 303 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Qwen | 101 | 239 | 1 | 1 | 1 |
+| Qwen | 202 | 287 | 1 | 1 | 1 |
+| Qwen | 303 | 246 | 16 | 12 | 13 |
+| Sol | 101 | 233 | 5 | 3 | 4 |
+| Sol | 202 | 233 | 10 | 11 | 9 |
+| Sol | 303 | 211 | 20 | 20 | 20 |
+
+The 211-deletion Sol search-seed-303 candidate reached the 20-generation cap
+in all three lineages, for 60 of 60 requested divisions. It is the only fixed
+candidate to do so. The three Sol candidates completed 102 of 180 possible
+generations; the three Qwen candidates completed 47 of 180. These totals are
+descriptive because the genotype, not each lineage or generation, is the
+biological unit and there are only three fixed genotypes per method.
+
+The 18 terminal outcomes were three `reached_max_generations`, eight
+`nondivision_max_duration`, and seven `model_exception`. Internal model
+exceptions remain distinct from maximum-duration nondivision and are not
+treated as biological death. The outcome therefore supports sustained
+division for one genotype in one pinned WCM condition, not wet-lab viability
+or a general Sol-versus-Qwen biological conclusion.
+
+### Execution audit and incidents
+
+Every accepted lineage used vEcoli commit
+`b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc`, pinned Nextflow 25.10.4, and
+Java 21. The run-specific wrapper accepted a nonzero Nextflow return only when
+all six candidates had complete predeclared terminal classes. It rejected
+running, unscheduled, resource-failure, and orchestration-failure states.
+
+The seed-101 workflow had completed before the original wrapper attempted
+summary generation; its raw results were summarized without rerunning any
+simulation. One seed-202 continuation accidentally selected Homebrew Nextflow
+26 and failed during configuration parsing before any simulation task ran.
+That attempt remains preserved separately. The launcher then placed the pinned
+Nextflow binary first in the child environment and recorded its hash. Archived
+results could be skipped during recovery only when their retained result hash
+exactly matched the prior validated ledger. No scientific input or candidate
+was changed by these operational corrections.
+
+The final analyzer verified all six candidate identities, all 18 outcomes,
+the six source-graph hashes, every lineage result hash, and the fixed selection
+hash. Overall analysis contains six candidate summaries and 18 unique
+candidate-by-lineage records.
+
+### Preservation
+
+Each raw lineage tree passed its own per-file SHA-256 inventory before
+compression. Each archive was uploaded under `03-vecoli-validation`,
+downloaded to a fresh temporary directory, matched byte-for-byte, and passed
+Zstandard integrity testing before the corresponding local raw output was
+removed:
+
+- seed 101: 1,539 files, SHA-256
+  `ccc6ff443447603b2106b8d8b2970b4ff6349e333461e30a85958ee54162a0d1`;
+- seed 202: 1,386 files, SHA-256
+  `91350c18c89668d8fef2dfc54fc82bacfe642fd663f960603a359d905e980b60`;
+- seed 303: 1,441 files, SHA-256
+  `b426eeede042e0823de0f991290add0e50dad156873aafac565ec32b8269bde9`.
+
+The 75-file final analysis/provenance tree was archived separately as
+`wcm1216-sol-qwen-current-finalists-vecoli-complete-20260903.tar.zst`. Its
+uploaded copy was independently downloaded, hash-verified, archive-tested,
+and checked for the declared analysis and manifests. Its SHA-256 is
+`4ad8a2eabbe03438a4853055c24f6a8e1637dc960e2620668639ad46eb1dda3d`.

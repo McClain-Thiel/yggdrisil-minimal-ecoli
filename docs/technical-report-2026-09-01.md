@@ -14,13 +14,15 @@ intervention `6483b34d46f440514d6b4e08e77397b717e30b30`
 **Yggdrisil revision:**
 `67983c5c0821c57e6b0f60449b3e608b981455e2`
 
+**vEcoli adapter and result-validation revision:**
+`fdd791a5804e9a2b786a436b03581a1b0014c66e`
+
 ## Executive summary
 
 This study asks whether a closed-book language-model policy can search a large
 combinatorial gene-deletion space more effectively than a strong structural
 baseline when both receive the same maximum number of candidate evaluations.
-The
-benchmark restricts deletion proposals to 1,216 canonical *Escherichia coli*
+The benchmark restricts deletion proposals to 1,216 canonical *Escherichia coli*
 K-12 protein-coding genes that map into the 1,219-gene whole-cell-model (WCM)
 universe released by Gherman et al. The agent sees blinded identifiers and
 categorical evidence rather than canonical locus tags.
@@ -60,17 +62,28 @@ across repeated lineages. Those are different computational budgets and
 validation standards, so the designs must not be ranked as if they came from
 one experiment [Gherman et al., 2025](https://pure.hw.ac.uk/ws/portalfiles/portal/160646316/PIIS240547122500225X.pdf).
 
+Six primary Sol/Qwen candidates were fixed before any new WCM outcome was
+read, then simulated for up to 20 generations at three lineage seeds. One
+candidate—the 211-deletion Sol search-seed-303 endpoint—reached 20 generations
+in all three lineages. The other five did not: three genotypes ended by
+maximum-duration nondivision in at least two lineages, and two Sol genotypes
+ended by internal model exceptions after several divisions. Internal model
+exceptions are not classified as biological death. This is prospective
+mechanistic evidence for one design in one pinned model and medium, not wet-lab
+viability.
+
 The present evidence supports a computational methods paper when framed as a
 sample-efficiency result under a fixed scientific-evaluation budget. The
 ten-seed Minesweeper scaling curve is complete: the agents retain a large
 advantage at 193 evaluations, while Minesweeper catches both agents when given
 hundreds to thousands of additional evaluations. The scheduler intervention
-is complete across ten paired seeds, and the gate and pure tool-access
-interventions are complete across five paired seeds. The remaining
-highest-priority experiment is the active, prospectively selected
-current-finalist vEcoli panel. Action-size, broader evidence-exposure, and
-candidate-diversity analyses would strengthen mechanism attribution and
-biological interpretation but are secondary to that panel.
+is complete across ten paired seeds, the gate and pure tool-access
+interventions are complete across five paired seeds, and the prospective
+current-finalist vEcoli panel is complete. The remaining highest-priority work
+is to analyze why the five other fixed candidates stopped, report genotype
+overlap and functional diversity, and add wet-lab validation if the manuscript
+makes biological-viability claims. Action-size and broader evidence-exposure
+experiments would strengthen mechanism attribution but are secondary.
 
 ## 1. Scientific context
 
@@ -308,7 +321,7 @@ deletions. Every requested canonical deletion maps one-to-one to a vEcoli
 cistron; ambiguous or missing mappings would have rejected a candidate before
 simulation.
 
-Each genotype is simulated in pinned vEcoli commit
+Each genotype was simulated in pinned vEcoli commit
 `b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc` at lineage seeds 101, 202, and
 303 for at most 20 serial generations in the basal
 M9-glucose-minus-amino-acids condition. A single daughter is followed after
@@ -468,7 +481,47 @@ larger Minesweeper prefixes use about 2.6, 5.2, and 25.9 times as many state
 evaluations as the fixed 193-state agent runs. This analysis does not equalize
 wall-clock time, total computation, model tokens, or money.
 
-### 3.8 Relation to EMine-737 and whole-cell evidence
+### 3.8 Prospective current-finalist whole-cell results
+
+All six fixed candidates produced complete terminal records at all three
+lineage seeds:
+
+| Method | Search seed | Deletions | Lineage 101 | Lineage 202 | Lineage 303 | Lineages reaching 20 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Qwen | 101 | 239 | 1/20 | 1/20 | 1/20 | 0/3 |
+| Qwen | 202 | 287 | 1/20 | 1/20 | 1/20 | 0/3 |
+| Qwen | 303 | 246 | 16/20 | 12/20 | 13/20 | 0/3 |
+| Sol | 101 | 233 | 5/20 | 3/20 | 4/20 | 0/3 |
+| Sol | 202 | 233 | 10/20 | 11/20 | 9/20 | 0/3 |
+| Sol | 303 | 211 | 20/20 | 20/20 | 20/20 | 3/3 |
+
+The 211-deletion Sol candidate sustained 60 of 60 requested serial divisions
+across the three lineage seeds. It retains 1,005 of the 1,216 eligible
+canonical genes and all three WCM genes outside that eligible intersection,
+for 1,008 retained WCM genes. Sol's three fixed candidates completed 102 of
+180 possible generations, while Qwen's completed 47 of 180. With only three
+fixed genotypes per method, these totals are descriptive and are not an
+inferential model comparison.
+
+The 18 terminal outcomes comprise three `reached_max_generations`, eight
+`nondivision_max_duration`, and seven `model_exception` records. The Qwen
+search-seed-101 and search-seed-202 genotypes reached maximum-duration
+nondivision after one completed generation in all six lineages. The two Sol
+genotypes selected at search seeds 101 and 202 ended by internal model
+exception in all six lineages after 3--5 and 9--11 completed generations. The
+Qwen search-seed-303 genotype ended twice by maximum-duration nondivision and
+once by model exception after 12--16 completed generations. These model
+exceptions remain indeterminate with respect to biological division and must
+not be counted as deaths.
+
+The panel therefore provides two complementary findings. First, the cheaper
+FBA+RBA gates admit candidates with sharply different downstream WCM behavior,
+so they are useful search filters but not sufficient viability tests. Second,
+one prospectively fixed candidate shows reproducible 20-generation division in
+the pinned WCM condition. This does not establish minimality, robustness in
+other environments, or wet-lab viability.
+
+### 3.9 Relation to EMine-737 and earlier whole-cell evidence
 
 The deepest current candidate removes 305 of the 1,216 eligible genes (25.1%)
 and leaves 911 genes in that subset. It does not delete genes outside the
@@ -476,8 +529,11 @@ eligible set. EMine-737 contains 737 of the WCM's 1,219 modeled genes (a 39.5%
 reduction) and was validated by repeated six- and ten-generation WCM
 simulations [Gherman et al.,
 2025](https://pure.hw.ac.uk/ws/portalfiles/portal/160646316/PIIS240547122500225X.pdf).
-Consequently, the current candidates are neither smaller within the WCM set
-nor as directly validated as EMine-737.
+Consequently, the WCM-positive current candidate is substantially larger than
+EMine-737 within the WCM set: it retains 1,008 genes rather than 737. Its three
+20-generation lineages are useful direct model evidence, but the current
+screen evaluated only six fixed genotypes, compared with the much larger
+Minesweeper/EMine design and validation campaign.
 
 A separate older experiment provides encouraging but non-transferable WCM
 evidence. Five Sol finalists from a full 4,290-gene search, each with
@@ -523,12 +579,17 @@ and the result remains model evidence, not wet-lab viability.
    hundreds to thousands of evaluations. This supports a sample-efficiency
    claim and rules out an interpretation of unconditional algorithmic
    superiority.
+7. **Prospective WCM claim.** One of six fixed current candidates sustained 20
+   generations at all three lineage seeds in one pinned vEcoli condition. The
+   panel also shows that FBA+RBA feasibility does not guarantee favorable WCM
+   behavior.
 
 ### What the experiment does not support
 
 1. **Biological viability.** FBA and RBA are constrained mechanistic models,
-   not observations of a cell. RBA feasibility at 0.1 h^-1 is an operational
-   gate, not proof of division.
+   and vEcoli is a more comprehensive model rather than an observation of a
+   cell. Repeated simulated division supports one genotype in the pinned model
+   condition but does not prove laboratory growth.
 2. **A new minimal genome.** The search stops at a fixed search cap, not at a
    proof of minimality. Genes outside the 1,216-gene action space are always
    retained.
@@ -582,9 +643,12 @@ and the result remains model evidence, not wet-lab viability.
   interventions are complete, but action-size and broader evidence-exposure
   experiments remain pending. The five-seed gate and no-tool results are
   descriptive and do not identify higher-order interactions among components.
-- **Current-finalist WCM gap.** The existing 300/300 division result belongs to
-  an older cohort. The present Sol/Qwen endpoints require predeclared vEcoli
-  testing with biological-unit-level analysis.
+- **Small WCM panel and terminal ambiguity.** The prospective panel contains
+  only three fixed genotypes per method and one medium. Seven of 18 lineage
+  outcomes ended by internal model exception; those outcomes are neither
+  successful 20-generation runs nor evidence of biological death. The panel
+  therefore supports one genotype-specific model result, not a population-
+  level estimate of viability or a definitive Sol-versus-Qwen comparison.
 
 ## 6. Publication-readiness assessment
 
@@ -594,17 +658,17 @@ budget baseline, large effects, exact paired inference, provenance-complete grap
 and off-machine preservation. That is a credible central result for a
 computational genome-design methods manuscript.
 
-It is not yet a complete paper package. The minimum high-value additions are:
+It is close to a complete computational paper package. The remaining
+high-value additions are:
 
-1. finish the predeclared current-finalist vEcoli panel across all six fixed
-   genotypes and three lineage seeds, retaining model exceptions separately
-   from biological nondivision;
+1. investigate the repeated vEcoli model exceptions and report their failure
+   locations without reclassifying or replacing the affected candidates;
 2. report a compute and wall-clock accounting alongside the completed
    scientific-evaluation scaling curve if the manuscript makes any general
    efficiency claim;
-3. report the fixed vEcoli panel by genotype, compare it with the separately
-   preserved workflow controls, and avoid treating an internal model exception
-   as biological nondivision;
+3. compare the fixed panel with the separately preserved workflow controls and
+   report division-time, mass, and temporal diagnostics for the 20-generation
+   candidate;
 4. extend the five-seed gate and same-evidence no-tool interventions if formal
    confirmatory mechanism inference is required, and run the locked
    action-size comparison before assigning importance to smaller recovery
@@ -623,8 +687,9 @@ If those items hold, the strongest defensible central claim is:
 > At a fixed candidate-evaluation budget, closed-book agent-guided recoverable
 > search finds more extensively reduced *E. coli* genotypes satisfying pinned
 > metabolic and resource-allocation constraints than a matched-cap structural
-> Minesweeper baseline; scheduler and information/action ablations explain the
-> gain, and predeclared finalists are evaluated independently in a pinned
+> Minesweeper baseline; scheduler, viability-gate, and blinded-tool
+> interventions explain part of the gain, and one of six prospectively fixed
+> finalists sustains 20 generations across three lineage seeds in a pinned
 > whole-cell model.
 
 ## 7. Reproducibility and data availability
@@ -651,6 +716,10 @@ Key preserved bundles are:
 | Superseded Minesweeper scaling attempt and solver diagnostics | `04-audit-history/wcm1216-minesweeper-states500-5000-seeds101-1010-20260901-superseded-rba-v2.tar.gz` | `f8c651ce26c12e160b561580157e9e95c8a4f80432f1dd0b053cad3614ee3ccb` |
 | Second Minesweeper scaling incident and complete RBA-v3 graphs | `04-audit-history/wcm1216-minesweeper-states500-5000-seeds101-1010-rba-v3-second-incident-20260902.tar.zst` | `35d8a6c7463c49153994fc2b35acee3c12896519654af46f2ed671163457d301` |
 | Final ten-seed Minesweeper scaling curve | `01-search-evidence/wcm1216-minesweeper-scaling-193-5000-ten-seed-rba-v3-v4-20260903.tar.zst` | `806559aa6c37e1109946808a54df746aa6b359054f3b68c967badff23f3eab8b` |
+| Current-finalist vEcoli lineage seed 101 raw output | `03-vecoli-validation/wcm1216-sol-qwen-current-finalists-vecoli-lineage-seed101-20260903.tar.zst` | `ccc6ff443447603b2106b8d8b2970b4ff6349e333461e30a85958ee54162a0d1` |
+| Current-finalist vEcoli lineage seed 202 raw output | `03-vecoli-validation/wcm1216-sol-qwen-current-finalists-vecoli-lineage-seed202-20260903.tar.zst` | `91350c18c89668d8fef2dfc54fc82bacfe642fd663f960603a359d905e980b60` |
+| Current-finalist vEcoli lineage seed 303 raw output | `03-vecoli-validation/wcm1216-sol-qwen-current-finalists-vecoli-lineage-seed303-20260903.tar.zst` | `b426eeede042e0823de0f991290add0e50dad156873aafac565ec32b8269bde9` |
+| Current-finalist vEcoli complete analysis and provenance | `03-vecoli-validation/wcm1216-sol-qwen-current-finalists-vecoli-complete-20260903.tar.zst` | `4ad8a2eabbe03438a4853055c24f6a8e1637dc960e2620668639ad46eb1dda3d` |
 
 The second-five model archive contains ten new mutable and read-only frozen
 graphs, per-arm logs, budget snapshots, exact runner/analyzer/finalizer code,
