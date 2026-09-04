@@ -2,7 +2,7 @@
 
 **Status:** interim in-silico methods report
 
-**Evidence cutoff:** 3 September 2026
+**Evidence cutoff:** 4 September 2026
 
 **Application revisions:** first five
 `d87debf67379ff4826937e7e0b26918e2235d438`; second five
@@ -11,11 +11,15 @@ policy `2032c5aba3df47dca71ff8736c8ea424ceb66f6b`; final numerical
 fallback `c4f77a4331c73562228f48f075c9a0fc1d29295c`; blinded no-tool
 intervention `6483b34d46f440514d6b4e08e77397b717e30b30`
 
-**Yggdrisil revision:**
-`67983c5c0821c57e6b0f60449b3e608b981455e2`
+**Yggdrisil revision:** historical genome-search runs
+`67983c5c0821c57e6b0f60449b3e608b981455e2`; evaluator-cost extension
+`5d280f9bc3f8c709c684db6ed8c901e909f8a8cf`
 
 **vEcoli adapter and result-validation revision:**
 `fdd791a5804e9a2b786a436b03581a1b0014c66e`
+
+**PMO extension revision:**
+`76b73f7d2a0216ef65276065e699a0582d2bd472`
 
 ## Executive summary
 
@@ -84,6 +88,17 @@ is to analyze why the five other fixed candidates stopped, report genotype
 overlap and functional diversity, and add wet-lab validation if the manuscript
 makes biological-viability claims. Action-size and broader evidence-exposure
 experiments would strengthen mechanism attribution but are secondary.
+
+A molecular-optimization extension now tests whether the scheduler effect
+transfers to a second domain and, crucially, whether it disappears when hard
+feasibility is removed. The initial five-seed QED calibration was a negative
+mechanism result: unconstrained scheduler pairs were identical, but the
+`SA <= 2.0` gate caused only two Qwen reopenings and no Sol reopenings, so
+recoverable search did not improve mean gated AUC. This result is retained.
+A prospective four-task factorial and a five-seed PMO-1k model-by-scheduler
+study were therefore frozen around a reference-calibrated severe gate before
+their model calls. Those runs are in progress at this evidence cutoff and are
+not yet evidence for cross-domain transfer.
 
 ## 1. Scientific context
 
@@ -335,6 +350,52 @@ simulations, and serial generations are not independent observations. The
 panel is therefore reported genotype by genotype without treating its 18
 lineage traces or individual divisions as biological replicates.
 
+### 2.8 Prospective PMO recoverability extension
+
+Practical Molecular Optimization (PMO) evaluates molecular optimizers by the
+area under the running top-10 performance curve at a fixed oracle-call budget
+[Gao et al., 2022](https://proceedings.neurips.cc/paper_files/paper/2022/hash/8644353f7d307baaf29bc1e56fe8e0ec-Abstract-Datasets_and_Benchmarks.html).
+Vanilla PMO objectives are continuous, so poor proposals receive low values
+rather than killing a branch. The cross-domain design therefore runs both an
+unconstrained negative control and the same objectives behind a hard
+synthetic-accessibility (SA) gate.
+
+The PMO application uses canonical SMILES states, a cached PyTDC oracle,
+RDKit's contributed SA scorer, the same frontier-only and recoverable parent
+selectors, complete SQLite decision traces, and the evaluator-cost API from
+Yggdrisil revision `5d280f9`. The oracle declares cost one and the local SA
+screen cost zero. A budget of `B` permits exactly `B` unique valid molecular
+oracle calls; the framework limit is `B+1` because a non-query synthetic root
+has one persisted oracle-evaluator record. Model calls are made through the
+same `qwen/qwen3.6-35b-a3b` and `openai/gpt-5.6-sol` routes used in the genome
+study. Qwen 3.6 is a 35B-A3B route, not an 8B model.
+
+Gate severity was fixed without inspecting the new tasks. From the official
+PMO repository at commit `2da631b`, the 10,000 unique `data/zinc.tab` strings
+with the lowest SHA-256 digests were canonicalized and scored. All parsed;
+the inclusive SA thresholds retaining the lower 50%, 20%, and 5% were 2.8802,
+2.3204, and 1.9862. The new hard gate uses the severe 1.9862 threshold. The
+compressed `data/zinc.csv.gz` artifact was rejected because its rows are
+truncated relative to the tab file and 8,464 of the deterministic 10,000-row
+sample were invalid.
+
+The prospective first phase crosses scheduler (frontier-only or recoverable)
+with allocation (direct five-to-five or ten proposals cheaply screened to
+five) on `drd2`, `albuterol_similarity`, `isomers_c7h8n2o2`, and
+`osimertinib_mpo`, at 100 molecular calls and seeds 1211, 2322, and 3433.
+Direct unconstrained scheduler pairs are the negative control. The second
+phase fixes `osimertinib_mpo`, direct allocation, five new seeds, both models,
+both schedulers, and 1,000 calls per arm. Its focal contrast is
+Qwen/recoverable versus Sol/frontier-only. Nested outcomes at 100, 300, and
+1,000 calls will measure sample efficiency.
+
+No guessed conversion combines heterogeneous resources. Each arm reports the
+vector of molecular-oracle calls, local SA screens, model requests, tokens,
+provider dollars, and wall time. The enforced comparison budget is molecular
+oracle calls; dollar limits are safety guards. PyTDC is pinned at 1.1.14, so
+these mechanism results are not directly ranked against original PMO tables
+generated with PyTDC 0.3.6.
+
 ## 3. Results
 
 ### 3.1 Per-seed primary endpoints
@@ -550,6 +611,38 @@ simulation, not complete mechanistic representation of every deleted gene's
 function. These genotypes are not the current 1,216-gene benchmark finalists,
 and the result remains model evidence, not wet-lab viability.
 
+### 3.10 PMO calibration and controlled frontier mortality
+
+The completed five-seed, 30-call QED calibration confirms that molecular
+optimization itself is functioning: all 20 gated arms improved their best
+feasible QED over the ethanol root. Mean feasibility-aware AUC was 0.3046 for
+Qwen/frontier-only and 0.2997 for Qwen/recoverable; the paired difference was
+-0.0049. Sol's two scheduler means were both 0.4009 and its histories were
+identical. The gated Qwen runs reopened only twice in total and Sol never
+reopened. Qwen/recoverable also trailed Sol/frontier-only by 0.1012 mean AUC.
+Without a gate, the scheduler histories were exactly identical for every
+model and seed. Thus the first molecular calibration supports the negative
+control and optimization implementation, but not scheduler transfer or the
+substrate-versus-scale prediction.
+
+The cost-aware allocation policy was then selected using development-only
+seeds and passed its prospectively fixed three-seed validation at 30 calls.
+Direct five-to-five allocation had mean feasible AUC 0.3188; requesting ten,
+cheaply screening by `SA <= 2.0`, and evaluating five had mean 0.3748. The
+paired improvements were +0.1356, +0.0501, and -0.0178, satisfying the fixed
+higher-mean and two-of-three-wins launch rule. The five-seed, 1,000-call QED
+follow-up is still running and is not summarized before completion.
+
+A separate controlled model clarifies the proposed mechanism without making
+a chemistry claim. In 10,000 Bernoulli trials with batch size five, six
+recovery attempts per depth, and a 1,000-evaluation budget, both schedulers
+reached mean depth 200 when every child was feasible. At child-feasibility
+probability 0.5, mean depth was 31.03 for frontier-only and 193.75 for
+recoverable; at probability 0.2 it was 2.06 and 124.58. This shows how repeated
+hard-boundary mortality can amplify a reopening effect in the stated
+abstraction. Whether real gated PMO trajectories enter that regime is the
+purpose of the prospective experiment, not an inference from the simulation.
+
 ## 4. Interpretation
 
 ### What the experiment supports
@@ -583,6 +676,10 @@ and the result remains model evidence, not wet-lab viability.
    generations at all three lineage seeds in one pinned vEcoli condition. The
    panel also shows that FBA+RBA feasibility does not guarantee favorable WCM
    behavior.
+8. **Cross-domain falsifiability.** The first PMO calibration is a retained
+   negative result, and the new design predeclares both an unconstrained
+   no-effect control and a gated transfer prediction. No positive molecular
+   recovery claim is supported at the current evidence cutoff.
 
 ### What the experiment does not support
 
@@ -649,6 +746,12 @@ and the result remains model evidence, not wet-lab viability.
   successful 20-generation runs nor evidence of biological death. The panel
   therefore supports one genotype-specific model result, not a population-
   level estimate of viability or a definitive Sol-versus-Qwen comparison.
+- **Incomplete PMO extension.** The reference calibration and controlled
+  simulation are complete, but the cross-task factorial, PMO-1k allocation
+  follow-up, and model-scale comparison are still running. The current report
+  therefore cannot claim cross-domain scheduler transfer or molecular SOTA.
+  PyTDC 1.1.14 also prevents direct numerical comparison with original PMO
+  0.3.6 tables without a compatibility study.
 
 ## 6. Publication-readiness assessment
 
@@ -681,6 +784,14 @@ high-value additions are:
 Running the fixed-action-size and broader tool-rich conditions remains a
 useful secondary analysis, but it is not a prerequisite for the central
 fixed-evaluation-budget search claim.
+
+The PMO extension is deliberately confirmatory about mechanism rather than a
+premature SOTA campaign. A publishable cross-domain result requires the fixed
+factorial to show that recovery helps specifically when frontier mortality is
+present, while the unconstrained control remains null. Failure of that pattern
+would narrow the genome result to its original domain and should be reported
+as such. A positive pattern would justify expanding seeds and tasks before any
+23-task leaderboard claim.
 
 If those items hold, the strongest defensible central claim is:
 
@@ -762,3 +873,6 @@ source hashes are retained instead.
 9. Huangfu Q, Hall JAJ. Parallelizing the dual revised simplex method.
    *Mathematical Programming Computation*. 2018;10:119--142.
    [doi:10.1007/s12532-017-0130-5](https://doi.org/10.1007/s12532-017-0130-5).
+10. Gao W, Fu T, Sun J, Coley CW. Sample efficiency matters: a benchmark for
+    practical molecular optimization. *NeurIPS Datasets and Benchmarks*. 2022.
+    [paper](https://proceedings.neurips.cc/paper_files/paper/2022/hash/8644353f7d307baaf29bc1e56fe8e0ec-Abstract-Datasets_and_Benchmarks.html).
