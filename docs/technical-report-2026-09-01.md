@@ -630,8 +630,25 @@ seeds and passed its prospectively fixed three-seed validation at 30 calls.
 Direct five-to-five allocation had mean feasible AUC 0.3188; requesting ten,
 cheaply screening by `SA <= 2.0`, and evaluating five had mean 0.3748. The
 paired improvements were +0.1356, +0.0501, and -0.0178, satisfying the fixed
-higher-mean and two-of-three-wins launch rule. The five-seed, 1,000-call QED
-follow-up is still running and is not summarized before completion.
+higher-mean and two-of-three-wins launch rule.
+
+The launched five-seed, 1,000-call QED follow-up is now complete. Direct and
+cost-aware mean feasibility-aware AUC were 0.8481 +/- 0.0306 and 0.8718 +/-
+0.0148; paired differences by seed were +0.0081, +0.0386, +0.0388, -0.0369,
+and +0.0700. Cost-aware v2 won four of five pairs with mean difference +0.0237
+(paired bootstrap 95% interval -0.0067 to +0.0514; exact two-sided sign-flip
+`p=0.1875`). Mean best feasible QED increased by 0.0168 and feasibility
+fraction by 0.2612. Every arm used exactly 1,000 molecular calls and framework
+cost 1,001/1,001, and all ten graphs passed SQLite integrity and foreign-key
+checks.
+
+The gain is specific to the expensive scientific-oracle budget. Cost-aware
+allocation cheaply screened more candidates, reduced mean model requests from
+413.8 to 378.4 and reopenings from 156.2 to 62.6, but increased total provider
+cost from $0.34882 to $0.54088 and mean wall time from 19.71 to 24.79 minutes.
+It therefore supports molecular-oracle efficiency, not lower monetary or
+wall-clock compute. The five-pair interval includes zero and the result remains
+descriptive rather than a formal confirmation.
 
 A separate controlled model clarifies the proposed mechanism without making
 a chemistry claim. In 10,000 Bernoulli trials with batch size five, six
@@ -746,9 +763,9 @@ purpose of the prospective experiment, not an inference from the simulation.
   successful 20-generation runs nor evidence of biological death. The panel
   therefore supports one genotype-specific model result, not a population-
   level estimate of viability or a definitive Sol-versus-Qwen comparison.
-- **Incomplete PMO extension.** The reference calibration and controlled
-  simulation are complete, but the cross-task factorial, PMO-1k allocation
-  follow-up, and model-scale comparison are still running. The current report
+- **Incomplete PMO extension.** The reference calibration, controlled
+  simulation, and PMO-1k allocation follow-up are complete, but the cross-task
+  factorial and model-scale comparison are still running. The current report
   therefore cannot claim cross-domain scheduler transfer or molecular SOTA.
   PyTDC 1.1.14 also prevents direct numerical comparison with original PMO
   0.3.6 tables without a compatibility study.
