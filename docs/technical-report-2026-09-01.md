@@ -97,8 +97,10 @@ mechanism result: unconstrained scheduler pairs were identical, but the
 recoverable search did not improve mean gated AUC. This result is retained.
 A prospective four-task factorial and a five-seed PMO-1k model-by-scheduler
 study were therefore frozen around a reference-calibrated severe gate before
-their model calls. Those runs are in progress at this evidence cutoff and are
-not yet evidence for cross-domain transfer.
+their model calls. The factorial is now complete: it confirms the exact
+unconstrained negative control and one large reopening rescue, but recovery
+and screening did not improve AUC consistently across tasks. The model-scale
+study remains in progress and no broad cross-domain transfer claim is made.
 
 ## 1. Scientific context
 
@@ -660,6 +662,29 @@ hard-boundary mortality can amplify a reopening effect in the stated
 abstraction. Whether real gated PMO trajectories enter that regime is the
 purpose of the prospective experiment, not an inference from the simulation.
 
+The prospective four-task, three-seed scheduler-by-allocation factorial is
+also complete. All 12 unconstrained task-seed scheduler pairs had identical
+histories and AUCs. Mean gated recovery-minus-frontier AUC by task was -0.0481,
+-0.0073, +0.1343, and -0.0087 under direct allocation for DRD2, Albuterol
+similarity, Isomers C7H8N2O2, and Osimertinib MPO. With cheap 10-to-5 screening,
+the corresponding effects were +0.0208, +0.0177, 0.0000, and +0.0236.
+
+The positive direct mean was dominated by one Isomers seed: frontier-only
+stopped after five molecular queries, while recovery completed 100 and gained
+0.4029 AUC. Recovery also extended two early-stopped Albuterol arms, but with
+small negative AUC differences, and extended one screened Osimertinib arm from
+six to 38 queries without a material AUC gain. Screening improved both
+schedulers on Albuterol, harmed both on DRD2, and had scheduler-dependent
+effects on the other tasks. It raised feasible fraction under both schedulers
+on three of four tasks, but did not establish a general objective advantage.
+
+The factorial therefore supports the predeclared no-gate control and a narrow
+claim that reopening can rescue a dead molecular frontier. It does not support
+a broad claim that recovery or cost-aware preselection improves PMO across
+tasks. All 72 graphs passed integrity and foreign-key checks; scientific early
+stops were retained. The block used 6,618 molecular calls, 1,322 model requests,
+745,945 tokens, and $0.21171 provider-reported cost.
+
 ## 4. Interpretation
 
 ### What the experiment supports
@@ -694,9 +719,10 @@ purpose of the prospective experiment, not an inference from the simulation.
    panel also shows that FBA+RBA feasibility does not guarantee favorable WCM
    behavior.
 8. **Cross-domain falsifiability.** The first PMO calibration is a retained
-   negative result, and the new design predeclares both an unconstrained
-   no-effect control and a gated transfer prediction. No positive molecular
-   recovery claim is supported at the current evidence cutoff.
+   negative result, and the four-task factorial exactly supports its
+   unconstrained no-effect control. Gated recovery produced one large frontier
+   rescue but mixed task-level AUC effects, narrowing rather than generally
+   confirming the transfer claim.
 
 ### What the experiment does not support
 
@@ -764,9 +790,10 @@ purpose of the prospective experiment, not an inference from the simulation.
   therefore supports one genotype-specific model result, not a population-
   level estimate of viability or a definitive Sol-versus-Qwen comparison.
 - **Incomplete PMO extension.** The reference calibration, controlled
-  simulation, and PMO-1k allocation follow-up are complete, but the cross-task
-  factorial and model-scale comparison are still running. The current report
-  therefore cannot claim cross-domain scheduler transfer or molecular SOTA.
+  simulation, PMO-1k allocation follow-up, and cross-task factorial are
+  complete, but the model-scale comparison is still running. The mixed
+  factorial does not support a general cross-domain scheduler advantage, and
+  the current report cannot claim molecular SOTA.
   PyTDC 1.1.14 also prevents direct numerical comparison with original PMO
   0.3.6 tables without a compatibility study.
 
@@ -803,12 +830,13 @@ useful secondary analysis, but it is not a prerequisite for the central
 fixed-evaluation-budget search claim.
 
 The PMO extension is deliberately confirmatory about mechanism rather than a
-premature SOTA campaign. A publishable cross-domain result requires the fixed
-factorial to show that recovery helps specifically when frontier mortality is
-present, while the unconstrained control remains null. Failure of that pattern
-would narrow the genome result to its original domain and should be reported
-as such. A positive pattern would justify expanding seeds and tasks before any
-23-task leaderboard claim.
+premature SOTA campaign. The completed factorial shows the expected null
+effect without hard feasibility and one strong rescue when a frontier dies,
+but no consistent task-level recovery benefit. This narrows the genome result:
+reopening is decisive in the genome substrate and can matter in a molecular
+trajectory, but is not a generally superior PMO scheduler in the tested setup.
+The running model-scale block can quantify its fixed contrast but cannot turn
+this mixed screening result into a broad 23-task leaderboard claim.
 
 If those items hold, the strongest defensible central claim is:
 
