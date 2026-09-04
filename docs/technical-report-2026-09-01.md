@@ -18,8 +18,9 @@ intervention `6483b34d46f440514d6b4e08e77397b717e30b30`
 **vEcoli adapter and result-validation revision:**
 `fdd791a5804e9a2b786a436b03581a1b0014c66e`
 
-**PMO extension revision:**
-`76b73f7d2a0216ef65276065e699a0582d2bd472`
+**PMO extension revisions:** implementation
+`76b73f7d2a0216ef65276065e699a0582d2bd472`; completed results
+`a6c247ac6077f1f962495b0450611563bf3f05e0`
 
 ## Executive summary
 
@@ -97,10 +98,12 @@ mechanism result: unconstrained scheduler pairs were identical, but the
 recoverable search did not improve mean gated AUC. This result is retained.
 A prospective four-task factorial and a five-seed PMO-1k model-by-scheduler
 study were therefore frozen around a reference-calibrated severe gate before
-their model calls. The factorial is now complete: it confirms the exact
+their model calls. Both are now complete. The factorial confirms the exact
 unconstrained negative control and one large reopening rescue, but recovery
-and screening did not improve AUC consistently across tasks. The model-scale
-study remains in progress and no broad cross-domain transfer claim is made.
+and screening did not improve AUC consistently across tasks. The focal
+Qwen/recoverable-versus-Sol/frontier inequality held in all five scale seeds,
+but Qwen/frontier was stronger still: the full matrix attributes the contrast
+to model/domain compatibility rather than recovery substituting for scale.
 
 ## 1. Scientific context
 
@@ -685,6 +688,32 @@ tasks. All 72 graphs passed integrity and foreign-key checks; scientific early
 stops were retained. The block used 6,618 molecular calls, 1,322 model requests,
 745,945 tokens, and $0.21171 provider-reported cost.
 
+The final five-seed, 1,000-call-ceiling Osimertinib MPO matrix is complete as
+well. Mean feasibility-aware AUC at 100, 300, and 1,000 calls was 0.0353,
+0.1253, and 0.3434 for Qwen/frontier; 0.0466, 0.1365, and 0.3124 for
+Qwen/recoverable; approximately 0.00005 at all three prefixes for
+Sol/frontier; and 0.0010, 0.0017, and 0.0019 for Sol/recoverable.
+
+The predeclared Qwen/recoverable-minus-Sol/frontier contrast was positive in
+all five seeds at the full horizon, by +0.4268, +0.0023, +0.2545, +0.5306,
+and +0.3477 AUC. Its mean was +0.3124 (paired bootstrap 95% interval +0.1405
+to +0.4546; exact two-sided sign-flip `p=0.0625`, the minimum possible with
+five pairs). However, Qwen/frontier itself averaged 0.3434, while
+Qwen/recoverable averaged 0.3124. Recovery beat frontier in only two of five
+Qwen seeds, with mean difference -0.0310 (bootstrap interval -0.1295 to
++0.0940; exact `p=0.75`). Sol's +0.00184 recovery effect was driven by one
+seed.
+
+The gate exposed a model-specific failure mode. Both Qwen schedulers reached
+the 1,000-call budget in four of five seeds. Sol/frontier stopped after 1--6
+calls in every seed; recovery extended four Sol runs to 37--98 calls but found
+a better feasible molecule in only one. Thus `B > C` is numerically true, but
+the full factorial does not support its intended causal interpretation that a
+recoverable substrate substitutes for model capability. Qwen 3.6 is also a
+35B-A3B route, not a 7--8B model. The block's 20 integrity-checked graphs
+record 8,276 molecular calls, 2,767 model requests, 2,146,586 tokens, and
+$0.76061 provider-reported cost.
+
 ## 4. Interpretation
 
 ### What the experiment supports
@@ -721,8 +750,10 @@ stops were retained. The block used 6,618 molecular calls, 1,322 model requests,
 8. **Cross-domain falsifiability.** The first PMO calibration is a retained
    negative result, and the four-task factorial exactly supports its
    unconstrained no-effect control. Gated recovery produced one large frontier
-   rescue but mixed task-level AUC effects, narrowing rather than generally
-   confirming the transfer claim.
+   rescue but mixed task-level AUC effects. The final model-scale matrix also
+   shows that its focal inequality can hold even when within-model recovery
+   does not help, narrowing rather than generally confirming the transfer
+   claim.
 
 ### What the experiment does not support
 
@@ -789,11 +820,13 @@ stops were retained. The block used 6,618 molecular calls, 1,322 model requests,
   successful 20-generation runs nor evidence of biological death. The panel
   therefore supports one genotype-specific model result, not a population-
   level estimate of viability or a definitive Sol-versus-Qwen comparison.
-- **Incomplete PMO extension.** The reference calibration, controlled
-  simulation, PMO-1k allocation follow-up, and cross-task factorial are
-  complete, but the model-scale comparison is still running. The mixed
-  factorial does not support a general cross-domain scheduler advantage, and
-  the current report cannot claim molecular SOTA.
+- **PMO scope and model interpretation.** The reference calibration,
+  controlled simulation, PMO-1k allocation follow-up, cross-task factorial,
+  and model-scale comparison are complete. The mixed factorial does not
+  support a general cross-domain scheduler advantage. The focal model contrast
+  is confounded by a severe Sol/gate mismatch, and Qwen is 35B-A3B rather than
+  an 8B weak model. The current report therefore cannot claim that recovery
+  substitutes for scale or claim molecular SOTA.
   PyTDC 1.1.14 also prevents direct numerical comparison with original PMO
   0.3.6 tables without a compatibility study.
 
@@ -835,8 +868,12 @@ effect without hard feasibility and one strong rescue when a frontier dies,
 but no consistent task-level recovery benefit. This narrows the genome result:
 reopening is decisive in the genome substrate and can matter in a molecular
 trajectory, but is not a generally superior PMO scheduler in the tested setup.
-The running model-scale block can quantify its fixed contrast but cannot turn
-this mixed screening result into a broad 23-task leaderboard claim.
+The completed model-scale block reinforces that caution: its focal `B > C`
+contrast is large, but Qwen/frontier also dominates Sol and Qwen/recovery is
+slightly worse than Qwen/frontier on average. Reporting only `B > C` would
+misattribute a model/domain compatibility effect to substrate recovery. These
+results are publishable as a falsifiable boundary test, not as a broad 23-task
+leaderboard or scale-substitution claim.
 
 If those items hold, the strongest defensible central claim is:
 
@@ -884,6 +921,16 @@ covering 109 durable files. Its uploaded archive was downloaded after transfer
 and reproduced the local SHA-256 exactly. Third-party source snapshots with
 redistribution restrictions are excluded; acquisition URLs, commits, and
 source hashes are retained instead.
+
+The PMO extension archives are currently preserved locally and have not yet
+been uploaded off-machine: gate calibration and frontier mortality
+`882ce5b283cf61d13de71379692f072e887576d351d039fab495c13f1e0ce5fc`;
+QED PMO-1k allocation
+`73a11c75bb90efe2b9790ad672b233bee2f7ccb4391aaabcde3a52e7702b2233`;
+four-task factorial
+`b6419bc64f1751191f551afb58c08f76331f180cad94ed7b96b9285bf9b9f638`;
+and model-scale Osimertinib MPO
+`92c2474e1a6baf2ec7f1a026995c5b116cb266a923630249c61b0e4e9e89e6b6`.
 
 ## References
 
