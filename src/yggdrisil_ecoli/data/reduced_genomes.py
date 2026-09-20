@@ -12,10 +12,12 @@ from dataclasses import dataclass
 from importlib.metadata import version
 from pathlib import Path
 
+import pandas as pd
 import pysam
 from pypdf import PdfReader
 
-from yggdrisil_ecoli.data.registry import GeneRecord, GeneRegistry, file_sha256
+from yggdrisil_ecoli.data.evidence import load_genes
+from yggdrisil_ecoli.data.io import file_sha256
 
 MDS42_ACCESSION = "AP012306"
 REFERENCE_ACCESSION = "NC_000913.3"
@@ -112,19 +114,14 @@ def deletion_intervals_from_sam(
 
 
 def genes_in_intervals(
-    registry: GeneRegistry, intervals: tuple[Interval, ...]
+    registry: pd.DataFrame, intervals: tuple[Interval, ...]
 ) -> frozenset[str]:
     """Map any protein-coding reference gene touched by a deletion interval."""
 
-    return frozenset(
-        gene.b_number
-        for gene in registry
-        if any(_overlaps(gene, interval) for interval in intervals)
-    )
-
-
-def _overlaps(gene: GeneRecord, interval: Interval) -> bool:
-    return gene.start <= interval.end and interval.start <= gene.end
+    touched = pd.Series(False, index=registry.index)
+    for interval in intervals:
+        touched |= registry.start.le(interval.end) & registry.end.ge(interval.start)
+    return frozenset(registry.index[touched])
 
 
 def _run_minimap2(reference: str, query: str) -> tuple[tuple[Interval, ...], str]:
@@ -151,39 +148,37 @@ def _run_minimap2(reference: str, query: str) -> tuple[tuple[Interval, ...], str
     return intervals, aligner_version
 
 
-def _interval_payload(interval: Interval, registry: GeneRegistry) -> dict[str, object]:
+def _interval_payload(interval: Interval, registry: pd.DataFrame) -> dict[str, object]:
     return {
         "start": interval.start,
         "end": interval.end,
         "length_bp": interval.length,
-        "gene_ids": sorted(
-            gene.b_number for gene in registry if _overlaps(gene, interval)
-        ),
+        "gene_ids": sorted(genes_in_intervals(registry, (interval,))),
     }
 
 
 def build_validation(
     *,
-    registry_path: Path,
+    genes_path: Path,
     reference_path: Path,
     mds42_path: Path,
     ms56_pdf_path: Path,
 ) -> dict[str, object]:
     """Build the complete held-out validation payload."""
 
-    registry = GeneRegistry.from_parquet(registry_path)
+    registry = load_genes(genes_path)
     reference = load_ncbi_sequence(reference_path, REFERENCE_ACCESSION)
     mds42 = load_ncbi_sequence(mds42_path, MDS42_ACCESSION)
     intervals, minimap2_version = _run_minimap2(reference, mds42)
     mds42_genes = genes_in_intervals(registry, intervals)
     ms56_published = extract_ms56_gene_ids(ms56_pdf_path)
-    ms56_genes = ms56_published & registry.search_universe
+    ms56_genes = ms56_published & set(registry.index)
     return {
         "schema_version": 1,
         "agent_visible": False,
         "reference": {
             "accession": REFERENCE_ACCESSION,
-            "registry_sha256": file_sha256(registry_path),
+            "genes_sha256": file_sha256(genes_path),
             "sequence_artifact_sha256": file_sha256(reference_path),
         },
         "strains": {
@@ -202,11 +197,6 @@ def build_validation(
                 "deletion_intervals": [
                     _interval_payload(interval, registry) for interval in intervals
                 ],
-                "counts": {
-                    "deleted_genes_in_search_universe": len(mds42_genes),
-                    "deletion_intervals": len(intervals),
-                    "deleted_bp": sum(interval.length for interval in intervals),
-                },
             },
             "MS56": {
                 "source": {
@@ -218,16 +208,9 @@ def build_validation(
                 },
                 "deleted_gene_ids": sorted(ms56_genes),
                 "published_ids_outside_search_universe": sorted(
-                    ms56_published - registry.search_universe
+                    ms56_published - set(registry.index)
                 ),
                 "deletion_intervals": [],
-                "counts": {
-                    "published_locus_tags": len(ms56_published),
-                    "deleted_genes_in_search_universe": len(ms56_genes),
-                    "published_ids_outside_search_universe": len(
-                        ms56_published - registry.search_universe
-                    ),
-                },
             },
         },
     }

@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import gzip
-from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+import pandas as pd
 
 from yggdrisil_ecoli.constants import (
     ASSEMBLY_ACCESSION,
@@ -17,24 +18,18 @@ from yggdrisil_ecoli.constants import (
     TAXONOMY_ID,
 )
 from yggdrisil_ecoli.data.errors import DataValidationError
-from yggdrisil_ecoli.data.registry import GeneRecord, GeneRegistry
+from yggdrisil_ecoli.data.registry import GeneRecord
 
 if TYPE_CHECKING:
     from gffutils import Feature
 
 
-@dataclass(frozen=True, slots=True)
-class ParsedGff:
-    registry: GeneRegistry
-    metadata: dict[str, str | None]
-
-
-def parse_ncbi_gff(path: str | Path) -> ParsedGff:
+def parse_ncbi_gff(path: str | Path) -> tuple[pd.DataFrame, dict[str, str | None]]:
     """Read protein-coding genes and CDS products, rejecting reference drift."""
     from gffutils.feature import feature_from_line
 
     directives: dict[str, str] = {}
-    genes: list[Feature] = []
+    gene_features: list[Feature] = []
     products: dict[str, str] = {}
     region = None
     raw = Path(path).read_bytes()
@@ -55,7 +50,7 @@ def parse_ncbi_gff(path: str | Path) -> ParsedGff:
             tag = _attribute(feature, "locus_tag")
             if tag and feature.featuretype == "gene":
                 if _attribute(feature, "gene_biotype") == GENE_TYPE:
-                    genes.append(feature)
+                    gene_features.append(feature)
             elif tag and feature.featuretype == "CDS":
                 product = _attribute(feature, "product")
                 if product:
@@ -63,7 +58,7 @@ def parse_ncbi_gff(path: str | Path) -> ParsedGff:
 
     metadata = _validate_reference(directives, region)
     records = []
-    for feature in genes:
+    for feature in gene_features:
         tag = _attribute(feature, "locus_tag") or ""
         if feature.start is None or feature.end is None:
             raise DataValidationError(f"{tag}: missing gene coordinates")
@@ -86,7 +81,14 @@ def parse_ncbi_gff(path: str | Path) -> ParsedGff:
                 ecocyc_id=_crossref(feature, "ECOCYC"),
             )
         )
-    return ParsedGff(GeneRegistry(records), metadata)
+    if not records:
+        raise DataValidationError("canonical gene table is empty")
+    genes = pd.DataFrame(r.model_dump() for r in records).set_index("b_number")
+    if not genes.index.is_unique:
+        raise DataValidationError("duplicate canonical IDs in GFF3")
+    genes = genes.sort_index()
+    genes.attrs["reference"] = metadata
+    return genes, metadata
 
 
 def _validate_reference(

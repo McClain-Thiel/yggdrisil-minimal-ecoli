@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 
 from yggdrisil_ecoli.data.sources import SourceSpec, acquire_source, extract_member
-from yggdrisil_ecoli.data_build import build_data
 
 
 def test_cached_sources_are_verified_without_network(tmp_path: Path) -> None:
@@ -19,15 +18,6 @@ def test_cached_sources_are_verified_without_network(tmp_path: Path) -> None:
     path.write_bytes(b"changed")
     with pytest.raises(ValueError, match="checksum changed"):
         acquire_source(source, tmp_path)
-
-
-def test_source_build_requires_explicit_kegg_terms_before_creating_files(
-    tmp_path: Path,
-) -> None:
-    output = tmp_path / "dataset"
-    with pytest.raises(ValueError, match="accept_kegg_terms"):
-        build_data(output)
-    assert not output.exists()
 
 
 def test_publication_member_hash_is_checked_before_replacing_output(

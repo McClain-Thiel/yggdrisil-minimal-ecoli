@@ -16,8 +16,7 @@ from pathlib import Path
 import pooch
 
 from yggdrisil_ecoli.data.errors import DataValidationError
-from yggdrisil_ecoli.data.io import atomic_bytes
-from yggdrisil_ecoli.data.registry import file_sha256
+from yggdrisil_ecoli.data.io import atomic_bytes, file_sha256
 
 
 @dataclass(frozen=True)

@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import tempfile
 from pathlib import Path
+
+
+def file_sha256(path: str | Path) -> str:
+    with Path(path).open("rb") as handle:
+        return hashlib.file_digest(handle, "sha256").hexdigest()
 
 
 def atomic_bytes(path: Path, content: bytes) -> None:

@@ -1,6 +1,6 @@
 import json
 from contextlib import ExitStack
-from pathlib import Path
+from dataclasses import replace
 
 import pytest
 from pydantic import ValidationError
@@ -10,30 +10,21 @@ from yggdrisil_ecoli.actions import DeleteGenes
 from yggdrisil_ecoli.agent_policy import (
     AgentSearchConfig,
     _action_type,
-    _GeneTools,
-    _GeneView,
+    _aliases,
     _LimitedAgent,
     make_agent_policy,
 )
-from yggdrisil_ecoli.data.essentiality import EssentialityDataset, EssentialityRecord
-from yggdrisil_ecoli.data.gff import parse_ncbi_gff
 from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.state import GenomeState
 from yggdrisil_ecoli.tools.genes import GeneTools
 
 
 @pytest.fixture
-def evidence() -> GeneTools:
-    registry = parse_ncbi_gff(
-        Path(__file__).parent / "fixtures/mg1655_excerpt.gff3"
-    ).registry
+def evidence(genes) -> GeneTools:
     return GeneTools(
-        registry=registry,
-        essentiality=EssentialityDataset(
-            EssentialityRecord(b_number=gene) for gene in registry.search_universe
-        ),
-        modules=ModuleEvaluator(
-            registry=registry,
+        genes,
+        ModuleEvaluator(
+            registry=genes,
             entries={},
             wt_complete_module_ids=(),
             parser_semantics_version="fixture",
@@ -57,8 +48,7 @@ def policy(evidence, config, monkeypatch):
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-placeholder")
     monkeypatch.setattr(models, "ALLOW_MODEL_REQUESTS", False)
     return make_agent_policy(
-        registry=evidence.registry,
-        essentiality=evidence.essentiality,
+        genes=evidence.genes,
         modules=evidence.modules,
         config=config,
         evaluator_ids={},
@@ -68,11 +58,11 @@ def policy(evidence, config, monkeypatch):
 
 def test_agent_config_and_mapping_are_reproducible_and_secret_free(evidence):
     config = AgentSearchConfig(model="openai/gpt-4o-mini-2024-07-18", seed=7)
-    metadata = config.metadata(evidence.registry)
-    assert metadata == config.metadata(evidence.registry)
+    metadata = config.metadata(evidence.genes)
+    assert metadata == config.metadata(evidence.genes)
     assert metadata["blind_map_sha256"]
     assert "key" not in str(metadata).lower()
-    assert _GeneView(evidence.registry, config).aliases == {
+    assert _aliases(evidence.genes, config.seed) == {
         "b0001": "g0001",
         "b0003": "g0002",
         "b0002": "g0003",
@@ -83,16 +73,18 @@ def test_agent_config_and_mapping_are_reproducible_and_secret_free(evidence):
 
 @pytest.mark.parametrize("mode", ["closed-book", "tool-rich"])
 def test_pydantic_action_validation_and_translation(evidence, mode):
-    view = _GeneView(
-        evidence.registry, AgentSearchConfig(model="vendor/model", mode=mode)
+    tools = replace(
+        evidence,
+        deleted_genes=frozenset({"b0001"}),
+        aliases=_aliases(evidence.genes, 0) if mode == "closed-book" else None,
     )
-    action = _action_type(view, GenomeState(frozenset({"b0001"})), 2)
-    first, second = view.aliases["b0002"], view.aliases["b0003"]
+    action = _action_type(tools, 2)
+    first, second = tools.public("b0002"), tools.public("b0003")
     assert action(genes=(second, first)).genes == ("b0002", "b0003")
     for invalid, message in [
         ((first, second, first), "at most 2"),
         ((first, first), "duplicate"),
-        ((view.aliases["b0001"],), "already deleted"),
+        ((tools.public("b0001"),), "already deleted"),
         (("unknown",), "unknown candidate"),
         ((), "at least 1"),
     ]:
@@ -112,11 +104,10 @@ def test_prompt_and_tools_obey_evidence_arm(evidence, monkeypatch, mode):
     agent = policy(evidence, config, monkeypatch)
     current = context(frozenset({"b0001"}))
     prompt = agent.explorer.format_prompt(current)
-    tools = _GeneTools(evidence, agent.explorer.view, current.state)
+    tools = replace(agent.explorer.evidence, deleted_genes=current.state.deleted_genes)
     preview = tools.list_deletion_candidates()
-    aliases = agent.explorer.view.aliases
-    bundle = tools.analyze_deletion_bundle([aliases["b0002"]])
-    assert aliases["b0001"] in json.loads(prompt)["deleted_gene_ids_first_64"]
+    bundle = tools.analyze_deletion_bundle([tools.public("b0002")])
+    assert tools.public("b0001") in json.loads(prompt)["deleted_gene_ids_first_64"]
     assert preview["remaining_candidates"] == 2
     if mode == "closed-book":
         for leaked in ("b0001", "b0002", "b0003", "thrL", "thrA", "thrB"):
@@ -125,7 +116,7 @@ def test_prompt_and_tools_obey_evidence_arm(evidence, monkeypatch, mode):
             tools.inspect_kegg_module("M00001")
     else:
         assert "thrA" in prompt
-        assert bundle["valid_genes"] == ["b0001", "b0002"]
+        assert bundle["deleted_gene_ids"] == ["b0001", "b0002"]
         assert bundle["proposed_gene_ids"] == ["b0002"]
 
 
@@ -156,7 +147,7 @@ async def test_native_framework_adapter_validates_actions_and_keeps_usage_trace(
     model = TestModel(
         call_tools=[],
         custom_output_args={
-            "actions": [{"genes": [agent.explorer.view.aliases["b0002"]]}],
+            "actions": [{"genes": [agent.explorer.evidence.public("b0002")]}],
         },
     )
     make_explorer = adapter.make_explorer
@@ -176,3 +167,30 @@ async def test_native_framework_adapter_validates_actions_and_keeps_usage_trace(
     assert any(event["role"] == "usage" for event in result.trace)
     assert agent.explorer.limits.request_limit == config.max_model_requests
     assert agent.explorer.limits.cost_limit == config.max_cost_per_call_usd
+
+
+def test_consolidated_tools_report_cumulative_module_status_and_coverage(genes):
+    genes = genes.copy()
+    for gene in ("b0001", "b0002"):
+        genes.at[gene, "ko_ids"] = ("K00001",)
+    genes.loc[:, "iml1515_gene_id"] = None
+    genes.at["b0001", "iml1515_gene_id"] = "b0001"
+    modules = ModuleEvaluator(
+        registry=genes,
+        entries={"M00001": {"name": "Isozymes", "definition": "K00001"}},
+        wt_complete_module_ids=("M00001",),
+        parser_semantics_version="fixture",
+    )
+    tools = GeneTools(genes, modules, deleted_genes=frozenset({"b0001"}))
+    assert tools.inspect_kegg_module("M00001")["complete_after_deletion"] is True
+    assert (
+        tools.inspect_kegg_module("M00001", ["b0002"])["complete_after_deletion"]
+        is False
+    )
+    result = tools.analyze_deletion_bundle(["b0002", "b0002"])
+    assert result["deleted_genes_total"] == 2
+    assert result["modules_broken"] == 1
+    assert result["broken_module_ids"] == ("M00001",)
+    assert result["essentiality"] == {"nonessential": 2}
+    assert result["model_coverage"] == {"modeled": 1, "unmodeled": 1}
+    assert result["ko_coverage"] == {"mapped": 2, "unmapped": 0}

@@ -4,19 +4,19 @@ import csv
 import json
 import re
 from collections import defaultdict
-from dataclasses import replace
 from pathlib import Path
 
+import pandas as pd
+
 from yggdrisil_ecoli.data.errors import DataValidationError
-from yggdrisil_ecoli.data.registry import GeneRegistry
 
 
 def add_crosswalks(
-    registry: GeneRegistry,
+    registry: pd.DataFrame,
     gene_list: Path,
     ko_links: Path,
     model: Path,
-) -> tuple[GeneRegistry, dict[str, object]]:
+) -> tuple[pd.DataFrame, dict[str, object]]:
     """Annotate existing genes; report unmatched IDs without adding search genes."""
 
     with gene_list.open() as stream:
@@ -42,24 +42,20 @@ def add_crosswalks(
     if len(model_ids) != len(set(model_ids)):
         raise DataValidationError("duplicate iML1515 gene ID")
     model_genes = set(model_ids) - {"s0001"}  # COBRA's non-biological placeholder.
-    mapped = GeneRegistry(
-        replace(
-            gene,
-            kegg_gene_id=f"eco:{gene.b_number}"
-            if gene.b_number in listed_genes
-            else None,
-            ko_ids=tuple(sorted(kos[gene.b_number])),
-            iml1515_gene_id=gene.b_number if gene.b_number in model_genes else None,
-        )
-        for gene in registry
+    mapped = registry.assign(
+        kegg_gene_id=[
+            f"eco:{tag}" if tag in listed_genes else None for tag in registry.index
+        ],
+        ko_ids=[tuple(sorted(kos[tag])) for tag in registry.index],
+        iml1515_gene_id=[tag if tag in model_genes else None for tag in registry.index],
     )
     return mapped, {
         "unresolved_identifiers": {
             "kegg": sorted(
                 f"eco:{gene}"
-                for gene in (listed_genes | kos.keys()) - registry.search_universe
+                for gene in (listed_genes | kos.keys()) - set(registry.index)
             ),
-            "iml1515": sorted(model_genes - registry.search_universe),
+            "iml1515": sorted(model_genes - set(registry.index)),
         },
         "excluded_model_ids": sorted(set(model_ids) & {"s0001"}),
     }

@@ -2,19 +2,21 @@
 
 import json
 import re
-from dataclasses import asdict
 from pathlib import Path
 
+from pandas import DataFrame
+
 from yggdrisil_ecoli.data.errors import DataValidationError
-from yggdrisil_ecoli.data.io import atomic_json
+from yggdrisil_ecoli.data.evidence import load_genes
+from yggdrisil_ecoli.data.io import atomic_json, file_sha256
 from yggdrisil_ecoli.data.kegg_modules import (
     PARSER_SEMANTICS_VERSION,
     KeggModuleEntry,
     parse_kegg_module_flat_file,
+    parse_module_expression,
     referenced_ids,
     registry_ko_mapping_hash,
 )
-from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
 from yggdrisil_ecoli.data.sources import (
     KEGG_KO_LINKS,
     KEGG_MODULE_INFO,
@@ -27,7 +29,7 @@ from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 
 def build_kegg_modules(
     *,
-    registry_path: Path,
+    genes_path: Path,
     ko_links_path: Path,
     data_dir: Path,
     accept_kegg_terms: bool,
@@ -35,11 +37,11 @@ def build_kegg_modules(
 ) -> Path:
     if not accept_kegg_terms:
         raise ValueError("KEGG source preparation requires accept_kegg_terms=True")
-    registry = GeneRegistry.from_parquet(registry_path)
-    ko_source = _validated_ko_links_source(registry_path, ko_links_path)
+    registry = load_genes(genes_path)
+    ko_source = _validated_ko_links_source(genes_path, ko_links_path)
     background_kos = _background_kos(ko_links_path, registry)
     raw_dir = data_dir / "raw" / "kegg_modules"
-    manifest_path = registry_path.with_name("source_manifest.json")
+    manifest_path = genes_path.with_name("source_manifest.json")
     manifest = json.loads(manifest_path.read_text())
 
     def fetch(spec: SourceSpec) -> Path:
@@ -69,7 +71,7 @@ def build_kegg_modules(
         needed.update(
             key
             for entry in parsed.values()
-            for key in referenced_ids(entry.expression)
+            for key in referenced_ids(parse_module_expression(entry["definition"]))
             if key.startswith("M")
         )
     evaluator = ModuleEvaluator(
@@ -79,25 +81,22 @@ def build_kegg_modules(
         parser_semantics_version=PARSER_SEMANTICS_VERSION,
         background_kos=tuple(background_kos),
     )
-    broken = evaluator.score_deleted(set()).broken_modules
+    broken = evaluator.score_deleted(set())
     if broken:
         raise DataValidationError(f"local completeness disagrees with KEGG: {broken}")
 
     output = data_dir / "processed" / "kegg_modules.json"
-    definitions = {key: asdict(entry) for key, entry in sorted(entries.items())}
-    for entry in definitions.values():
-        del entry["module_id"]  # The JSON mapping key already carries the ID.
     atomic_json(
         output,
         {
             "schema_version": 1,
             "parser_semantics_version": PARSER_SEMANTICS_VERSION,
-            "reference_registry_sha256": file_sha256(registry_path),
+            "reference_registry_sha256": file_sha256(genes_path),
             "reference_registry_ko_mapping_hash": registry_ko_mapping_hash(registry),
             "background_ko_source_sha256": ko_source["sha256"],
             "background_kos": sorted(background_kos),
             "wt_complete_module_ids": sorted(wt_complete_ids),
-            "definitions": definitions,
+            "definitions": entries,
         },
     )
     manifest["outputs"][output.name] = file_sha256(output)
@@ -105,11 +104,9 @@ def build_kegg_modules(
     return output
 
 
-def _validated_ko_links_source(
-    registry_path: Path, ko_links_path: Path
-) -> dict[str, str]:
-    manifest = json.loads(registry_path.with_name("source_manifest.json").read_text())
-    if manifest["outputs"][registry_path.name] != file_sha256(registry_path):
+def _validated_ko_links_source(genes_path: Path, ko_links_path: Path) -> dict[str, str]:
+    manifest = json.loads(genes_path.with_name("source_manifest.json").read_text())
+    if manifest["outputs"][genes_path.name] != file_sha256(genes_path):
         raise DataValidationError("registry differs from its source manifest")
     source: dict[str, str] = manifest["inputs"][KEGG_KO_LINKS.filename]
     if source["sha256"] != file_sha256(ko_links_path):
@@ -133,7 +130,7 @@ def _parse_wt_module_ids(path: Path) -> frozenset[str]:
     return frozenset(ids)
 
 
-def _background_kos(path: Path, registry: GeneRegistry) -> frozenset[str]:
+def _background_kos(path: Path, registry: DataFrame) -> frozenset[str]:
     """KOs outside the protein-coding deletion universe remain fixed."""
     background = set()
     for line in path.read_text().splitlines():
@@ -142,6 +139,6 @@ def _background_kos(path: Path, registry: GeneRegistry) -> frozenset[str]:
         match = re.fullmatch(r"eco:([^\t]+)\tko:(K[0-9]{5})", line)
         if match is None:
             raise DataValidationError(f"{path}: malformed KEGG gene-KO link")
-        if match[1] not in registry.search_universe:
+        if match[1] not in registry.index:
             background.add(match[2])
     return frozenset(background)

@@ -15,9 +15,10 @@ uv sync --extra notebooks --extra fba --extra dev
 uv run marimo edit scripts/experiment.py
 ```
 
-Choose prepared data, a random or heuristic policy, and a small search budget
-in the notebook, then run the experiment. Results are saved as local SQLite
-graphs under `runs/`; use a separate graph for each independent experiment.
+The notebook shows the complete flow: load data, construct evaluators, choose a
+policy, run Yggdrisil, and inspect results. It starts with a small random search;
+examples show how to substitute a heuristic or model-backed policy. Each run
+saves a fresh SQLite graph under `runs/`.
 
 Model-backed searches are optional: install `--extra agents`, set
 `OPENROUTER_API_KEY` in your environment or `~/.env`, and provide a fixed model
@@ -26,8 +27,9 @@ ID. The notebook requires a separate action to enable a paid search.
 ## Layout
 
 ```text
-src/yggdrisil_ecoli/   Reusable data loading, scoring, search, and analysis
-scripts/              Experiments and preparation runs, including marimo notebooks
+src/yggdrisil_ecoli/   Reusable data loading, evaluators, policies, and analysis
+scripts/experiment.py Search experiment (marimo)
+scripts/prepare_data.py Source preparation recipe (marimo)
 tests/                Library tests and small fixtures
 ```
 
@@ -42,12 +44,20 @@ local prepared-data directory or a Hugging Face dataset ID and pinned revision.
 No dataset has been published for this prototype yet. Local data are ignored;
 small synthetic fixtures remain with the tests.
 
-For one-time source preparation, install `--extra data` and call
-`yggdrisil_ecoli.data_build.build_data(Path("data"), accept_kegg_terms=True)`
-after reviewing KEGG's terms. Ordinary experiments reuse prepared inputs.
+For one-time source preparation:
 
-The prepared inputs are a gene registry and essentiality table (Parquet), a
-KEGG module catalog (JSON), and the iML1515 model (JSON). Source files, hashes,
+```bash
+uv sync --extra notebooks --extra data --extra fba
+uv run marimo edit scripts/prepare_data.py
+```
+
+Review KEGG's terms before enabling its downloads. Ordinary experiments reuse
+prepared inputs.
+
+The prepared inputs are one indexed gene-evidence table (`genes.parquet`), a
+KEGG module catalog (JSON), and the iML1515 model (JSON). Pandas joins the gene
+annotations, crosswalks, and essentiality measurements; validators check the
+scientific input boundaries. Source files, hashes,
 and preparation details travel with the dataset, rather than being repeated in
 repository documentation. KEGG-derived material needs a redistribution check
 before publication; it can remain a local input.
@@ -67,8 +77,9 @@ The search deletes protein-coding genes identified by MG1655 `b` locus tags
 (reference `NC_000913.3`, assembly `GCF_000005845.2`). It reports genome size,
 essentiality, KEGG module retention, and predicted growth separately for
 aerobic M9 with glucose at 37 °C. Missing evidence stays unknown; these scores
-do not prove a strain is viable. Published reduced-genome labels are used only
-for analysis after search.
+do not prove a strain is viable. KEGG scoring reports complete and broken
+modules, without enumerating possible repairs. Published reduced-genome labels
+are used only for analysis after search.
 
 ## Development
 

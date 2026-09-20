@@ -9,11 +9,12 @@ import sys
 
 class BlockPreparationLibraries(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path, target=None):
-        if fullname.split('.')[0] in {'openpyxl', 'pandas', 'gffutils', 'pooch'}:
+        if fullname.split('.')[0] in {'openpyxl', 'gffutils', 'pooch', 'pysam', 'pypdf', 'pydantic_ai', 'dotenv'}:
             raise ModuleNotFoundError(f"{fullname} deliberately unavailable")
         return None
 
 sys.meta_path.insert(0, BlockPreparationLibraries())
+from yggdrisil_ecoli.data.evidence import load_genes
 import yggdrisil_ecoli.scorers
 import yggdrisil_ecoli.tools
 """

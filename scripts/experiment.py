@@ -6,25 +6,46 @@ app = marimo.App(width="medium")
 
 @app.cell
 def imports():
+    import json
     from datetime import datetime
+    from importlib.metadata import distribution
     from pathlib import Path
 
     import marimo as mo
+    import yggdrisil as yg
     from huggingface_hub import snapshot_download
 
-    from yggdrisil_ecoli.agent_policy import AgentSearchConfig
+    import yggdrisil_ecoli
     from yggdrisil_ecoli.analysis import summarize_run
-    from yggdrisil_ecoli.search import SearchArtifacts, run_search
+    from yggdrisil_ecoli.data.evidence import load_genes
+    from yggdrisil_ecoli.data.io import file_sha256
+    from yggdrisil_ecoli.policies import deletion_sampler
+    from yggdrisil_ecoli.problem import EcoliProblem
+    from yggdrisil_ecoli.scorers.base import active_evaluator_ids
+    from yggdrisil_ecoli.scorers.essentiality import EssentialityScorer
+    from yggdrisil_ecoli.scorers.fba import FBAScorer
+    from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
+    from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 
     return (
-        AgentSearchConfig,
+        EcoliProblem,
+        EssentialityScorer,
+        FBAScorer,
+        GenomeSizeScorer,
+        ModuleEvaluator,
         Path,
-        SearchArtifacts,
+        active_evaluator_ids,
         datetime,
+        deletion_sampler,
+        distribution,
+        file_sha256,
+        json,
+        load_genes,
         mo,
-        run_search,
         snapshot_download,
         summarize_run,
+        yg,
+        yggdrisil_ecoli,
     )
 
 
@@ -33,9 +54,9 @@ def introduction(mo):
     mo.md("""
     # Minimal *E. coli*
 
-    Load prepared evidence, choose a policy, and inspect a small experiment.
-    Yggdrisil runs and records the search; the package supplies reusable biology.
-    Edit the parameters below, then use the load and run buttons.
+    Load the gene table, define four pieces of evidence, choose a policy, and run
+    Yggdrisil. The experiment is below; reusable biological calculations live in
+    `src/yggdrisil_ecoli`. Edit a parameter or policy directly, then click Run.
     """)
     return
 
@@ -54,10 +75,11 @@ def data_settings(Path, mo):
 @app.cell
 def load(
     Path,
-    SearchArtifacts,
     data_revision,
     dataset_id,
+    file_sha256,
     load_data,
+    load_genes,
     local_data,
     mo,
     snapshot_download,
@@ -65,7 +87,7 @@ def load(
     mo.stop(not load_data.value, mo.md("Load the prepared data to begin."))
     if dataset_id:
         mo.stop(not data_revision, mo.md("Set the dataset's pinned commit first."))
-        _path = Path(
+        data_dir = Path(
             snapshot_download(
                 repo_id=dataset_id,
                 repo_type="dataset",
@@ -74,65 +96,164 @@ def load(
             )
         )
     else:
-        _path = local_data
-    artifacts = SearchArtifacts(_path)
-    mo.md(f"Prepared data: `{artifacts.data_dir}`")
-    return (artifacts,)
+        data_dir = local_data
+    input_files = {
+        "genes": data_dir / "processed/genes.parquet",
+        "modules": data_dir / "processed/kegg_modules.json",
+        "model": data_dir / "external/iML1515.json",
+    }
+    input_hashes = {name: file_sha256(path) for name, path in input_files.items()}
+    genes = load_genes(input_files["genes"])
+    genes.head(10)
+    return genes, input_files, input_hashes
+
+
+@app.cell
+def evaluators(
+    EssentialityScorer,
+    FBAScorer,
+    GenomeSizeScorer,
+    ModuleEvaluator,
+    active_evaluator_ids,
+    genes,
+    input_files,
+    input_hashes,
+):
+    module_evaluator = ModuleEvaluator.from_json(input_files["modules"], genes)
+    evaluators = [
+        GenomeSizeScorer(genes),
+        EssentialityScorer(genes=genes, artifact_hash=input_hashes["genes"]),
+        module_evaluator,
+        FBAScorer(genes=genes, model_path=input_files["model"]),
+    ]
+    evaluator_ids = active_evaluator_ids(evaluators)
+    return evaluator_ids, evaluators
 
 
 @app.cell
 def search_settings(mo):
-    # Policies: "random", "heuristic", or "agent". Each run gets a new graph.
-    policy_name = "random"
     seed = 17
+    bundle_size = 1
+    n_proposals = 2
     max_states = 10
-    model = ""  # A fixed OpenRouter model ID is required for the agent policy.
-    mode = "closed-book"  # Or "tool-rich" for gene and module inspection tools.
+    agent_config = None
+    # from yggdrisil_ecoli.agent_policy import AgentSearchConfig
+    # Replace None with AgentSearchConfig(
+    #     model="vendor/model", seed=seed, bundle_size=bundle_size,
+    #     max_actions=n_proposals, mode="closed-book")
     allow_paid = mo.ui.checkbox(label="Enable paid model calls")
     start_search = mo.ui.run_button(label="Run search")
     mo.hstack([allow_paid, start_search], justify="start")
-    return allow_paid, max_states, mode, model, policy_name, seed, start_search
+    return (
+        agent_config,
+        allow_paid,
+        bundle_size,
+        max_states,
+        n_proposals,
+        seed,
+        start_search,
+    )
+
+
+@app.cell
+def provenance(
+    Path,
+    distribution,
+    file_sha256,
+    input_hashes,
+    json,
+    mo,
+    start_search,
+    yg,
+    yggdrisil_ecoli,
+):
+    mo.stop(not start_search.value)
+    # Record the exact inputs and code alongside every experiment.
+    _package = Path(yggdrisil_ecoli.__file__).parent
+    _framework = distribution("yggdrisil")
+    _install = json.loads(_framework.read_text("direct_url.json") or "{}")
+    provenance = {
+        "inputs": input_hashes,
+        "application": {
+            "version": yggdrisil_ecoli.__version__,
+            "source_sha256": yg.stable_hash(
+                {
+                    str(_path.relative_to(_package)): file_sha256(_path)
+                    for _path in _package.rglob("*.py")
+                }
+            ),
+            "notebook_sha256": file_sha256(Path(__file__)),
+        },
+        "framework": {
+            "version": _framework.version,
+            "revision": _install.get("vcs_info", {}).get("commit_id"),
+        },
+    }
+    return (provenance,)
 
 
 @app.cell
 async def search(
-    AgentSearchConfig,
+    EcoliProblem,
     Path,
+    agent_config,
     allow_paid,
-    artifacts,
+    bundle_size,
     datetime,
+    deletion_sampler,
+    evaluator_ids,
+    evaluators,
+    genes,
     max_states,
     mo,
-    mode,
-    model,
-    policy_name,
-    run_search,
+    n_proposals,
+    provenance,
     seed,
     start_search,
+    yg,
 ):
-    mo.stop(not start_search.value, mo.md("Choose a policy, then run the search."))
-    _agent = None
-    if policy_name == "agent":
-        mo.stop(
-            not allow_paid.value or not model,
-            mo.md("Set a fixed model ID and enable paid model calls before running."),
-        )
-        _agent = AgentSearchConfig(model=model, mode=mode, seed=seed)
-
+    mo.stop(not start_search.value, mo.md("Choose a policy below, then run."))
     graph_path = (
-        Path("runs") / f"{policy_name}-{seed}-{datetime.now():%Y%m%d-%H%M%S-%f}.sqlite"
+        Path("runs") / f"experiment-{seed}-{datetime.now():%Y%m%d-%H%M%S-%f}.sqlite"
     )
     graph_path.parent.mkdir(exist_ok=True)
-    await run_search(
-        artifacts=artifacts,
-        graph_path=graph_path,
-        policy_name=policy_name,
-        seed=seed,
-        max_states=max_states,
-        max_steps=max_states,
-        agent_config=_agent,
-    )
-    mo.md(f"Search saved to `{graph_path}`.")
+    graph_path.touch(exist_ok=False)  # Refuse to reuse another experiment's graph.
+    with yg.SQLiteStateGraph(graph_path) as _graph:
+        policy = yg.RandomPolicy(
+            deletion_sampler(genes, bundle_size=bundle_size),
+            seed=seed,
+            n_proposals=n_proposals,
+        )
+        # Replace the policy above with a heuristic or an agent:
+        # from yggdrisil_ecoli.policies import make_heuristic_policy
+        # policy = make_heuristic_policy(genes=genes, evaluator_ids=evaluator_ids,
+        #     seed=seed, bundle_size=bundle_size, n_proposals=n_proposals)
+        # from yggdrisil_ecoli.agent_policy import make_agent_policy
+        # policy = make_agent_policy(genes=genes, modules=module_evaluator,
+        #     config=agent_config, evaluator_ids=evaluator_ids,
+        #     evaluations=_graph.evaluations)
+        mo.stop(
+            isinstance(policy, yg.NavigatorExplorerPolicy) and not allow_paid.value,
+            mo.md("Enable paid model calls before running an agent policy."),
+        )
+        run = await yg.Runner(
+            EcoliProblem(genes, max_genes_per_action=bundle_size),
+            policy,
+            _graph,
+            yg.RunLimits(max_states=max_states, max_steps=max_states),
+            evaluators=yg.EvaluatorSuite(evaluators, concurrent=True),
+            resume=False,
+            metadata={
+                **provenance,
+                "evaluators": evaluator_ids,
+                "policy": type(policy).__name__,
+                "seed": seed,
+                "bundle_size": bundle_size,
+                "n_proposals": n_proposals,
+                "agent": agent_config.metadata(genes) if agent_config else None,
+            },
+        ).run()
+    mo.md(f"{run.unique_states} states saved to `{graph_path}`.")
     return (graph_path,)
 
 

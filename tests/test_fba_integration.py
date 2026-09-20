@@ -4,16 +4,16 @@ import pytest
 from yggdrisil import evaluator_identity
 
 from yggdrisil_ecoli.data.errors import DataValidationError
-from yggdrisil_ecoli.data.registry import GeneRegistry
+from yggdrisil_ecoli.data.evidence import load_genes
 from yggdrisil_ecoli.scorers.fba import FBAScorer
 from yggdrisil_ecoli.state import GenomeState
 
 ROOT = Path(__file__).parents[1]
 MODEL_PATH = ROOT / "data" / "external" / "iML1515.json"
-REGISTRY_PATH = ROOT / "data" / "processed" / "gene_registry.parquet"
+GENES_PATH = ROOT / "data" / "processed" / "genes.parquet"
 
 pytestmark = pytest.mark.skipif(
-    not MODEL_PATH.exists() or not REGISTRY_PATH.exists(),
+    not MODEL_PATH.exists() or not GENES_PATH.exists(),
     reason="frozen iML1515 and generated registry are not available",
 )
 
@@ -22,7 +22,7 @@ pytestmark = pytest.mark.skipif(
 def scorer() -> FBAScorer:
     return FBAScorer(
         model_path=MODEL_PATH,
-        registry=GeneRegistry.from_parquet(REGISTRY_PATH),
+        genes=load_genes(GENES_PATH),
     )
 
 
@@ -69,7 +69,7 @@ def test_rejects_changed_biomass_objective(
     path = tmp_path / "changed-model.json"
     save_json_model(model, str(path))
     with pytest.raises(DataValidationError, match="biomass maximization"):
-        FBAScorer(model_path=path, registry=scorer.registry)
+        FBAScorer(model_path=path, genes=load_genes(GENES_PATH))
 
 
 async def test_non_model_gene_changes_coverage_not_solution(

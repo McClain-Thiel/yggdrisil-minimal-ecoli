@@ -3,20 +3,19 @@
 from __future__ import annotations
 
 import asyncio
-import hashlib
-import json
 import math
 from importlib.metadata import version
 from pathlib import Path
 from types import MappingProxyType
 
+import pandas as pd
 from cobra import Model
 from cobra.io import load_json_model
 from cobra.util.solver import linear_reaction_coefficients
-from yggdrisil import EvaluationResult
+from yggdrisil import EvaluationResult, stable_hash
 
 from yggdrisil_ecoli.data.errors import DataValidationError
-from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
+from yggdrisil_ecoli.data.io import file_sha256
 from yggdrisil_ecoli.scorers.base import scientific_evaluation
 from yggdrisil_ecoli.state import GenomeState
 
@@ -63,24 +62,18 @@ _ENVIRONMENT = {
 }
 
 
-def _sha256_json(value: object) -> str:
-    return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
-
-
 class FBAScorer:
     """Score isolated COBRApy model copies; retain coverage and input identities."""
 
     name = "fba"
     version = "2"
 
-    def __init__(self, *, model_path: str | Path, registry: GeneRegistry) -> None:
-        self.registry = registry
+    def __init__(self, *, model_path: str | Path, genes: pd.DataFrame) -> None:
+        self.model_ids = genes.iml1515_gene_id.copy()
         self.config = {
             "model_sha256": file_sha256(Path(model_path)),
-            "registry_mapping_hash": _sha256_json(
-                [(record.b_number, record.iml1515_gene_id) for record in registry]
-            ),
-            "environment_config_hash": _sha256_json(_ENVIRONMENT),
+            "registry_mapping_hash": stable_hash(self.model_ids.to_dict()),
+            "environment_config_hash": stable_hash(_ENVIRONMENT),
             "solver": "glpk",
             "cobra_version": version("cobra"),
             "optlang_version": version("optlang"),
@@ -99,10 +92,8 @@ class FBAScorer:
         """Return an independent knockout model for scoring or inspecting GPRs."""
 
         model = self.model.copy()
-        for gene in sorted(deleted_genes):
-            model_id = self.registry.require(gene).iml1515_gene_id
-            if model_id is not None:
-                model.genes.get_by_id(model_id).knock_out()
+        for model_id in self.model_ids.loc[sorted(deleted_genes)].dropna():
+            model.genes.get_by_id(model_id).knock_out()
         return model
 
     def _evaluate(self, state: GenomeState) -> EvaluationResult:
@@ -113,9 +104,9 @@ class FBAScorer:
             if not math.isfinite(growth):
                 raise DataValidationError("FBA returned non-finite biomass flux")
             growth = 0.0 if abs(growth) < 1e-9 else growth
-        records = [self.registry.require(gene) for gene in sorted(state.deleted_genes)]
-        modeled = [r.iml1515_gene_id for r in records if r.in_iml1515]
-        unmodeled = [r.b_number for r in records if not r.in_iml1515]
+        mapping = self.model_ids.loc[sorted(state.deleted_genes)]
+        modeled = mapping.dropna().tolist()
+        unmodeled = mapping.loc[mapping.isna()].index.tolist()
         return scientific_evaluation(
             {
                 "feasible": feasible,
@@ -123,7 +114,7 @@ class FBAScorer:
                 "solver_status": str(solution.status),
             },
             coverage={
-                "deleted_genes_total": len(records),
+                "deleted_genes_total": len(mapping),
                 "deleted_genes_modeled": len(modeled),
                 "deleted_genes_unmodeled": len(unmodeled),
                 "modeled_gene_ids": modeled,
@@ -153,9 +144,7 @@ class FBAScorer:
             raise DataValidationError(
                 f"medium references missing exchanges: {sorted(missing)}"
             )
-        mapped = [
-            r.iml1515_gene_id for r in self.registry if r.iml1515_gene_id is not None
-        ]
+        mapped = self.model_ids.dropna().tolist()
         absent = set(mapped) - {gene.id for gene in model.genes}
         if absent:
             raise DataValidationError(

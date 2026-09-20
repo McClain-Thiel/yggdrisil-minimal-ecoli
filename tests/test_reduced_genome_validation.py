@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 
+import pandas as pd
 import pytest
 
 from yggdrisil_ecoli.analysis import score_rediscovery
@@ -12,21 +13,6 @@ from yggdrisil_ecoli.data.reduced_genomes import (
     genes_in_intervals,
     load_ncbi_sequence,
 )
-from yggdrisil_ecoli.data.registry import GeneRecord, GeneRegistry
-
-
-def _gene(b_number: str, start: int, end: int) -> GeneRecord:
-    return GeneRecord(
-        b_number=b_number,
-        symbol=None,
-        name=None,
-        description=None,
-        start=start,
-        end=end,
-        strand="+",
-        ncbi_gene_id=None,
-        ecocyc_id=None,
-    )
 
 
 def test_load_ncbi_sequence_checks_wrapper_metadata(tmp_path) -> None:
@@ -73,8 +59,9 @@ def test_ms56_parser_stops_at_next_table(separator) -> None:
 
 
 def test_gene_interval_mapping_includes_boundary_overlap() -> None:
-    registry = GeneRegistry(
-        [_gene("b0001", 50, 100), _gene("b0002", 100, 150), _gene("b0003", 151, 200)]
+    registry = pd.DataFrame(
+        {"start": [50, 100, 151], "end": [100, 150, 200]},
+        index=pd.Index(["b0001", "b0002", "b0003"], name="b_number"),
     )
 
     assert genes_in_intervals(registry, (Interval(100, 120),)) == {

@@ -1,18 +1,15 @@
 from dataclasses import dataclass
-from pathlib import Path
 
+import pandas as pd
 import pytest
 from yggdrisil import EvaluationResult
 
-from yggdrisil_ecoli.data.gff import parse_ncbi_gff
 from yggdrisil_ecoli.scorers.base import (
     active_evaluator_ids,
     scientific_evaluation,
 )
 from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 from yggdrisil_ecoli.state import GenomeState
-
-FIXTURES = Path(__file__).parent / "fixtures"
 
 
 @dataclass
@@ -26,9 +23,10 @@ class _Evaluator:
 
 
 @pytest.mark.asyncio
-async def test_genome_size_evaluator_returns_only_exact_gene_counts() -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    evaluator = GenomeSizeScorer(registry)
+async def test_genome_size_evaluator_returns_only_exact_gene_counts(
+    genes: pd.DataFrame,
+) -> None:
+    evaluator = GenomeSizeScorer(genes)
 
     result = await evaluator.evaluate(GenomeState(frozenset({"b0001"})))
 
