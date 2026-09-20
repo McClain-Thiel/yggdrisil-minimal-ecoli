@@ -1,0 +1,8 @@
+{
+  "id": "iML1515-test-excerpt",
+  "genes": [
+    {"id": "b0002", "name": "thrA"},
+    {"id": "b9999", "name": "outside fixture universe"},
+    {"id": "s0001", "name": "spontaneous process placeholder"}
+  ]
+}

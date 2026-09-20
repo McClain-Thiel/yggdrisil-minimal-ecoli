@@ -1,0 +1,11 @@
+ENTRY       M00001            Pathway   Module
+NAME        Synthetic pathway
+DEFINITION  K00001
+            (K00002,K00003)
+CLASS       Pathway modules; Synthetic metabolism
+///
+ENTRY       M00002            Pathway   Module
+NAME        Synthetic optional complex
+DEFINITION  K00004-K00005
+CLASS       Pathway modules; Synthetic metabolism
+///
