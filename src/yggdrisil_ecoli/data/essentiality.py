@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 import json
-import os
-import tempfile
 from collections import Counter
 from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import asdict, dataclass
+from math import isfinite
 from pathlib import Path
-from typing import Literal, cast
+from typing import Literal
 
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -90,36 +89,51 @@ class EssentialityRecord:
     m9_ecipkm: float | None
 
     def __post_init__(self) -> None:
-        if not is_b_number(self.b_number):
+        if not isinstance(self.b_number, str) or not is_b_number(self.b_number):
             raise DataValidationError(f"malformed canonical ID: {self.b_number!r}")
-        values = (self.lb_call_raw, self.lb_ecipkm, self.m9_call_raw, self.m9_ecipkm)
+        measurements = (
+            self.lb_call_raw,
+            self.lb_ecipkm,
+            self.m9_call_raw,
+            self.m9_ecipkm,
+        )
         if self.coverage == "unknown":
             if self.classification != "unknown" or any(
-                value is not None for value in values
+                v is not None for v in measurements
             ):
                 raise DataValidationError(
-                    f"{self.b_number}: unknown coverage must not contain measurements"
+                    "unknown coverage must not contain measurements"
                 )
             return
         if self.coverage != "measured":
             raise DataValidationError(
-                f"{self.b_number}: invalid essentiality coverage {self.coverage!r}"
+                f"invalid essentiality coverage: {self.coverage!r}"
             )
-        if self.lb_call_raw not in {"E", "NE"} or self.m9_call_raw not in {"E", "NE"}:
-            raise DataValidationError(
-                f"{self.b_number}: measured calls must be E or NE"
-            )
-        if self.lb_ecipkm is None or self.m9_ecipkm is None:
-            raise DataValidationError(
-                f"{self.b_number}: measured ecIPKM values are required"
-            )
-        _validate_call(self.lb_call_raw, self.lb_ecipkm, f"{self.b_number} LB")
-        _validate_call(self.m9_call_raw, self.m9_ecipkm, f"{self.b_number} M9")
+        for medium, call, value in (
+            ("LB", self.lb_call_raw, self.lb_ecipkm),
+            ("M9", self.m9_call_raw, self.m9_ecipkm),
+        ):
+            if call not in {"E", "NE"}:
+                raise DataValidationError(
+                    f"{self.b_number} {medium}: calls must be E or NE"
+                )
+            if (
+                isinstance(value, bool)
+                or not isinstance(value, (int, float))
+                or not isfinite(value)
+                or value < 0
+            ):
+                raise DataValidationError(
+                    f"{self.b_number} {medium}: ecIPKM must be finite and nonnegative"
+                )
+            if (value <= 2.2) != (call == "E"):
+                raise DataValidationError(
+                    f"{self.b_number} {medium}: author call disagrees with ecIPKM threshold"
+                )
         expected = _classification(self.lb_call_raw, self.m9_call_raw)
         if self.classification != expected:
             raise DataValidationError(
-                f"{self.b_number}: classification must be {expected!r}, "
-                f"got {self.classification!r}"
+                f"{self.b_number}: classification must be {expected!r}"
             )
 
     @property
@@ -170,46 +184,34 @@ class EssentialityDataset:
         *,
         metadata: Mapping[str, object] | None = None,
     ) -> None:
-        by_id: dict[str, EssentialityRecord] = {}
-        for record in records:
-            if record.b_number in by_id:
-                raise DataValidationError(
-                    f"duplicate essentiality b_number: {record.b_number}"
-                )
-            by_id[record.b_number] = record
-        if not by_id:
+        records = list(records)
+        duplicates = [
+            tag for tag, n in Counter(r.b_number for r in records).items() if n > 1
+        ]
+        if duplicates:
+            raise DataValidationError(f"duplicate essentiality b_number: {duplicates}")
+        if not records:
             raise DataValidationError("essentiality dataset is empty")
-        self._by_id = by_id
-        supplied_metadata = dict(metadata or {})
-        changed_constants = {
-            key
-            for key, value in _STUDY_METADATA.items()
-            if key in supplied_metadata and supplied_metadata[key] != value
-        }
-        if changed_constants:
-            raise DataValidationError(
-                f"essentiality metadata changes fixed fields: {sorted(changed_constants)}"
-            )
-        self.metadata = {**_STUDY_METADATA, **supplied_metadata}
+        self._by_id = {record.b_number: record for record in records}
+        self.metadata = {**_STUDY_METADATA, **(metadata or {})}
+        for key, value in _STUDY_METADATA.items():
+            if self.metadata[key] != value:
+                raise DataValidationError(
+                    f"essentiality metadata changes fixed field: {key}"
+                )
 
     def __len__(self) -> int:
         return len(self._by_id)
 
     def __iter__(self) -> Iterator[EssentialityRecord]:
-        for b_number in sorted(self._by_id):
-            yield self._by_id[b_number]
+        return (self._by_id[tag] for tag in sorted(self._by_id))
 
     def record(self, b_number: str) -> EssentialityRecord:
         if not is_b_number(b_number):
             raise DataValidationError(
                 f"expected a canonical b-number, got {b_number!r}"
             )
-        try:
-            return self._by_id[b_number]
-        except KeyError as exc:
-            raise KeyError(
-                f"gene is absent from essentiality data: {b_number}"
-            ) from exc
+        return self._by_id[b_number]
 
     # Keep the concise lookup name used by policies and tools.
     summary = record
@@ -234,9 +236,7 @@ class EssentialityDataset:
             raise DataValidationError(
                 f"unexpected essentiality schema: {table.schema.remove_metadata()}"
             )
-        raw_metadata = (
-            table.schema.metadata.get(_METADATA_KEY) if table.schema.metadata else None
-        )
+        raw_metadata = (table.schema.metadata or {}).get(_METADATA_KEY)
         if raw_metadata is None:
             raise DataValidationError("essentiality artifact lacks dataset metadata")
         try:
@@ -264,24 +264,7 @@ class EssentialityDataset:
             [asdict(record) for record in self],
             schema=ESSENTIALITY_SCHEMA.with_metadata(metadata),
         )
-        with tempfile.NamedTemporaryFile(
-            prefix=f".{destination.name}.",
-            suffix=".tmp",
-            dir=destination.parent,
-            delete=False,
-        ) as handle:
-            temporary = Path(handle.name)
-        try:
-            pq.write_table(
-                table,
-                temporary,
-                compression="zstd",
-                use_dictionary=True,
-                write_statistics=True,
-            )
-            os.replace(temporary, destination)
-        finally:
-            temporary.unlink(missing_ok=True)
+        pq.write_table(table, destination, compression="zstd")
 
 
 def parse_choe_workbook(
@@ -291,170 +274,112 @@ def parse_choe_workbook(
     expected_source_counts: dict[str, int] | None = _EXPECTED_SOURCE_COUNTS,
     metadata: Mapping[str, object] | None = None,
 ) -> tuple[EssentialityDataset, EssentialityImportReport]:
-    """Parse checksum-pinned Choe 2023 Table S1 into one row per gene."""
+    """Prepare Choe 2023 Table S1; experiments only need the resulting Parquet."""
+    import pandas as pd
 
-    from openpyxl import load_workbook
-
-    workbook = load_workbook(path, read_only=True, data_only=True)
-    try:
-        if workbook.sheetnames != ["Table S1"]:
+    with pd.ExcelFile(path) as workbook:
+        if workbook.sheet_names != ["Table S1"]:
             raise DataValidationError(
-                f"unexpected Choe workbook sheets: {workbook.sheetnames}"
+                f"unexpected Choe workbook sheets: {workbook.sheet_names}"
             )
-        worksheet = workbook["Table S1"]
-        headers = tuple(
-            tuple(
-                cell.value
-                for cell in next(worksheet.iter_rows(min_row=row, max_row=row))
-            )
-            for row in (1, 2)
+        sheet = workbook.parse(
+            "Table S1", header=None, dtype=object, keep_default_na=False
         )
-        _validate_headers(*headers)
-        source_rows = list(worksheet.iter_rows(min_row=3, values_only=True))
-    finally:
-        workbook.close()
-
-    protein_rows = [row for row in source_rows if row[6] == "Y" and row[7] == "N"]
-    source_counts = {
-        "lb_essential": sum(row[14] == "E" for row in protein_rows),
-        "lb_nonessential": sum(row[14] == "NE" for row in protein_rows),
-        "m9_essential": sum(row[19] == "E" for row in protein_rows),
-        "m9_nonessential": sum(row[19] == "NE" for row in protein_rows),
+    first, second = sheet.iloc[0].tolist(), sheet.iloc[1].tolist()
+    if (
+        tuple(first[:10]) != _IDENTITY_HEADERS
+        or first[10] != "LB medium"
+        or first[15] != "M9 glucose (0.2%) medium"
+        or tuple(second[10:15]) != _ASSAY_HEADERS
+        or tuple(second[15:20]) != _ASSAY_HEADERS
+    ):
+        raise DataValidationError("unexpected Choe Table S1 column contract")
+    columns = {
+        1: "start",
+        2: "end",
+        5: "b_number",
+        6: "cds",
+        7: "pseudo",
+        13: "lb_ecipkm",
+        14: "lb_call",
+        18: "m9_ecipkm",
+        19: "m9_call",
     }
-    observed_contract = {
-        "source_rows": len(source_rows),
-        "protein_coding_nonpseudo_rows": len(protein_rows),
+    source = sheet.iloc[2:][list(columns)].rename(columns=columns)
+    source.index += 1  # DataFrame index 2 is worksheet row 3; filtering keeps it.
+    protein = source.loc[(source.cds == "Y") & (source.pseudo == "N")]
+    source_counts = {
+        f"{medium}_{label}": int((protein[f"{medium}_call"] == call).sum())
+        for medium in ("lb", "m9")
+        for label, call in (("essential", "E"), ("nonessential", "NE"))
+    }
+    observed = {
+        "source_rows": len(source),
+        "protein_coding_nonpseudo_rows": len(protein),
         **source_counts,
     }
-    if (
-        expected_source_counts is not None
-        and observed_contract != expected_source_counts
-    ):
-        raise DataValidationError(
-            f"Choe source snapshot contract changed: {observed_contract}"
-        )
+    if expected_source_counts is not None and observed != expected_source_counts:
+        raise DataValidationError(f"Choe source snapshot contract changed: {observed}")
 
     mapped: dict[str, EssentialityRecord] = {}
     unmapped: list[str] = []
     coordinate_mismatches: list[str] = []
-    for row_number, row in enumerate(protein_rows, start=3):
-        b_number = _text(row[5], f"row {row_number} locus tag")
-        if not is_b_number(b_number):
-            raise DataValidationError(
-                f"row {row_number}: malformed source locus tag {b_number!r}"
+    for row in protein.itertuples():
+        try:
+            record = EssentialityRecord(
+                b_number=row.b_number,
+                classification=_classification(row.lb_call, row.m9_call),
+                coverage="measured",
+                lb_call_raw=row.lb_call,
+                lb_ecipkm=row.lb_ecipkm,
+                m9_call_raw=row.m9_call,
+                m9_ecipkm=row.m9_ecipkm,
             )
-        lb_call, lb_ecipkm = _source_evidence(row, row_number, 13, 14)
-        m9_call, m9_ecipkm = _source_evidence(row, row_number, 18, 19)
-        if b_number not in registry.search_universe:
-            unmapped.append(b_number)
+        except DataValidationError as exc:
+            raise DataValidationError(f"row {row.Index}: {exc}") from exc
+        reference = registry.get(record.b_number)
+        if reference is None:
+            unmapped.append(record.b_number)
             continue
-        if b_number in mapped:
-            raise DataValidationError(f"duplicate Choe source locus tag: {b_number}")
-        reference = registry.require(b_number)
-        if (
-            _integer(row[1], f"{b_number} start"),
-            _integer(row[2], f"{b_number} end"),
-        ) != (
-            reference.start,
-            reference.end,
+        if record.b_number in mapped:
+            raise DataValidationError(
+                f"row {row.Index}: duplicate Choe source locus tag: {record.b_number}"
+            )
+        if any(
+            isinstance(v, bool)
+            or not isinstance(v, (int, float))
+            or not isfinite(v)
+            or v != int(v)
+            for v in (row.start, row.end)
         ):
-            coordinate_mismatches.append(b_number)
-        mapped[b_number] = EssentialityRecord(
-            b_number=b_number,
-            classification=_classification(lb_call, m9_call),
-            coverage="measured",
-            lb_call_raw=lb_call,
-            lb_ecipkm=lb_ecipkm,
-            m9_call_raw=m9_call,
-            m9_ecipkm=m9_ecipkm,
-        )
+            raise DataValidationError(f"row {row.Index}: coordinates must be integers")
+        if (row.start, row.end) != (reference.start, reference.end):
+            coordinate_mismatches.append(record.b_number)
+        mapped[record.b_number] = record
 
-    records = tuple(
-        mapped.get(
-            gene.b_number,
-            EssentialityRecord(
-                b_number=gene.b_number,
-                classification="unknown",
-                coverage="unknown",
-                lb_call_raw=None,
-                lb_ecipkm=None,
-                m9_call_raw=None,
-                m9_ecipkm=None,
-            ),
-        )
-        for gene in registry
-    )
     missing = tuple(sorted(registry.search_universe - mapped.keys()))
-    summary_counts = {
-        str(classification): count
-        for classification, count in Counter(
-            record.classification for record in records
-        ).items()
-    }
+    records = [
+        *mapped.values(),
+        *(
+            EssentialityRecord(tag, "unknown", "unknown", None, None, None, None)
+            for tag in missing
+        ),
+    ]
     return EssentialityDataset(records, metadata=metadata), EssentialityImportReport(
-        source_rows=len(source_rows),
-        protein_coding_nonpseudo_rows=len(protein_rows),
+        source_rows=len(source),
+        protein_coding_nonpseudo_rows=len(protein),
         source_call_counts=source_counts,
         mapped_source_genes=len(mapped),
         unmapped_source_ids=tuple(sorted(unmapped)),
         canonical_genes_without_measurement=missing,
         coordinate_mismatches=tuple(sorted(coordinate_mismatches)),
-        summary_counts=summary_counts,
+        summary_counts=dict(Counter(record.classification for record in records)),
     )
 
 
-def _classification(lb_call: SourceCall, m9_call: SourceCall) -> EssentialityClass:
+def _classification(
+    lb_call: SourceCall | None, m9_call: SourceCall | None
+) -> EssentialityClass:
     if m9_call == "E":
         return "essential" if lb_call == "E" else "conditionally_essential"
     return "ambiguous" if lb_call == "E" else "nonessential"
-
-
-def _source_evidence(
-    row: tuple[object, ...], row_number: int, ecipkm_index: int, call_index: int
-) -> tuple[SourceCall, float]:
-    call = _text(row[call_index], f"row {row_number} essentiality")
-    if call not in {"E", "NE"}:
-        raise DataValidationError(f"row {row_number}: unexpected call {call!r}")
-    ecipkm = _number(row[ecipkm_index], f"row {row_number} ecIPKM")
-    typed_call = cast(SourceCall, call)
-    _validate_call(typed_call, ecipkm, f"row {row_number}")
-    return typed_call, ecipkm
-
-
-def _validate_call(call: SourceCall, ecipkm: float, label: str) -> None:
-    if (ecipkm <= 2.2) != (call == "E"):
-        raise DataValidationError(
-            f"{label}: author call disagrees with ecIPKM threshold"
-        )
-
-
-def _validate_headers(first: tuple[object, ...], second: tuple[object, ...]) -> None:
-    if (
-        first[0:10] != _IDENTITY_HEADERS
-        or first[10] != "LB medium"
-        or first[15] != "M9 glucose (0.2%) medium"
-        or second[10:15] != _ASSAY_HEADERS
-        or second[15:20] != _ASSAY_HEADERS
-    ):
-        raise DataValidationError("unexpected Choe Table S1 column contract")
-
-
-def _text(value: object, label: str) -> str:
-    if not isinstance(value, str) or not value:
-        raise DataValidationError(f"{label} is not non-empty text")
-    return value
-
-
-def _integer(value: object, label: str) -> int:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise DataValidationError(f"{label} is not numeric")
-    result = int(value)
-    if result != value:
-        raise DataValidationError(f"{label} is not an integer")
-    return result
-
-
-def _number(value: object, label: str) -> float:
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
-        raise DataValidationError(f"{label} is not numeric")
-    return float(value)

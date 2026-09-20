@@ -1,3 +1,4 @@
+from contextlib import ExitStack
 from pathlib import Path
 
 import pytest
@@ -15,6 +16,7 @@ from yggdrisil_ecoli.agent_policy import (
     _CandidateSchedule,
     _format_explorer_prompt,
     _UsageLimitedAgent,
+    make_agent_policy,
 )
 from yggdrisil_ecoli.data.essentiality import (
     EssentialityDataset,
@@ -47,6 +49,8 @@ def test_agent_output_schema_enforces_bundle_size() -> None:
 
     with pytest.raises(ValidationError, match="at most 1 item"):
         action_type(genes=("g0001", "g0002"))
+    with pytest.raises(ValidationError, match="pattern"):
+        action_type(genes=("b0001",))
 
 
 @pytest.mark.asyncio
@@ -70,13 +74,13 @@ def test_closed_book_prompt_and_tools_hide_canonical_annotations() -> None:
     schedule = _CandidateSchedule(registry, config.seed)
     state = GenomeState(frozenset({"b0001"}))
 
-    def toolkit(current: GenomeState) -> _AgentGeneTools:
+    def toolkit(state: GenomeState) -> _AgentGeneTools:
         return _AgentGeneTools(
             registry=registry,
             essentiality=essentiality,
             modules=modules,
             schedule=schedule,
-            state=current,
+            state=state,
             mode="closed-book",
             blind=blind,
         )
@@ -91,8 +95,9 @@ def test_closed_book_prompt_and_tools_hide_canonical_annotations() -> None:
         ),
         toolkit,
         config,
+        evaluator_ids={},
     )
-    evidence = toolkit(state).list_candidates()
+    evidence = toolkit(state).list_deletion_candidates()
 
     for leaked in ("b0001", "b0002", "b0003", "thrL", "thrA", "thrB"):
         assert leaked not in prompt
@@ -111,13 +116,13 @@ def test_tool_rich_prompt_exposes_canonical_candidate_annotations() -> None:
     schedule = _CandidateSchedule(registry, config.seed)
     state = GenomeState(frozenset())
 
-    def toolkit(current: GenomeState) -> _AgentGeneTools:
+    def toolkit(state: GenomeState) -> _AgentGeneTools:
         return _AgentGeneTools(
             registry=registry,
             essentiality=essentiality,
             modules=modules,
             schedule=schedule,
-            state=current,
+            state=state,
             mode="tool-rich",
             blind=None,
         )
@@ -132,6 +137,7 @@ def test_tool_rich_prompt_exposes_canonical_candidate_annotations() -> None:
         ),
         toolkit,
         config,
+        evaluator_ids={},
     )
 
     assert any(gene in prompt for gene in ("b0001", "b0002", "b0003"))
@@ -144,13 +150,13 @@ async def test_agent_action_over_bundle_limit_is_recorded_as_rejected() -> None:
     schedule = _CandidateSchedule(registry, 0)
     state = GenomeState(frozenset())
 
-    def toolkit(current: GenomeState) -> _AgentGeneTools:
+    def toolkit(state: GenomeState) -> _AgentGeneTools:
         return _AgentGeneTools(
             registry=registry,
             essentiality=essentiality,
             modules=modules,
             schedule=schedule,
-            state=current,
+            state=state,
             mode="tool-rich",
             blind=None,
         )
@@ -167,9 +173,11 @@ async def test_agent_action_over_bundle_limit_is_recorded_as_rejected() -> None:
             return "fixture"
 
     explorer = _BoundExplorer(
-        TooManyGenes(),
+        lambda tools: TooManyGenes(),
         toolkit,
         lambda action: action,
+        model="fixture",
+        prompt=lambda context: "fixture",
         max_actions=1,
         max_genes_per_action=1,
     )
@@ -209,3 +217,54 @@ def _evidence() -> tuple[GeneRegistry, EssentialityDataset, ModuleEvaluator]:
         parser_semantics_version="fixture",
     )
     return registry, essentiality, modules
+
+
+@pytest.mark.asyncio
+async def test_framework_adapter_uses_bound_tools_and_translates_blind_output(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from pydantic_ai import models
+    from pydantic_ai.exceptions import CostNotFoundWarning
+    from pydantic_ai.models.test import TestModel
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-placeholder")
+    monkeypatch.setattr(models, "ALLOW_MODEL_REQUESTS", False)
+    registry, essentiality, modules = _evidence()
+    config = AgentSearchConfig(model="openai/gpt-4o-mini-2024-07-18", seed=7)
+    policy = make_agent_policy(
+        registry=registry,
+        essentiality=essentiality,
+        modules=modules,
+        config=config,
+        evaluator_ids={},
+        evaluations=lambda state_id: [],
+    )
+    blind = _BlindGeneMap(registry, config.seed)
+    model = TestModel(
+        call_tools=[],
+        custom_output_args={"actions": [{"genes": [blind.public("b0002")]}]},
+    )
+    original_factory = policy.explorer.factory
+    with ExitStack() as stack, pytest.warns(CostNotFoundWarning):
+
+        def offline_factory(tools):
+            explorer = original_factory(tools)
+            stack.enter_context(explorer.agent.inner.override(model=model))
+            return explorer
+
+        monkeypatch.setattr(policy.explorer, "factory", offline_factory)
+        result = await policy.explorer.explore(
+            ExplorerContext(
+                goal="minimize",
+                state_id="fixture",
+                state=GenomeState(frozenset()),
+                lineage=[],
+                guidance=None,
+            )
+        )
+
+    assert result.actions == [DeleteGenes(genes=("b0002",))]
+    assert [
+        tool.name for tool in model.last_model_request_parameters.function_tools
+    ] == ["analyze_deletion_bundle"]
+    assert any(event["role"] == "usage" for event in result.trace)

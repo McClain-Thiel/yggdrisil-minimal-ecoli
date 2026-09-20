@@ -2,17 +2,18 @@
 
 from __future__ import annotations
 
-import os
+import hashlib
 import tempfile
-import time
+import zipfile
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+
+import pooch
 
 from yggdrisil_ecoli.constants import ASSEMBLY_ACCESSION
 from yggdrisil_ecoli.data.errors import DataValidationError
+from yggdrisil_ecoli.data.io import atomic_bytes
 from yggdrisil_ecoli.data.registry import file_sha256
 
 NCBI_GFF_URL = (
@@ -131,16 +132,26 @@ def acquire_source(
     *,
     refresh: bool = False,
     timeout_s: float = 60.0,
-    retries: int = 3,
 ) -> tuple[Path, SourceRecord]:
-    """Download *spec* atomically, or hash and reuse the local snapshot."""
+    """Cache a source with Pooch; record the exact bytes used by the build."""
 
     directory = Path(raw_dir)
     directory.mkdir(parents=True, exist_ok=True)
     destination = directory / spec.filename
     reused = destination.exists() and not refresh
     if not reused:
-        _download(spec.url, destination, timeout_s=timeout_s, retries=retries)
+        # A failed refresh must leave the previous frozen snapshot available.
+        with tempfile.TemporaryDirectory(dir=directory) as staging:
+            downloaded = Path(
+                pooch.retrieve(
+                    spec.url,
+                    known_hash=spec.expected_sha256,
+                    fname=spec.filename,
+                    path=staging,
+                    downloader=pooch.HTTPDownloader(timeout=timeout_s),
+                )
+            )
+            downloaded.replace(destination)
     accessed_at = datetime.now(UTC).isoformat()
     sha256 = file_sha256(destination)
     if spec.expected_sha256 is not None and sha256 != spec.expected_sha256:
@@ -185,37 +196,15 @@ def record_local_source(
     )
 
 
-def _download(url: str, destination: Path, *, timeout_s: float, retries: int) -> None:
-    request = Request(
-        url,
-        headers={"User-Agent": "yggdrisil-ecoli/0.1 (+scientific data build)"},
-    )
-    last_error: OSError | None = None
-    for attempt in range(retries):
-        try:
-            with urlopen(request, timeout=timeout_s) as response:  # noqa: S310
-                with tempfile.NamedTemporaryFile(
-                    prefix=f".{destination.name}.",
-                    suffix=".tmp",
-                    dir=destination.parent,
-                    delete=False,
-                ) as handle:
-                    temporary = Path(handle.name)
-                    while chunk := response.read(1024 * 1024):
-                        handle.write(chunk)
-            try:
-                os.replace(temporary, destination)
-            finally:
-                temporary.unlink(missing_ok=True)
-            return
-        except HTTPError as exc:
-            last_error = exc
-            if exc.code < 500 and exc.code != 429:
-                raise
-        except URLError as exc:
-            last_error = OSError(str(exc))
-        if attempt + 1 < retries:
-            time.sleep(2**attempt)
-    if last_error is None:
-        raise OSError(f"failed to download {url}")
-    raise OSError(f"failed to download {url} after {retries} attempts") from last_error
+def extract_member(
+    archive_path: Path, member: str, sha256: str, destination: Path
+) -> Path:
+    """Extract one pinned publication supplement, never the whole archive."""
+
+    with zipfile.ZipFile(archive_path) as archive:
+        content = archive.read(member)
+    digest = hashlib.sha256(content).hexdigest()
+    if digest != sha256:
+        raise DataValidationError(f"{member}: expected {sha256}, got {digest}")
+    atomic_bytes(destination, content)
+    return destination

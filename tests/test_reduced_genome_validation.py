@@ -4,14 +4,14 @@ import json
 
 import pytest
 
-from scripts.build_reduced_genome_validation import (
+from yggdrisil_ecoli.analysis import score_rediscovery
+from yggdrisil_ecoli.data.reduced_genomes import (
     Interval,
     _ms56_ids_from_pages,
-    deletion_intervals_from_paf,
+    deletion_intervals_from_sam,
     genes_in_intervals,
     load_ncbi_sequence,
 )
-from scripts.summarize_runs import score_rediscovery
 from yggdrisil_ecoli.data.registry import GeneRecord, GeneRegistry
 
 
@@ -50,16 +50,26 @@ def test_load_ncbi_sequence_checks_wrapper_metadata(tmp_path) -> None:
         load_ncbi_sequence(path, "NC_000913.3")
 
 
-def test_paf_large_reference_gaps_become_one_based_intervals() -> None:
-    paf = (
-        "query\t6000\t0\t6000\t+\treference\t10000\t0\t10000\t"
-        "6000\t10000\t60\ttp:A:P\tcg:Z:100M1500D200M2500D5700M\n"
+def test_sam_large_reference_gaps_become_one_based_intervals(tmp_path) -> None:
+    path = tmp_path / "alignment.sam"
+    path.write_text(
+        "@HD\tVN:1.6\n@SQ\tSN:reference\tLN:10000\n"
+        "query\t0\treference\t1\t60\t100M1500D200M2500D5700M\t*\t0\t0\t*\t*\n"
     )
-
-    assert deletion_intervals_from_paf(paf, 10_000) == (
+    assert deletion_intervals_from_sam(path, 10_000) == (
         Interval(101, 1600),
         Interval(1801, 4300),
     )
+
+
+@pytest.mark.parametrize("separator", ["\n", "\f"])
+def test_ms56_parser_stops_at_next_table(separator) -> None:
+    pages = [
+        "Table S3 Descriptions of the deleted genes in MS56\nb0016 first\n"
+        + separator
+        + "Table S4 Other measurements\nb0257 other\n"
+    ]
+    assert _ms56_ids_from_pages(pages) == {"b0016"}
 
 
 def test_gene_interval_mapping_includes_boundary_overlap() -> None:

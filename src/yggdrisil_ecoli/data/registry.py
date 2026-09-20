@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import os
-import tempfile
 from collections.abc import Iterable, Iterator
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -133,40 +131,20 @@ class GeneRegistry:
         return cls(records)
 
     def to_parquet(self, path: str | Path) -> None:
-        """Atomically write a deterministic, compressed registry."""
+        """Write a deterministic, compressed registry."""
 
         destination = Path(path)
         destination.parent.mkdir(parents=True, exist_ok=True)
         rows = [record.as_arrow_row() for record in self]
         table = pa.Table.from_pylist(rows, schema=REGISTRY_SCHEMA)
-        with tempfile.NamedTemporaryFile(
-            prefix=f".{destination.name}.",
-            suffix=".tmp",
-            dir=destination.parent,
-            delete=False,
-        ) as handle:
-            temporary = Path(handle.name)
-        try:
-            pq.write_table(
-                table,
-                temporary,
-                compression="zstd",
-                use_dictionary=True,
-                write_statistics=True,
-            )
-            os.replace(temporary, destination)
-        finally:
-            temporary.unlink(missing_ok=True)
+        pq.write_table(table, destination, compression="zstd")
 
 
 def file_sha256(path: str | Path) -> str:
     """Hash a file without loading the whole artifact into memory."""
 
-    digest = hashlib.sha256()
     with Path(path).open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+        return hashlib.file_digest(handle, "sha256").hexdigest()
 
 
 def _is_ko_id(value: str) -> bool:

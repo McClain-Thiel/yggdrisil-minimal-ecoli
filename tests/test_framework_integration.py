@@ -338,3 +338,84 @@ async def test_heuristic_selects_active_cached_identity_after_config_reversion(
 
     assert decisions
     graph.close()
+
+
+@pytest.mark.asyncio
+async def test_search_rejects_mismatched_agent_seed_before_loading_data(
+    tmp_path: Path,
+) -> None:
+    from yggdrisil_ecoli.agent_policy import AgentSearchConfig
+    from yggdrisil_ecoli.search import SearchArtifacts, run_search
+
+    with pytest.raises(ValueError, match="seed, bundle_size and max_actions"):
+        await run_search(
+            artifacts=SearchArtifacts(tmp_path / "absent-data"),
+            graph_path=tmp_path / "unused.sqlite",
+            policy_name="agent",
+            seed=1,
+            agent_config=AgentSearchConfig(model="vendor/model", seed=2),
+        )
+    assert not (tmp_path / "unused.sqlite").exists()
+
+
+@pytest.mark.asyncio
+async def test_agent_prompts_select_active_cached_evaluations(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import json
+
+    from pydantic_ai import models
+    from yggdrisil.agents import ExplorationRequest
+
+    from yggdrisil_ecoli.agent_policy import AgentSearchConfig, make_agent_policy
+    from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-placeholder")
+    monkeypatch.setattr(models, "ALLOW_MODEL_REQUESTS", False)
+    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
+    essentiality = EssentialityDataset(
+        _essentiality_summary(gene, "nonessential") for gene in registry.search_universe
+    )
+    modules = ModuleEvaluator(
+        registry=registry,
+        entries={},
+        wt_complete_module_ids=(),
+        parser_semantics_version="fixture",
+    )
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "agent-cache.sqlite")
+    graph.add_state("root", GenomeState(frozenset()))
+    active = _FixedScorer("fba", {"feasible": True, "growth_rate": 1.0}, "config-a")
+    inactive = _FixedScorer("fba", {"feasible": False, "growth_rate": 0.0}, "config-b")
+    for scorer in (active, inactive, active):
+        await EvaluatorSuite([scorer]).evaluate_cached(graph, "root")
+    policy = make_agent_policy(
+        registry=registry,
+        essentiality=essentiality,
+        modules=modules,
+        config=AgentSearchConfig(model="vendor/model"),
+        evaluator_ids=active_evaluator_ids([active]),
+        evaluations=graph.evaluations,
+    )
+    status = RunStatus(
+        step=0, unique_states=1, edges=0, elapsed_s=0, limits=RunLimits(max_states=2)
+    )
+    explorer_prompt = policy.explorer.format_prompt(
+        policy._explorer_context(graph.readonly(), ExplorationRequest("root"))
+    )
+    navigator_prompt = policy.navigator.format_prompt(
+        policy._navigator_context(graph.readonly(), status)
+    )
+
+    def payload(prompt: str, label: str):
+        return json.loads(
+            next(
+                line.removeprefix(label)
+                for line in prompt.splitlines()
+                if line.startswith(label)
+            )
+        )
+
+    expected = {"fba": {"feasible": True, "growth_rate": 1.0}}
+    assert payload(explorer_prompt, "CURRENT_EVALUATIONS: ") == expected
+    assert payload(navigator_prompt, "RECENT_STATES: ")[0]["evaluations"] == expected
+    graph.close()

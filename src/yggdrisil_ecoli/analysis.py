@@ -1,13 +1,11 @@
-#!/usr/bin/env python3
 """Summarize comparable Yggdrisil E. coli run graphs as JSON."""
 
 from __future__ import annotations
 
-import argparse
 import json
 import re
 from collections import Counter
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -15,7 +13,6 @@ from yggdrisil import SQLiteStateGraph
 from yggdrisil.types import EvaluationRecord
 
 from yggdrisil_ecoli.actions import DeleteGenes
-from yggdrisil_ecoli.data.io import atomic_json
 from yggdrisil_ecoli.state import GenomeState
 
 _CANONICAL_ID = re.compile(r"\bb\d{4}\b")
@@ -45,7 +42,7 @@ def summarize_run(
             viable,
             key=lambda item: (
                 len(item[0].state.deleted_genes),
-                _number(item[1]["fba"].metrics.get("growth_rate")),
+                item[1]["fba"].metrics["growth_rate"],
                 item[0].state_id,
             ),
             default=None,
@@ -87,7 +84,7 @@ def summarize_run(
                         value = event.get(key)
                         if isinstance(value, int) and not isinstance(value, bool):
                             usage_counts[key] += value
-                    cost_usd += _decimal(event.get("cost_usd"))
+                    cost_usd += Decimal(event.get("cost_usd") or "0")
         agent = run.metadata.get("agent")
         result: dict[str, object] = {
             "graph": str(path.resolve()),
@@ -97,11 +94,11 @@ def summarize_run(
             "states": len(graph),
             "edges": graph.edge_count(),
             "policy": run.metadata.get("policy"),
-            "agent": agent if isinstance(agent, dict) else None,
-            "decision_counts": dict(sorted(role_counts.items())),
-            "scientific_tool_calls": dict(sorted(tool_counts.items())),
+            "agent": agent,
+            "decision_counts": dict(role_counts),
+            "scientific_tool_calls": dict(tool_counts),
             "model_usage": {
-                **dict(sorted(usage_counts.items())),
+                **usage_counts,
                 "cost_usd": str(cost_usd),
             },
             "canonical_ids_in_model_io": canonical_model_io,
@@ -166,55 +163,17 @@ def _candidate_summary(
     state: GenomeState,
     evidence: dict[str, EvaluationRecord],
 ) -> dict[str, object]:
-    essentiality = evidence["essentiality"].metrics
-    fba = evidence["fba"]
-    modules = evidence["module_retention"].metrics
-    fba_coverage = _metadata_dict(fba.metadata, "coverage")
-    module_coverage = _metadata_dict(evidence["module_retention"].metadata, "coverage")
     return {
         "state_id": state_id,
         "genes_deleted": len(state.deleted_genes),
         "deleted_gene_ids": sorted(state.deleted_genes),
-        "growth_rate": fba.metrics.get("growth_rate"),
-        "essential_deleted": essentiality.get("n_essential_deleted"),
-        "conditional_essential_deleted": essentiality.get(
-            "n_conditional_essential_deleted"
-        ),
-        "ambiguous_deleted": essentiality.get("n_ambiguous_deleted"),
-        "unknown_deleted": essentiality.get("n_unknown_deleted"),
-        "modules_complete": modules.get("n_complete"),
-        "modules_broken": modules.get("n_broken"),
-        "fba_modeled_deletions": fba_coverage.get("deleted_genes_modeled"),
-        "fba_unmodeled_deletions": fba_coverage.get("deleted_genes_unmodeled"),
-        "deletions_with_ko": module_coverage.get("deleted_genes_with_ko"),
-        "deletions_without_ko": len(
-            _list(module_coverage.get("deleted_genes_without_ko"))
-        ),
+        "growth_rate": evidence["fba"].metrics["growth_rate"],
+        "evaluations": {name: record.metrics for name, record in evidence.items()},
+        "coverage": {
+            name: record.metadata.get("coverage", {})
+            for name, record in evidence.items()
+        },
     }
-
-
-def _metadata_dict(metadata: dict[str, Any], key: str) -> dict[str, Any]:
-    value = metadata.get(key)
-    return value if isinstance(value, dict) else {}
-
-
-def _list(value: object) -> list[object]:
-    return value if isinstance(value, list) else []
-
-
-def _number(value: object) -> float:
-    if isinstance(value, (int, float)) and not isinstance(value, bool):
-        return float(value)
-    return float("-inf")
-
-
-def _decimal(value: object) -> Decimal:
-    if value is None:
-        return Decimal("0")
-    try:
-        return Decimal(str(value))
-    except InvalidOperation:
-        return Decimal("0")
 
 
 def score_rediscovery(
@@ -275,31 +234,3 @@ def _string_set(value: object, field: str) -> set[str]:
 
 def _ratio(numerator: int, denominator: int) -> float:
     return numerator / denominator if denominator else 0.0
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("graphs", type=Path, nargs="+")
-    parser.add_argument("--output", type=Path)
-    parser.add_argument(
-        "--validation",
-        type=Path,
-        help="held-out reduced-genome labels loaded only for post-hoc scoring",
-    )
-    args = parser.parse_args()
-    validation = None
-    if args.validation is not None:
-        raw_validation = json.loads(args.validation.read_text())
-        if not isinstance(raw_validation, dict):
-            raise ValueError("validation artifact must be a JSON object")
-        validation = raw_validation
-    payload = {
-        "runs": [summarize_run(path, validation=validation) for path in args.graphs]
-    }
-    if args.output is not None:
-        atomic_json(args.output, payload)
-    print(json.dumps(payload, indent=2, sort_keys=True))
-
-
-if __name__ == "__main__":
-    main()

@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pyarrow.parquet as pq
 import pytest
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 
 from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.essentiality import (
@@ -109,6 +109,38 @@ def test_record_rejects_author_call_threshold_disagreement() -> None:
             m9_call_raw="E",
             m9_ecipkm=1.0,
         )
+
+
+@pytest.mark.parametrize(
+    ("cell", "value", "reason"),
+    [
+        ("F5", "wrong", "malformed canonical ID"),
+        ("O5", "unexpected", "calls must be E or NE"),
+        ("N5", 1.0, "disagrees with ecIPKM"),
+    ],
+)
+def test_parser_reports_worksheet_row_after_filtering(
+    tmp_path: Path, cell: str, value: object, reason: str
+) -> None:
+    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
+    path = tmp_path / "choe.xlsx"
+    _write_choe_fixture(path)
+    workbook = load_workbook(path)
+    worksheet = workbook["Table S1"]
+    worksheet.insert_rows(4)  # An excluded row before the now-fifth-row thrA record.
+    worksheet["G4"] = "N"
+    worksheet[cell] = value
+    workbook.save(path)
+    workbook.close()
+
+    with pytest.raises(DataValidationError, match=f"row 5: .*{reason}"):
+        parse_choe_workbook(path, registry, expected_source_counts=None)
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -1.0])
+def test_nonfinite_or_negative_measurements_are_not_nonessential(value: float) -> None:
+    with pytest.raises(DataValidationError, match="finite and nonnegative"):
+        EssentialityRecord("b0001", "nonessential", "measured", "NE", value, "NE", 10.0)
 
 
 def _unknown(b_number: str) -> EssentialityRecord:

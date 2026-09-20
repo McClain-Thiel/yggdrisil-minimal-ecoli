@@ -1,5 +1,6 @@
 import json
 from dataclasses import replace
+from itertools import product
 from pathlib import Path
 
 import pytest
@@ -48,6 +49,9 @@ FIXTURES = Path(__file__).parent / "fixtures"
         ),
         ("K00001-K00002", {"K00001"}, True, (), ()),
         ("K00001-K00002", {"K00002"}, False, ("K00001",), (("K00001",),)),
+        ("K00001-(K00002+K00003)", {"K00001"}, True, (), ()),
+        ("K00001-K00002+K00003", {"K00001"}, False, ("K00003",), (("K00003",),)),
+        ("K00001,(K00001+K00002)", set(), False, ("K00001",), (("K00001",),)),
         ("(K00001 K00002),K00003", {"K00003"}, True, (), ()),
         (
             "K00001+(K00002,K00003+K00004)",
@@ -82,6 +86,24 @@ def test_module_references_are_resolved_from_the_same_frozen_snapshot() -> None:
     )
 
     assert result.minimal_missing_ko_sets == (("K00003",),)
+
+
+def test_pathway_spaces_join_complete_alternative_blocks() -> None:
+    expression = parse_module_expression("K00001,K00002 K00003+K00004")
+    for a, b, c, d in product((False, True), repeat=4):
+        present = {
+            f"K{index:05}"
+            for index, included in enumerate((a, b, c, d), start=1)
+            if included
+        }
+        assert evaluate_module_expression(expression, present).complete == (
+            (a or b) and c and d
+        )
+
+
+def test_unresolved_required_module_reference_is_rejected() -> None:
+    with pytest.raises(ModuleExpressionError, match="unresolved module reference"):
+        evaluate_module_expression(parse_module_expression("M00001"), set())
 
 
 def test_referenced_ids_include_optional_components_and_module_refs() -> None:

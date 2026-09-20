@@ -1,3 +1,4 @@
+import gzip
 from pathlib import Path
 
 import pytest
@@ -51,3 +52,34 @@ def test_symbols_are_not_translated_as_identifiers() -> None:
 
     with pytest.raises(DataValidationError, match="canonical b-number"):
         registry.require("thrA")
+
+
+@pytest.mark.parametrize("compressed", [False, True])
+def test_library_parser_handles_escaping_and_embedded_fasta(
+    tmp_path: Path, compressed: bool
+) -> None:
+    source = (
+        (FIXTURES / "mg1655_excerpt.gff3")
+        .read_text()
+        .replace(
+            "product=thr operon leader peptide", "product=leader%3B peptide%2C 100%25"
+        )
+    )
+    source += "##FASTA\n>NC_000913.3\nACGT\n"
+    path = tmp_path / "download"  # Detect compressed downloads without a .gz suffix.
+    path.write_bytes(gzip.compress(source.encode()) if compressed else source.encode())
+
+    registry = parse_ncbi_gff(path).registry
+
+    assert len(registry) == 3
+    assert registry.require("b0001").description == "leader; peptide, 100%"
+
+
+def test_duplicate_genes_are_rejected_after_library_parsing(tmp_path: Path) -> None:
+    source = (FIXTURES / "mg1655_excerpt.gff3").read_text()
+    gene = next(line for line in source.splitlines() if "ID=gene-b0001;" in line)
+    path = tmp_path / "duplicate.gff3"
+    path.write_text(source + gene + "\n")
+
+    with pytest.raises(DataValidationError, match="duplicate canonical ID: b0001"):
+        parse_ncbi_gff(path)

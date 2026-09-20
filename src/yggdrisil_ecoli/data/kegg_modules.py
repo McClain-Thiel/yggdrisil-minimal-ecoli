@@ -10,12 +10,13 @@ from __future__ import annotations
 
 import hashlib
 import json
-import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 from itertools import product
 from pathlib import Path
-from typing import Literal, TypeAlias
+from typing import TypeAlias, cast
+
+from lark import Lark, Token, Transformer, UnexpectedInput
 
 from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.registry import GeneRegistry
@@ -70,19 +71,19 @@ class KeggModuleEntry:
         return parse_module_expression(self.definition)
 
 
-_Token: TypeAlias = tuple[str, str, int]
-
-
 def parse_module_expression(raw: str) -> Expression:
     """Parse one canonical KEGG Module logical expression."""
 
     expression = raw.strip()
     if not expression:
         raise ModuleExpressionError("module expression is empty")
-    parser = _Parser(_tokenize(expression))
-    result = parser.parse_definition()
-    parser.expect("EOF")
-    return result
+    try:
+        # Lark cannot infer the result type supplied by our transformer.
+        return cast(Expression, _PARSER.parse(expression))
+    except UnexpectedInput as exc:
+        raise ModuleExpressionError(
+            f"invalid module expression at column {exc.column}: {expression!r}"
+        ) from exc
 
 
 def evaluate_module_expression(
@@ -207,106 +208,37 @@ def parse_kegg_module_flat_text(raw: str) -> dict[str, KeggModuleEntry]:
     return entries
 
 
-class _Parser:
-    def __init__(self, tokens: list[_Token]) -> None:
-        self.tokens = tokens
-        self.index = 0
+class _ExpressionBuilder(Transformer[Token, Expression]):
+    def reference(self, tokens: list[Token]) -> Reference:
+        return Reference(str(tokens[0]))
 
-    @property
-    def current(self) -> _Token:
-        return self.tokens[self.index]
+    def optional(self, children: list[Expression]) -> OptionalComponent:
+        return OptionalComponent(children[0])
 
-    def expect(self, kind: _TokenKind) -> _Token:
-        token = self.current
-        if token[0] != kind:
-            raise ModuleExpressionError(
-                f"expected {kind} at position {token[2]}, found {token[1]!r}"
-            )
-        self.index += 1
-        return token
+    def conjunction(self, children: list[Expression]) -> Expression:
+        return _combine(children, And)
 
-    def accept(self, kind: _TokenKind) -> bool:
-        if self.current[0] != kind:
-            return False
-        self.index += 1
-        return True
-
-    def parse_definition(self) -> Expression:
-        expressions = [self.parse_or()]
-        while self.accept("SPACE"):
-            expressions.append(self.parse_or())
-        return _combine(expressions, And)
-
-    def parse_or(self) -> Expression:
-        expressions = [self.parse_complex()]
-        while self.accept(","):
-            expressions.append(self.parse_complex())
-        return _combine(expressions, Or)
-
-    def parse_complex(self) -> Expression:
-        expressions: list[Expression] = [self.parse_primary()]
-        saw_operator = False
-        while self.current[0] in {"+", "-"}:
-            optional = self.current[0] == "-"
-            self.index += 1
-            child = self.parse_primary()
-            if optional:
-                child = OptionalComponent(child)
-            expressions.append(child)
-            saw_operator = True
-        if not saw_operator:
-            return expressions[0]
-        return _combine(expressions, And)
-
-    def parse_primary(self) -> Expression:
-        token = self.current
-        if token[0] == "ID":
-            self.index += 1
-            return Reference(token[1])
-        if self.accept("("):
-            expression = self.parse_definition()
-            self.expect(")")
-            return expression
-        raise ModuleExpressionError(
-            f"expected K number, M number, or '(' at position {token[2]}; "
-            f"found {token[1]!r}"
-        )
+    def alternatives(self, children: list[Expression]) -> Expression:
+        return _combine(children, Or)
 
 
-_TokenKind: TypeAlias = Literal["ID", "SPACE", "+", "-", ",", "(", ")", "EOF"]
-
-
-def _tokenize(expression: str) -> list[_Token]:
-    tokens: list[_Token] = []
-    position = 0
-    for match in re.finditer(r"[KM][0-9]{5}| +|[+\-,()]", expression):
-        if match.start() != position:
-            raise ModuleExpressionError(
-                f"unexpected character {expression[position]!r} at position {position}"
-            )
-        value = match.group()
-        kind = "ID" if value[0] in "KM" else "SPACE" if value[0] == " " else value
-        tokens.append((kind, value, position))
-        position = match.end()
-    if position != len(expression):
-        raise ModuleExpressionError(
-            f"unexpected character {expression[position]!r} at position {position}"
-        )
-    tokens.append(("EOF", "", len(expression)))
-    _reject_spaces_next_to_punctuation(tokens)
-    return tokens
-
-
-def _reject_spaces_next_to_punctuation(tokens: list[_Token]) -> None:
-    for index, token in enumerate(tokens):
-        if token[0] != "SPACE":
-            continue
-        previous = tokens[index - 1][0] if index else "EOF"
-        following = tokens[index + 1][0]
-        if previous in {"+", "-", ",", "("} or following in {"+", "-", ",", ")"}:
-            raise ModuleExpressionError(
-                f"space next to punctuation at position {token[2]} is ambiguous"
-            )
+# Spaces separate pathway blocks; commas choose alternatives within a block.
+# Do not ignore whitespace: changing this precedence changes module completeness.
+# https://www.kegg.jp/kegg/module.html (Module validation)
+_PARSER = Lark(
+    r"""
+    ?start: alternatives (_SPACE alternatives)* -> conjunction
+    ?alternatives: complex ("," complex)*       -> alternatives
+    ?complex: primary ("+" primary | optional)* -> conjunction
+    optional: "-" primary
+    ?primary: ID -> reference
+            | "(" start ")"
+    ID: /[KM][0-9]{5}/
+    _SPACE: / +/
+    """,
+    parser="lalr",
+    transformer=_ExpressionBuilder(),
+)
 
 
 def _combine(expressions: list[Expression], kind: type[And] | type[Or]) -> Expression:

@@ -1,4 +1,4 @@
-"""Build the canonical MG1655 protein-coding registry and crosswalk audit."""
+"""One-time source preparation for the frozen MG1655 experiment dataset."""
 
 from __future__ import annotations
 
@@ -22,11 +22,15 @@ from yggdrisil_ecoli.data.gff import parse_ncbi_gff
 from yggdrisil_ecoli.data.io import atomic_json
 from yggdrisil_ecoli.data.registry import file_sha256
 from yggdrisil_ecoli.data.sources import (
+    IML1515_PUBLICATION_ARCHIVE,
+    IML1515_PUBLICATION_MEMBER,
+    IML1515_PUBLICATION_MEMBER_SHA256,
     KEGG_GENE_LIST,
     KEGG_KO_LINKS,
     NCBI_GFF,
     SourceRecord,
     acquire_source,
+    extract_member,
     record_local_source,
 )
 
@@ -34,10 +38,10 @@ from yggdrisil_ecoli.data.sources import (
 def build_registry(
     data_dir: Path,
     *,
-    include_kegg: bool,
-    accept_kegg_terms: bool,
-    iml1515_json: Path | None,
-    refresh: bool,
+    include_kegg: bool = False,
+    accept_kegg_terms: bool = False,
+    iml1515_json: Path | None = None,
+    refresh: bool = False,
 ) -> Path:
     """Run the reproducible Milestone 1 build and return the registry path."""
 
@@ -124,6 +128,62 @@ def build_registry(
         "crosswalk_audit": audit.as_dict(),
     }
     atomic_json(processed_dir / "source_manifest.json", manifest)
-    print(audit.render_text(), end="")
-    print(f"\nWrote {registry_path}")
     return registry_path
+
+
+def fetch_iml1515(data_dir: Path, *, refresh: bool = False) -> Path:
+    """Extract the exact publication model; its checksum pins identity and contents."""
+
+    external = data_dir / "external"
+    archive, source = acquire_source(
+        IML1515_PUBLICATION_ARCHIVE, external, refresh=refresh
+    )
+    output = extract_member(
+        archive,
+        IML1515_PUBLICATION_MEMBER,
+        IML1515_PUBLICATION_MEMBER_SHA256,
+        external / "iML1515.json",
+    )
+    atomic_json(
+        external / "iML1515.manifest.json",
+        {
+            "schema_version": 2,
+            "publication_doi": "10.1038/nbt.3956",
+            "archive": source.as_dict(),
+            "member": IML1515_PUBLICATION_MEMBER,
+            "sha256": IML1515_PUBLICATION_MEMBER_SHA256,
+        },
+    )
+    return output
+
+
+def build_data(
+    data_dir: Path, *, accept_kegg_terms: bool = False, refresh: bool = False
+) -> Path:
+    """Prepare sources in dependency order; return the dataset root for a notebook.
+
+    KEGG snapshots remain local unless redistribution permission is obtained.
+    """
+
+    from yggdrisil_ecoli.essentiality_build import build_essentiality_data
+    from yggdrisil_ecoli.module_build import build_kegg_modules
+
+    if not accept_kegg_terms:
+        raise ValueError("full source preparation requires accept_kegg_terms=True")
+    model = fetch_iml1515(data_dir, refresh=refresh)
+    registry = build_registry(
+        data_dir,
+        include_kegg=True,
+        accept_kegg_terms=True,
+        iml1515_json=model,
+        refresh=refresh,
+    )
+    build_essentiality_data(registry_path=registry, data_dir=data_dir, refresh=refresh)
+    build_kegg_modules(
+        registry_path=registry,
+        ko_links_path=data_dir / "raw" / KEGG_KO_LINKS.filename,
+        data_dir=data_dir,
+        accept_kegg_terms=True,
+        refresh=refresh,
+    )
+    return data_dir
