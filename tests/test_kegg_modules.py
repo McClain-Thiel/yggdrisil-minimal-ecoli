@@ -1,5 +1,6 @@
 import json
 from dataclasses import replace
+from importlib.metadata import version
 from itertools import product
 from pathlib import Path
 
@@ -158,6 +159,15 @@ def test_exact_option_limit_is_enforced() -> None:
         )
 
 
+def test_large_alternative_product_is_rejected_before_distribution() -> None:
+    # Forty independent pairs would expand to more than a trillion alternatives.
+    definition = " ".join(f"K{index:05},K{index + 1:05}" for index in range(1, 81, 2))
+    with pytest.raises(ModuleExpressionError, match="intermediate DNF expansion limit"):
+        evaluate_module_expression(
+            parse_module_expression(definition), set(), max_options=64
+        )
+
+
 def test_kegg_flat_file_continuations_are_parsed_without_changing_grammar() -> None:
     entries = parse_kegg_module_flat_file(FIXTURES / "kegg_modules_excerpt.txt")
 
@@ -275,17 +285,18 @@ async def test_loaded_evaluator_retains_and_emits_all_provenance(
     evaluator = ModuleEvaluator.from_json(artifact, registry)
     result = await evaluator.evaluate(GenomeState(frozenset()))
 
-    assert evaluator.background_ko_source_sha256 == background_sha
-    assert evaluator.reference_registry_sha256 == registry_sha
+    assert evaluator.provenance["background_ko_source_sha256"] == background_sha
+    assert evaluator.provenance["reference_registry_sha256"] == registry_sha
     assert result.metrics == {"n_complete": 1, "n_broken": 0}
     assert "complete_modules" not in result.metadata["details"]
     assert result.metadata["provenance"] == {
         "artifact_sha256": file_sha256(artifact),
         "reference_registry_sha256": registry_sha,
         "reference_registry_ko_mapping_hash": registry_ko_mapping_hash(registry),
-        "registry_ko_mapping_sha256": registry_ko_mapping_hash(registry),
         "background_ko_source_sha256": background_sha,
         "parser_semantics_version": "test",
+        "lark_version": version("lark"),
+        "boolean_py_version": version("boolean.py"),
     }
 
 
@@ -319,14 +330,13 @@ def test_background_ko_input_must_match_registry_source_manifest(
     registry_path.write_bytes(b"registry fixture")
     ko_links_path.write_text("eco:b0001\tko:K00001\n", encoding="utf-8")
     source_manifest = {
-        "sources": [
-            {
-                "name": "kegg_eco_ko_links",
+        "inputs": {
+            "kegg_eco_ko_links.tsv": {
                 "sha256": file_sha256(ko_links_path),
                 "url": "https://rest.kegg.jp/link/ko/eco",
             }
-        ],
-        "outputs": {"gene_registry": {"sha256": file_sha256(registry_path)}},
+        },
+        "outputs": {"gene_registry.parquet": file_sha256(registry_path)},
     }
     registry_path.with_name("source_manifest.json").write_text(
         json.dumps(source_manifest), encoding="utf-8"
@@ -335,7 +345,7 @@ def test_background_ko_input_must_match_registry_source_manifest(
     provenance = _validated_ko_links_source(registry_path, ko_links_path)
 
     assert provenance["sha256"] == file_sha256(ko_links_path)
-    assert provenance["source"] == source_manifest["sources"][0]
+    assert provenance == source_manifest["inputs"]["kegg_eco_ko_links.tsv"]
 
     ko_links_path.write_text("eco:b0002\tko:K00002\n", encoding="utf-8")
     with pytest.raises(DataValidationError, match="snapshot used to build"):

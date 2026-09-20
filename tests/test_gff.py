@@ -13,8 +13,8 @@ FIXTURES = Path(__file__).parent / "fixtures"
 def test_ncbi_gff_defines_only_canonical_protein_coding_genes() -> None:
     parsed = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3")
 
-    assert parsed.metadata.assembly_accession == ASSEMBLY_ACCESSION
-    assert parsed.metadata.reference_accession == REFERENCE_ACCESSION
+    assert parsed.metadata["assembly_accession"] == ASSEMBLY_ACCESSION
+    assert parsed.metadata["reference_accession"] == REFERENCE_ACCESSION
     assert parsed.registry.search_universe == frozenset({"b0001", "b0002", "b0003"})
 
     thr_a = parsed.registry.require("b0002")

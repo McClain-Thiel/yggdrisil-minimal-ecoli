@@ -5,6 +5,11 @@ using [Yggdrisil](https://github.com/McClain-Thiel/yggdrisil) for search and
 COBRApy for flux-balance analysis. Start in `scripts/experiment.py`; the
 package holds reusable biological data loading, evaluators, and policies.
 
+COBRApy evaluates metabolic growth and gene knockouts. Lark parses KEGG module
+definitions and [boolean.py](https://booleanpy.readthedocs.io/en/latest/users_guide.html)
+evaluates their Boolean logic. Source preparation uses gffutils, pandas, Pooch,
+and pysam; local code supplies the study-specific mappings and evidence reports.
+
 ```bash
 uv sync --extra notebooks --extra fba --extra dev
 uv run marimo edit scripts/experiment.py
@@ -76,4 +81,4 @@ uv run mypy src
 
 Yggdrisil's revision and the numerical solver versions are pinned in
 `pyproject.toml`. Search graphs record input identities and settings so a
-changed experiment cannot silently resume an old run.
+run can be traced to its inputs. Each experiment requires a new graph path.

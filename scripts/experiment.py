@@ -130,7 +130,6 @@ async def search(
         seed=seed,
         max_states=max_states,
         max_steps=max_states,
-        resume=False,
         agent_config=_agent,
     )
     mo.md(f"Search saved to `{graph_path}`.")

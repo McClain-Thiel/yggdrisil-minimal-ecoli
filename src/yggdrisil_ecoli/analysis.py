@@ -1,4 +1,4 @@
-"""Summarize comparable Yggdrisil E. coli run graphs as JSON."""
+"""Summarize search graphs and compare candidates with held-out deletion sets."""
 
 from __future__ import annotations
 
@@ -9,6 +9,7 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
+from pydantic import BaseModel, StrictStr, TypeAdapter
 from yggdrisil import SQLiteStateGraph
 from yggdrisil.types import EvaluationRecord
 
@@ -22,70 +23,101 @@ _SCIENTIFIC_TOOLS = {
     "analyze_deletion_bundle",
     "inspect_kegg_module",
 }
+_USAGE_FIELDS = {
+    "requests",
+    "tool_calls",
+    "input_tokens",
+    "output_tokens",
+    "cache_read_tokens",
+    "cache_write_tokens",
+}
+
+
+class _Interval(BaseModel):
+    gene_ids: list[StrictStr]
+
+
+class _Strain(BaseModel):
+    deleted_gene_ids: list[StrictStr]
+    deletion_intervals: list[_Interval]
+
+
+class _Validation(BaseModel):
+    strains: dict[StrictStr, _Strain]
 
 
 def summarize_run(
     path: Path, validation: dict[str, Any] | None = None
 ) -> dict[str, object]:
-    graph = SQLiteStateGraph[GenomeState, DeleteGenes](path)
-    try:
+    """Report independent evidence, model usage, and the largest eligible deletion set."""
+    with SQLiteStateGraph[GenomeState, DeleteGenes](path) as graph:
         run = graph.latest_run()
         if run is None:
             raise ValueError(f"graph has no runs: {path}")
-        evaluator_ids = _evaluator_ids(run.metadata.get("evaluators"))
+        identities = TypeAdapter(dict[str, str]).validate_python(
+            run.metadata.get("evaluators"), strict=True
+        )
+        required = {"essentiality", "fba", "genome_size", "module_retention"}
+        if required - identities.keys():
+            raise ValueError("run metadata lacks required evaluator identities")
         viable = []
         for node in graph.states():
-            evidence = _active_evidence(graph.evaluations(node.state_id), evaluator_ids)
-            if _viable(evidence):
+            evidence: dict[str, EvaluationRecord] = {}
+            for name, identity in identities.items():
+                record = graph.get_evaluation(node.state_id, identity)
+                if record is None:
+                    raise ValueError(f"state lacks active evaluation: {name}")
+                evidence[name] = record
+            growth = evidence["fba"].metrics.get("growth_rate")
+            if (
+                evidence["essentiality"].metrics.get("n_essential_deleted") == 0
+                and evidence["fba"].metrics.get("feasible") is True
+                and isinstance(growth, (int, float))
+                and not isinstance(growth, bool)
+                and growth > 0
+            ):
                 viable.append((node, evidence))
-        candidate = max(
+        best = max(
             viable,
+            default=None,
             key=lambda item: (
                 len(item[0].state.deleted_genes),
                 item[1]["fba"].metrics["growth_rate"],
                 item[0].state_id,
             ),
-            default=None,
         )
-        decisions = graph.decisions(run.run_id)
-        role_counts = Counter(decision.role for decision in decisions)
-        tool_counts: Counter[str] = Counter()
-        usage_counts: Counter[str] = Counter()
-        cost_usd = Decimal("0")
-        canonical_model_io: list[str] = []
-        for decision in decisions:
-            model_io = json.dumps(
-                {
-                    "input_context": decision.input_context,
-                    "tool_calls": decision.tool_calls,
+        candidate = None
+        if best is not None:
+            node, evidence = best
+            candidate = {
+                "state_id": node.state_id,
+                "genes_deleted": len(node.state.deleted_genes),
+                "deleted_gene_ids": sorted(node.state.deleted_genes),
+                "growth_rate": evidence["fba"].metrics["growth_rate"],
+                "evaluations": {
+                    name: record.metrics for name, record in evidence.items()
                 },
-                default=str,
-                sort_keys=True,
+                "coverage": {
+                    name: record.metadata.get("coverage", {})
+                    for name, record in evidence.items()
+                },
+            }
+        decisions = graph.decisions(run.run_id)
+        events = [event for decision in decisions for event in decision.tool_calls]
+        usage_events = [event for event in events if event.get("role") == "usage"]
+        usage: Counter[str] = Counter()
+        for event in usage_events:
+            usage.update(
+                {
+                    key: value
+                    for key, value in event.items()
+                    if key in _USAGE_FIELDS and type(value) is int
+                }
             )
-            if _CANONICAL_ID.search(model_io):
-                canonical_model_io.append(decision.decision_id)
-            for event in decision.tool_calls:
-                tool = event.get("tool")
-                if (
-                    event.get("role") == "tool_call"
-                    and isinstance(tool, str)
-                    and tool in _SCIENTIFIC_TOOLS
-                ):
-                    tool_counts[tool] += 1
-                if event.get("role") == "usage":
-                    for key in (
-                        "requests",
-                        "tool_calls",
-                        "input_tokens",
-                        "output_tokens",
-                        "cache_read_tokens",
-                        "cache_write_tokens",
-                    ):
-                        value = event.get(key)
-                        if isinstance(value, int) and not isinstance(value, bool):
-                            usage_counts[key] += value
-                    cost_usd += Decimal(event.get("cost_usd") or "0")
-        agent = run.metadata.get("agent")
+        cost = sum(
+            (Decimal(event.get("cost_usd") or "0") for event in usage_events),
+            Decimal("0"),
+        )
         result: dict[str, object] = {
             "graph": str(path.resolve()),
             "run_id": run.run_id,
@@ -94,118 +126,52 @@ def summarize_run(
             "states": len(graph),
             "edges": graph.edge_count(),
             "policy": run.metadata.get("policy"),
-            "agent": agent,
-            "decision_counts": dict(role_counts),
-            "scientific_tool_calls": dict(tool_counts),
-            "model_usage": {
-                **usage_counts,
-                "cost_usd": str(cost_usd),
-            },
-            "canonical_ids_in_model_io": canonical_model_io,
-            "deepest_viable_candidate": (
-                _candidate_summary(
-                    candidate[0].state_id, candidate[0].state, candidate[1]
+            "agent": run.metadata.get("agent"),
+            "decision_counts": dict(Counter(decision.role for decision in decisions)),
+            "scientific_tool_calls": dict(
+                Counter(
+                    event["tool"]
+                    for event in events
+                    if event.get("role") == "tool_call"
+                    and isinstance(event.get("tool"), str)
+                    and event.get("tool") in _SCIENTIFIC_TOOLS
                 )
-                if candidate is not None
-                else None
             ),
+            "model_usage": {**usage, "cost_usd": str(cost)},
+            "canonical_ids_in_model_io": [
+                decision.decision_id
+                for decision in decisions
+                if _CANONICAL_ID.search(
+                    json.dumps(
+                        [decision.input_context, decision.tool_calls], default=str
+                    )
+                )
+            ],
+            "deepest_viable_candidate": candidate,
         }
-        if candidate is not None and validation is not None:
+        if best is not None and validation is not None:
             result["rediscovery"] = score_rediscovery(
-                set(candidate[0].state.deleted_genes), validation
+                set(best[0].state.deleted_genes), validation
             )
         return result
-    finally:
-        graph.close()
-
-
-def _evaluator_ids(raw: object) -> dict[str, str]:
-    if not isinstance(raw, dict):
-        raise ValueError("run metadata lacks evaluator identities")
-    evaluator_ids = {
-        key: value
-        for key, value in raw.items()
-        if isinstance(key, str) and isinstance(value, str)
-    }
-    required = {"essentiality", "fba", "genome_size", "module_retention"}
-    if required - evaluator_ids.keys():
-        raise ValueError("run metadata lacks required evaluator identities")
-    return evaluator_ids
-
-
-def _active_evidence(
-    records: list[EvaluationRecord], evaluator_ids: dict[str, str]
-) -> dict[str, EvaluationRecord]:
-    by_id = {record.evaluator_id: record for record in records}
-    missing = [
-        name for name, identity in evaluator_ids.items() if identity not in by_id
-    ]
-    if missing:
-        raise ValueError(f"state lacks active evaluations: {sorted(missing)}")
-    return {name: by_id[identity] for name, identity in evaluator_ids.items()}
-
-
-def _viable(evidence: dict[str, EvaluationRecord]) -> bool:
-    essential = evidence["essentiality"].metrics.get("n_essential_deleted")
-    fba = evidence["fba"].metrics
-    growth = fba.get("growth_rate")
-    return (
-        essential == 0
-        and fba.get("feasible") is True
-        and isinstance(growth, (int, float))
-        and not isinstance(growth, bool)
-        and growth > 0
-    )
-
-
-def _candidate_summary(
-    state_id: str,
-    state: GenomeState,
-    evidence: dict[str, EvaluationRecord],
-) -> dict[str, object]:
-    return {
-        "state_id": state_id,
-        "genes_deleted": len(state.deleted_genes),
-        "deleted_gene_ids": sorted(state.deleted_genes),
-        "growth_rate": evidence["fba"].metrics["growth_rate"],
-        "evaluations": {name: record.metrics for name, record in evidence.items()},
-        "coverage": {
-            name: record.metadata.get("coverage", {})
-            for name, record in evidence.items()
-        },
-    }
 
 
 def score_rediscovery(
     deleted_gene_ids: set[str], validation: dict[str, Any]
 ) -> dict[str, object]:
-    """Score a candidate against truth sets that were not loaded during search."""
-
-    strains = validation.get("strains")
-    if not isinstance(strains, dict):
-        raise ValueError("validation artifact lacks strain truth sets")
+    """Compare a candidate with truth sets that were not loaded during search."""
+    strains = _Validation.model_validate(validation, strict=True).strains
     scores: dict[str, object] = {}
-    for strain_name, raw in sorted(strains.items()):
-        if not isinstance(strain_name, str) or not isinstance(raw, dict):
-            raise ValueError("validation strain entries must be named objects")
-        truth = _string_set(raw.get("deleted_gene_ids"), "deleted_gene_ids")
+    for name, strain in sorted(strains.items()):
+        truth = set(strain.deleted_gene_ids)
         overlap = deleted_gene_ids & truth
-        union = deleted_gene_ids | truth
-        intervals = raw.get("deletion_intervals")
-        if not isinstance(intervals, list):
-            raise ValueError(f"{strain_name}: deletion_intervals must be a list")
-        interval_gene_sets = [
-            _string_set(interval.get("gene_ids"), "gene_ids")
-            for interval in intervals
-            if isinstance(interval, dict)
+        intervals = [
+            set(interval.gene_ids)
+            for interval in strain.deletion_intervals
+            if interval.gene_ids
         ]
-        if len(interval_gene_sets) != len(intervals):
-            raise ValueError(f"{strain_name}: malformed deletion interval")
-        eligible_intervals = [gene_ids for gene_ids in interval_gene_sets if gene_ids]
-        intervals_hit = sum(
-            bool(deleted_gene_ids & gene_ids) for gene_ids in eligible_intervals
-        )
-        scores[strain_name] = {
+        hits = sum(bool(deleted_gene_ids & genes) for genes in intervals)
+        scores[name] = {
             "published_deleted_genes": len(truth),
             "candidate_genes": len(deleted_gene_ids),
             "overlap_genes": len(overlap),
@@ -214,22 +180,16 @@ def score_rediscovery(
                 len(overlap), len(deleted_gene_ids)
             ),
             "published_deletion_gene_recall": _ratio(len(overlap), len(truth)),
-            "published_deletion_gene_jaccard": _ratio(len(overlap), len(union)),
-            "published_intervals_with_search_genes": len(eligible_intervals),
-            "published_intervals_hit": intervals_hit,
-            "published_deletion_interval_recall": (
-                _ratio(intervals_hit, len(eligible_intervals))
-                if eligible_intervals
-                else None
+            "published_deletion_gene_jaccard": _ratio(
+                len(overlap), len(deleted_gene_ids | truth)
             ),
+            "published_intervals_with_search_genes": len(intervals),
+            "published_intervals_hit": hits,
+            "published_deletion_interval_recall": _ratio(hits, len(intervals))
+            if intervals
+            else None,
         }
     return scores
-
-
-def _string_set(value: object, field: str) -> set[str]:
-    if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
-        raise ValueError(f"validation {field} must be a list of strings")
-    return set(value)
 
 
 def _ratio(numerator: int, denominator: int) -> float:

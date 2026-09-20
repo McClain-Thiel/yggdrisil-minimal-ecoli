@@ -9,10 +9,10 @@ import math
 from importlib.metadata import version
 from pathlib import Path
 from types import MappingProxyType
-from typing import Mapping
 
 from cobra import Model
 from cobra.io import load_json_model
+from cobra.util.solver import linear_reaction_coefficients
 from yggdrisil import EvaluationResult
 
 from yggdrisil_ecoli.data.errors import DataValidationError
@@ -21,40 +21,42 @@ from yggdrisil_ecoli.scorers.base import scientific_evaluation
 from yggdrisil_ecoli.state import GenomeState
 
 IML1515_OBJECTIVE_REACTION = "BIOMASS_Ec_iML1515_core_75p37M"
-IML1515_ATPM_REACTION = "ATPM"
-
-M9_GLUCOSE_AEROBIC_MEDIUM: Mapping[str, float] = MappingProxyType(
+M9_GLUCOSE_AEROBIC_MEDIUM = MappingProxyType(
     {
         "EX_glc__D_e": 10.0,
-        "EX_o2_e": 1000.0,
-        "EX_pi_e": 1000.0,
-        "EX_nh4_e": 1000.0,
-        "EX_so4_e": 1000.0,
-        "EX_k_e": 1000.0,
-        "EX_na1_e": 1000.0,
-        "EX_cl_e": 1000.0,
-        "EX_mg2_e": 1000.0,
-        "EX_ca2_e": 1000.0,
-        "EX_h_e": 1000.0,
-        "EX_h2o_e": 1000.0,
-        "EX_co2_e": 1000.0,
-        "EX_fe2_e": 1000.0,
-        "EX_fe3_e": 1000.0,
-        "EX_mn2_e": 1000.0,
-        "EX_zn2_e": 1000.0,
-        "EX_cu2_e": 1000.0,
-        "EX_cobalt2_e": 1000.0,
-        "EX_ni2_e": 1000.0,
-        "EX_mobd_e": 1000.0,
-        "EX_sel_e": 1000.0,
-        "EX_slnt_e": 1000.0,
-        "EX_tungs_e": 1000.0,
+        **dict.fromkeys(
+            (
+                "EX_o2_e",
+                "EX_pi_e",
+                "EX_nh4_e",
+                "EX_so4_e",
+                "EX_k_e",
+                "EX_na1_e",
+                "EX_cl_e",
+                "EX_mg2_e",
+                "EX_ca2_e",
+                "EX_h_e",
+                "EX_h2o_e",
+                "EX_co2_e",
+                "EX_fe2_e",
+                "EX_fe3_e",
+                "EX_mn2_e",
+                "EX_zn2_e",
+                "EX_cu2_e",
+                "EX_cobalt2_e",
+                "EX_ni2_e",
+                "EX_mobd_e",
+                "EX_sel_e",
+                "EX_slnt_e",
+                "EX_tungs_e",
+            ),
+            1000.0,
+        ),
     }
 )
-
 _ENVIRONMENT = {
     "name": "aerobic_m9_minimal_glucose",
-    "medium": dict(sorted(M9_GLUCOSE_AEROBIC_MEDIUM.items())),
+    "medium": dict(M9_GLUCOSE_AEROBIC_MEDIUM),
     "oxygenation": "aerobic_unlimited_oxygen",
     "temperature_c": 37.0,
     "solver": "glpk",
@@ -62,178 +64,102 @@ _ENVIRONMENT = {
 
 
 def _sha256_json(value: object) -> str:
-    encoded = json.dumps(value, separators=(",", ":"), sort_keys=True).encode()
-    return hashlib.sha256(encoded).hexdigest()
+    return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
 
 
 class FBAScorer:
-    """Native Yggdrisil evaluator using a fresh iML1515 copy per candidate."""
+    """Score isolated COBRApy model copies; retain coverage and input identities."""
 
     name = "fba"
-    version = "1"
+    version = "2"
 
-    def __init__(
-        self,
-        *,
-        model_path: str | Path,
-        registry: GeneRegistry,
-        solver: str = "glpk",
-    ) -> None:
-        if solver != "glpk":
-            raise DataValidationError("v1 FBA supports only the pinned GLPK solver")
-        self.model_path = Path(model_path)
+    def __init__(self, *, model_path: str | Path, registry: GeneRegistry) -> None:
         self.registry = registry
-        self.model_sha256 = file_sha256(self.model_path)
-        self.registry_mapping_hash = _sha256_json(
-            [(record.b_number, record.iml1515_gene_id) for record in registry]
-        )
-        self.environment_config_hash = _sha256_json(_ENVIRONMENT)
-        self.solver = solver
-        self.cobra_version = version("cobra")
-        self.optlang_version = version("optlang")
-        self.solver_package = "swiglpk"
-        self.solver_package_version = version(self.solver_package)
         self.config = {
-            "model_sha256": self.model_sha256,
-            "registry_mapping_sha256": self.registry_mapping_hash,
-            "environment_config_sha256": self.environment_config_hash,
-            "cobra_version": self.cobra_version,
-            "optlang_version": self.optlang_version,
-            "solver_package": self.solver_package,
-            "solver_package_version": self.solver_package_version,
+            "model_sha256": file_sha256(Path(model_path)),
+            "registry_mapping_hash": _sha256_json(
+                [(record.b_number, record.iml1515_gene_id) for record in registry]
+            ),
+            "environment_config_hash": _sha256_json(_ENVIRONMENT),
+            "solver": "glpk",
+            "cobra_version": version("cobra"),
+            "optlang_version": version("optlang"),
+            "solver_package": "swiglpk",
+            "solver_package_version": version("swiglpk"),
         }
-        self._base_model = load_json_model(str(self.model_path))
+        self.model = load_json_model(str(model_path))
         self._validate_model()
+        self.model.solver = "glpk"
+        self.model.medium = dict(M9_GLUCOSE_AEROBIC_MEDIUM)
 
     async def evaluate(self, state: GenomeState) -> EvaluationResult:
-        """Evaluate a candidate without blocking Yggdrisil's event loop."""
+        return await asyncio.to_thread(self._evaluate, state)
 
-        metrics, coverage = await asyncio.to_thread(
-            self._score_deleted, state.deleted_genes
-        )
-        return scientific_evaluation(
-            metrics,
-            coverage=coverage,
-            provenance={
-                "model_sha256": self.model_sha256,
-                "registry_mapping_hash": self.registry_mapping_hash,
-                "environment_config_hash": self.environment_config_hash,
-                "solver": self.solver,
-                "cobra_version": self.cobra_version,
-                "optlang_version": self.optlang_version,
-                "solver_package": self.solver_package,
-                "solver_package_version": self.solver_package_version,
-            },
-        )
+    def model_for(self, deleted_genes: set[str] | frozenset[str]) -> Model:
+        """Return an independent knockout model for scoring or inspecting GPRs."""
 
-    def _score_deleted(
-        self, deleted_genes: set[str] | frozenset[str]
-    ) -> tuple[dict[str, object], dict[str, object]]:
-        deleted, modeled, unmodeled = self._partition_deletions(deleted_genes)
-        solution = self._candidate_model(modeled).optimize()
-        status = str(solution.status)
-        feasible = status == "optimal"
-        growth: float | None = None
-        if feasible and solution.objective_value is not None:
-            candidate = float(solution.objective_value)
-            if not math.isfinite(candidate):
+        model = self.model.copy()
+        for gene in sorted(deleted_genes):
+            model_id = self.registry.require(gene).iml1515_gene_id
+            if model_id is not None:
+                model.genes.get_by_id(model_id).knock_out()
+        return model
+
+    def _evaluate(self, state: GenomeState) -> EvaluationResult:
+        solution = self.model_for(state.deleted_genes).optimize()
+        feasible = solution.status == "optimal"
+        growth = float(solution.objective_value) if feasible else None
+        if growth is not None:
+            if not math.isfinite(growth):
                 raise DataValidationError("FBA returned non-finite biomass flux")
-            growth = 0.0 if abs(candidate) < 1e-9 else candidate
-        return (
+            growth = 0.0 if abs(growth) < 1e-9 else growth
+        records = [self.registry.require(gene) for gene in sorted(state.deleted_genes)]
+        modeled = [r.iml1515_gene_id for r in records if r.in_iml1515]
+        unmodeled = [r.b_number for r in records if not r.in_iml1515]
+        return scientific_evaluation(
             {
                 "feasible": feasible,
                 "growth_rate": growth,
-                "solver_status": status,
+                "solver_status": str(solution.status),
             },
-            {
-                "deleted_genes_total": len(deleted),
+            coverage={
+                "deleted_genes_total": len(records),
                 "deleted_genes_modeled": len(modeled),
                 "deleted_genes_unmodeled": len(unmodeled),
-                "modeled_gene_ids": list(modeled),
-                "unmodeled_gene_ids": list(unmodeled),
+                "modeled_gene_ids": modeled,
+                "unmodeled_gene_ids": unmodeled,
             },
+            provenance=self.config,
         )
-
-    def reaction_bounds_after_deletion(
-        self,
-        deleted_genes: set[str] | frozenset[str],
-        reaction_ids: tuple[str, ...],
-    ) -> dict[str, tuple[float, float]]:
-        """Return candidate bounds for GPR and environment diagnostics."""
-
-        _deleted, modeled, _unmodeled = self._partition_deletions(deleted_genes)
-        model = self._candidate_model(modeled)
-        return {
-            reaction_id: tuple(model.reactions.get_by_id(reaction_id).bounds)
-            for reaction_id in reaction_ids
-        }
-
-    def base_reaction_bounds(
-        self, reaction_ids: tuple[str, ...]
-    ) -> dict[str, tuple[float, float]]:
-        return {
-            reaction_id: tuple(self._base_model.reactions.get_by_id(reaction_id).bounds)
-            for reaction_id in reaction_ids
-        }
-
-    def _partition_deletions(
-        self, deleted_genes: set[str] | frozenset[str]
-    ) -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
-        deleted = tuple(sorted(deleted_genes))
-        modeled: list[str] = []
-        unmodeled: list[str] = []
-        for b_number in deleted:
-            model_gene_id = self.registry.require(b_number).iml1515_gene_id
-            if model_gene_id is None:
-                unmodeled.append(b_number)
-            else:
-                modeled.append(model_gene_id)
-        return deleted, tuple(modeled), tuple(unmodeled)
-
-    def _candidate_model(self, modeled_gene_ids: tuple[str, ...]) -> Model:
-        model = self._base_model.copy()
-        model.solver = self.solver
-        model.medium = dict(M9_GLUCOSE_AEROBIC_MEDIUM)
-        for model_gene_id in modeled_gene_ids:
-            model.genes.get_by_id(model_gene_id).knock_out()
-        return model
 
     def _validate_model(self) -> None:
-        model = self._base_model
+        model = self.model
         if model.id != "iML1515":
             raise DataValidationError(f"expected iML1515 model, got {model.id!r}")
-        try:
-            objective = model.reactions.get_by_id(IML1515_OBJECTIVE_REACTION)
-            atpm = model.reactions.get_by_id(IML1515_ATPM_REACTION)
-        except KeyError as exc:
+        objective = {
+            r.id: value for r, value in linear_reaction_coefficients(model).items()
+        }
+        if (
+            objective != {IML1515_OBJECTIVE_REACTION: 1.0}
+            or model.objective.direction != "max"
+        ):
             raise DataValidationError(
-                "iML1515 objective or ATPM reaction is absent"
-            ) from exc
-        if objective.objective_coefficient != 1.0:
-            raise DataValidationError(
-                f"expected objective {IML1515_OBJECTIVE_REACTION} with coefficient 1"
+                "expected the iML1515 biomass maximization objective"
             )
-        if tuple(atpm.bounds) != (6.86, 1000.0):
-            raise DataValidationError(f"unexpected ATPM bounds: {atpm.bounds}")
-        missing_exchanges = sorted(
-            set(M9_GLUCOSE_AEROBIC_MEDIUM)
-            - {reaction.id for reaction in model.exchanges}
-        )
-        if missing_exchanges:
+        if tuple(model.reactions.get_by_id("ATPM").bounds) != (6.86, 1000.0):
+            raise DataValidationError("unexpected iML1515 ATPM bounds")
+        missing = set(M9_GLUCOSE_AEROBIC_MEDIUM) - {r.id for r in model.exchanges}
+        if missing:
             raise DataValidationError(
-                f"medium references missing exchanges: {missing_exchanges}"
+                f"medium references missing exchanges: {sorted(missing)}"
             )
-        model_gene_ids = {gene.id for gene in model.genes}
-        mapped_gene_ids = [
-            record.iml1515_gene_id
-            for record in self.registry
-            if record.iml1515_gene_id is not None
+        mapped = [
+            r.iml1515_gene_id for r in self.registry if r.iml1515_gene_id is not None
         ]
-        missing_model_genes = sorted(set(mapped_gene_ids) - model_gene_ids)
-        if missing_model_genes:
+        absent = set(mapped) - {gene.id for gene in model.genes}
+        if absent:
             raise DataValidationError(
-                "registry maps genes absent from the frozen iML1515 model: "
-                f"{missing_model_genes}"
+                f"registry maps genes absent from iML1515: {sorted(absent)}"
             )
-        if len(mapped_gene_ids) != len(set(mapped_gene_ids)):
+        if len(mapped) != len(set(mapped)):
             raise DataValidationError("registry maps multiple genes to one iML1515 ID")

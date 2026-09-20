@@ -1,20 +1,22 @@
-from dataclasses import replace
+from dataclasses import asdict, replace
 from pathlib import Path
 
 import pyarrow.parquet as pq
+import pytest
+from pydantic import ValidationError
 
 from yggdrisil_ecoli.data.audit import audit_registry
-from yggdrisil_ecoli.data.crosswalks import CrosswalkDiagnostics
+from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.gff import parse_ncbi_gff
-from yggdrisil_ecoli.data.registry import REGISTRY_SCHEMA, GeneRegistry
+from yggdrisil_ecoli.data.registry import GeneRegistry
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
-def test_parquet_round_trip_preserves_schema_and_list_values(tmp_path: Path) -> None:
+def test_parquet_round_trip_preserves_fields_and_list_values(tmp_path: Path) -> None:
     registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
     records = [
-        replace(record, ko_ids=("K00001", "K00002"))
+        replace(record, ko_ids=("K00002", "K00001", "K00002"))
         if record.b_number == "b0001"
         else record
         for record in registry
@@ -26,46 +28,40 @@ def test_parquet_round_trip_preserves_schema_and_list_values(tmp_path: Path) -> 
     actual = GeneRegistry.from_parquet(path)
 
     assert list(actual) == list(expected)
-    assert pq.read_schema(path) == REGISTRY_SCHEMA
-    assert REGISTRY_SCHEMA.names == [
-        "b_number",
-        "symbol",
-        "name",
-        "description",
-        "start",
-        "end",
-        "strand",
-        "ncbi_gene_id",
-        "ecocyc_id",
-        "kegg_gene_id",
-        "ko_ids",
-        "iml1515_gene_id",
-    ]
+    assert pq.read_schema(path).names == list(asdict(records[0]))
+    assert actual.require("b0001").ko_ids == ("K00001", "K00002")
 
 
 def test_audit_reports_coverage_and_mapping_gaps() -> None:
     registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    diagnostics = CrosswalkDiagnostics(
-        unresolved_identifiers={"kegg": ["eco:b9999"]},
-        notes=["fixture note"],
-    )
+    report = audit_registry(registry)
 
-    report = audit_registry(registry, diagnostics)
-
-    assert report.canonical_protein_coding_genes == 3
-    assert report.coverage["ncbi_gene"] == 3
-    assert report.coverage["ecocyc"] == 3
-    assert report.coverage["ko"] == 0
-    assert report.unresolved_count == 1
-    assert "Missing" not in report.render_text()
+    assert report["canonical_protein_coding_genes"] == 3
+    assert report["coverage"]["ncbi_gene"] == 3
+    assert report["coverage"]["ecocyc"] == 3
+    assert report["coverage"]["ko"] == 0
 
 
-def test_audit_reports_duplicate_and_ambiguous_identifiers() -> None:
+def test_registry_and_audit_reject_duplicate_identifiers() -> None:
     records = list(parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry)
     ambiguous = replace(records[1], ncbi_gene_id=records[0].ncbi_gene_id)
 
-    report = audit_registry([records[0], records[0], ambiguous])
+    with pytest.raises(DataValidationError, match="duplicate canonical ID: b0001"):
+        GeneRegistry([records[0], records[0]])
+    with pytest.raises(DataValidationError, match="ambiguous ncbi_gene mappings"):
+        audit_registry(GeneRegistry([records[0], ambiguous]))
 
-    assert report.duplicate_b_numbers == ["b0001"]
-    assert report.ambiguous_mappings == {"ncbi_gene": {"944742": ["b0001", "b0002"]}}
-    assert len(report.fatal_errors) == 2
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("b_number", "thrA"),
+        ("start", 0),
+        ("strand", "."),
+        ("ko_ids", ("bad",)),
+    ],
+)
+def test_gene_fields_use_library_validation(field: str, value: object) -> None:
+    record = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry.require("b0001")
+    with pytest.raises(ValidationError):
+        replace(record, **{field: value})

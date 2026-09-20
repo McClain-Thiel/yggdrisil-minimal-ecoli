@@ -11,7 +11,6 @@ from pathlib import Path
 from yggdrisil import (
     Evaluator,
     EvaluatorSuite,
-    GraphError,
     Policy,
     RandomPolicy,
     RunLimits,
@@ -36,8 +35,6 @@ from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 from yggdrisil_ecoli.state import GenomeState
 
-SEARCH_CONTRACT_VERSION = 4
-
 
 @dataclass(frozen=True, slots=True)
 class SearchArtifacts:
@@ -60,9 +57,6 @@ class SearchArtifacts:
     @property
     def iml1515(self) -> Path:
         return self.data_dir / "external" / "iML1515.json"
-
-
-DEFAULT_SEARCH_ARTIFACTS = SearchArtifacts()
 
 
 def load_standard_evaluators(
@@ -103,11 +97,9 @@ async def run_search(
     max_states: int = 10,
     max_steps: int = 10,
     max_wall_time_s: float | None = None,
-    run_id: str | None = None,
-    resume: bool = True,
     agent_config: AgentSearchConfig | None = None,
 ) -> RunResult:
-    """Run a baseline or bounded agent policy over identical evidence."""
+    """Run one independent experiment, refusing to reuse an existing graph."""
 
     if policy_name not in {"random", "heuristic", "agent"}:
         raise ValueError(f"unknown policy: {policy_name!r}")
@@ -123,6 +115,9 @@ async def run_search(
         raise ValueError(
             "agent seed, bundle_size and max_actions must match the search"
         )
+    graph_path = Path(graph_path)
+    if graph_path.exists():
+        raise FileExistsError(f"choose a new graph for each experiment: {graph_path}")
     registry, essentiality, evaluators = load_standard_evaluators(artifacts)
     evaluator_ids = active_evaluator_ids(evaluators)
     metadata = {
@@ -130,7 +125,6 @@ async def run_search(
             "distribution": f"yggdrisil-ecoli=={__version__}",
             "source_sha256": _application_source_hash(),
         },
-        "search_contract": SEARCH_CONTRACT_VERSION,
         "framework": _installed_revision("yggdrisil"),
         "evaluators": evaluator_ids,
         "policy": policy_name,
@@ -140,14 +134,10 @@ async def run_search(
     }
     if agent_config is not None:
         metadata["agent"] = agent_config.metadata(registry)
-    graph = SQLiteStateGraph[GenomeState, DeleteGenes](graph_path)
-    try:
-        validate_search_resume(
-            graph,
-            run_id=run_id,
-            resume=resume,
-            expected_metadata=metadata,
-        )
+    # Exclusive creation also prevents simultaneous runs sharing an output path.
+    graph_path.parent.mkdir(parents=True, exist_ok=True)
+    graph_path.touch(exist_ok=False)
+    with SQLiteStateGraph[GenomeState, DeleteGenes](graph_path) as graph:
         problem = EcoliProblem(registry, max_genes_per_action=bundle_size)
         policy: Policy[DeleteGenes]
         if policy_name == "random":
@@ -190,45 +180,9 @@ async def run_search(
                 max_wall_time_s=max_wall_time_s,
             ),
             evaluators=EvaluatorSuite(list(evaluators), concurrent=True),
-            run_id=run_id,
-            resume=resume,
+            resume=False,
             metadata=metadata,
         ).run()
-    finally:
-        graph.close()
-
-
-def validate_search_resume(
-    graph: SQLiteStateGraph[GenomeState, DeleteGenes],
-    *,
-    run_id: str | None,
-    resume: bool,
-    expected_metadata: dict[str, object],
-) -> None:
-    """Refuse to resume a trajectory with a different policy configuration."""
-
-    if not resume:
-        return
-    if run_id is None:
-        record = graph.latest_run()
-    else:
-        try:
-            record = graph.get_run(run_id)
-        except KeyError:
-            return
-    if record is None:
-        return
-    changed = [
-        key
-        for key, expected in expected_metadata.items()
-        if record.metadata.get(key) != expected
-    ]
-    if changed:
-        raise GraphError(
-            "refusing to resume with changed search configuration: "
-            f"{', '.join(sorted(changed))}; use a new graph for an independent "
-            "experiment, or resume=False to reuse the existing DAG"
-        )
 
 
 def _installed_revision(name: str) -> str:
@@ -239,15 +193,8 @@ def _installed_revision(name: str) -> str:
     raw = package.read_text("direct_url.json")
     if raw is None:
         return identity
-    try:
-        direct_url = json.loads(raw)
-    except json.JSONDecodeError:
-        return identity
-    if isinstance(direct_url, dict):
-        vcs = direct_url.get("vcs_info")
-        if isinstance(vcs, dict) and isinstance(vcs.get("commit_id"), str):
-            return f"{identity}@{vcs['commit_id']}"
-    return identity
+    commit = json.loads(raw).get("vcs_info", {}).get("commit_id")
+    return f"{identity}@{commit}" if commit else identity
 
 
 def _application_source_hash() -> str:

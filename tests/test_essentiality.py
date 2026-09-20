@@ -1,8 +1,10 @@
 from pathlib import Path
 
+import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 from openpyxl import Workbook, load_workbook
+from pydantic import ValidationError
 
 from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.essentiality import (
@@ -20,7 +22,7 @@ FIXTURES = Path(__file__).parent / "fixtures"
 def test_dataset_rejects_duplicate_canonical_genes() -> None:
     record = _unknown("b0001")
 
-    with pytest.raises(DataValidationError, match="duplicate.*b0001"):
+    with pytest.raises(DataValidationError, match="unique b-numbers"):
         EssentialityDataset([record, record])
 
 
@@ -43,8 +45,8 @@ def test_parser_preserves_calls_conflicts_and_coordinate_audit(tmp_path: Path) -
     ambiguous = dataset.record("b0003")
     assert ambiguous.classification == "ambiguous"
     assert ambiguous.evidence_conflict is True
-    assert report.unmapped_source_ids == ("b9999",)
-    assert report.coordinate_mismatches == ("b0002",)
+    assert report["unmapped_source_ids"] == ("b9999",)
+    assert report["coordinate_mismatches"] == ("b0002",)
 
 
 @pytest.mark.asyncio
@@ -65,7 +67,7 @@ async def test_one_table_round_trip_and_scorer_keep_unknown_separate(
     loaded = EssentialityDataset.from_parquet(artifact)
 
     assert pq.read_table(artifact).num_rows == len(registry)
-    assert report.canonical_genes_without_measurement == ("b0003",)
+    assert report["canonical_genes_without_measurement"] == ("b0003",)
     assert loaded.record("b0003") == _unknown("b0003")
     detail = loaded.detail("b0002")
     assert detail["classification"] == "conditionally_essential"
@@ -99,11 +101,9 @@ async def test_one_table_round_trip_and_scorer_keep_unknown_separate(
 
 
 def test_record_rejects_author_call_threshold_disagreement() -> None:
-    with pytest.raises(DataValidationError, match="disagrees with ecIPKM"):
+    with pytest.raises(ValidationError, match="disagrees with ecIPKM"):
         EssentialityRecord(
             b_number="b0001",
-            classification="essential",
-            coverage="measured",
             lb_call_raw="E",
             lb_ecipkm=10.0,
             m9_call_raw="E",
@@ -114,8 +114,8 @@ def test_record_rejects_author_call_threshold_disagreement() -> None:
 @pytest.mark.parametrize(
     ("cell", "value", "reason"),
     [
-        ("F5", "wrong", "malformed canonical ID"),
-        ("O5", "unexpected", "calls must be E or NE"),
+        ("F5", "wrong", "b_number"),
+        ("O5", "unexpected", "lb_call_raw"),
         ("N5", 1.0, "disagrees with ecIPKM"),
     ],
 )
@@ -133,26 +133,49 @@ def test_parser_reports_worksheet_row_after_filtering(
     workbook.save(path)
     workbook.close()
 
-    with pytest.raises(DataValidationError, match=f"row 5: .*{reason}"):
+    with pytest.raises(DataValidationError, match=f"(?s)row 5: .*{reason}"):
         parse_choe_workbook(path, registry, expected_source_counts=None)
 
 
 @pytest.mark.parametrize("value", [float("nan"), float("inf"), -1.0])
 def test_nonfinite_or_negative_measurements_are_not_nonessential(value: float) -> None:
-    with pytest.raises(DataValidationError, match="finite and nonnegative"):
-        EssentialityRecord("b0001", "nonessential", "measured", "NE", value, "NE", 10.0)
+    with pytest.raises(ValidationError):
+        EssentialityRecord(
+            b_number="b0001",
+            lb_call_raw="NE",
+            lb_ecipkm=value,
+            m9_call_raw="NE",
+            m9_ecipkm=10.0,
+        )
 
 
 def _unknown(b_number: str) -> EssentialityRecord:
-    return EssentialityRecord(
-        b_number=b_number,
-        classification="unknown",
-        coverage="unknown",
-        lb_call_raw=None,
-        lb_ecipkm=None,
-        m9_call_raw=None,
-        m9_ecipkm=None,
-    )
+    return EssentialityRecord(b_number=b_number)
+
+
+@pytest.mark.parametrize(
+    "measurements",
+    [
+        {"lb_call_raw": "E", "lb_ecipkm": 1.0},
+        {"lb_call_raw": "E", "lb_ecipkm": 1.0, "m9_call_raw": "NE"},
+        {"lb_ecipkm": 1.0, "m9_ecipkm": 3.0},
+    ],
+)
+def test_partial_measurements_are_rejected(measurements: dict[str, object]) -> None:
+    with pytest.raises(ValidationError, match="both LB and M9"):
+        EssentialityRecord.model_validate({"b_number": "b0001", **measurements})
+
+
+def test_loaded_labels_must_agree_with_raw_evidence(tmp_path: Path) -> None:
+    path = tmp_path / "essentiality.parquet"
+    EssentialityDataset([_unknown("b0001")]).to_parquet(path)
+    table = pq.read_table(path)
+    rows = table.to_pylist()
+    rows[0]["classification"] = "nonessential"
+    pq.write_table(pa.Table.from_pylist(rows, schema=table.schema), path)
+
+    with pytest.raises(DataValidationError, match="stored labels disagree"):
+        EssentialityDataset.from_parquet(path)
 
 
 def _write_choe_fixture(

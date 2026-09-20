@@ -34,8 +34,8 @@ async def test_wild_type_grows_in_explicit_aerobic_m9_glucose(
 
     assert result.metrics["feasible"] is True
     assert result.metrics["growth_rate"] == pytest.approx(0.87699721442698, rel=1e-6)
-    assert len(scorer.registry_mapping_hash) == 64
-    assert provenance["registry_mapping_hash"] == scorer.registry_mapping_hash
+    assert len(provenance["registry_mapping_hash"]) == 64
+    assert provenance == scorer.config
     assert provenance["cobra_version"] == "0.32.1"
     assert provenance["solver_package"] == "swiglpk"
     assert provenance["solver_package_version"] == "5.0.13"
@@ -45,20 +45,31 @@ def test_configuration_participates_in_evaluator_identity(scorer: FBAScorer) -> 
     _evaluator_id, config_hash = evaluator_identity(scorer)
 
     assert config_hash
-    assert scorer.config["model_sha256"] == scorer.model_sha256
-    assert scorer.config["registry_mapping_sha256"] == (scorer.registry_mapping_hash)
-    assert scorer.config["environment_config_sha256"] == (
-        scorer.environment_config_hash
-    )
+    assert len(scorer.config["model_sha256"]) == 64
+    assert len(scorer.config["registry_mapping_hash"]) == 64
+    assert len(scorer.config["environment_config_hash"]) == 64
+    assert scorer.model.solver.interface.__name__ == "optlang.glpk_interface"
 
 
-def test_only_pinned_solver_is_accepted(scorer: FBAScorer) -> None:
-    with pytest.raises(DataValidationError, match="only the pinned GLPK solver"):
-        FBAScorer(
-            model_path=MODEL_PATH,
-            registry=scorer.registry,
-            solver="not-glpk",
-        )
+@pytest.mark.parametrize("change", ["negative_biomass", "extra_reaction"])
+def test_rejects_changed_biomass_objective(
+    tmp_path: Path, scorer: FBAScorer, change: str
+) -> None:
+    from cobra.io import save_json_model
+
+    model = scorer.model.copy()
+    if change == "negative_biomass":
+        from yggdrisil_ecoli.scorers.fba import IML1515_OBJECTIVE_REACTION
+
+        model.reactions.get_by_id(
+            IML1515_OBJECTIVE_REACTION
+        ).objective_coefficient = -1.0
+    else:
+        model.reactions.get_by_id("ATPM").objective_coefficient = 1.0
+    path = tmp_path / "changed-model.json"
+    save_json_model(model, str(path))
+    with pytest.raises(DataValidationError, match="biomass maximization"):
+        FBAScorer(model_path=path, registry=scorer.registry)
 
 
 async def test_non_model_gene_changes_coverage_not_solution(
@@ -78,19 +89,19 @@ async def test_non_model_gene_changes_coverage_not_solution(
 def test_or_gpr_requires_both_isozymes_to_disable_reaction(
     scorer: FBAScorer,
 ) -> None:
-    original = scorer.base_reaction_bounds(("TALA",))
-    one_deleted = scorer.reaction_bounds_after_deletion({"b0008"}, ("TALA",))
-    both_deleted = scorer.reaction_bounds_after_deletion({"b0008", "b2464"}, ("TALA",))
+    original = scorer.model.reactions.get_by_id("TALA").bounds
+    one_deleted = scorer.model_for({"b0008"})
+    both_deleted = scorer.model_for({"b0008", "b2464"})
 
-    assert one_deleted == original
-    assert both_deleted == {"TALA": (0, 0)}
+    assert one_deleted.reactions.get_by_id("TALA").bounds == original
+    assert both_deleted.reactions.get_by_id("TALA").bounds == (0, 0)
 
 
 async def test_and_gpr_disables_reaction_and_growth(scorer: FBAScorer) -> None:
-    bounds = scorer.reaction_bounds_after_deletion({"b1260"}, ("TRPS2",))
+    model = scorer.model_for({"b1260"})
     result = await scorer.evaluate(GenomeState(frozenset({"b1260"})))
 
-    assert bounds == {"TRPS2": (0, 0)}
+    assert model.reactions.get_by_id("TRPS2").bounds == (0, 0)
     assert result.metrics["feasible"] is True
     assert result.metrics["growth_rate"] == 0.0
 
@@ -98,13 +109,13 @@ async def test_and_gpr_disables_reaction_and_growth(scorer: FBAScorer) -> None:
 async def test_repeated_scoring_does_not_mutate_base_model(
     scorer: FBAScorer,
 ) -> None:
-    original_bounds = scorer.base_reaction_bounds(("TALA", "TRPS2"))
+    original_bounds = [r.bounds for r in scorer.model.reactions]
     original = await scorer.evaluate(GenomeState(frozenset()))
 
     await scorer.evaluate(GenomeState(frozenset({"b0008", "b2464", "b1260"})))
 
     repeated = await scorer.evaluate(GenomeState(frozenset()))
-    assert scorer.base_reaction_bounds(("TALA", "TRPS2")) == original_bounds
+    assert [r.bounds for r in scorer.model.reactions] == original_bounds
     assert repeated.metrics["growth_rate"] == pytest.approx(
         original.metrics["growth_rate"]
     )

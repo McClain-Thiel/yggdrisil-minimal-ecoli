@@ -1,31 +1,23 @@
-"""OpenRouter-backed Yggdrisil policy with explicit evidence exposure modes."""
+"""Bounded model search with explicit blinded or annotated biological evidence."""
 
 from __future__ import annotations
 
 import hashlib
 import json
-import os
 from collections import Counter
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from decimal import Decimal
-from functools import partial
 from importlib.metadata import version
 from pathlib import Path
-from typing import Annotated, Any, Generic, Literal, TypeVar, cast
+from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, create_model, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from yggdrisil import NavigatorExplorerPolicy
-from yggdrisil.agents import (
-    Explorer,
-    ExplorerContext,
-    ExplorerResult,
-    NavigatorContext,
-)
+from yggdrisil.agents import ExplorerContext, ExplorerResult, NavigatorContext
 from yggdrisil.types import EvaluationRecord
 
 from yggdrisil_ecoli.actions import DeleteGenes
-from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.essentiality import EssentialityDataset
 from yggdrisil_ecoli.data.registry import GeneRegistry
 from yggdrisil_ecoli.scorers.base import ScalarMetric
@@ -33,22 +25,13 @@ from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.state import GenomeState
 from yggdrisil_ecoli.tools.genes import GeneTools
 
-AgentMode = Literal["closed-book", "tool-rich"]
-PROMPT_VERSION = 2
-BLIND_MAP_VERSION = 1
-
-
-class AgentPolicyError(RuntimeError):
-    """A bounded model invocation failed at the external provider boundary."""
-
 
 class AgentSearchConfig(BaseModel):
-    """Reproducible, secret-free configuration for one model arm."""
+    """Model, experimental arm, and per-invocation budgets."""
 
     model_config = ConfigDict(frozen=True)
-
     model: str
-    mode: AgentMode = "closed-book"
+    mode: Literal["closed-book", "tool-rich"] = "closed-book"
     seed: int = 0
     bundle_size: int = Field(default=1, gt=0)
     max_actions: int = Field(default=2, gt=0)
@@ -68,156 +51,146 @@ class AgentSearchConfig(BaseModel):
 
     @property
     def tool_names(self) -> tuple[str, ...]:
-        return (
-            ("analyze_deletion_bundle",)
-            if self.mode == "closed-book"
-            else (
+        tools: tuple[str, ...] = ("analyze_deletion_bundle",)
+        if self.mode == "tool-rich":
+            tools += (
                 "list_deletion_candidates",
                 "inspect_gene_evidence",
-                "analyze_deletion_bundle",
                 "inspect_kegg_module",
             )
-        )
+        return tools
 
     @property
-    def model_ref(self) -> str:
-        return f"openrouter:{self.model}"
-
-    def metadata(self, registry: GeneRegistry) -> dict[str, object]:
-        schedule = _CandidateSchedule(registry, self.seed)
-        blind = (
-            _BlindGeneMap(registry, self.seed) if self.mode == "closed-book" else None
-        )
+    def settings(self) -> dict[str, Any]:
         return {
-            **self.model_dump(mode="json"),
-            "provider": "openrouter",
-            "prompt_version": PROMPT_VERSION,
-            "pydantic_ai": version("pydantic-ai"),
+            "max_tokens": self.max_output_tokens,
             "temperature": 0.0,
-            "provider_routing": {
+            "seed": self.seed,
+            "openrouter_provider": {
                 "require_parameters": True,
                 "data_collection": "deny",
             },
-            "candidate_order_sha256": schedule.fingerprint,
-            "blind_map_version": BLIND_MAP_VERSION if blind else None,
-            "blind_map_sha256": blind.fingerprint if blind else None,
+            "openrouter_usage": {"include": True},
+        }
+
+    def metadata(self, registry: GeneRegistry) -> dict[str, object]:
+        view = _GeneView(registry, self)
+        return {
+            **self.model_dump(mode="json"),
+            "provider": "openrouter",
+            "prompt_version": 3,
+            "pydantic_ai": version("pydantic-ai"),
+            "settings": self.settings,
             "tools": list(self.tool_names),
+            "candidate_order_sha256": hashlib.sha256(
+                "\n".join(view.order).encode()
+            ).hexdigest(),
+            "blind_map_version": 1 if view.blinded else None,
+            "blind_map_sha256": hashlib.sha256(
+                json.dumps(view.aliases, sort_keys=True, separators=(",", ":")).encode()
+            ).hexdigest()
+            if view.blinded
+            else None,
         }
 
 
-class _BlindDeleteGenes(BaseModel):
-    model_config = ConfigDict(frozen=True)
+class _GeneView:
+    """One deterministic candidate order and a reversible display-ID mapping."""
 
-    genes: tuple[Annotated[str, Field(pattern=r"^g\d{4}$")], ...] = Field(min_length=1)
-
-    @field_validator("genes")
-    @classmethod
-    def validate_genes(cls, genes: tuple[str, ...]) -> tuple[str, ...]:
-        if len(set(genes)) != len(genes):
-            raise ValueError("deletion action contains duplicate genes")
-        return tuple(sorted(genes))
-
-
-class _BlindGeneMap:
-    def __init__(self, registry: GeneRegistry, seed: int) -> None:
-        canonical = sorted(
-            registry.search_universe,
-            key=lambda gene: _seeded_digest("blind", seed, gene),
-        )
-        self._to_public = {
-            gene: f"g{index:04d}" for index, gene in enumerate(canonical, start=1)
-        }
-        self._to_canonical = {public: gene for gene, public in self._to_public.items()}
-        self.fingerprint = _mapping_hash(self._to_public)
-
-    def public(self, canonical: str) -> str:
-        return self._to_public[canonical]
-
-    def canonical(self, public: str) -> str:
-        try:
-            return self._to_canonical[public]
-        except KeyError as exc:
-            raise ValueError(f"unknown blinded gene id: {public}") from exc
-
-
-class _CandidateSchedule:
-    def __init__(self, registry: GeneRegistry, seed: int) -> None:
-        self.genes = tuple(
-            sorted(
+    def __init__(self, registry: GeneRegistry, config: AgentSearchConfig) -> None:
+        def ordered(namespace: str) -> list[str]:
+            return sorted(
                 registry.search_universe,
-                key=lambda gene: _seeded_digest("candidate", seed, gene),
+                key=lambda gene: hashlib.sha256(
+                    f"{namespace}:{config.seed}:{gene}".encode()
+                ).digest(),
             )
-        )
-        self.fingerprint = hashlib.sha256("\n".join(self.genes).encode()).hexdigest()
+
+        self.order = ordered("candidate")
+        self.blinded = config.mode == "closed-book"
+        self.aliases = {
+            gene: f"g{index:04d}" if self.blinded else gene
+            for index, gene in enumerate(ordered("blind"), start=1)
+        }
+        self.canonical_ids = {alias: gene for gene, alias in self.aliases.items()}
+
+    def canonical(self, alias: str) -> str:
+        try:
+            return self.canonical_ids[alias]
+        except KeyError as exc:
+            raise ValueError(f"unknown candidate gene id: {alias}") from exc
 
 
 @dataclass
-class _AgentGeneTools:
-    registry: GeneRegistry
-    essentiality: EssentialityDataset
-    modules: ModuleEvaluator
-    schedule: _CandidateSchedule
+class _GeneTools:
+    evidence: GeneTools
+    view: _GeneView
     state: GenomeState
-    mode: AgentMode
-    blind: _BlindGeneMap | None
-
-    @property
-    def rich(self) -> GeneTools:
-        return GeneTools(
-            registry=self.registry, essentiality=self.essentiality, modules=self.modules
-        )
-
-    def public(self, canonical: str) -> str:
-        return self.blind.public(canonical) if self.blind else canonical
-
-    def canonical(self, public: str) -> str:
-        canonical = self.blind.canonical(public) if self.blind else public
-        self.registry.require(canonical)
-        return canonical
-
-    def deleted_public_ids(self) -> list[str]:
-        return sorted(self.public(gene) for gene in self.state.deleted_genes)
 
     def list_deletion_candidates(
         self, page: int = 0, count: int = 24
     ) -> dict[str, object]:
-        if page < 0:
-            raise ValueError("page must be non-negative")
-        if count < 1 or count > 50:
-            raise ValueError("count must be between 1 and 50")
+        """List a reproducible page of undeleted candidates and allowed evidence."""
+        if page < 0 or not 1 <= count <= 50:
+            raise ValueError("page must be non-negative and count must be 1 to 50")
         available = [
-            gene for gene in self.schedule.genes if gene not in self.state.deleted_genes
+            gene for gene in self.view.order if gene not in self.state.deleted_genes
         ]
-        start = page * count
-        genes = available[start : start + count]
+        candidates = available[page * count : (page + 1) * count]
         return {
             "page": page,
-            "count": len(genes),
+            "count": len(candidates),
             "remaining_candidates": len(available),
-            "candidates": [self._gene_evidence(gene) for gene in genes],
+            "candidates": [
+                self.inspect_gene_evidence(self.view.aliases[gene])
+                for gene in candidates
+            ],
         }
 
     def inspect_gene_evidence(self, gene_id: str) -> dict[str, object]:
-        """Inspect the allowed evidence for one candidate gene."""
-        return self._gene_evidence(self.canonical(gene_id), detailed=True)
+        """Inspect allowed evidence for one candidate, without unblinding its identity."""
+        gene = self.view.canonical(gene_id)
+        if not self.view.blinded:
+            return {
+                **self.evidence.get_gene_info(gene),
+                "essentiality_evidence": self.evidence.essentiality.detail(gene),
+            }
+        record = self.evidence.registry.require(gene)
+        essentiality = self.evidence.essentiality.record(gene)
+        return {
+            "gene_id": gene_id,
+            "essentiality": essentiality.classification,
+            "experimental_coverage": essentiality.coverage,
+            "metabolic_model_coverage": record.in_iml1515,
+            "has_ko_mapping": bool(record.ko_ids),
+            "module_membership_count": len(
+                self.evidence.modules.modules_for_kos(set(record.ko_ids))
+            ),
+            "condition_disagreement": essentiality.condition_disagreement,
+            "evidence_conflict": essentiality.evidence_conflict,
+        }
 
     def analyze_deletion_bundle(self, gene_ids: list[str]) -> dict[str, object]:
-        """Check aggregate evidence for a proposed direct deletion bundle."""
-        canonical = [self.canonical(gene) for gene in gene_ids]
-        if self.mode == "tool-rich":
-            return self.rich.analyze_gene_set(canonical)
+        """Check a proposed bundle and module retention including existing deletions."""
+        genes = [self.view.canonical(gene) for gene in gene_ids]
+        projected = self.state.deleted_genes.union(genes)
+        modules = self.evidence.modules.score_deleted(projected)
+        if not self.view.blinded:
+            return {
+                **self.evidence.analyze_gene_set(sorted(projected)),
+                "proposed_gene_ids": gene_ids,
+                "projected_modules_complete": modules.n_complete,
+                "projected_modules_broken": modules.n_broken,
+            }
         classes = Counter(
-            self.essentiality.record(gene).classification for gene in canonical
+            self.evidence.essentiality.record(gene).classification for gene in genes
         )
-        module_result = self.modules.score_deleted(
-            self.state.deleted_genes.union(canonical)
-        )
-        records = [self.registry.require(gene) for gene in canonical]
+        modeled = sum(self.evidence.registry.require(gene).in_iml1515 for gene in genes)
         return {
             "gene_ids": gene_ids,
             "essentiality_summary": {
-                category: classes.get(category, 0)
-                for category in (
+                name: classes[name]
+                for name in (
                     "essential",
                     "conditionally_essential",
                     "nonessential",
@@ -225,47 +198,117 @@ class _AgentGeneTools:
                     "unknown",
                 )
             },
-            "projected_modules_complete": module_result.n_complete,
-            "projected_modules_broken": module_result.n_broken,
-            "model_coverage": {
-                "modeled": sum(record.in_iml1515 for record in records),
-                "unmodeled": sum(not record.in_iml1515 for record in records),
-            },
+            "projected_modules_complete": modules.n_complete,
+            "projected_modules_broken": modules.n_broken,
+            "model_coverage": {"modeled": modeled, "unmodeled": len(genes) - modeled},
         }
 
     def inspect_kegg_module(
         self, module_id: str, deleted_gene_ids: list[str] | None = None
     ) -> dict[str, object]:
-        """Inspect a KEGG module after an optional proposed deletion set."""
-        if self.mode != "tool-rich":
+        """Inspect a module after adding a proposed bundle to current deletions."""
+        if self.view.blinded:
             raise ValueError("module details are unavailable in closed-book mode")
-        deleted = [self.canonical(gene) for gene in deleted_gene_ids or ()]
-        return self.rich.get_module_info(module_id, deleted_genes=deleted)
+        deleted = self.state.deleted_genes.union(
+            self.view.canonical(gene) for gene in deleted_gene_ids or ()
+        )
+        return self.evidence.get_module_info(module_id, deleted_genes=sorted(deleted))
 
-    def _gene_evidence(
-        self, canonical: str, *, detailed: bool = False
-    ) -> dict[str, object]:
-        record = self.registry.require(canonical)
-        essentiality = self.essentiality.record(canonical)
-        if self.mode == "closed-book":
-            evidence: dict[str, object] = {
-                "gene_id": self.public(canonical),
-                "essentiality": essentiality.classification,
-                "experimental_coverage": essentiality.coverage,
-                "metabolic_model_coverage": record.in_iml1515,
-                "has_ko_mapping": bool(record.ko_ids),
-                "module_membership_count": len(
-                    self.modules.modules_for_kos(set(record.ko_ids))
-                ),
-            }
-            if detailed:
-                evidence["condition_disagreement"] = essentiality.condition_disagreement
-                evidence["evidence_conflict"] = essentiality.evidence_conflict
-            return evidence
-        return {
-            **self.rich.get_gene_info(canonical),
-            "essentiality_evidence": self.essentiality.detail(canonical),
-        }
+
+def _action_type(
+    view: _GeneView, state: GenomeState, bundle_size: int
+) -> type[DeleteGenes]:
+    """Let Pydantic validate and translate model IDs before they reach the search."""
+
+    class ProposedDeletion(DeleteGenes):
+        genes: tuple[str, ...] = Field(min_length=1, max_length=bundle_size)
+
+        @field_validator("genes")
+        @classmethod
+        def validate_genes(cls, genes: tuple[str, ...]) -> tuple[str, ...]:
+            if len(set(genes)) != len(genes):
+                raise ValueError("deletion action contains duplicate genes")
+            action = DeleteGenes(genes=tuple(view.canonical(gene) for gene in genes))
+            if state.deleted_genes.intersection(action.genes):
+                raise ValueError("action includes an already deleted gene")
+            return action.genes
+
+    return ProposedDeletion
+
+
+@dataclass
+class _LimitedAgent:
+    """Pass PydanticAI budgets through the framework's minimal agent.run interface."""
+
+    inner: Any
+    limits: Any
+
+    async def run(self, prompt: str) -> Any:
+        return await self.inner.run(prompt, usage_limits=self.limits)
+
+
+@dataclass
+class _Explorer:
+    evidence: GeneTools
+    view: _GeneView
+    config: AgentSearchConfig
+    evaluator_ids: Mapping[str, str]
+    limits: Any
+
+    @property
+    def model(self) -> str:
+        return f"openrouter:{self.config.model}"
+
+    def format_prompt(self, context: ExplorerContext[GenomeState]) -> str:
+        tools = _GeneTools(self.evidence, self.view, context.state)
+        deleted = sorted(
+            self.view.aliases[gene] for gene in context.state.deleted_genes
+        )
+        return json.dumps(
+            {
+                "goal": context.goal,
+                "evidence_mode": self.config.mode,
+                "state_id": context.state_id,
+                "deleted_gene_count": len(deleted),
+                "deleted_gene_ids_first_64": deleted[:64],
+                "evaluations": _active_metrics(context.evaluations, self.evaluator_ids),
+                "candidate_preview": tools.list_deletion_candidates(count=8),
+                "max_actions": self.config.max_actions,
+                "max_genes_per_action": self.config.bundle_size,
+            },
+            sort_keys=True,
+        )
+
+    async def explore(
+        self, context: ExplorerContext[GenomeState]
+    ) -> ExplorerResult[DeleteGenes]:
+        from yggdrisil.agents.pydantic_ai import make_explorer
+
+        tools = _GeneTools(self.evidence, self.view, context.state)
+        explorer = make_explorer(
+            self.model,
+            _action_type(self.view, context.state, self.config.bundle_size),
+            tools=[getattr(tools, name) for name in self.config.tool_names],
+            instructions=(
+                "Propose direct deletion actions using only candidate IDs and evidence from "
+                "this invocation. Do not use web or literature knowledge. Avoid essential "
+                "genes; prefer experimentally nonessential candidates. Shortlist from the "
+                "preview, then use at most one analyze_deletion_bundle call on the final "
+                "bundle. Respect max_actions and max_genes_per_action in the prompt."
+            ),
+            prompt=self.format_prompt,
+        )
+        explorer.agent.model_settings = self.config.settings
+        explorer.agent = _LimitedAgent(explorer.agent, self.limits)
+        result = await explorer.explore(context)
+        return ExplorerResult(
+            actions=[
+                DeleteGenes(genes=action.genes)
+                for action in result.actions[: self.config.max_actions]
+            ],
+            note=result.note,
+            trace=result.trace,
+        )
 
 
 def make_agent_policy(
@@ -277,164 +320,66 @@ def make_agent_policy(
     evaluator_ids: Mapping[str, str],
     evaluations: Callable[[str], list[EvaluationRecord]],
 ) -> NavigatorExplorerPolicy[GenomeState, DeleteGenes]:
-    """Build a bounded OpenRouter navigator/explorer policy."""
-
-    _load_openrouter_key()
+    """Build the two model roles; the framework owns graph traversal and traces."""
+    from dotenv import load_dotenv
     from pydantic_ai import UsageLimits
-    from pydantic_ai.models.openrouter import OpenRouterModelSettings
-    from yggdrisil.agents.pydantic_ai import make_explorer, make_navigator
+    from yggdrisil.agents.pydantic_ai import make_navigator
 
-    schedule = _CandidateSchedule(registry, config.seed)
-    blind = (
-        _BlindGeneMap(registry, config.seed) if config.mode == "closed-book" else None
-    )
-
-    toolkit = partial(
-        _AgentGeneTools,
-        registry=registry,
-        essentiality=essentiality,
-        modules=modules,
-        schedule=schedule,
-        mode=config.mode,
-        blind=blind,
-    )
-
-    settings = OpenRouterModelSettings(
-        max_tokens=config.max_output_tokens,
-        temperature=0.0,
-        seed=config.seed,
-        openrouter_provider={
-            "require_parameters": True,
-            "data_collection": "deny",
-        },
-        openrouter_usage={"include": True},
-    )
+    load_dotenv(Path.home() / ".env", override=False)
     limits = UsageLimits(
         cost_limit=config.max_cost_per_call_usd,
         request_limit=config.max_model_requests,
         tool_calls_limit=config.max_tool_calls,
         output_tokens_limit=config.max_model_requests * config.max_output_tokens,
     )
-    navigator = make_navigator(
-        config.model_ref,
-        instructions=(
-            "Navigate an E. coli genome-deletion search. Select only existing "
-            "frontier state ids. Prefer states with zero essential deletions, "
-            "feasible positive FBA growth, fewer remaining genes, and fewer "
-            "broken modules. Unknown evidence is risk, not proof of safety."
-        ),
-        prompt=lambda context: _format_navigator_prompt(
-            context, config.max_navigator_requests, evaluator_ids, evaluations
-        ),
-    )
-    action_type = _bounded_action_type(config.mode, config.bundle_size)
-    navigator.agent.model_settings = settings
-    navigator.agent = _UsageLimitedAgent(navigator.agent, limits)
-    prompt = partial(
-        _format_explorer_prompt,
-        toolkit_factory=toolkit,
-        config=config,
-        evaluator_ids=evaluator_ids,
+    explorer = _Explorer(
+        GeneTools(registry=registry, essentiality=essentiality, modules=modules),
+        _GeneView(registry, config),
+        config,
+        evaluator_ids,
+        limits,
     )
 
-    def explorer_factory(gene_tools: _AgentGeneTools) -> Any:
-        explorer = make_explorer(
-            config.model_ref,
-            action_type,
-            tools=[getattr(gene_tools, name) for name in config.tool_names],
-            instructions=(
-                "Explore one E. coli deletion state using only the supplied evidence. "
-                "Do not use web or literature knowledge. Propose only candidate ids "
-                "from this invocation. Shortlist from the preview, then batch-check "
-                "the final bundle. Avoid essential genes; prefer experimentally "
-                "nonessential candidates. Return direct deletion actions only."
-            ),
-            prompt=prompt,
+    def navigator_prompt(context: NavigatorContext) -> str:
+        # The pinned framework omits evaluator IDs from its recent-state summaries.
+        recent = [
+            {
+                **item,
+                "evaluations": _active_metrics(
+                    evaluations(item["state_id"]), evaluator_ids
+                ),
+            }
+            for item in context.recent
+        ]
+        return json.dumps(
+            {
+                "goal": context.goal,
+                "step": context.status.step,
+                "select_at_most": config.max_navigator_requests,
+                "frontier_ids": context.frontier_ids,
+                "recent_states": recent,
+                "notes": context.summaries,
+            },
+            sort_keys=True,
         )
-        explorer.agent.model_settings = settings
-        explorer.agent = _UsageLimitedAgent(explorer.agent, limits)
-        return explorer
 
-    def translate(action: DeleteGenes | _BlindDeleteGenes) -> DeleteGenes:
-        if isinstance(action, DeleteGenes):
-            return DeleteGenes(genes=action.genes)
-        assert blind is not None
-        return DeleteGenes(genes=tuple(blind.canonical(gene) for gene in action.genes))
-
-    bound_explorer = _BoundExplorer(
-        explorer_factory,
-        toolkit,
-        translate,
-        model=config.model_ref,
-        prompt=prompt,
-        max_actions=config.max_actions,
-        max_genes_per_action=config.bundle_size,
+    navigator = make_navigator(
+        explorer.model,
+        prompt=navigator_prompt,
+        instructions=(
+            "Select existing frontier states with zero essential deletions, "
+            "feasible positive FBA growth, fewer remaining genes and fewer broken "
+            "modules. Unknown evidence is risk, not proof of safety."
+        ),
     )
+    navigator.agent.model_settings = config.settings
+    navigator.agent = _LimitedAgent(navigator.agent, limits)
     return NavigatorExplorerPolicy(
         navigator,
-        bound_explorer,
-        goal=(
-            "Minimize the MG1655 protein-coding genome for aerobic M9 glucose "
-            "at 37 C while retaining predicted viability."
-        ),
+        explorer,
         max_requests=config.max_navigator_requests,
+        goal="Minimize the MG1655 protein-coding genome for aerobic M9 glucose at 37 C while retaining predicted viability.",
     )
-
-
-SourceAction = TypeVar("SourceAction")
-
-
-@dataclass
-class _BoundExplorer(Generic[SourceAction]):
-    factory: Callable[[_AgentGeneTools], Explorer[GenomeState, SourceAction]]
-    toolkit: Callable[..., _AgentGeneTools]
-    translate: Callable[[SourceAction], DeleteGenes]
-    model: str
-    prompt: Callable[[ExplorerContext[GenomeState]], str]
-    max_actions: int
-    max_genes_per_action: int
-
-    async def explore(
-        self, context: ExplorerContext[GenomeState]
-    ) -> ExplorerResult[DeleteGenes]:
-        toolkit = self.toolkit(state=context.state)
-        result = await self.factory(toolkit).explore(context)
-        actions: list[DeleteGenes] = []
-        rejected: list[str] = []
-        for action in result.actions[: self.max_actions]:
-            try:
-                translated = self.translate(action)
-                if len(translated.genes) > self.max_genes_per_action:
-                    raise ValueError("action exceeds the configured bundle size")
-                for gene in translated.genes:
-                    toolkit.registry.require(gene)
-                    if gene in context.state.deleted_genes:
-                        raise ValueError("action includes an already deleted gene")
-                actions.append(translated)
-            except (DataValidationError, KeyError, ValueError) as exc:
-                rejected.append(str(exc))
-        note = result.note
-        if rejected:
-            suffix = f"adapter rejected {len(rejected)} invalid action(s)"
-            note = f"{note}; {suffix}" if note else suffix
-        return ExplorerResult(actions=actions, note=note, trace=result.trace)
-
-    def format_prompt(self, context: ExplorerContext[GenomeState]) -> str:
-        return self.prompt(context)
-
-
-@dataclass
-class _UsageLimitedAgent:
-    """Small adapter because Yggdrisil intentionally does not own provider limits."""
-
-    inner: Any
-    limits: Any
-
-    async def run(self, prompt: str) -> Any:
-        try:
-            return await self.inner.run(prompt, usage_limits=self.limits)
-        except Exception as exc:
-            raise AgentPolicyError(f"{type(exc).__name__}: {exc}") from exc
 
 
 def _active_metrics(
@@ -445,100 +390,3 @@ def _active_metrics(
         return {name: by_id[identity] for name, identity in evaluator_ids.items()}
     except KeyError as exc:
         raise ValueError(f"state lacks active evaluation: {exc.args[0]}") from exc
-
-
-def _format_navigator_prompt(
-    context: NavigatorContext,
-    max_requests: int,
-    evaluator_ids: Mapping[str, str],
-    evaluations: Callable[[str], list[EvaluationRecord]],
-) -> str:
-    # This framework version omits evaluator IDs from NavigatorContext.recent.
-    recent = [
-        {
-            **item,
-            "evaluations": _active_metrics(
-                evaluations(item["state_id"]), evaluator_ids
-            ),
-        }
-        for item in context.recent
-    ]
-    return "\n".join(
-        [
-            f"GOAL: {context.goal}",
-            f"STEP: {context.status.step}",
-            f"SELECT_AT_MOST: {max_requests}",
-            f"FRONTIER_IDS: {json.dumps(context.frontier_ids)}",
-            f"RECENT_STATES: {json.dumps(recent, sort_keys=True)}",
-            f"NOTES: {json.dumps(context.summaries, sort_keys=True)}",
-            "Select existing frontier state ids with the strongest viable evidence.",
-        ]
-    )
-
-
-def _format_explorer_prompt(
-    context: ExplorerContext[GenomeState],
-    toolkit_factory: Callable[..., _AgentGeneTools],
-    config: AgentSearchConfig,
-    evaluator_ids: Mapping[str, str],
-) -> str:
-    toolkit = toolkit_factory(state=context.state)
-    deleted = toolkit.deleted_public_ids()
-    shown_deleted = deleted[:64]
-    return "\n".join(
-        [
-            f"GOAL: {context.goal}",
-            f"EVIDENCE_MODE: {config.mode}",
-            f"CURRENT_STATE_ID: {context.state_id}",
-            f"DELETED_GENE_COUNT: {len(deleted)}",
-            f"DELETED_GENE_IDS_FIRST_64: {json.dumps(shown_deleted)}",
-            "CURRENT_EVALUATIONS: "
-            + json.dumps(
-                _active_metrics(context.evaluations, evaluator_ids),
-                sort_keys=True,
-            ),
-            "CANDIDATE_PREVIEW: "
-            + json.dumps(
-                toolkit.list_deletion_candidates(page=0, count=8), sort_keys=True
-            ),
-            f"Return at most {config.max_actions} direct deletion actions; each action "
-            f"must contain 1 to {config.bundle_size} candidate gene ids.",
-            "Use at most one analyze_deletion_bundle call on the final proposed "
-            "bundle; do not call it separately for every candidate.",
-        ]
-    )
-
-
-def _load_openrouter_key() -> None:
-    try:
-        from dotenv import load_dotenv
-    except ImportError as exc:
-        raise ImportError("install the agents extra: uv sync --extra agents") from exc
-    load_dotenv(Path.home() / ".env", override=False)
-    if not os.environ.get("OPENROUTER_API_KEY"):
-        raise DataValidationError(
-            "OPENROUTER_API_KEY is missing; add it to ~/.env, never to Git or CLI args"
-        )
-
-
-def _seeded_digest(namespace: str, seed: int, gene: str) -> bytes:
-    return hashlib.sha256(f"{namespace}:{seed}:{gene}".encode()).digest()
-
-
-def _mapping_hash(mapping: dict[str, str]) -> str:
-    payload = json.dumps(mapping, sort_keys=True, separators=(",", ":")).encode()
-    return hashlib.sha256(payload).hexdigest()
-
-
-def _bounded_action_type(
-    mode: AgentMode, bundle_size: int
-) -> type[DeleteGenes] | type[_BlindDeleteGenes]:
-    base: type[BaseModel] = _BlindDeleteGenes if mode == "closed-book" else DeleteGenes
-    gene_type = base.model_fields["genes"].annotation
-    gene_tuple = Annotated[gene_type, Field(min_length=1, max_length=bundle_size)]  # type: ignore[valid-type]
-    model = create_model(
-        f"{mode.title().replace('-', '')}DeleteGenes{bundle_size}",
-        __base__=base,
-        genes=(gene_tuple, ...),
-    )
-    return cast(type[DeleteGenes] | type[_BlindDeleteGenes], model)

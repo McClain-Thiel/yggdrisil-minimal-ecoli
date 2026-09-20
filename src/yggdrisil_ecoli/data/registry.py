@@ -1,151 +1,97 @@
-"""Canonical MG1655 gene registry types and Parquet persistence."""
+"""Validated MG1655 gene records and a small Parquet-backed lookup."""
 
 from __future__ import annotations
 
 import hashlib
 from collections.abc import Iterable, Iterator
-from dataclasses import asdict, dataclass
+from dataclasses import asdict
 from pathlib import Path
+from typing import Annotated, Literal
 
 import pyarrow as pa
 import pyarrow.parquet as pq
+from pydantic import Field, field_validator
+from pydantic.dataclasses import dataclass
 
 from yggdrisil_ecoli.constants import is_b_number
 from yggdrisil_ecoli.data.errors import DataValidationError
 
-REGISTRY_SCHEMA = pa.schema(
-    [
-        pa.field("b_number", pa.string(), nullable=False),
-        pa.field("symbol", pa.string()),
-        pa.field("name", pa.string()),
-        pa.field("description", pa.string()),
-        pa.field("start", pa.int64(), nullable=False),
-        pa.field("end", pa.int64(), nullable=False),
-        pa.field("strand", pa.string(), nullable=False),
-        pa.field("ncbi_gene_id", pa.string()),
-        pa.field("ecocyc_id", pa.string()),
-        pa.field("kegg_gene_id", pa.string()),
-        pa.field("ko_ids", pa.list_(pa.string()), nullable=False),
-        pa.field("iml1515_gene_id", pa.string()),
-    ]
-)
+BNumber = Annotated[str, Field(pattern=r"^b[0-9]{4}$")]
+KO = Annotated[str, Field(pattern=r"^K[0-9]{5}$")]
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class GeneRecord:
-    """One canonical protein-coding MG1655 gene and its crosswalks."""
+    """Coordinates are one-based and inclusive."""
 
-    b_number: str
+    b_number: BNumber
     symbol: str | None
     name: str | None
     description: str | None
-    start: int
-    end: int
-    strand: str
+    start: Annotated[int, Field(ge=1, strict=True)]
+    end: Annotated[int, Field(ge=1, strict=True)]
+    strand: Literal["+", "-"]
     ncbi_gene_id: str | None
     ecocyc_id: str | None
     kegg_gene_id: str | None = None
-    ko_ids: tuple[str, ...] = ()
+    ko_ids: tuple[KO, ...] = ()
     iml1515_gene_id: str | None = None
 
     def __post_init__(self) -> None:
-        if not is_b_number(self.b_number):
-            raise DataValidationError(f"malformed canonical ID: {self.b_number!r}")
-        if self.start < 1 or self.end < self.start:
-            raise DataValidationError(
-                f"{self.b_number}: invalid coordinates {self.start}..{self.end}"
-            )
-        if self.strand not in {"+", "-"}:
-            raise DataValidationError(
-                f"{self.b_number}: invalid strand {self.strand!r}"
-            )
-        normalized_kos = tuple(sorted(set(self.ko_ids)))
-        if any(not _is_ko_id(ko_id) for ko_id in normalized_kos):
-            raise DataValidationError(f"{self.b_number}: malformed KO identifiers")
-        object.__setattr__(self, "ko_ids", normalized_kos)
+        if self.end < self.start:
+            raise ValueError(f"{self.b_number}: end precedes start")
+
+    @field_validator("ko_ids")
+    @classmethod
+    def unique_kos(cls, values: tuple[str, ...]) -> tuple[str, ...]:
+        return tuple(sorted(set(values)))
 
     @property
     def in_iml1515(self) -> bool:
-        """Whether the canonical ID has an iML1515 crosswalk."""
-
         return self.iml1515_gene_id is not None
-
-    def as_arrow_row(self) -> dict[str, object]:
-        """Return a PyArrow-compatible row with deterministic list values."""
-
-        return {**asdict(self), "ko_ids": list(self.ko_ids)}
 
 
 class GeneRegistry:
-    """Validated, immutable lookup over canonical gene records."""
-
     def __init__(self, records: Iterable[GeneRecord]) -> None:
-        by_id: dict[str, GeneRecord] = {}
+        self._by_id: dict[str, GeneRecord] = {}
         for record in records:
-            if record.b_number in by_id:
+            if record.b_number in self._by_id:
                 raise DataValidationError(f"duplicate canonical ID: {record.b_number}")
-            by_id[record.b_number] = record
-        if not by_id:
+            self._by_id[record.b_number] = record
+        if not self._by_id:
             raise DataValidationError("canonical registry is empty")
-        self._by_id = by_id
 
     def __len__(self) -> int:
         return len(self._by_id)
 
     def __iter__(self) -> Iterator[GeneRecord]:
-        for b_number in sorted(self._by_id):
-            yield self._by_id[b_number]
+        return (self._by_id[tag] for tag in sorted(self._by_id))
 
     @property
     def search_universe(self) -> frozenset[str]:
-        """Canonical IDs eligible for the v1 search."""
-
         return frozenset(self._by_id)
 
     def get(self, b_number: str) -> GeneRecord | None:
-        """Return a record only for an exact canonical ID."""
-
         return self._by_id.get(b_number)
 
     def require(self, b_number: str) -> GeneRecord:
-        """Return a record or fail without attempting symbol translation."""
-
         if not is_b_number(b_number):
             raise DataValidationError(
                 f"expected a canonical b-number, got {b_number!r}"
             )
-        try:
-            return self._by_id[b_number]
-        except KeyError as exc:
-            raise KeyError(f"gene is outside the search universe: {b_number}") from exc
+        return self._by_id[b_number]
 
     @classmethod
     def from_parquet(cls, path: str | Path) -> GeneRegistry:
-        """Load and validate a registry from the canonical Parquet schema."""
-
-        table = pq.read_table(path, schema=REGISTRY_SCHEMA)
-        records = []
-        for row in table.to_pylist():
-            row["ko_ids"] = tuple(row["ko_ids"] or ())
-            records.append(GeneRecord(**row))
-        return cls(records)
+        return cls(GeneRecord(**row) for row in pq.read_table(path).to_pylist())
 
     def to_parquet(self, path: str | Path) -> None:
-        """Write a deterministic, compressed registry."""
-
-        destination = Path(path)
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        rows = [record.as_arrow_row() for record in self]
-        table = pa.Table.from_pylist(rows, schema=REGISTRY_SCHEMA)
-        pq.write_table(table, destination, compression="zstd")
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        pq.write_table(
+            pa.Table.from_pylist([asdict(r) for r in self]), path, compression="zstd"
+        )
 
 
 def file_sha256(path: str | Path) -> str:
-    """Hash a file without loading the whole artifact into memory."""
-
     with Path(path).open("rb") as handle:
         return hashlib.file_digest(handle, "sha256").hexdigest()
-
-
-def _is_ko_id(value: str) -> bool:
-    return len(value) == 6 and value.startswith("K") and value[1:].isdigit()

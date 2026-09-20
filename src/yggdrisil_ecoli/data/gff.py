@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import gzip
-from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -25,19 +24,9 @@ if TYPE_CHECKING:
 
 
 @dataclass(frozen=True, slots=True)
-class GffMetadata:
-    assembly_accession: str
-    assembly_name: str
-    reference_accession: str
-    taxonomy_id: str
-    annotation_date: str | None
-    annotation_source: str | None
-
-
-@dataclass(frozen=True, slots=True)
 class ParsedGff:
     registry: GeneRegistry
-    metadata: GffMetadata
+    metadata: dict[str, str | None]
 
 
 def parse_ncbi_gff(path: str | Path) -> ParsedGff:
@@ -48,7 +37,9 @@ def parse_ncbi_gff(path: str | Path) -> ParsedGff:
     genes: list[Feature] = []
     products: dict[str, str] = {}
     region = None
-    for line_number, line in enumerate(_text_lines(Path(path)), start=1):
+    raw = Path(path).read_bytes()
+    text = (gzip.decompress(raw) if raw.startswith(b"\x1f\x8b") else raw).decode()
+    for line_number, line in enumerate(text.splitlines(), start=1):
         if line.startswith("##FASTA"):
             break
         if line.startswith("#!"):
@@ -100,7 +91,7 @@ def parse_ncbi_gff(path: str | Path) -> ParsedGff:
 
 def _validate_reference(
     directives: dict[str, str], region: Feature | None
-) -> GffMetadata:
+) -> dict[str, str | None]:
     accession = directives.get("genome-build-accession", "").removeprefix(
         "NCBI_Assembly:"
     )
@@ -118,14 +109,14 @@ def _validate_reference(
             raise DataValidationError(f"reference region must have {key}={expected!r}")
     if f"taxon:{TAXONOMY_ID}" not in region.attributes.get("Dbxref", []):
         raise DataValidationError(f"reference region must have taxon:{TAXONOMY_ID}")
-    return GffMetadata(
-        assembly_accession=accession,
-        assembly_name=name,
-        reference_accession=REFERENCE_ACCESSION,
-        taxonomy_id=TAXONOMY_ID,
-        annotation_date=directives.get("annotation-date"),
-        annotation_source=directives.get("annotation-source"),
-    )
+    return {
+        "assembly_accession": accession,
+        "assembly_name": name,
+        "reference_accession": REFERENCE_ACCESSION,
+        "taxonomy_id": TAXONOMY_ID,
+        "annotation_date": directives.get("annotation-date"),
+        "annotation_source": directives.get("annotation-source"),
+    }
 
 
 def _attribute(feature: Feature, key: str) -> str | None:
@@ -145,11 +136,3 @@ def _crossref(feature: Feature, namespace: str) -> str | None:
     if len(values) > 1:
         raise DataValidationError(f"multiple {namespace} identifiers: {sorted(values)}")
     return next(iter(values), None)
-
-
-def _text_lines(path: Path) -> Iterator[str]:
-    with path.open("rb") as handle:
-        compressed = handle.read(2) == b"\x1f\x8b"
-    opener = gzip.open if compressed else open
-    with opener(path, "rt", encoding="utf-8") as handle:
-        yield from handle

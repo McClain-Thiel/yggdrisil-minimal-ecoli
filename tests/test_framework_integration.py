@@ -7,7 +7,6 @@ import pytest
 from yggdrisil import (
     EvaluationResult,
     EvaluatorSuite,
-    GraphError,
     RandomPolicy,
     RunLimits,
     Runner,
@@ -29,7 +28,7 @@ from yggdrisil_ecoli.scorers.base import (
     active_evaluator_ids,
     scientific_evaluation,
 )
-from yggdrisil_ecoli.search import _application_source_hash, validate_search_resume
+from yggdrisil_ecoli.search import SearchArtifacts, _application_source_hash, run_search
 from yggdrisil_ecoli.state import GenomeState
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -218,8 +217,6 @@ def _essentiality_summary(
     lb_call, m9_call = calls[classification]
     return EssentialityRecord(
         b_number=gene,
-        classification=classification,
-        coverage="measured",
         lb_call_raw=lb_call,
         lb_ecipkm=1.0 if lb_call == "E" else 3.0,
         m9_call_raw=m9_call,
@@ -227,25 +224,17 @@ def _essentiality_summary(
     )
 
 
-def test_resume_rejects_changed_policy_configuration(tmp_path: Path) -> None:
-    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "resume.sqlite")
-    graph.save_run(
-        "run_a",
-        step=0,
-        status="completed",
-        config={},
-        metadata={"policy": "random", "seed": 7},
-    )
-
-    with pytest.raises(GraphError, match="policy"):
-        validate_search_resume(
-            graph,
-            run_id="run_a",
-            resume=True,
-            expected_metadata={"policy": "heuristic", "seed": 7},
+@pytest.mark.asyncio
+async def test_search_refuses_existing_graph_before_loading_data(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "existing.sqlite"
+    path.write_bytes(b"preserved experiment")
+    with pytest.raises(FileExistsError, match="new graph"):
+        await run_search(
+            artifacts=SearchArtifacts(tmp_path / "absent-data"), graph_path=path
         )
-
-    graph.close()
+    assert path.read_bytes() == b"preserved experiment"
 
 
 def test_application_source_hash_is_stable_and_content_addressed() -> None:
@@ -253,27 +242,6 @@ def test_application_source_hash_is_stable_and_content_addressed() -> None:
 
     assert len(first) == 64
     assert first == _application_source_hash()
-
-
-def test_resume_rejects_changed_evaluator_identity(tmp_path: Path) -> None:
-    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "evidence.sqlite")
-    graph.save_run(
-        "run_a",
-        step=0,
-        status="completed",
-        config={},
-        metadata={"evaluators": {"essentiality": "artifact-a"}},
-    )
-
-    with pytest.raises(GraphError, match="evaluators"):
-        validate_search_resume(
-            graph,
-            run_id="run_a",
-            resume=True,
-            expected_metadata={"evaluators": {"essentiality": "artifact-b"}},
-        )
-
-    graph.close()
 
 
 @pytest.mark.asyncio
@@ -406,16 +374,7 @@ async def test_agent_prompts_select_active_cached_evaluations(
         policy._navigator_context(graph.readonly(), status)
     )
 
-    def payload(prompt: str, label: str):
-        return json.loads(
-            next(
-                line.removeprefix(label)
-                for line in prompt.splitlines()
-                if line.startswith(label)
-            )
-        )
-
     expected = {"fba": {"feasible": True, "growth_rate": 1.0}}
-    assert payload(explorer_prompt, "CURRENT_EVALUATIONS: ") == expected
-    assert payload(navigator_prompt, "RECENT_STATES: ")[0]["evaluations"] == expected
+    assert json.loads(explorer_prompt)["evaluations"] == expected
+    assert json.loads(navigator_prompt)["recent_states"][0]["evaluations"] == expected
     graph.close()
