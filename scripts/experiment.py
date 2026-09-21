@@ -153,7 +153,7 @@ def search_settings(mo):
     #         fallback_action_caps=(20, 10, 5, 1)))
     allow_paid = mo.ui.checkbox(label="Enable paid model calls")
     resume_graph = mo.ui.text(label="Resume graph (optional)")
-    state_limit = mo.ui.number(value=10, start=1, label="State limit")
+    state_limit = mo.ui.number(value=10, start=1, step=1, label="State limit")
     start_search = mo.ui.run_button(label="Run search")
     mo.vstack(
         [
@@ -235,6 +235,10 @@ async def search(
     yg,
 ):
     mo.stop(not start_search.value, mo.md("Choose a policy below, then run."))
+    mo.stop(
+        type(state_limit.value) is not int or state_limit.value <= 0,
+        mo.md("Enter a positive whole-number state limit."),
+    )
     mo.stop(
         agent_config is not None and not allow_paid.value,
         mo.md("Enable paid model calls before running an agent policy."),
