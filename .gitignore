@@ -14,7 +14,7 @@ dist/
 runs/
 
 # Prepared scientific data and marimo session state stay local.
-/data/
+/data
 __marimo__/
 
 .marimo.toml

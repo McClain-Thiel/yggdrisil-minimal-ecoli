@@ -6,6 +6,8 @@ app = marimo.App(width="medium")
 
 with app.setup:
     import json
+    import sqlite3
+    from contextlib import closing
     from datetime import datetime
     from importlib.metadata import distribution
     from pathlib import Path
@@ -13,6 +15,7 @@ with app.setup:
     import marimo as mo
     import yggdrisil as yg
     from huggingface_hub import snapshot_download
+    from yggdrisil.serialize import loads
 
     import yggdrisil_ecoli
     from yggdrisil_ecoli.analysis import summarize_run
@@ -34,7 +37,8 @@ def introduction():
 
     Load the gene table, define four pieces of evidence, choose a policy, and run
     Yggdrisil. The experiment is below; reusable biological calculations live in
-    `src/yggdrisil_ecoli`. Edit a parameter or policy directly, then click Run.
+    `src/yggdrisil_ecoli`. Positive FBA growth is the hard gate; essentiality and
+    module evidence guide ranking. Edit a parameter or policy, then click Run.
     """)
     return
 
@@ -92,25 +96,28 @@ def evaluators(genes, input_files, input_hashes):
 @app.cell
 def search_settings():
     seed = 17
-    bundle_size = 1
+    bundle_size = 1  # Agent actions may contain 1..bundle_size genes (at most 20).
     n_proposals = 2
-    max_states = 10
     agent_config = None
+    # For a recoverable open-set agent, replace None with:
     # from yggdrisil_ecoli.agent_policy import AgentSearchConfig
-    # Replace None with AgentSearchConfig(
+    # agent_config = AgentSearchConfig(
     #     model="vendor/model", seed=seed, bundle_size=bundle_size,
     #     max_actions=n_proposals, mode="closed-book")
     allow_paid = mo.ui.checkbox(label="Enable paid model calls")
+    resume_graph = mo.ui.text(label="Resume graph (optional)")
+    state_limit = mo.ui.number(value=10, start=1, step=1, label="State limit")
     start_search = mo.ui.run_button(label="Run search")
-    mo.hstack([allow_paid, start_search], justify="start")
+    mo.vstack([resume_graph, state_limit, allow_paid, start_search])
     return (
         agent_config,
         allow_paid,
         bundle_size,
-        max_states,
         n_proposals,
+        resume_graph,
         seed,
         start_search,
+        state_limit,
     )
 
 
@@ -149,52 +156,75 @@ async def search(
     evaluator_ids,
     evaluators,
     genes,
-    max_states,
     n_proposals,
     provenance,
+    resume_graph,
     seed,
     start_search,
+    state_limit,
 ):
     mo.stop(not start_search.value, mo.md("Choose a policy below, then run."))
-    graph_path = (
-        Path("runs") / f"experiment-{seed}-{datetime.now():%Y%m%d-%H%M%S-%f}.sqlite"
+    mo.stop(
+        type(state_limit.value) is not int or state_limit.value <= 0,
+        mo.md("Enter a positive whole-number state limit."),
     )
-    graph_path.parent.mkdir(exist_ok=True)
-    graph_path.touch(exist_ok=False)  # Refuse to reuse another experiment's graph.
+    mo.stop(
+        agent_config is not None and not allow_paid.value,
+        mo.md("Enable paid model calls before running an agent policy."),
+    )
+    policy = yg.RandomPolicy(
+        deletion_sampler(genes, bundle_size=bundle_size),
+        seed=seed,
+        n_proposals=n_proposals,
+    )
+    # Replace the policy above with a heuristic or a recoverable open-set agent:
+    # from yggdrisil_ecoli.policies import make_heuristic_policy
+    # policy = make_heuristic_policy(genes=genes, evaluator_ids=evaluator_ids,
+    #     seed=seed, bundle_size=bundle_size, n_proposals=n_proposals)
+    # from yggdrisil_ecoli.agent_policy import make_agent_policy
+    # policy = make_agent_policy(genes=genes, modules=module_evaluator,
+    #     config=agent_config, evaluator_ids=evaluator_ids)
+    _metadata = {
+        **provenance,
+        "evaluators": evaluator_ids,
+        "policy": type(policy).__name__,
+        "seed": seed,
+        "bundle_size": bundle_size,
+        "n_proposals": n_proposals,
+        "agent": agent_config.metadata(genes) if agent_config else None,
+    }
+    _previous = None
+    if resume_graph.value.strip():
+        graph_path = Path(resume_graph.value.strip())
+        # Validate without opening the graph for writes or calling a model.
+        with closing(
+            sqlite3.connect(f"{graph_path.resolve().as_uri()}?mode=ro", uri=True)
+        ) as _db:
+            _previous = _db.execute(
+                "SELECT run_id, metadata_json FROM runs ORDER BY updated_at DESC LIMIT 1"
+            ).fetchone()
+        mo.stop(_previous is None, mo.md("This graph has no saved run."))
+        _stored = loads(_previous[1])
+        _changed = [
+            key for key, value in _metadata.items() if _stored.get(key) != value
+        ]
+        mo.stop(bool(_changed), mo.md("Resume settings differ: " + ", ".join(_changed)))
+    else:
+        graph_path = (
+            Path("runs") / f"experiment-{seed}-{datetime.now():%Y%m%d-%H%M%S-%f}.sqlite"
+        )
+        graph_path.parent.mkdir(exist_ok=True)
+        graph_path.touch(exist_ok=False)
     with yg.SQLiteStateGraph(graph_path) as _graph:
-        policy = yg.RandomPolicy(
-            deletion_sampler(genes, bundle_size=bundle_size),
-            seed=seed,
-            n_proposals=n_proposals,
-        )
-        # Replace the policy above with a heuristic or an agent:
-        # from yggdrisil_ecoli.policies import make_heuristic_policy
-        # policy = make_heuristic_policy(genes=genes, evaluator_ids=evaluator_ids,
-        #     seed=seed, bundle_size=bundle_size, n_proposals=n_proposals)
-        # from yggdrisil_ecoli.agent_policy import make_agent_policy
-        # policy = make_agent_policy(genes=genes, modules=module_evaluator,
-        #     config=agent_config, evaluator_ids=evaluator_ids,
-        #     evaluations=_graph.evaluations)
-        mo.stop(
-            isinstance(policy, yg.NavigatorExplorerPolicy) and not allow_paid.value,
-            mo.md("Enable paid model calls before running an agent policy."),
-        )
         run = await yg.Runner(
             EcoliProblem(genes, max_genes_per_action=bundle_size),
             policy,
             _graph,
-            yg.RunLimits(max_states=max_states, max_steps=max_states),
+            yg.RunLimits(max_states=state_limit.value, max_steps=state_limit.value),
             evaluators=yg.EvaluatorSuite(evaluators, concurrent=True),
-            resume=False,
-            metadata={
-                **provenance,
-                "evaluators": evaluator_ids,
-                "policy": type(policy).__name__,
-                "seed": seed,
-                "bundle_size": bundle_size,
-                "n_proposals": n_proposals,
-                "agent": agent_config.metadata(genes) if agent_config else None,
-            },
+            run_id=_previous[0] if _previous else None,
+            resume=_previous is not None,
+            metadata=_metadata,
         ).run()
     mo.md(f"{run.unique_states} states saved to `{graph_path}`.")
     return (graph_path,)
@@ -204,14 +234,15 @@ async def search(
 def results(graph_path):
     summary = summarize_run(graph_path)
     _candidate = summary["deepest_viable_candidate"]
-    mo.stop(_candidate is None, mo.md("No candidate passed the evidence filters."))
+    mo.stop(_candidate is None, mo.md("No candidate has positive predicted growth."))
     _evidence = _candidate["evaluations"]
     mo.vstack(
         [
             mo.md("""## Results
 
-    Largest deletion set with positive predicted growth and no known essential
-    deletions. Missing evidence stays unknown; strain viability is unproven.
+    Largest deletion set with positive predicted growth. Essentiality and module
+    evidence guide ranking; they do not exclude candidates. Missing evidence stays
+    unknown, and strain viability is unproven.
     """),
             mo.ui.table(
                 [
