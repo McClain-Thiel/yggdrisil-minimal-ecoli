@@ -66,6 +66,15 @@ def context(deleted=frozenset()) -> ExplorerContext:
                 "fixture",
                 {"feasible": True, "growth_rate": 1.0},
             ),
+            EvaluationRecord(
+                "resource-evaluation",
+                "resource-fixture",
+                "fixture",
+                "resource_allocation",
+                "fixture",
+                "fixture",
+                {"feasible_at_growth_floor": True, "growth_rate_floor_h": 0.1},
+            ),
         ],
     )
 
@@ -79,7 +88,7 @@ def policy(evidence, config, monkeypatch):
         genes=evidence.genes,
         modules=evidence.modules,
         config=config,
-        evaluator_ids={"fba": "fba-fixture"},
+        evaluator_ids={"fba": "fba-fixture", "resource_allocation": "resource-fixture"},
     )
 
 

@@ -24,6 +24,7 @@ EVALUATOR_IDS = {
     "essentiality": "essentiality-fixture",
     "fba": "fba-fixture",
     "module_retention": "modules-fixture",
+    "resource_allocation": "resource-fixture",
 }
 
 
@@ -144,6 +145,81 @@ def test_active_window_favors_diverse_deletion_sets(tmp_path: Path) -> None:
     assert len(requests) == 2
     assert {request.state_id for request in requests} <= states
     assert _distance(chosen[0], chosen[1]) == 1.0
+    graph.close()
+
+
+def test_fba_positive_resource_infeasible_state_is_not_reopened(
+    tmp_path: Path,
+) -> None:
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "resource.sqlite")
+    graph.save_run("run_a", step=0, status="running", config={}, metadata={})
+    viable = _add_state(graph, "viable", ("b0001",))
+    _add_state(
+        graph,
+        "resource-lethal",
+        ("b0001", "b0002"),
+        growth=1.0,
+        resource_feasible=False,
+    )
+
+    requests = _selector().select(graph.readonly(), _status("run_a", step=0))
+
+    assert [request.state_id for request in requests] == [viable]
+    graph.close()
+
+
+@pytest.mark.parametrize("missing", ["fba", "resource_allocation"])
+def test_child_missing_active_gate_remains_retryable(tmp_path: Path, missing: str):
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "partial.sqlite")
+    graph.save_run("run_a", step=1, status="running", config={}, metadata={})
+    parent = _add_state(graph, "parent", ("b0001",))
+    child = _add_state(graph, "partial", ("b0001", "b0002"), missing_evaluator=missing)
+    edge = graph.add_edge(parent, child, DeleteGenes(genes=("b0002",)))
+    _add_attempt(
+        graph,
+        run_id="run_a",
+        decision_id="attempt",
+        parent_id=parent,
+        actions=(("b0002", child, edge.edge_id),),
+    )
+    metrics = (
+        {"feasible": True, "growth_rate": 1.0}
+        if missing == "fba"
+        else {"feasible_at_growth_floor": True}
+    )
+    graph.add_evaluation(
+        child,
+        evaluator_id="stale-identity",
+        evaluator=missing,
+        version="fixture",
+        config_hash="old-config",
+        result=EvaluationResult(metrics=metrics),
+    )
+    selector = _selector()
+    request = selector.select(graph.readonly(), _status("run_a", step=1))[0]
+    assert request.state_id == parent
+    assert json.loads(request.guidance)["attempt"] == 1
+    assert selector.attempted_actions(parent) == frozenset()
+    assert json.loads(request.guidance)["previous_sibling_outcomes"] == []
+
+    graph.add_evaluation(
+        child,
+        evaluator_id=EVALUATOR_IDS[missing],
+        evaluator=missing,
+        version="fixture",
+        config_hash="fixture",
+        result=EvaluationResult(metrics=metrics),
+    )
+    requests = selector.select(graph.readonly(), _status("run_a", step=2))
+    parent_request = next(request for request in requests if request.state_id == parent)
+    assert json.loads(parent_request.guidance)["attempt"] == 2
+    assert selector.attempted_actions(parent) == frozenset({("b0002",)})
+    assert (
+        json.loads(parent_request.guidance)["previous_sibling_outcomes"][0][
+            "child_viability"
+        ]
+        == "viable"
+    )
     graph.close()
 
 
@@ -368,8 +444,10 @@ def _add_state(
     genes: tuple[str, ...],
     *,
     growth: float = 1.0,
+    resource_feasible: bool = True,
     essential: int = 0,
     broken: int = 0,
+    missing_evaluator: str | None = None,
 ) -> str:
     graph.add_state(state_id, GenomeState(frozenset(genes)))
     evaluations = {
@@ -381,8 +459,14 @@ def _add_state(
         },
         "fba": {"feasible": True, "growth_rate": growth},
         "module_retention": {"n_broken": broken},
+        "resource_allocation": {
+            "feasible_at_growth_floor": resource_feasible,
+            "growth_rate_floor_h": 0.1,
+        },
     }
     for name, metrics in evaluations.items():
+        if name == missing_evaluator:
+            continue
         graph.add_evaluation(
             state_id,
             evaluator_id=EVALUATOR_IDS[name],

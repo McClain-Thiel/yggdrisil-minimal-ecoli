@@ -9,9 +9,11 @@ from yggdrisil_ecoli.state import GenomeState
 
 
 @pytest.mark.parametrize("growth", [1.0, 0.0])
+@pytest.mark.parametrize("resource_feasible", [True, False])
 def test_summary_uses_active_evidence_and_preserves_trace_audits(
     tmp_path: Path,
     growth: float,
+    resource_feasible: bool,
 ) -> None:
     path = tmp_path / "run.sqlite"
     metrics = {
@@ -19,6 +21,7 @@ def test_summary_uses_active_evidence_and_preserves_trace_audits(
         "fba": {"feasible": True, "growth_rate": growth},
         "genome_size": {"genes_deleted": 0},
         "module_retention": {"n_complete": 2},
+        "resource_allocation": {"feasible_at_growth_floor": resource_feasible},
     }
     with SQLiteStateGraph(path) as graph:
         graph.save_run(
@@ -80,7 +83,7 @@ def test_summary_uses_active_evidence_and_preserves_trace_audits(
         )
     summary = summarize_run(path)
     candidate = summary["deepest_viable_candidate"]
-    if growth > 0:
+    if growth > 0 and resource_feasible:
         assert candidate["deleted_gene_ids"] == ["b0001"]
     else:
         assert candidate is None

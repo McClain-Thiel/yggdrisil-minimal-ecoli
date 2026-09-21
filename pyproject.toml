@@ -24,7 +24,7 @@ dependencies = [
     "pandas>=2.2,<4",
     "lark>=1.2,<2",
     "boolean.py>=5,<6",
-    "yggdrisil @ git+https://github.com/McClain-Thiel/yggdrisil.git@67983c5c0821c57e6b0f60449b3e608b981455e2",
+    "yggdrisil @ git+https://github.com/McClain-Thiel/yggdrisil.git@bf390ddcee567ff705085273394a4b929a8c0005",
 ]
 
 [project.optional-dependencies]
@@ -48,6 +48,12 @@ fba = [
     "optlang==1.9.1",
     "swiglpk==5.0.13",
 ]
+rba = [
+    "RBApy==3.0.3",
+    "RBAtools==2.0.1",
+    "setuptools==80.10.2",
+    "swiglpk==5.0.13",
+]
 dev = [
     "build>=1.2",
     "mypy>=1.13",
@@ -61,6 +67,10 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 yggdrisil_ecoli = ["py.typed"]
+
+[tool.uv]
+# RBAtools pulls SBtab's obsolete openpyxl cap; no SBtab workbook APIs are used.
+override-dependencies = ["openpyxl>=3.1"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -81,5 +91,5 @@ strict = true
 warn_unreachable = true
 
 [[tool.mypy.overrides]]
-module = ["cobra", "cobra.*", "openpyxl", "openpyxl.*", "pyarrow", "pyarrow.*", "gffutils", "gffutils.*", "pandas", "pandas.*", "pooch", "pooch.*", "pysam", "pysam.*", "boolean", "boolean.*"]
+module = ["cobra", "cobra.*", "openpyxl", "openpyxl.*", "pyarrow", "pyarrow.*", "gffutils", "gffutils.*", "pandas", "pandas.*", "pooch", "pooch.*", "pysam", "pysam.*", "boolean", "boolean.*", "rba", "rba.*", "rbatools", "rbatools.*", "swiglpk"]
 ignore_missing_imports = true

@@ -15,9 +15,10 @@ from yggdrisil.agents import ExplorationRequest
 from yggdrisil.types import EvaluationRecord, StateNode
 
 from yggdrisil_ecoli.actions import DeleteGenes
+from yggdrisil_ecoli.scorers.base import passes_growth_gates
 from yggdrisil_ecoli.state import GenomeState
 
-SCHEDULER_VERSION = 2
+SCHEDULER_VERSION = 3
 
 
 @dataclass(frozen=True, slots=True)
@@ -60,7 +61,7 @@ class RecoverableOpenSetSelector:
     )
 
     def __post_init__(self) -> None:
-        missing = {"fba"} - self.evaluator_ids.keys()
+        missing = {"fba", "resource_allocation"} - self.evaluator_ids.keys()
         if missing:
             raise ValueError(
                 f"missing active growth-gate identities: {sorted(missing)}"
@@ -97,7 +98,7 @@ class RecoverableOpenSetSelector:
             active = evidence.get(event.child_id or "", {})
             if (
                 event.outcome not in {"created", "reused"}
-                or not {"fba"} <= active.keys()
+                or not {"fba", "resource_allocation"} <= active.keys()
             ):
                 continue
             completed_decisions.add(event.decision_id)
@@ -238,12 +239,3 @@ def _jaccard_distance(left: frozenset[str], right: frozenset[str]) -> float:
 def _seeded_tie_break(seed: int, state_id: str) -> int:
     digest = hashlib.sha256(f"open-set:{seed}:{state_id}".encode()).digest()
     return int.from_bytes(digest[:8], "big")
-
-
-def passes_growth_gates(evidence: Mapping[str, EvaluationRecord]) -> bool:
-    fba = evidence.get("fba")
-    return (
-        fba is not None
-        and fba.metrics.get("feasible") is True
-        and _number(fba.metrics.get("growth_rate")) > 0
-    )

@@ -21,12 +21,13 @@ with app.setup:
     from yggdrisil_ecoli.analysis import summarize_run
     from yggdrisil_ecoli.data.evidence import load_genes
     from yggdrisil_ecoli.data.io import file_sha256
-    from yggdrisil_ecoli.policies import deletion_sampler
+    from yggdrisil_ecoli.policies import deletion_sampler, viability_eligibility
     from yggdrisil_ecoli.problem import EcoliProblem
     from yggdrisil_ecoli.scorers.base import active_evaluator_ids
     from yggdrisil_ecoli.scorers.essentiality import EssentialityScorer
     from yggdrisil_ecoli.scorers.fba import FBAScorer
     from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
+    from yggdrisil_ecoli.scorers.rba import RBAScorer
     from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 
 
@@ -35,10 +36,10 @@ def introduction():
     mo.md("""
     # Minimal *E. coli*
 
-    Load the gene table, define four pieces of evidence, choose a policy, and run
+    Load the gene table, define five pieces of evidence, choose a policy, and run
     Yggdrisil. The experiment is below; reusable biological calculations live in
-    `src/yggdrisil_ecoli`. Positive FBA growth is the hard gate; essentiality and
-    module evidence guide ranking. Edit a parameter or policy, then click Run.
+    `src/yggdrisil_ecoli`. Candidates need positive FBA growth and RBA feasibility
+    at 0.1/h. Essentiality and modules guide ranking. Edit a policy, then click Run.
     """)
     return
 
@@ -64,7 +65,11 @@ def load(data_revision, dataset_id, load_data, local_data):
                 repo_id=dataset_id,
                 repo_type="dataset",
                 revision=data_revision,
-                allow_patterns=["processed/*", "external/iML1515.json"],
+                allow_patterns=[
+                    "processed/*",
+                    "external/iML1515.json",
+                    "external/rba_ecoli_k12_wt/**",
+                ],
             )
         )
     else:
@@ -73,6 +78,9 @@ def load(data_revision, dataset_id, load_data, local_data):
         "genes": data_dir / "processed/genes.parquet",
         "modules": data_dir / "processed/kegg_modules.json",
         "model": data_dir / "external/iML1515.json",
+        "rba_manifest": (
+            data_dir / "external/rba_ecoli_k12_wt/rba_artifact_manifest.json"
+        ),
     }
     input_hashes = {name: file_sha256(path) for name, path in input_files.items()}
     genes = load_genes(input_files["genes"])
@@ -88,6 +96,7 @@ def evaluators(genes, input_files, input_hashes):
         EssentialityScorer(genes=genes, artifact_hash=input_hashes["genes"]),
         module_evaluator,
         FBAScorer(genes=genes, model_path=input_files["model"]),
+        RBAScorer(genes=genes, artifact_dir=input_files["rba_manifest"].parent),
     ]
     evaluator_ids = active_evaluator_ids(evaluators)
     return evaluator_ids, evaluators
@@ -176,6 +185,7 @@ async def search(
         deletion_sampler(genes, bundle_size=bundle_size),
         seed=seed,
         n_proposals=n_proposals,
+        eligible=viability_eligibility(evaluator_ids),
     )
     # Replace the policy above with a heuristic or a recoverable open-set agent:
     # from yggdrisil_ecoli.policies import make_heuristic_policy
@@ -234,28 +244,34 @@ async def search(
 def results(graph_path):
     summary = summarize_run(graph_path)
     _candidate = summary["deepest_viable_candidate"]
-    mo.stop(_candidate is None, mo.md("No candidate has positive predicted growth."))
+    mo.stop(_candidate is None, mo.md("No candidate passes both growth checks."))
     _evidence = _candidate["evaluations"]
     mo.vstack(
         [
             mo.md("""## Results
 
-    Largest deletion set with positive predicted growth. Essentiality and module
-    evidence guide ranking; they do not exclude candidates. Missing evidence stays
-    unknown, and strain viability is unproven.
+    Largest deletion set with positive FBA growth and RBA feasibility at 0.1/h.
+    Essentiality and modules guide ranking; they do not exclude candidates.
+    Missing evidence stays unknown, and strain viability is unproven.
     """),
             mo.ui.table(
                 [
                     {
                         "Genes deleted": _candidate["genes_deleted"],
-                        "Predicted growth (1/h)": _candidate["growth_rate"],
+                        "FBA growth (1/h)": _candidate["growth_rate"],
+                        "RBA feasible at 0.1/h": _evidence["resource_allocation"][
+                            "feasible_at_growth_floor"
+                        ],
                         "Modules retained": _evidence["module_retention"]["n_complete"],
                         "Essential genes deleted": _evidence["essentiality"][
                             "n_essential_deleted"
                         ],
-                        "Unmodeled deletions": _candidate["coverage"]["fba"][
+                        "FBA unmodeled deletions": _candidate["coverage"]["fba"][
                             "deleted_genes_unmodeled"
                         ],
+                        "RBA unmodeled deletions": _candidate["coverage"][
+                            "resource_allocation"
+                        ]["deleted_genes_unmodeled"],
                     }
                 ]
             ),
