@@ -1,115 +1,95 @@
-# Yggdrisil Minimal *E. coli*
+# Minimal *E. coli*
 
-A separate scientific application for testing gene-set minimization of
-*Escherichia coli* K-12 MG1655 on top of
-[Yggdrisil](https://github.com/McClain-Thiel/yggdrisil).
+A notebook experiment in gene-set minimization for *E. coli* K-12 MG1655,
+using [Yggdrisil](https://github.com/McClain-Thiel/yggdrisil) for search and
+COBRApy for flux-balance analysis. Start in `scripts/experiment.py`; the
+package holds reusable biological data loading, evaluators, and policies.
 
-The application provides a canonical gene registry,
-experimental-essentiality evidence, KEGG module retention, iML1515
-flux-balance analysis, gene-inspection tools, and a persistent Yggdrisil search
-DAG. It pins the exact framework commit used by the search so framework and
-scientific changes can continue independently.
-
-## Scientific scope
-
-- Reference: chromosome `NC_000913.3`, assembly `GCF_000005845.2` (`ASM584v2`).
-- Search universe: NCBI-annotated protein-coding genes only.
-- Canonical identity: MG1655 `b` locus tags; symbols are display metadata.
-- Environment: aerobic M9 minimal medium with glucose at 37 °C.
-- Outputs: separate evidence results. There is deliberately no combined
-  viability score or scalar reward.
-- Unknown or absent model coverage stays unknown; it is never treated as
-  evidence that a deletion is safe.
-
-## Reproduce the local evidence build
-
-Install the development environment. This creates an ignored local `uv.lock`;
-the numerical FBA stack is pinned directly in `pyproject.toml`:
+COBRApy evaluates metabolic growth and gene knockouts. Lark parses KEGG module
+definitions and [boolean.py](https://booleanpy.readthedocs.io/en/latest/users_guide.html)
+evaluates their Boolean logic. Source preparation uses gffutils, pandas, Pooch,
+and pysam; local code supplies the study-specific mappings and evidence reports.
 
 ```bash
-uv sync --extra dev --extra data --extra fba
+uv sync --extra notebooks --extra fba --extra dev
+uv run marimo edit scripts/experiment.py
 ```
 
-Build the exact iML1515 model, canonical registry, essentiality table, and KEGG
-module catalog in dependency order:
+The notebook shows the complete flow: load data, construct evaluators, choose a
+policy, run Yggdrisil, and inspect results. It starts with a small random search;
+examples show how to substitute a heuristic or model-backed policy. Each run
+saves a fresh SQLite graph under `runs/`.
 
-```bash
-uv run python scripts/build_data.py --accept-kegg-terms
+Model-backed searches are optional: install `--extra agents`, set
+`OPENROUTER_API_KEY` in your environment or `~/.env`, and provide a fixed model
+ID. The notebook requires a separate action to enable a paid search.
+
+## Layout
+
+```text
+src/yggdrisil_ecoli/   Reusable data loading, evaluators, policies, and analysis
+scripts/experiment.py Search experiment (marimo)
+scripts/prepare_data.py Source preparation recipe (marimo)
+tests/                Library tests and small fixtures
 ```
 
-Run the fixed biological sanity panel:
+Experiment parameters and plots belong in `scripts/`. Move shared functions into
+`src/`; scripts import the package, never the other way around. Use marimo for
+interactive experiments and ordinary Python for batch runs.
+
+## Data
+
+Large inputs and generated results belong outside Git. The notebook accepts a
+local prepared-data directory or a Hugging Face dataset ID and pinned revision.
+No dataset has been published for this prototype yet. Local data are ignored;
+small synthetic fixtures remain with the tests.
+
+For one-time source preparation:
 
 ```bash
-uv run python scripts/validate_environment.py
+uv sync --extra notebooks --extra data --extra fba
+uv run marimo edit scripts/prepare_data.py
 ```
 
-Run small, deterministic baseline searches after the data build:
+Review KEGG's terms before enabling its downloads. Ordinary experiments reuse
+prepared inputs.
+
+The prepared inputs are one indexed gene-evidence table (`genes.parquet`), a
+KEGG module catalog (JSON), and the iML1515 model (JSON). Pandas joins the gene
+annotations, crosswalks, and essentiality measurements; validators check the
+scientific input boundaries. Source files, hashes,
+and preparation details travel with the dataset, rather than being repeated in
+repository documentation. KEGG-derived material needs a redistribution check
+before publication; it can remain a local input.
+
+Sources: [NCBI MG1655](https://www.ncbi.nlm.nih.gov/nuccore/NC_000913.3),
+[Choe 2023 essentiality](https://doi.org/10.1128/msystems.00896-22),
+[KEGG](https://www.kegg.jp/kegg/),
+[iML1515](https://doi.org/10.1038/nbt.3956), and held-out
+[MDS42](https://www.ncbi.nlm.nih.gov/nuccore/AP012306) /
+[MS56](https://doi.org/10.1007/s00253-014-5739-y) deletions.
+Consult the dependencies' licenses and each data provider's terms, including
+[NCBI policies](https://www.ncbi.nlm.nih.gov/home/about/policies/).
+
+## Interpretation
+
+The search deletes protein-coding genes identified by MG1655 `b` locus tags
+(reference `NC_000913.3`, assembly `GCF_000005845.2`). It reports genome size,
+essentiality, KEGG module retention, and predicted growth separately for
+aerobic M9 with glucose at 37 °C. Missing evidence stays unknown; these scores
+do not prove a strain is viable. KEGG scoring reports complete and broken
+modules, without enumerating possible repairs. Published reduced-genome labels
+are used only for analysis after search.
+
+## Development
 
 ```bash
-uv run yggdrisil-ecoli-search \
-  --graph runs/random.sqlite \
-  --policy random \
-  --seed 17 \
-  --max-states 10
-
-uv run yggdrisil-ecoli-search \
-  --graph runs/heuristic.sqlite \
-  --policy heuristic \
-  --seed 17 \
-  --max-states 10
-```
-
-Both policies use the same four-evaluator suite. Yggdrisil evaluates and caches
-every state before the next policy call. Inspect a completed or active graph
-with `uv run yggdrisil inspect runs/random.sqlite`. Reopening a graph resumes
-only when its policy settings, application/framework revisions, and exact
-evaluator/artifact identities match. Use a separate graph for independent
-comparisons. `--new-run` creates a new run over the states already present in
-that same shared DAG.
-
-Generated scientific data are gitignored. Each build records source URLs,
-versions, access times, content hashes, row counts, mapping gaps, and output
-hashes in local manifests under `data/processed/`. KEGG snapshots require the
-explicit academic-use acknowledgement and are not redistributed.
-
-## What is implemented
-
-- Strict GFF3 parsing and an immutable, typed Parquet gene registry.
-- Audited, left-joined KEGG/KO and iML1515 crosswalks.
-- One-row-per-gene Choe 2023 evidence with condition-aware summary classes and
-  explicit unknown coverage.
-- A KEGG module grammar supporting AND, OR, optional terms, and module
-  references, with exact minimal missing-KO sets.
-- Copy-on-score COBRApy gene deletion with explicit medium, objective, ATPM,
-  solver, provenance, coverage, and GPR diagnostics.
-- `GenomeState`, `DeleteGenes`, and thin monotonic problem semantics,
-  registered for safe Yggdrisil persistence.
-- Independent size, essentiality, module-retention, and FBA evaluators using
-  Yggdrisil's native evaluator contract. A small shared helper keeps scalar
-  metrics separate from structured details, coverage, and provenance.
-- Concurrent search-time evaluation and SQLite DAG caching keyed by state,
-  scorer version, and source/configuration fingerprints.
-- Fixed-seed `RandomPolicy` and a deliberately small heuristic baseline that
-  avoids known essential genes and FBA-infeasible parent states.
-- Canonical-only gene inspection, set analysis, and frozen-module inspection
-  tools.
-
-The latest fully populated local build produced 4,290 canonical genes, 4,288
-KEGG gene mappings, 3,244 genes with KO mappings, 1,513 genes mapped into
-iML1515, and 112 wild-type-complete KEGG modules. These are observed snapshot
-counts, not hard-coded biological assumptions; rebuilding generates a fresh
-audit.
-
-## Development gates
-
-```bash
+uv sync --python 3.11 --all-extras
 uv run pytest
 uv run ruff check .
-uv run ruff format --check .
-uv run mypy src scripts
-uv build
+uv run mypy src
 ```
 
-See [the data contract](docs/data-contract.md), [source ledger](docs/sources.md),
-and [framework handoff](docs/framework-handoff.md) for the pinned integration
-boundary and remaining agent work.
+Yggdrisil's revision and the numerical solver versions are pinned in
+`pyproject.toml`. Search graphs record input identities and settings so a
+run can be traced to its inputs. Each experiment requires a new graph path.
