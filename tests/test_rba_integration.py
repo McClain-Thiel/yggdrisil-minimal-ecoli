@@ -60,8 +60,8 @@ def test_builder_reuses_sources_without_changing_semantic_identity(
     genes: pd.DataFrame,
 ) -> None:
     before_identity = evaluator_identity(scorer)
-    before_mapping_hash = scorer.registry_mapping_sha256
-    before_bundle_hash = scorer.artifact_bundle_sha256
+    before_mapping_hash = scorer.config["registry_mapping_sha256"]
+    before_bundle_hash = scorer.config["artifact_bundle_sha256"]
 
     copied = tmp_path / "rba"
     shutil.copytree(ARTIFACT_DIR, copied)
@@ -70,8 +70,8 @@ def test_builder_reuses_sources_without_changing_semantic_identity(
 
     assert manifest_path == copied / RBA_ARTIFACT_MANIFEST
     assert evaluator_identity(regenerated) == before_identity
-    assert regenerated.registry_mapping_sha256 == before_mapping_hash
-    assert regenerated.artifact_bundle_sha256 == before_bundle_hash
+    assert regenerated.config["registry_mapping_sha256"] == before_mapping_hash
+    assert regenerated.config["artifact_bundle_sha256"] == before_bundle_hash
     for source, sha256 in RBA_MODEL_FILES.items():
         assert file_sha256(copied / source) == sha256
 
@@ -219,9 +219,9 @@ def test_artifact_and_mapping_participate_in_evaluator_identity(
 
     assert evaluator_id
     assert config_hash
-    assert len(scorer.artifact_bundle_sha256) == 64
-    assert len(scorer.registry_mapping_sha256) == 64
-    assert scorer.model_dimensions == RBA_EXPECTED_LP_DIMENSIONS
+    assert len(scorer.config["artifact_bundle_sha256"]) == 64
+    assert len(scorer.config["registry_mapping_sha256"]) == 64
+    assert scorer.config["model_dimensions"] == RBA_EXPECTED_LP_DIMENSIONS
     assert (
         len([gene for gene in scorer._variables_by_gene.values() if gene])
         == (RBA_EXPECTED_REGISTRY_MAPPING["genes"])
@@ -285,3 +285,27 @@ def test_changed_artifact_is_rejected_before_solving(
             handle.write(" ")
     with pytest.raises(DataValidationError, match="changed|pinned configuration"):
         _validated_manifest(copied)
+
+
+@pytest.mark.parametrize("deletions", [{"b0001": False}, "b0001", [123], ["thrA"]])
+async def test_calibration_rejects_noncanonical_deletion_lists(
+    tmp_path: Path, deletions: object
+) -> None:
+    from scripts.calibrate_resource_gate import calibrate
+
+    controls = tmp_path / "controls.json"
+    controls.write_text(
+        json.dumps(
+            {
+                "agent_visible": False,
+                "strains": {"MDS42": {"deleted_gene_ids": deletions}},
+            }
+        )
+    )
+    with pytest.raises(ValueError, match="list|pattern|string"):
+        await calibrate(
+            data_dir=tmp_path,
+            controls_path=controls,
+            prior_graph_path=tmp_path / "unused.sqlite",
+            prior_state_id="unused",
+        )

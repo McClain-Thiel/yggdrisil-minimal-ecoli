@@ -29,7 +29,7 @@ def parse_ncbi_gff(path: str | Path) -> tuple[pd.DataFrame, dict[str, str | None
     from gffutils.feature import feature_from_line
 
     directives: dict[str, str] = {}
-    gene_features: list[Feature] = []
+    records = []
     products: dict[str, str] = {}
     region = None
     raw = Path(path).read_bytes()
@@ -40,50 +40,49 @@ def parse_ncbi_gff(path: str | Path) -> tuple[pd.DataFrame, dict[str, str | None
         if line.startswith("#!"):
             key, _, value = line[2:].partition(" ")
             directives[key] = value.strip()
-        elif line.strip() and not line.startswith("#"):
-            try:
-                feature = feature_from_line(line.rstrip("\n"))
-            except (ValueError, IndexError) as exc:
-                raise DataValidationError(f"line {line_number}: invalid GFF3") from exc
-            if feature.featuretype == "region" and feature.seqid == REFERENCE_ACCESSION:
-                region = feature
-            tag = _attribute(feature, "locus_tag")
-            if tag and feature.featuretype == "gene":
-                if _attribute(feature, "gene_biotype") == GENE_TYPE:
-                    gene_features.append(feature)
-            elif tag and feature.featuretype == "CDS":
-                product = _attribute(feature, "product")
-                if product:
-                    products.setdefault(tag, product)
-
-    metadata = _validate_reference(directives, region)
-    records = []
-    for feature in gene_features:
-        tag = _attribute(feature, "locus_tag") or ""
+        if not line.strip() or line.startswith("#"):
+            continue
+        try:
+            feature = feature_from_line(line.rstrip("\n"))
+        except (ValueError, IndexError) as exc:
+            raise DataValidationError(f"line {line_number}: invalid GFF3") from exc
+        if feature.featuretype == "region" and feature.seqid == REFERENCE_ACCESSION:
+            region = feature
+        tag = _attribute(feature, "locus_tag")
+        if tag and feature.featuretype == "CDS":
+            product = _attribute(feature, "product")
+            if product:
+                products.setdefault(tag, product)
+        if not (tag and feature.featuretype == "gene"):
+            continue
+        if _attribute(feature, "gene_biotype") != GENE_TYPE:
+            continue
         if feature.start is None or feature.end is None:
             raise DataValidationError(f"{tag}: missing gene coordinates")
         if feature.seqid != REFERENCE_ACCESSION:
             raise DataValidationError(
                 f"{tag}: expected reference {REFERENCE_ACCESSION}"
             )
-        symbol = _attribute(feature, "gene") or _attribute(feature, "Name")
         name = _attribute(feature, "Name")
+        symbol = _attribute(feature, "gene") or name
         records.append(
             GeneRecord(
                 b_number=tag,
                 symbol=symbol,
                 name=name if name != symbol else None,
-                description=products.get(tag),
                 start=feature.start,
                 end=feature.end,
                 strand=feature.strand,
-                ncbi_gene_id=_crossref(feature, "GeneID"),
-                ecocyc_id=_crossref(feature, "ECOCYC"),
-            )
+                ncbi_gene_id=_attribute(feature, "Dbxref", "GeneID:"),
+                ecocyc_id=_attribute(feature, "Dbxref", "ECOCYC:"),
+            ).model_dump()
         )
+
+    metadata = _validate_reference(directives, region)
     if not records:
         raise DataValidationError("canonical gene table is empty")
-    genes = pd.DataFrame(r.model_dump() for r in records).set_index("b_number")
+    genes = pd.DataFrame(records).set_index("b_number")
+    genes["description"] = [products.get(tag) for tag in genes.index]
     if not genes.index.is_unique:
         raise DataValidationError("duplicate canonical IDs in GFF3")
     genes = genes.sort_index()
@@ -121,20 +120,14 @@ def _validate_reference(
     }
 
 
-def _attribute(feature: Feature, key: str) -> str | None:
-    values: list[str] = feature.attributes.get(key, [])
-    if len(set(values)) > 1:
-        raise DataValidationError(f"conflicting GFF3 attribute {key!r}: {values}")
-    return values[0] if values else None
-
-
-def _crossref(feature: Feature, namespace: str) -> str | None:
-    prefix = f"{namespace}:"
+def _attribute(feature: Feature, key: str, prefix: str = "") -> str | None:
     values = {
-        v.removeprefix(prefix)
-        for v in feature.attributes.get("Dbxref", [])
-        if v.startswith(prefix)
+        value.removeprefix(prefix)
+        for value in feature.attributes.get(key, [])
+        if value.startswith(prefix)
     }
     if len(values) > 1:
-        raise DataValidationError(f"multiple {namespace} identifiers: {sorted(values)}")
+        raise DataValidationError(
+            f"conflicting GFF3 attribute {key}/{prefix}: {sorted(values)}"
+        )
     return next(iter(values), None)

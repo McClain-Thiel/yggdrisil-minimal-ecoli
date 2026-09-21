@@ -200,7 +200,7 @@ def test_child_missing_active_gate_remains_retryable(tmp_path: Path, missing: st
     assert request.state_id == parent
     assert json.loads(request.guidance)["attempt"] == 1
     assert selector.attempted_actions(parent) == frozenset()
-    assert selector._viability_label(graph.evaluations(child)) == "not_evaluated"
+    assert json.loads(request.guidance)["previous_sibling_outcomes"] == []
 
     graph.add_evaluation(
         child,
@@ -214,7 +214,12 @@ def test_child_missing_active_gate_remains_retryable(tmp_path: Path, missing: st
     parent_request = next(request for request in requests if request.state_id == parent)
     assert json.loads(parent_request.guidance)["attempt"] == 2
     assert selector.attempted_actions(parent) == frozenset({("b0002",)})
-    assert selector._viability_label(graph.evaluations(child)) == "viable"
+    assert (
+        json.loads(parent_request.guidance)["previous_sibling_outcomes"][0][
+            "child_viability"
+        ]
+        == "viable"
+    )
     graph.close()
 
 

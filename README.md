@@ -90,8 +90,8 @@ essentiality, KEGG module retention, and predicted growth separately for
 aerobic M9 with glucose at 37 °C. Missing evidence stays unknown; these scores
 do not prove a strain is viable. KEGG scoring reports complete and broken
 modules, without enumerating possible repairs. The RBA model covers 1,441 of
-4,290 genes; uncovered deletions remain explicit. See
-[the RBA assumptions](docs/resource-viability.md).
+4,290 genes; uncovered deletions remain explicit. RBA uses its published medium
+and exact enzyme/process-machine knockouts at the fixed growth floor.
 
 MDS42 and MS56 are agent-invisible calibration controls, used to check the RBA
 floor before search. Their later overlap scores measure rediscovery, not
