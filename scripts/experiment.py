@@ -46,6 +46,7 @@ def introduction():
 
 @app.cell
 def data_settings():
+    # Use local prepared data, or supply an existing Hugging Face dataset and commit.
     local_data = Path("data")
     dataset_id = ""
     data_revision = ""
