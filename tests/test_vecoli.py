@@ -8,13 +8,13 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
+import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 from scipy import sparse
 from yggdrisil.serialize import dumps
 
-from yggdrisil_ecoli.data.registry import GeneRecord, GeneRegistry
 from yggdrisil_ecoli.state import GenomeState, genome_state_key
 from yggdrisil_ecoli.vecoli import (
     Finalist,
@@ -24,7 +24,11 @@ from yggdrisil_ecoli.vecoli import (
     select_diverse_finalists,
     select_finalists,
 )
-from yggdrisil_ecoli.vecoli_results import summarize_vecoli_lineages
+from yggdrisil_ecoli.vecoli_results import (
+    SimulationTask,
+    _terminal_outcome,
+    summarize_vecoli_lineages,
+)
 
 FBA_ID = "fba-active"
 RESOURCE_ID = "resource-active"
@@ -84,13 +88,23 @@ def test_graph_selection_uses_only_active_viability_evidence(tmp_path: Path) -> 
         GenomeState(frozenset({"b0001"})),
         GenomeState(frozenset({"b0001", "b0002"})),
         GenomeState(frozenset({"b0003", "b0004"})),
+        GenomeState(frozenset({"b0002", "b0003", "b0004"})),
     ]
     for state in states:
         state_id = genome_state_key(state)
         connection.execute("INSERT INTO states VALUES (?, ?)", (state_id, dumps(state)))
         connection.execute(
             "INSERT INTO evaluations VALUES (?, ?, ?)",
-            (state_id, FBA_ID, dumps({"feasible": True, "growth_rate": 0.8})),
+            (
+                state_id,
+                FBA_ID,
+                dumps(
+                    {
+                        "feasible": True,
+                        "growth_rate": float("inf") if state is states[3] else 0.8,
+                    }
+                ),
+            ),
         )
         connection.execute(
             "INSERT INTO evaluations VALUES (?, ?, ?)",
@@ -111,6 +125,10 @@ def test_graph_selection_uses_only_active_viability_evidence(tmp_path: Path) -> 
     connection.execute(
         "INSERT INTO proposal_events VALUES (?, ?, ?)",
         ("run-1", genome_state_key(states[0]), genome_state_key(states[2])),
+    )
+    connection.execute(
+        "INSERT INTO proposal_events VALUES (?, ?, ?)",
+        ("run-1", genome_state_key(states[2]), genome_state_key(states[3])),
     )
     outside_run = GenomeState(frozenset({"b0001", "b0002", "b0003"}))
     outside_id = genome_state_key(outside_run)
@@ -142,12 +160,9 @@ def test_graph_selection_uses_only_active_viability_evidence(tmp_path: Path) -> 
 
 
 def test_mapping_and_workflow_keep_exact_variant_order(tmp_path: Path) -> None:
-    registry = GeneRegistry(
-        [
-            _record("b0001", "EG1"),
-            _record("b0002", "EG2"),
-            _record("b0003", "EG3"),
-        ]
+    registry = pd.DataFrame(
+        {"ecocyc_id": ["EG1", "EG2", "EG3"]},
+        index=pd.Index(["b0001", "b0002", "b0003"], name="b_number"),
     )
     finalists = (
         _finalist("one", {"b0002", "b0001"}),
@@ -177,13 +192,16 @@ def test_mapping_and_workflow_keep_exact_variant_order(tmp_path: Path) -> None:
     assert "MS56" not in repr(config)
 
 
-def test_mapping_rejects_missing_or_ambiguous_ids() -> None:
+@pytest.mark.parametrize("missing_value", [None, np.nan, pd.NA])
+def test_mapping_rejects_missing_or_ambiguous_ids(missing_value: object) -> None:
     finalist = (_finalist("candidate", {"b0001", "b0002"}),)
-    missing = GeneRegistry([_record("b0001", "EG1"), _record("b0002", None)])
+    missing = pd.DataFrame(
+        {"ecocyc_id": ["EG1", missing_value]}, index=["b0001", "b0002"]
+    )
     with pytest.raises(ValueError, match="lack EcoCyc"):
         map_finalists(finalist, missing)
 
-    ambiguous = GeneRegistry([_record("b0001", "EG1"), _record("b0002", "EG1")])
+    ambiguous = missing.assign(ecocyc_id="EG1")
     with pytest.raises(ValueError, match="ambiguous"):
         map_finalists(finalist, ambiguous)
 
@@ -396,20 +414,6 @@ def test_lineage_summary_distinguishes_division_from_nondivision(
         )
 
 
-def _record(b_number: str, ecocyc_id: str | None) -> GeneRecord:
-    return GeneRecord(
-        b_number=b_number,
-        symbol=None,
-        name=None,
-        description=None,
-        start=1,
-        end=2,
-        strand="+",
-        ncbi_gene_id=None,
-        ecocyc_id=ecocyc_id,
-    )
-
-
 def _fake_sim_data() -> SimpleNamespace:
     cistrons = np.array(
         [("c1", "EG1"), ("c2", "EG2"), ("c3", "EG3")],
@@ -478,3 +482,42 @@ def _fake_task(
     (path / ".command.trace").write_text("nextflow.trace/v2\nrealtime=1234\n")
     if exit_code == 0:
         (path / "division_time.sh").write_text("export division_time=2200.0")
+
+
+@pytest.mark.parametrize(
+    ("exit_code", "error", "expected"),
+    [
+        (137, "TimeLimitError: reached max duration", "resource_failure"),
+        (0, "warning: reached max duration", "orchestration_failure"),
+        (1, "TimeLimitError: cell reached max duration", "nondivision_max_duration"),
+        (1, "ValueError: impossible model state", "model_exception"),
+    ],
+)
+def test_terminal_failure_classification_preserves_nonbiological_failures(
+    tmp_path: Path, exit_code: int, error: str, expected: str
+) -> None:
+    (tmp_path / ".command.err").write_text(error)
+    task = SimulationTask(1, 1, tmp_path, exit_code, None, 1)
+    reason, _ = _terminal_outcome(task, completed=0, maximum=20)
+    assert reason == expected
+
+
+def test_adapter_rejects_knockout_that_leaves_regulatory_expression(
+    tmp_path: Path,
+) -> None:
+    (tmp_path / "ecoli" / "variants").mkdir(parents=True)
+    module_path = install_vecoli_adapter(tmp_path)
+    spec = importlib.util.spec_from_file_location("adapter", module_path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    sim_data = _fake_sim_data()
+    adjust = sim_data.adjust_final_expression
+
+    def incomplete_adjust(indices: list[int], factors: list[float]) -> None:
+        adjust(indices, factors)
+        sim_data.process.transcription_regulation.delta_prob["deltaV"][0] = 0.01
+
+    sim_data.adjust_final_expression = incomplete_adjust
+    with pytest.raises(RuntimeError, match="nonzero expression parameters: delta_prob"):
+        module.apply_variant(sim_data, {"gene_ids": ["EG1"]})

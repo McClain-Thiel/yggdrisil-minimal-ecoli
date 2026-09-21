@@ -1,71 +1,88 @@
-from dataclasses import replace
 from pathlib import Path
 
-import pyarrow.parquet as pq
+import pandas as pd
+import pytest
+from pandas.testing import assert_frame_equal
+from pydantic import ValidationError
 
 from yggdrisil_ecoli.data.audit import audit_registry
-from yggdrisil_ecoli.data.crosswalks import CrosswalkDiagnostics
-from yggdrisil_ecoli.data.gff import parse_ncbi_gff
-from yggdrisil_ecoli.data.registry import REGISTRY_SCHEMA, GeneRegistry
-
-FIXTURES = Path(__file__).parent / "fixtures"
+from yggdrisil_ecoli.data.errors import DataValidationError
+from yggdrisil_ecoli.data.evidence import load_genes, validate_genes, write_genes
 
 
-def test_parquet_round_trip_preserves_schema_and_list_values(tmp_path: Path) -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    records = [
-        replace(record, ko_ids=("K00001", "K00002"))
-        if record.b_number == "b0001"
-        else record
-        for record in registry
-    ]
-    expected = GeneRegistry(records)
-    path = tmp_path / "gene_registry.parquet"
+def test_one_table_round_trip_preserves_fields_metadata_and_kos(
+    tmp_path: Path, genes: pd.DataFrame
+) -> None:
+    genes.at["b0001", "ko_ids"] = ("K00002", "K00001", "K00002")
+    genes.attrs["fixture"] = {"provenance": ["synthetic annotations"]}
+    expected = validate_genes(genes)
+    path = tmp_path / "genes.parquet"
 
-    expected.to_parquet(path)
-    actual = GeneRegistry.from_parquet(path)
+    write_genes(genes, path)
+    actual = load_genes(path)
 
-    assert list(actual) == list(expected)
-    assert pq.read_schema(path) == REGISTRY_SCHEMA
-    assert REGISTRY_SCHEMA.names == [
-        "b_number",
-        "symbol",
-        "name",
-        "description",
-        "start",
-        "end",
-        "strand",
-        "ncbi_gene_id",
-        "ecocyc_id",
-        "kegg_gene_id",
-        "ko_ids",
-        "iml1515_gene_id",
-    ]
+    assert_frame_equal(actual, expected)
+    assert actual.attrs == expected.attrs
+    assert actual.at["b0001", "ko_ids"] == ("K00001", "K00002")
 
 
-def test_audit_reports_coverage_and_mapping_gaps() -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    diagnostics = CrosswalkDiagnostics(
-        unresolved_identifiers={"kegg": ["eco:b9999"]},
-        notes=["fixture note"],
-    )
+def test_audit_reports_coverage_and_mapping_gaps(genes: pd.DataFrame) -> None:
+    report = audit_registry(genes)
 
-    report = audit_registry(registry, diagnostics)
-
-    assert report.canonical_protein_coding_genes == 3
-    assert report.coverage["ncbi_gene"] == 3
-    assert report.coverage["ecocyc"] == 3
-    assert report.coverage["ko"] == 0
-    assert report.unresolved_count == 1
-    assert "Missing" not in report.render_text()
+    assert report["canonical_protein_coding_genes"] == 3
+    assert report["coverage"]["ncbi_gene"] == 3
+    assert report["coverage"]["ecocyc"] == 3
+    assert report["coverage"]["ko"] == 0
 
 
-def test_audit_reports_duplicate_and_ambiguous_identifiers() -> None:
-    records = list(parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry)
-    ambiguous = replace(records[1], ncbi_gene_id=records[0].ncbi_gene_id)
+def test_table_and_audit_reject_duplicate_identifiers(genes: pd.DataFrame) -> None:
+    with pytest.raises(DataValidationError, match="unique b_number"):
+        validate_genes(pd.concat([genes, genes.iloc[:1]]))
+    genes.loc["b0002", "ncbi_gene_id"] = genes.loc["b0001", "ncbi_gene_id"]
+    with pytest.raises(DataValidationError, match="ambiguous ncbi_gene mappings"):
+        audit_registry(genes)
 
-    report = audit_registry([records[0], records[0], ambiguous])
 
-    assert report.duplicate_b_numbers == ["b0001"]
-    assert report.ambiguous_mappings == {"ncbi_gene": {"944742": ["b0001", "b0002"]}}
-    assert len(report.fatal_errors) == 2
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [("start", 0), ("strand", "."), ("ko_ids", ("bad",))],
+)
+def test_gene_fields_use_library_validation(
+    genes: pd.DataFrame, field: str, value: object
+) -> None:
+    genes.at["b0001", field] = value
+    with pytest.raises(ValidationError):
+        validate_genes(genes)
+
+
+def test_gene_symbols_cannot_replace_canonical_index(genes: pd.DataFrame) -> None:
+    with pytest.raises(ValidationError):
+        validate_genes(genes.rename(index={"b0001": "thrL"}))
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("classification", "essential"),
+        ("coverage", "unknown"),
+        ("condition_disagreement", True),
+        ("evidence_conflict", True),
+    ],
+)
+def test_loaded_labels_must_agree_with_raw_evidence(
+    tmp_path: Path, genes: pd.DataFrame, field: str, value: object
+) -> None:
+    path = tmp_path / "genes.parquet"
+    genes.at["b0001", field] = value
+    genes.to_parquet(path)
+
+    with pytest.raises(DataValidationError, match="stored labels disagree"):
+        load_genes(path)
+
+
+def test_boundary_rejects_changed_study_metadata(genes: pd.DataFrame) -> None:
+    from yggdrisil_ecoli.data.essentiality import STUDY_METADATA
+
+    genes.attrs["essentiality"] = {**STUDY_METADATA, "m9_glucose_g_l": 20.0}
+    with pytest.raises(DataValidationError, match="fixed study fields"):
+        validate_genes(genes)

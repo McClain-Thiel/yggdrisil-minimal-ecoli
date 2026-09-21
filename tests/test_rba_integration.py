@@ -3,14 +3,17 @@ from __future__ import annotations
 import asyncio
 import importlib.util
 import json
+import shutil
 from pathlib import Path
 
+import pandas as pd
 import pytest
 from yggdrisil import evaluator_identity
 
 import yggdrisil_ecoli.rba_build as rba_build
 from yggdrisil_ecoli.data.errors import DataValidationError
-from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
+from yggdrisil_ecoli.data.evidence import load_genes
+from yggdrisil_ecoli.data.io import file_sha256
 from yggdrisil_ecoli.rba_build import (
     RBA_ARTIFACT_MANIFEST,
     RBA_EXPECTED_LP_DIMENSIONS,
@@ -22,12 +25,12 @@ from yggdrisil_ecoli.rba_build import (
     RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H,
     build_rba_artifact,
 )
-from yggdrisil_ecoli.scorers.rba import RBAScorer
+from yggdrisil_ecoli.scorers.rba import RBAScorer, _validated_manifest
 from yggdrisil_ecoli.state import GenomeState
 
 ROOT = Path(__file__).parents[1]
 ARTIFACT_DIR = ROOT / "data" / "external" / "rba_ecoli_k12_wt"
-REGISTRY_PATH = ROOT / "data" / "processed" / "gene_registry.parquet"
+GENES_PATH = ROOT / "data" / "processed" / "genes.parquet"
 RBA_DEPENDENCIES_AVAILABLE = all(
     importlib.util.find_spec(package) is not None
     for package in ("rba", "rbatools", "swiglpk")
@@ -36,38 +39,41 @@ RBA_DEPENDENCIES_AVAILABLE = all(
 pytestmark = pytest.mark.skipif(
     not RBA_DEPENDENCIES_AVAILABLE
     or not (ARTIFACT_DIR / RBA_ARTIFACT_MANIFEST).exists()
-    or not REGISTRY_PATH.exists(),
+    or not GENES_PATH.exists(),
     reason="pinned RBA artifact, dependencies, and registry are not available",
 )
 
 
 @pytest.fixture(scope="module")
-def registry() -> GeneRegistry:
-    return GeneRegistry.from_parquet(REGISTRY_PATH)
+def genes() -> pd.DataFrame:
+    return load_genes(GENES_PATH)
 
 
 @pytest.fixture(scope="module")
-def scorer(registry: GeneRegistry) -> RBAScorer:
-    return RBAScorer.from_artifact(ARTIFACT_DIR, registry=registry)
+def scorer(genes: pd.DataFrame) -> RBAScorer:
+    return RBAScorer(artifact_dir=ARTIFACT_DIR, genes=genes)
 
 
 def test_builder_reuses_sources_without_changing_semantic_identity(
+    tmp_path: Path,
     scorer: RBAScorer,
-    registry: GeneRegistry,
+    genes: pd.DataFrame,
 ) -> None:
     before_identity = evaluator_identity(scorer)
     before_mapping_hash = scorer.registry_mapping_sha256
     before_bundle_hash = scorer.artifact_bundle_sha256
 
-    manifest_path = build_rba_artifact(ARTIFACT_DIR)
-    regenerated = RBAScorer(artifact_dir=ARTIFACT_DIR, registry=registry)
+    copied = tmp_path / "rba"
+    shutil.copytree(ARTIFACT_DIR, copied)
+    manifest_path = build_rba_artifact(copied)
+    regenerated = RBAScorer(artifact_dir=copied, genes=genes)
 
-    assert manifest_path == ARTIFACT_DIR / RBA_ARTIFACT_MANIFEST
+    assert manifest_path == copied / RBA_ARTIFACT_MANIFEST
     assert evaluator_identity(regenerated) == before_identity
     assert regenerated.registry_mapping_sha256 == before_mapping_hash
     assert regenerated.artifact_bundle_sha256 == before_bundle_hash
-    for source in RBA_MODEL_FILES:
-        assert file_sha256(ARTIFACT_DIR / source.path) == source.sha256
+    for source, sha256 in RBA_MODEL_FILES.items():
+        assert file_sha256(copied / source) == sha256
 
 
 async def test_wild_type_is_feasible_at_fixed_growth_floor(
@@ -117,9 +123,9 @@ async def test_neutral_modeled_deletion_remains_feasible(scorer: RBAScorer) -> N
 
 async def test_fba_unmodeled_translation_gene_is_rba_infeasible(
     scorer: RBAScorer,
-    registry: GeneRegistry,
+    genes: pd.DataFrame,
 ) -> None:
-    assert registry.require("b0023").iml1515_gene_id is None
+    assert pd.isna(genes.at["b0023", "iml1515_gene_id"])
     assert scorer.variables_for_gene("b0023") == ("P_TA_machinery",)
 
     result = await scorer.evaluate(GenomeState(frozenset({"b0023"})))
@@ -240,3 +246,42 @@ def test_artifact_records_expected_structure_dimensions() -> None:
 def test_builder_rejects_malformed_or_changed_dimensions(payload: object) -> None:
     with pytest.raises(DataValidationError, match="ModelStructure|dimensions"):
         rba_build._validated_model_dimensions(payload)
+
+
+async def test_gene_universe_is_snapshotted_and_unknown_ids_are_rejected(
+    genes: pd.DataFrame,
+) -> None:
+    mutable = genes.copy()
+    scorer = RBAScorer(artifact_dir=ARTIFACT_DIR, genes=mutable)
+    identity = evaluator_identity(scorer)
+    mutable.drop(index="b0023", inplace=True)
+    result = await scorer.evaluate(GenomeState(frozenset({"b0023"})))
+    assert result.metrics["feasible_at_growth_floor"] is False
+    assert evaluator_identity(scorer) == identity
+    with pytest.raises(KeyError):
+        scorer.variables_for_gene("b9999")
+    with pytest.raises(KeyError):
+        await scorer.evaluate(GenomeState(frozenset({"b9999"})))
+
+
+@pytest.mark.parametrize("changed", ["source", "structure", "provenance"])
+def test_changed_artifact_is_rejected_before_solving(
+    tmp_path: Path, changed: str
+) -> None:
+    copied = tmp_path / "rba"
+    shutil.copytree(ARTIFACT_DIR, copied)
+    if changed == "provenance":
+        path = copied / RBA_ARTIFACT_MANIFEST
+        payload = json.loads(path.read_text())
+        payload["provenance"]["growth_floor_h"] = 0.2
+        path.write_text(json.dumps(payload))
+    else:
+        relative = (
+            "model/proteins.xml"
+            if changed == "source"
+            else rba_build.MODEL_STRUCTURE_PATH
+        )
+        with (copied / relative).open("a") as handle:
+            handle.write(" ")
+    with pytest.raises(DataValidationError, match="changed|pinned configuration"):
+        _validated_manifest(copied)

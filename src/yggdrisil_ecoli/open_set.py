@@ -7,16 +7,17 @@ import json
 import math
 from collections import Counter, defaultdict
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 
 from yggdrisil import ReadOnlyStateGraph, RunStatus
 from yggdrisil.agents import ExplorationRequest
 from yggdrisil.types import EvaluationRecord, ProposalEvent, StateNode
 
 from yggdrisil_ecoli.actions import DeleteGenes
+from yggdrisil_ecoli.scorers.base import passes_growth_gates
 from yggdrisil_ecoli.state import GenomeState
 
-SCHEDULER_VERSION = 2
+SCHEDULER_VERSION = 3
 
 
 @dataclass(frozen=True, slots=True)
@@ -42,35 +43,15 @@ class OpenSetConfig:
         return {
             "type": "recoverable_open_set",
             "version": SCHEDULER_VERSION,
-            "active_width": self.active_width,
-            "parents_per_step": self.parents_per_step,
+            **asdict(self),
             "fallback_action_caps": list(self.fallback_action_caps),
             "effective_fallback_action_caps": list(
                 _effective_caps(max_action_size, self.fallback_action_caps)
             ),
-            "ordering": {
-                "exploitation": [
-                    "deletion_count_desc",
-                    "fba_growth_desc",
-                    "essential_deleted_asc",
-                    "conditional_essential_deleted_asc",
-                    "ambiguous_deleted_asc",
-                    "unknown_deleted_asc",
-                    "broken_modules_asc",
-                ],
-                "diversity": "alternating_jaccard_distance_slots",
-                "scheduling": "fewest_completed_attempts_first",
-            },
-            "viability": {
-                "fba_feasible": True,
-                "growth_rate": ">0",
-                "resource_allocation_feasible_at_growth_floor": True,
-            },
-            "ranking_evidence_only": [
-                "essentiality",
-                "module_retention",
-                "unknown_evidence",
-            ],
+            "viability": "feasible FBA with growth > 0 and RBA feasible at 0.1/h",
+            "ranking": "deletions, growth, essentiality risk, broken modules",
+            "diversity": "alternating Jaccard distance slots",
+            "scheduling": "fewest completed attempts first",
         }
 
 
@@ -78,7 +59,6 @@ class OpenSetConfig:
 class _Candidate:
     node: StateNode[GenomeState]
     attempts: int
-    records: tuple[EvaluationRecord, ...]
     priority: tuple[int, float, int, int, int, int, int]
 
 
@@ -102,14 +82,11 @@ class RecoverableOpenSetSelector:
         candidate_page_size: int,
         public_gene_id: Callable[[str], str] = str,
     ) -> None:
-        missing = {
-            "essentiality",
-            "fba",
-            "module_retention",
-            "resource_allocation",
-        } - set(evaluator_ids)
+        missing = {"fba", "resource_allocation"} - evaluator_ids.keys()
         if missing:
-            raise ValueError(f"missing evaluator identities: {sorted(missing)}")
+            raise ValueError(
+                f"missing active growth-gate identities: {sorted(missing)}"
+            )
         if max_action_size < 1:
             raise ValueError("max_action_size must be positive")
         if candidate_count < 1 or candidate_page_size < 1:
@@ -161,7 +138,7 @@ class RecoverableOpenSetSelector:
         attempted: dict[str, set[tuple[str, ...]]] = defaultdict(set)
         for event in materialized:
             outgoing[event.parent_id].append(event)
-            attempted[event.parent_id].add(_action_signature(event.action))
+            attempted[event.parent_id].add(event.action.genes)
         self._attempted = {
             state_id: frozenset(signatures)
             for state_id, signatures in attempted.items()
@@ -177,7 +154,6 @@ class RecoverableOpenSetSelector:
                 _Candidate(
                     node=node,
                     attempts=state_attempts,
-                    records=records,
                     priority=self._priority(node, records),
                 )
             )
@@ -201,19 +177,7 @@ class RecoverableOpenSetSelector:
         ]
 
     def _is_viable(self, records: Sequence[EvaluationRecord]) -> bool:
-        active = self._active_records(records)
-        fba = active.get("fba")
-        resource = active.get("resource_allocation")
-        if fba is None or resource is None:
-            return False
-        growth = fba.metrics.get("growth_rate")
-        return (
-            fba.metrics.get("feasible") is True
-            and isinstance(growth, (int, float))
-            and not isinstance(growth, bool)
-            and growth > 0
-            and resource.metrics.get("feasible_at_growth_floor") is True
-        )
+        return passes_growth_gates(self._active_records(records))
 
     def _active_records(
         self, records: Sequence[EvaluationRecord]
@@ -302,34 +266,30 @@ class RecoverableOpenSetSelector:
                         self.public_gene_id(gene) for gene in event.action.genes
                     ],
                     "action_size": len(event.action.genes),
-                    "action_sha256": _action_hash(event.action),
                     "graph_outcome": event.outcome,
                     "child_state_id": event.child_id,
                     "child_viability": self._viability_label(child_records),
-                    "child_evaluations": _scalar_active_evaluations(
-                        self._active_records(child_records)
-                    ),
+                    "child_evaluations": {
+                        name: record.metrics
+                        for name, record in self._active_records(child_records).items()
+                    },
                 }
             )
-        return "\n".join(
-            [
-                f"RECOVERY_ATTEMPT: {candidate.attempts + 1}",
-                f"GLOBAL_MAX_ACTION_SIZE: {self.max_action_size}",
-                f"SUGGESTED_FALLBACK_CEILING: {preferred_cap}",
-                f"CANDIDATE_PREVIEW_PAGE: {preview_page}",
-                "The fallback ceiling is guidance, not a required bundle size. "
-                f"Choose any action size from 1 to {self.max_action_size} according "
-                "to the strength and confidence of the evidence.",
-                "Do not repeat an exact previous sibling action. Learn from lethal "
-                "siblings by choosing a smaller action or different genes.",
-                "PREVIOUS_SIBLING_OUTCOMES: " + json.dumps(history, sort_keys=True),
-            ]
+        return json.dumps(
+            {
+                "attempt": candidate.attempts + 1,
+                "suggested_fallback_ceiling": preferred_cap,
+                "candidate_preview_page": preview_page,
+                "previous_sibling_outcomes": history,
+            },
+            sort_keys=True,
         )
 
     def _viability_label(self, records: Sequence[EvaluationRecord]) -> str:
-        if not records:
+        active = self._active_records(records)
+        if not {"fba", "resource_allocation"} <= active.keys():
             return "not_evaluated"
-        return "viable" if self._is_viable(records) else "nonviable"
+        return "viable" if passes_growth_gates(active) else "nonviable"
 
     def _materialized(
         self,
@@ -342,35 +302,13 @@ class RecoverableOpenSetSelector:
         return (
             event.outcome in {"created", "reused"}
             and event.child_id is not None
-            and any(
-                record.evaluator_id == self.evaluator_ids["fba"]
-                for record in child_records
-            )
-            and any(
-                record.evaluator_id == self.evaluator_ids["resource_allocation"]
-                for record in child_records
-            )
+            and {"fba", "resource_allocation"}
+            <= self._active_records(child_records).keys()
         )
 
 
 def _effective_caps(maximum: int, configured: Sequence[int]) -> tuple[int, ...]:
-    caps: list[int] = []
-    for configured_cap in configured:
-        cap = min(maximum, configured_cap)
-        if cap not in caps:
-            caps.append(cap)
-    if 1 not in caps:
-        caps.append(1)
-    return tuple(caps)
-
-
-def _action_signature(action: DeleteGenes) -> tuple[str, ...]:
-    return tuple(sorted(action.genes))
-
-
-def _action_hash(action: DeleteGenes) -> str:
-    payload = json.dumps(_action_signature(action), separators=(",", ":")).encode()
-    return hashlib.sha256(payload).hexdigest()
+    return tuple(dict.fromkeys([min(maximum, cap) for cap in configured] + [1]))
 
 
 def _number(value: object) -> float:
@@ -404,16 +342,3 @@ def _jaccard_distance(left: frozenset[str], right: frozenset[str]) -> float:
 def _seeded_tie_break(seed: int, state_id: str) -> int:
     digest = hashlib.sha256(f"open-set:{seed}:{state_id}".encode()).digest()
     return int.from_bytes(digest[:8], "big")
-
-
-def _scalar_active_evaluations(
-    records: Mapping[str, EvaluationRecord],
-) -> dict[str, dict[str, object]]:
-    return {
-        name: {
-            key: value
-            for key, value in record.metrics.items()
-            if value is None or isinstance(value, (bool, int, float, str))
-        }
-        for name, record in sorted(records.items())
-    }

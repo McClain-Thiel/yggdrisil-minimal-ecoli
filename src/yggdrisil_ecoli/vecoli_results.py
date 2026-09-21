@@ -11,8 +11,7 @@ from typing import Any
 
 import pyarrow.parquet as pq
 
-from yggdrisil_ecoli.data.io import atomic_json
-from yggdrisil_ecoli.data.registry import file_sha256
+from yggdrisil_ecoli.data.io import atomic_json, file_sha256
 from yggdrisil_ecoli.vecoli import validate_vecoli_checkout
 
 _VARIANT = re.compile(r"--variant\s+(\d+)")
@@ -62,8 +61,8 @@ def summarize_vecoli_lineages(
     seed = _integer(lineage.get("seed"), "lineage seed")
     max_generations = _integer(lineage.get("max_generations"), "maximum generations")
     raw_finalists = manifest.get("finalists")
-    if not isinstance(raw_finalists, list):
-        raise ValueError("manifest finalists must be a list")
+    if not isinstance(raw_finalists, list) or not raw_finalists:
+        raise ValueError("manifest finalists must be a nonempty list")
     finalists = [
         _summarize_finalist(
             _mapping(item, "finalist"),
@@ -271,23 +270,15 @@ def _final_mass_measurements(
         final_chunk = max(chunks, key=lambda path: float(path.stem))
     except ValueError as exc:
         raise ValueError(f"history chunk has a nonnumeric time: {history}") from exc
-    table = pq.read_table(
-        final_chunk,
-        columns=[
-            "global_time",
-            "listeners__mass__cell_mass",
-            "listeners__mass__dry_mass",
-            "listeners__mass__dry_mass_fold_change",
-        ],
-    )
-    values = {
-        "final_global_time_s": table["global_time"][-1].as_py(),
-        "final_cell_mass_fg": table["listeners__mass__cell_mass"][-1].as_py(),
-        "final_dry_mass_fg": table["listeners__mass__dry_mass"][-1].as_py(),
-        "final_dry_mass_fold_change": table["listeners__mass__dry_mass_fold_change"][
-            -1
-        ].as_py(),
+    columns = {
+        "final_global_time_s": "global_time",
+        "final_cell_mass_fg": "listeners__mass__cell_mass",
+        "final_dry_mass_fg": "listeners__mass__dry_mass",
+        "final_dry_mass_fold_change": "listeners__mass__dry_mass_fold_change",
     }
+    table = pq.read_table(final_chunk, columns=list(columns.values()))
+    final = table.slice(table.num_rows - 1).to_pylist()[0]
+    values = {name: final[column] for name, column in columns.items()}
     if any(
         not isinstance(value, (int, float))
         or isinstance(value, bool)
@@ -310,12 +301,12 @@ def _terminal_outcome(
     error_path = task.workdir / ".command.err"
     error = error_path.read_text(errors="replace") if error_path.is_file() else ""
     error_hash = file_sha256(error_path) if error_path.is_file() else None
-    if "TimeLimitError" in error or "reached max duration" in error.lower():
-        reason = "nondivision_max_duration"
-    elif task.exit_code in {9, 137}:
+    if task.exit_code in {9, 137}:
         reason = "resource_failure"
     elif task.exit_code == 0:
         reason = "orchestration_failure"
+    elif "TimeLimitError" in error or "reached max duration" in error.lower():
+        reason = "nondivision_max_duration"
     else:
         reason = "model_exception"
     return reason, _task_payload(task, error_hash)

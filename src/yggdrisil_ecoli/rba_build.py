@@ -8,15 +8,12 @@ import os
 import subprocess
 import sys
 import tempfile
-from dataclasses import dataclass
 from datetime import UTC, datetime
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 from yggdrisil_ecoli.data.errors import DataValidationError
-from yggdrisil_ecoli.data.io import atomic_json
-from yggdrisil_ecoli.data.registry import file_sha256
-from yggdrisil_ecoli.data.sources import SourceSpec, acquire_source
+from yggdrisil_ecoli.data.io import atomic_json, file_sha256
 
 RBA_MODELS_COMMIT = "973f00e0618493e6df6af52bdde55686168fda62"
 RBA_MODEL_NAME = "Escherichia-coli-K12-WT"
@@ -48,78 +45,24 @@ RBA_NUMERICAL_DEPENDENCIES = (
 )
 
 
-@dataclass(frozen=True, slots=True)
-class _PinnedFile:
-    path: str
-    sha256: str
-
-
-RBA_MODEL_FILES = (
-    _PinnedFile(
-        "model/compartments.xml",
-        "1192a9f14e9d8f852b89aed8e035ba1e24fa16527f92a466a4a1348b21df4333",
-    ),
-    _PinnedFile(
-        "model/metabolism.xml",
-        "40636e85e6d627ac5ebd6a88e9e303920ea89fec464c28ae88038e0a1376ec5e",
-    ),
-    _PinnedFile(
-        "model/enzymes.xml",
-        "32ee3a070b80ce2e1c7dcf153573aced3decf7811b22e5d7317d2899902d6bcb",
-    ),
-    _PinnedFile(
-        "model/proteins.xml",
-        "fb3379ff7270fddfa53e36fb4dab21f337461ba0aa9ee7724e824a1718f1c161",
-    ),
-    _PinnedFile(
-        "model/rnas.xml",
-        "7eb9baf580614813fdb565c80a0f0f2bbb101242e1fc9ae8e9809d15ea0c00d0",
-    ),
-    _PinnedFile(
-        "model/dna.xml",
-        "009f0a77ad3ca55c5a1edeb8aca17bce40615d31a1b37bb6cec17bc44dd36619",
-    ),
-    _PinnedFile(
-        "model/other_macromolecules.xml",
-        "5cdbff6608680f5ac52c03119d1238a17c542ac217f2bb487d69fd04870f1a4d",
-    ),
-    _PinnedFile(
-        "model/processes.xml",
-        "bc87f31dbee2e702359ff846bd4b3aa0e9db0918c83eb400a18836c8aa307ba5",
-    ),
-    _PinnedFile(
-        "model/targets.xml",
-        "858fa43d8dbbb9ba0e0249673a26e851700b619eb36cdd457ca4f5cdfc288590",
-    ),
-    _PinnedFile(
-        "model/parameters.xml",
-        "ba2bf6380183b5e86acf165dc24edf97af606e8a15f4761895f1b45fcd5f8b13",
-    ),
-    _PinnedFile(
-        "model/custom_constraints.xml",
-        "e5f9d70463c94448b6db9b7e61d4e67e58a44bf2db937e94c1be575563730993",
-    ),
-    _PinnedFile(
-        "model/medium.tsv",
-        "4154761305fcef541ba38d0fe7f2025a532111fc482e463628e41d7e31441342",
-    ),
-    _PinnedFile(
-        "model_file_index.in",
-        "b78d17ce5d61dd66311e4bfe4e7e61d056258315a4eae15220d32bccc1b911b7",
-    ),
-    _PinnedFile(
-        "metadata.tsv",
-        "c1c41fff95be61747312089a207bcdda6b5249d87f400c8039896624f7fe2756",
-    ),
-    _PinnedFile(
-        "README.rst",
-        "18ac95423921ca560f0cf53d27d7d16f46c53412bffc9ec88ee47a8fb21d43b4",
-    ),
-    _PinnedFile(
-        RBA_REPOSITORY_WT_GROWTH_PATH,
-        "007906fff17975251ecb85f89a57d2e7d44268165ffc0e85c01d34a22f05d0dc",
-    ),
-)
+RBA_MODEL_FILES = {
+    "model/compartments.xml": "1192a9f14e9d8f852b89aed8e035ba1e24fa16527f92a466a4a1348b21df4333",
+    "model/metabolism.xml": "40636e85e6d627ac5ebd6a88e9e303920ea89fec464c28ae88038e0a1376ec5e",
+    "model/enzymes.xml": "32ee3a070b80ce2e1c7dcf153573aced3decf7811b22e5d7317d2899902d6bcb",
+    "model/proteins.xml": "fb3379ff7270fddfa53e36fb4dab21f337461ba0aa9ee7724e824a1718f1c161",
+    "model/rnas.xml": "7eb9baf580614813fdb565c80a0f0f2bbb101242e1fc9ae8e9809d15ea0c00d0",
+    "model/dna.xml": "009f0a77ad3ca55c5a1edeb8aca17bce40615d31a1b37bb6cec17bc44dd36619",
+    "model/other_macromolecules.xml": "5cdbff6608680f5ac52c03119d1238a17c542ac217f2bb487d69fd04870f1a4d",
+    "model/processes.xml": "bc87f31dbee2e702359ff846bd4b3aa0e9db0918c83eb400a18836c8aa307ba5",
+    "model/targets.xml": "858fa43d8dbbb9ba0e0249673a26e851700b619eb36cdd457ca4f5cdfc288590",
+    "model/parameters.xml": "ba2bf6380183b5e86acf165dc24edf97af606e8a15f4761895f1b45fcd5f8b13",
+    "model/custom_constraints.xml": "e5f9d70463c94448b6db9b7e61d4e67e58a44bf2db937e94c1be575563730993",
+    "model/medium.tsv": "4154761305fcef541ba38d0fe7f2025a532111fc482e463628e41d7e31441342",
+    "model_file_index.in": "b78d17ce5d61dd66311e4bfe4e7e61d056258315a4eae15220d32bccc1b911b7",
+    "metadata.tsv": "c1c41fff95be61747312089a207bcdda6b5249d87f400c8039896624f7fe2756",
+    "README.rst": "18ac95423921ca560f0cf53d27d7d16f46c53412bffc9ec88ee47a8fb21d43b4",
+    RBA_REPOSITORY_WT_GROWTH_PATH: "007906fff17975251ecb85f89a57d2e7d44268165ffc0e85c01d34a22f05d0dc",
+}
 
 
 def build_rba_artifact(
@@ -129,19 +72,18 @@ def build_rba_artifact(
 ) -> Path:
     """Download, verify, and derive the deterministic RBA model structure."""
 
+    from yggdrisil_ecoli.data.sources import SourceSpec, acquire_source
+
     artifact_dir = Path(output_dir)
     source_records: list[dict[str, object]] = []
-    for pinned in RBA_MODEL_FILES:
-        relative_path = Path(pinned.path)
+    for source_path, sha256 in RBA_MODEL_FILES.items():
+        relative_path = Path(source_path)
         spec = SourceSpec(
-            name=f"rba_models_{pinned.path.replace('/', '_')}",
-            url=f"{RBA_MODEL_BASE_URL}{pinned.path}",
+            url=f"{RBA_MODEL_BASE_URL}{source_path}",
             filename=relative_path.name,
-            source_version=RBA_MODELS_COMMIT,
-            redistribution="RBA-models CC-BY-NC-4.0; local artifact is not vendored",
-            expected_sha256=pinned.sha256,
+            expected_sha256=sha256,
         )
-        local_path, record = acquire_source(
+        local_path = acquire_source(
             spec,
             artifact_dir / relative_path.parent,
             refresh=refresh,
@@ -149,9 +91,9 @@ def build_rba_artifact(
         source_records.append(
             {
                 "path": local_path.relative_to(artifact_dir).as_posix(),
-                "url": record.url,
-                "sha256": record.sha256,
-                "bytes": record.bytes,
+                "url": spec.url,
+                "sha256": file_sha256(local_path),
+                "bytes": local_path.stat().st_size,
             }
         )
 
@@ -190,7 +132,7 @@ def build_rba_artifact(
         "built_at": datetime.now(UTC).isoformat(),
         "provenance": provenance,
         "provenance_sha256": provenance_sha256,
-        "artifact_bundle_sha256": _bundle_sha256(artifact_dir, provenance),
+        "artifact_bundle_sha256": _sha256_json(sorted(RBA_MODEL_FILES.items())),
     }
     manifest_path = artifact_dir / RBA_ARTIFACT_MANIFEST
     atomic_json(manifest_path, manifest)
@@ -315,31 +257,3 @@ def _read_repository_wt_reference(path: Path) -> float:
 def _sha256_json(value: object) -> str:
     encoded = json.dumps(value, separators=(",", ":"), sort_keys=True).encode()
     return hashlib.sha256(encoded).hexdigest()
-
-
-def _bundle_sha256(artifact_dir: Path, provenance: dict[str, object]) -> str:
-    entries = []
-    files = provenance["source_files"]
-    if not isinstance(files, list):
-        raise DataValidationError("invalid RBA provenance source_files")
-    for item in files:
-        if not isinstance(item, dict) or not isinstance(item.get("path"), str):
-            raise DataValidationError("invalid RBA provenance source entry")
-        path = artifact_dir / item["path"]
-        entries.append((item["path"], file_sha256(path)))
-    return _sha256_json(sorted(entries))
-
-
-__all__ = [
-    "MODEL_STRUCTURE_PATH",
-    "RBA_ARTIFACT_MANIFEST",
-    "RBA_EXPECTED_LP_DIMENSIONS",
-    "RBA_EXPECTED_REGISTRY_MAPPING",
-    "RBA_EXPECTED_STRUCTURE_DIMENSIONS",
-    "RBA_GROWTH_FLOOR_H",
-    "RBA_MODEL_FILES",
-    "RBA_MODELS_COMMIT",
-    "RBA_NUMERICAL_DEPENDENCIES",
-    "RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H",
-    "build_rba_artifact",
-]

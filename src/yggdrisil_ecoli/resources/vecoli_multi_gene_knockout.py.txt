@@ -2,6 +2,8 @@
 
 from typing import TYPE_CHECKING, Any
 
+import numpy as np
+
 if TYPE_CHECKING:
     from reconstruction.ecoli.simulation_data import SimulationDataEcoli
 
@@ -29,11 +31,7 @@ def apply_variant(
     rna_indices = []
     rna_ids = []
     for gene_id in gene_ids:
-        cistron_matches = [
-            index
-            for index, candidate in enumerate(cistrons["gene_id"])
-            if candidate == gene_id
-        ]
+        cistron_matches = np.flatnonzero(cistrons["gene_id"] == gene_id).tolist()
         if len(cistron_matches) != 1:
             raise ValueError(
                 f"{gene_id}: expected exactly one vEcoli cistron, "
@@ -85,32 +83,15 @@ def _verify_zero_expression(
         "basal_prob": regulation.basal_prob,
     }
     nonzero = [
-        f"{name}[{index}]={values[index]!r}"
-        for name, values in arrays.items()
-        for index in rna_indices
-        if float(values[index]) != 0.0
+        name for name, values in arrays.items() if np.any(values[rna_indices] != 0)
     ]
-    targeted = set(rna_indices)
-    nonzero.extend(
-        f"attenuation_basal_prob_adjustments[{position}]={value!r}"
-        for position, (index, value) in enumerate(
-            zip(
-                transcription.attenuated_rna_indices,
-                transcription.attenuation_basal_prob_adjustments,
-            )
-        )
-        if int(index) in targeted and float(value) != 0.0
-    )
+    attenuation = transcription.attenuation_basal_prob_adjustments
+    if np.any(attenuation[np.isin(transcription.attenuated_rna_indices, rna_indices)] != 0):
+        nonzero.append("attenuation_basal_prob_adjustments")
     delta_prob = regulation.delta_prob
-    nonzero.extend(
-        f"delta_prob[deltaV][{position}]={value!r}"
-        for position, (index, value) in enumerate(
-            zip(delta_prob["deltaI"], delta_prob["deltaV"])
-        )
-        if int(index) in targeted and float(value) != 0.0
-    )
+    if np.any(delta_prob["deltaV"][np.isin(delta_prob["deltaI"], rna_indices)] != 0):
+        nonzero.append("delta_prob")
     if nonzero:
         raise RuntimeError(
-            "vEcoli knockout left nonzero expression parameters: "
-            + ", ".join(nonzero[:20])
+            "vEcoli knockout left nonzero expression parameters: " + ", ".join(nonzero)
         )

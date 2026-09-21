@@ -29,7 +29,7 @@ all vEcoli outcomes are excluded from selection.
   model's knockout semantics without deleting untargeted operon partners.
 - Environment: the vEcoli basal condition (`M9 Glucose minus AAs` in ParCa and
   the matching minimal simulation medium).
-- Genotype mapping: canonical MG1655 b-numbers map through the frozen registry's
+- Genotype mapping: canonical MG1655 b-numbers map through the frozen gene table's
   exact EcoCyc gene ID. Every requested target must map to exactly one vEcoli
   cistron and one single-cistron RNA before the variant is accepted. Missing
   targets remain explicit and make that candidate's whole-cell result invalid;
@@ -45,7 +45,7 @@ all vEcoli outcomes are excluded from selection.
   Timeout/nondivision, model exception, resource failure, and orchestration
   failure are recorded separately; only timeout/nondivision is biological
   evidence.
-- Output: the exact source graph and registry hashes, selected state IDs and
+- Output: the exact source graph and gene-table hashes, selected state IDs and
   deletion-set hashes, b-number-to-vEcoli mapping, workflow configuration,
   variant hashes, vEcoli revision and dependency-lock hash, task trace, logs,
   generation outcomes, elapsed time, and content hashes are retained. Large
@@ -56,7 +56,7 @@ all vEcoli outcomes are excluded from selection.
 
 1. Finalist selection is deterministic, run-scoped, active-evaluator-scoped,
    and cannot load reduced-genome or vEcoli validation data.
-2. A changed graph, state payload, registry, vEcoli revision, lockfile, or
+2. A changed graph, state payload, gene table, vEcoli revision, lockfile, or
    knockout adapter is rejected by provenance validation.
 3. A separate control workflow shows that wild type and a known neutral single
    knockout divide, while a known essential single knockout is rejected or

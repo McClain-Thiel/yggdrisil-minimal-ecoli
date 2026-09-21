@@ -12,7 +12,9 @@ from yggdrisil_ecoli.vecoli import prepare_finalist_workflow
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--graph", type=Path, required=True)
-    parser.add_argument("--registry", type=Path, required=True)
+    parser.add_argument(
+        "--genes", type=Path, default=Path("data/processed/genes.parquet")
+    )
     parser.add_argument("--vecoli-checkout", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
@@ -25,7 +27,7 @@ def main() -> None:
     args = parser.parse_args()
     manifest = prepare_finalist_workflow(
         graph_path=args.graph,
-        registry_path=args.registry,
+        genes_path=args.genes,
         vecoli_checkout=args.vecoli_checkout,
         output_root=args.output_root,
         manifest_path=args.manifest,

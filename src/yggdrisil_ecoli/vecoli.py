@@ -10,12 +10,13 @@ import subprocess
 from dataclasses import dataclass
 from fractions import Fraction
 from pathlib import Path
-from typing import Any
 
+import pandas as pd
+from pydantic import TypeAdapter
 from yggdrisil.serialize import loads
 
-from yggdrisil_ecoli.data.io import atomic_bytes, atomic_json
-from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
+from yggdrisil_ecoli.data.evidence import load_genes
+from yggdrisil_ecoli.data.io import atomic_bytes, atomic_json, file_sha256
 from yggdrisil_ecoli.state import GenomeState, genome_state_key
 
 VECOLI_COMMIT = "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc"
@@ -80,9 +81,9 @@ def select_finalists(
         if run_row is None:
             raise ValueError(f"graph has no runs: {path}")
         run_id, run_status, raw_run_metadata = run_row
-        run_metadata = _mapping(loads(str(raw_run_metadata)), "run metadata")
-        evaluator_ids = _string_mapping(
-            run_metadata.get("evaluators"), "run evaluator identities"
+        run_metadata = loads(str(raw_run_metadata))
+        evaluator_ids = TypeAdapter(dict[str, str]).validate_python(
+            run_metadata["evaluators"], strict=True
         )
         required = {"fba", "resource_allocation"}
         if required - evaluator_ids.keys():
@@ -149,38 +150,29 @@ def select_diverse_finalists(
 
 
 def map_finalists(
-    finalists: tuple[Finalist, ...], registry: GeneRegistry
+    finalists: tuple[Finalist, ...], genes: pd.DataFrame
 ) -> tuple[FinalistVariant, ...]:
     """Map every deletion through the frozen canonical registry to vEcoli IDs."""
 
     variants: list[FinalistVariant] = []
     for variant_index, finalist in enumerate(finalists, start=1):
-        mapping: list[tuple[str, str]] = []
-        missing: list[str] = []
-        for b_number in sorted(finalist.deleted_genes):
-            ecocyc_id = registry.require(b_number).ecocyc_id
-            if ecocyc_id is None:
-                missing.append(b_number)
-            else:
-                mapping.append((b_number, ecocyc_id))
-        if missing:
+        mapping = genes.loc[sorted(finalist.deleted_genes), "ecocyc_id"]
+        if mapping.isna().any():
             raise ValueError(
-                f"{finalist.state_id}: deletions lack EcoCyc IDs: {missing}"
+                f"{finalist.state_id}: deletions lack EcoCyc IDs: "
+                f"{mapping.index[mapping.isna()].tolist()}"
             )
-        vecoli_ids = [ecocyc_id for _, ecocyc_id in mapping]
-        duplicates = sorted(
-            gene_id for gene_id in set(vecoli_ids) if vecoli_ids.count(gene_id) > 1
-        )
-        if duplicates:
+        if mapping.duplicated().any():
             raise ValueError(
-                f"{finalist.state_id}: ambiguous EcoCyc mappings: {duplicates}"
+                f"{finalist.state_id}: ambiguous EcoCyc mappings: "
+                f"{sorted(mapping[mapping.duplicated()].unique())}"
             )
         variants.append(
             FinalistVariant(
                 variant_index=variant_index,
                 finalist=finalist,
-                vecoli_gene_ids=tuple(vecoli_ids),
-                gene_mapping=tuple(mapping),
+                vecoli_gene_ids=tuple(mapping),
+                gene_mapping=tuple(mapping.items()),
             )
         )
     return tuple(variants)
@@ -189,7 +181,7 @@ def map_finalists(
 def prepare_finalist_workflow(
     *,
     graph_path: str | Path,
-    registry_path: str | Path,
+    genes_path: str | Path,
     vecoli_checkout: str | Path,
     output_root: str | Path,
     manifest_path: str | Path,
@@ -210,9 +202,8 @@ def prepare_finalist_workflow(
     selection, finalists = select_finalists(
         graph_path, count=count, deletion_band=deletion_band
     )
-    registry_file = Path(registry_path)
-    registry = GeneRegistry.from_parquet(registry_file)
-    variants = map_finalists(finalists, registry)
+    genes_file = Path(genes_path)
+    variants = map_finalists(finalists, load_genes(genes_file))
     selection_hash = _json_sha256([item.state_id for item in finalists])
     experiment_id = f"yggdrisil_finalists_{selection_hash[:12]}_seed{lineage_seed}"
     config = build_workflow_config(
@@ -234,8 +225,8 @@ def prepare_finalist_workflow(
         },
         "selection": selection,
         "registry": {
-            "path": str(registry_file.resolve()),
-            "sha256": file_sha256(registry_file),
+            "path": str(genes_file.resolve()),
+            "sha256": file_sha256(genes_file),
         },
         "vecoli": {
             **vecoli,
@@ -367,48 +358,32 @@ def _load_viable_states(
 ) -> tuple[Finalist, ...]:
     fba_id = evaluator_ids["fba"]
     resource_id = evaluator_ids["resource_allocation"]
-    run_state_ids = {
-        str(row[0])
-        for row in connection.execute(
-            "SELECT parent_id FROM proposal_events WHERE run_id = ? "
-            "UNION SELECT child_id FROM proposal_events "
-            "WHERE run_id = ? AND child_id IS NOT NULL",
-            (run_id, run_id),
-        ).fetchall()
-    }
-    if not run_state_ids:
-        raise ValueError(f"run has no materialized state transitions: {run_id}")
-    placeholders = ",".join("?" for _ in run_state_ids)
     rows = connection.execute(
-        f"SELECT state_id, state_json FROM states WHERE state_id IN ({placeholders})",
-        tuple(sorted(run_state_ids)),
+        "SELECT s.state_id, s.state_json, f.metrics_json, r.metrics_json "
+        "FROM states s "
+        "JOIN evaluations f ON f.state_id = s.state_id AND f.evaluator_id = ? "
+        "JOIN evaluations r ON r.state_id = s.state_id AND r.evaluator_id = ? "
+        "WHERE s.state_id IN ("
+        "SELECT parent_id FROM proposal_events WHERE run_id = ? "
+        "UNION SELECT child_id FROM proposal_events WHERE run_id = ?)",
+        (fba_id, resource_id, run_id, run_id),
     ).fetchall()
     finalists: list[Finalist] = []
-    for state_id, raw_state in rows:
+    for state_id, raw_state, raw_fba, raw_resource in rows:
         state = loads(str(raw_state))
-        if not isinstance(state, GenomeState):
-            raise ValueError(f"state {state_id} is not a GenomeState")
-        if genome_state_key(state) != state_id:
+        if not isinstance(state, GenomeState) or genome_state_key(state) != state_id:
             raise ValueError(f"state payload does not match ID: {state_id}")
-        raw_evaluations = connection.execute(
-            "SELECT evaluator_id, metrics_json FROM evaluations "
-            "WHERE state_id = ? AND evaluator_id IN (?, ?)",
-            (state_id, fba_id, resource_id),
-        ).fetchall()
-        metrics = {
-            str(evaluator_id): _mapping(loads(str(raw_metrics)), "evaluation metrics")
-            for evaluator_id, raw_metrics in raw_evaluations
-        }
-        if fba_id not in metrics or resource_id not in metrics:
-            continue
-        growth = metrics[fba_id].get("growth_rate")
+        fba = loads(str(raw_fba))
+        resource = loads(str(raw_resource))
+        growth = fba.get("growth_rate")
         fba_positive = (
-            metrics[fba_id].get("feasible") is True
+            fba.get("feasible") is True
             and isinstance(growth, (int, float))
             and not isinstance(growth, bool)
+            and math.isfinite(growth)
             and growth > 0
         )
-        resource_positive = metrics[resource_id].get("feasible_at_growth_floor") is True
+        resource_positive = resource.get("feasible_at_growth_floor") is True
         if fba_positive and resource_positive:
             assert isinstance(growth, (int, float)) and not isinstance(growth, bool)
             finalists.append(
@@ -461,22 +436,6 @@ def _frozen_sqlite_hashes(path: Path) -> dict[str, str]:
     if present:
         raise ValueError(f"graph must be checkpointed; found sidecars: {present}")
     return {path.name: file_sha256(path)}
-
-
-def _mapping(value: object, label: str) -> dict[str, Any]:
-    if not isinstance(value, dict):
-        raise ValueError(f"{label} must be a mapping")
-    return value
-
-
-def _string_mapping(value: object, label: str) -> dict[str, str]:
-    mapping = _mapping(value, label)
-    if any(
-        not isinstance(key, str) or not isinstance(item, str)
-        for key, item in mapping.items()
-    ):
-        raise ValueError(f"{label} must map strings to strings")
-    return {str(key): str(item) for key, item in mapping.items()}
 
 
 def _git(checkout: Path, *args: str) -> str:

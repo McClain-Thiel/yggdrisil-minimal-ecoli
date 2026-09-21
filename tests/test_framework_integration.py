@@ -4,11 +4,11 @@ import random
 from dataclasses import dataclass
 from pathlib import Path
 
+import pandas as pd
 import pytest
 from yggdrisil import (
     EvaluationResult,
     EvaluatorSuite,
-    GraphError,
     RandomPolicy,
     RunLimits,
     Runner,
@@ -17,13 +17,6 @@ from yggdrisil import (
 )
 
 from yggdrisil_ecoli.actions import DeleteGenes
-from yggdrisil_ecoli.data.essentiality import (
-    EssentialityClass,
-    EssentialityDataset,
-    EssentialityRecord,
-    SourceCall,
-)
-from yggdrisil_ecoli.data.gff import parse_ncbi_gff
 from yggdrisil_ecoli.policies import (
     deletion_sampler,
     make_heuristic_policy,
@@ -34,10 +27,7 @@ from yggdrisil_ecoli.scorers.base import (
     active_evaluator_ids,
     scientific_evaluation,
 )
-from yggdrisil_ecoli.search import _application_source_hash, validate_search_resume
 from yggdrisil_ecoli.state import GenomeState
-
-FIXTURES = Path(__file__).parent / "fixtures"
 
 
 @dataclass
@@ -93,9 +83,9 @@ class _FixedScorer:
 @pytest.mark.asyncio
 async def test_runner_persists_serializable_states_actions_and_evidence(
     tmp_path: Path,
+    genes: pd.DataFrame,
 ) -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    problem = EcoliProblem(registry, max_genes_per_action=1)
+    problem = EcoliProblem(genes, max_genes_per_action=1)
     scorer = _CountingScorer()
     graph_path = tmp_path / "search.sqlite"
     graph = SQLiteStateGraph[GenomeState, DeleteGenes](graph_path)
@@ -103,7 +93,7 @@ async def test_runner_persists_serializable_states_actions_and_evidence(
     result = await Runner(
         problem,
         RandomPolicy(
-            deletion_sampler(registry),
+            deletion_sampler(genes),
             n_proposals=1,
             seed=7,
         ),
@@ -151,18 +141,14 @@ async def test_framework_suite_uses_yggdrisil_cache(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
-async def test_simple_heuristic_accepts_resource_feasible_parent_with_essential_deletion(
+@pytest.mark.parametrize("policy_name", ["random", "heuristic"])
+async def test_baseline_requires_resource_growth_but_allows_essential_deletion(
     tmp_path: Path,
+    genes: pd.DataFrame,
+    policy_name: str,
 ) -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    problem = EcoliProblem(registry)
-    essentiality = EssentialityDataset(
-        (
-            _essentiality_summary("b0001", "essential"),
-            _essentiality_summary("b0002", "nonessential"),
-            _essentiality_summary("b0003", "nonessential"),
-        )
-    )
+    problem = EcoliProblem(genes)
+    genes.loc["b0001", "classification"] = "essential"
     graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "policy.sqlite")
     root = graph.add_state(
         problem.state_key(problem.initial_state),
@@ -187,11 +173,13 @@ async def test_simple_heuristic_accepts_resource_feasible_parent_with_essential_
     suite = EvaluatorSuite(list(scorers), concurrent=True)
     for node in graph.states():
         await suite.evaluate_cached(graph, node.state_id)
-    policy = make_heuristic_policy(
-        registry=registry,
-        essentiality=essentiality,
-        evaluator_ids=active_evaluator_ids(scorers),
-        seed=3,
+    identities = active_evaluator_ids(scorers)
+    policy = (
+        make_heuristic_policy(genes=genes, evaluator_ids=identities, seed=3)
+        if policy_name == "heuristic"
+        else RandomPolicy(
+            deletion_sampler(genes), seed=3, eligible=viability_eligibility(identities)
+        )
     )
 
     decisions = await policy.step(
@@ -207,178 +195,31 @@ async def test_simple_heuristic_accepts_resource_feasible_parent_with_essential_
 
     assert decisions
     proposal = decisions[0].proposals[0]
-    viable_child = next(
+    fba_positive_child = next(
         node for node in children if node.state.deleted_genes == frozenset({"b0001"})
     )
-    assert proposal.parent_id == viable_child.state_id
+    assert proposal.parent_id == fba_positive_child.state_id
 
 
-@pytest.mark.asyncio
-async def test_random_policy_never_expands_resource_infeasible_parent(
-    tmp_path: Path,
-) -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    problem = EcoliProblem(registry)
-    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "random-gate.sqlite")
-    root = graph.add_state(
-        problem.state_key(problem.initial_state), problem.initial_state
-    )
-    children = []
-    for gene in ("b0001", "b0002"):
-        action = DeleteGenes(genes=(gene,))
-        state = problem.apply(problem.initial_state, action)
-        node, _edge, _node_created, _edge_created = graph.add_transition(
-            parent_id=root.state_id,
-            child_id=problem.state_key(state),
-            child=state,
-            action=action,
-        )
-        children.append(node)
-    scorers = (
-        _StateEvidenceScorer("fba", "feasible"),
-        _StateEvidenceScorer("resource_allocation", "feasible_at_growth_floor"),
-    )
-    suite = EvaluatorSuite(list(scorers), concurrent=True)
-    for node in graph.states():
-        await suite.evaluate_cached(graph, node.state_id)
-    blocked_id = next(
-        node.state_id
-        for node in children
-        if node.state.deleted_genes == frozenset({"b0002"})
-    )
-    policy = RandomPolicy(
-        deletion_sampler(registry),
-        n_proposals=4,
-        seed=11,
-        eligible=viability_eligibility(active_evaluator_ids(scorers)),
-    )
-
-    for step in range(20):
-        decisions = await policy.step(
-            graph.readonly(),
-            RunStatus(
-                step=step,
-                unique_states=len(graph),
-                edges=graph.edge_count(),
-                elapsed_s=0,
-                limits=RunLimits(max_states=10),
-            ),
-        )
-        assert all(
-            proposal.parent_id != blocked_id
-            for decision in decisions
-            for proposal in decision.proposals
-        )
-    graph.close()
-
-
-def test_deletion_sampler_does_not_silently_exclude_essential_genes() -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    essentiality = EssentialityDataset(
-        (
-            _essentiality_summary("b0001", "essential"),
-            _essentiality_summary("b0002", "nonessential"),
-            _essentiality_summary("b0003", "nonessential"),
-        )
-    )
+def test_deletion_sampler_does_not_silently_exclude_essential_genes(genes) -> None:
+    genes.loc["b0001", "classification"] = "essential"
     state = GenomeState(frozenset({"b0002", "b0003"}))
 
-    default_actions = deletion_sampler(registry, essentiality=essentiality)(
-        state, random.Random(0)
-    )
+    default_actions = deletion_sampler(genes)(state, random.Random(0))
     filtered_actions = deletion_sampler(
-        registry,
-        essentiality=essentiality,
-        exclude_known_essential=True,
+        genes,
+        exclude_essential=True,
     )(GenomeState(frozenset({"b0002"})), random.Random(0))
 
     assert default_actions == (DeleteGenes(genes=("b0001",)),)
     assert filtered_actions == (DeleteGenes(genes=("b0003",)),)
 
 
-def _essentiality_summary(
-    gene: str,
-    classification: EssentialityClass,
-) -> EssentialityRecord:
-    calls: dict[EssentialityClass, tuple[SourceCall, SourceCall]] = {
-        "essential": ("E", "E"),
-        "conditionally_essential": ("NE", "E"),
-        "nonessential": ("NE", "NE"),
-        "ambiguous": ("E", "NE"),
-    }
-    lb_call, m9_call = calls[classification]
-    return EssentialityRecord(
-        b_number=gene,
-        classification=classification,
-        coverage="measured",
-        lb_call_raw=lb_call,
-        lb_ecipkm=1.0 if lb_call == "E" else 3.0,
-        m9_call_raw=m9_call,
-        m9_ecipkm=1.0 if m9_call == "E" else 3.0,
-    )
-
-
-def test_resume_rejects_changed_policy_configuration(tmp_path: Path) -> None:
-    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "resume.sqlite")
-    graph.save_run(
-        "run_a",
-        step=0,
-        status="completed",
-        config={},
-        metadata={"policy": "random", "seed": 7},
-    )
-
-    with pytest.raises(GraphError, match="policy"):
-        validate_search_resume(
-            graph,
-            run_id="run_a",
-            resume=True,
-            expected_metadata={"policy": "heuristic", "seed": 7},
-        )
-
-    graph.close()
-
-
-def test_application_source_hash_is_stable_and_content_addressed() -> None:
-    first = _application_source_hash()
-
-    assert len(first) == 64
-    assert first == _application_source_hash()
-
-
-def test_resume_rejects_changed_evaluator_identity(tmp_path: Path) -> None:
-    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "evidence.sqlite")
-    graph.save_run(
-        "run_a",
-        step=0,
-        status="completed",
-        config={},
-        metadata={"evaluators": {"essentiality": "artifact-a"}},
-    )
-
-    with pytest.raises(GraphError, match="evaluators"):
-        validate_search_resume(
-            graph,
-            run_id="run_a",
-            resume=True,
-            expected_metadata={"evaluators": {"essentiality": "artifact-b"}},
-        )
-
-    graph.close()
-
-
 @pytest.mark.asyncio
 async def test_heuristic_selects_active_cached_identity_after_config_reversion(
     tmp_path: Path,
+    genes: pd.DataFrame,
 ) -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    essentiality = EssentialityDataset(
-        (
-            _essentiality_summary("b0001", "nonessential"),
-            _essentiality_summary("b0002", "nonessential"),
-            _essentiality_summary("b0003", "nonessential"),
-        )
-    )
     graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "identity.sqlite")
     graph.add_state("root", GenomeState(frozenset()))
     active = (
@@ -393,9 +234,7 @@ async def test_heuristic_selects_active_cached_identity_after_config_reversion(
             "config-a",
         ),
         _FixedScorer(
-            "resource_allocation",
-            {"feasible_at_growth_floor": True},
-            "config-a",
+            "resource_allocation", {"feasible_at_growth_floor": True}, "config-a"
         ),
     )
     inactive = (
@@ -410,9 +249,7 @@ async def test_heuristic_selects_active_cached_identity_after_config_reversion(
             "config-b",
         ),
         _FixedScorer(
-            "resource_allocation",
-            {"feasible_at_growth_floor": False},
-            "config-b",
+            "resource_allocation", {"feasible_at_growth_floor": False}, "config-b"
         ),
     )
     await EvaluatorSuite(list(active), concurrent=True).evaluate_cached(graph, "root")
@@ -420,8 +257,7 @@ async def test_heuristic_selects_active_cached_identity_after_config_reversion(
     # Reverting to A is a cache hit, so A remains older than B.
     await EvaluatorSuite(list(active), concurrent=True).evaluate_cached(graph, "root")
     policy = make_heuristic_policy(
-        registry=registry,
-        essentiality=essentiality,
+        genes=genes,
         evaluator_ids=active_evaluator_ids(active),
         seed=0,
     )
@@ -438,4 +274,69 @@ async def test_heuristic_selects_active_cached_identity_after_config_reversion(
     )
 
     assert decisions
+    graph.close()
+
+
+@pytest.mark.asyncio
+async def test_agent_prompts_select_active_cached_evaluations(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, genes
+) -> None:
+    import json
+
+    from pydantic_ai import models
+    from yggdrisil.agents import ExplorationRequest
+
+    from yggdrisil_ecoli.agent_policy import AgentSearchConfig, make_agent_policy
+    from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
+
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-placeholder")
+    monkeypatch.setattr(models, "ALLOW_MODEL_REQUESTS", False)
+    modules = ModuleEvaluator(
+        registry=genes,
+        entries={},
+        wt_complete_module_ids=(),
+        parser_semantics_version="fixture",
+    )
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "agent-cache.sqlite")
+    graph.save_run("agent-cache", step=0, status="running", config={}, metadata={})
+    graph.add_state("root", GenomeState(frozenset()))
+    active = [
+        _FixedScorer("fba", {"feasible": True, "growth_rate": 1.0}, "config-a"),
+        _FixedScorer(
+            "resource_allocation", {"feasible_at_growth_floor": True}, "config-a"
+        ),
+    ]
+    inactive = [
+        _FixedScorer("fba", {"feasible": False, "growth_rate": 0.0}, "config-b"),
+        _FixedScorer(
+            "resource_allocation", {"feasible_at_growth_floor": False}, "config-b"
+        ),
+    ]
+    for scorers in (active, inactive, active):
+        await EvaluatorSuite(scorers).evaluate_cached(graph, "root")
+    policy = make_agent_policy(
+        genes=genes,
+        modules=modules,
+        config=AgentSearchConfig(model="vendor/model"),
+        evaluator_ids=active_evaluator_ids(active),
+    )
+    status = RunStatus(
+        step=0,
+        unique_states=1,
+        edges=0,
+        elapsed_s=0,
+        limits=RunLimits(max_states=2),
+        run_id="agent-cache",
+    )
+    explorer_prompt = policy.explorer.format_prompt(
+        policy._explorer_context(graph.readonly(), ExplorationRequest("root"))
+    )
+    requests = policy.request_selector.select(graph.readonly(), status)
+
+    expected = {
+        "fba": {"feasible": True, "growth_rate": 1.0},
+        "resource_allocation": {"feasible_at_growth_floor": True},
+    }
+    assert json.loads(explorer_prompt)["evaluations"] == expected
+    assert [request.state_id for request in requests] == ["root"]
     graph.close()

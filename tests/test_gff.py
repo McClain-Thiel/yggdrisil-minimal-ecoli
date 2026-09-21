@@ -1,3 +1,4 @@
+import gzip
 from pathlib import Path
 
 import pytest
@@ -10,13 +11,13 @@ FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def test_ncbi_gff_defines_only_canonical_protein_coding_genes() -> None:
-    parsed = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3")
+    genes, metadata = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3")
 
-    assert parsed.metadata.assembly_accession == ASSEMBLY_ACCESSION
-    assert parsed.metadata.reference_accession == REFERENCE_ACCESSION
-    assert parsed.registry.search_universe == frozenset({"b0001", "b0002", "b0003"})
+    assert metadata["assembly_accession"] == ASSEMBLY_ACCESSION
+    assert metadata["reference_accession"] == REFERENCE_ACCESSION
+    assert frozenset(genes.index) == frozenset({"b0001", "b0002", "b0003"})
 
-    thr_a = parsed.registry.require("b0002")
+    thr_a = genes.loc["b0002"]
     assert thr_a.symbol == "thrA"
     assert thr_a.description == "fused aspartate kinase/homoserine dehydrogenase 1"
     assert thr_a.ncbi_gene_id == "945803"
@@ -47,7 +48,38 @@ def test_gene_on_wrong_reference_fails_at_gff_boundary(tmp_path: Path) -> None:
 
 
 def test_symbols_are_not_translated_as_identifiers() -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
+    registry, _ = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3")
 
-    with pytest.raises(DataValidationError, match="canonical b-number"):
-        registry.require("thrA")
+    with pytest.raises(KeyError):
+        registry.loc["thrA"]
+
+
+@pytest.mark.parametrize("compressed", [False, True])
+def test_library_parser_handles_escaping_and_embedded_fasta(
+    tmp_path: Path, compressed: bool
+) -> None:
+    source = (
+        (FIXTURES / "mg1655_excerpt.gff3")
+        .read_text()
+        .replace(
+            "product=thr operon leader peptide", "product=leader%3B peptide%2C 100%25"
+        )
+    )
+    source += "##FASTA\n>NC_000913.3\nACGT\n"
+    path = tmp_path / "download"  # Detect compressed downloads without a .gz suffix.
+    path.write_bytes(gzip.compress(source.encode()) if compressed else source.encode())
+
+    registry, _ = parse_ncbi_gff(path)
+
+    assert len(registry) == 3
+    assert registry.loc["b0001"].description == "leader; peptide, 100%"
+
+
+def test_duplicate_genes_are_rejected_after_library_parsing(tmp_path: Path) -> None:
+    source = (FIXTURES / "mg1655_excerpt.gff3").read_text()
+    gene = next(line for line in source.splitlines() if "ID=gene-b0001;" in line)
+    path = tmp_path / "duplicate.gff3"
+    path.write_text(source + gene + "\n")
+
+    with pytest.raises(DataValidationError, match="duplicate canonical IDs"):
+        parse_ncbi_gff(path)

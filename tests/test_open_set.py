@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from collections.abc import Callable
 from pathlib import Path
 
@@ -15,12 +16,9 @@ from yggdrisil import (
 from yggdrisil.agents import ExplorerContext, ExplorerResult
 
 from yggdrisil_ecoli.actions import DeleteGenes
-from yggdrisil_ecoli.data.gff import parse_ncbi_gff
 from yggdrisil_ecoli.open_set import OpenSetConfig, RecoverableOpenSetSelector
 from yggdrisil_ecoli.problem import EcoliProblem
 from yggdrisil_ecoli.state import GenomeState
-
-FIXTURES = Path(__file__).parent / "fixtures"
 
 EVALUATOR_IDS = {
     "essentiality": "essentiality-fixture",
@@ -78,8 +76,8 @@ def test_viable_nonleaf_recovers_after_lethal_siblings_and_resume(
 
     assert request.state_id == parent
     assert request.guidance is not None
-    assert "RECOVERY_ATTEMPT: 2" in request.guidance
-    assert "SUGGESTED_FALLBACK_CEILING: 10" in request.guidance
+    assert json.loads(request.guidance)["attempt"] == 2
+    assert json.loads(request.guidance)["suggested_fallback_ceiling"] == 10
     assert request.guidance.count('"child_viability": "nonviable"') == 2
     assert "b0002" in request.guidance
     assert selector.attempted_actions(parent) == frozenset({("b0002",), ("b0003",)})
@@ -88,7 +86,7 @@ def test_viable_nonleaf_recovers_after_lethal_siblings_and_resume(
     resumed_request = resumed.select(graph.readonly(), _status("run_a", step=3))[0]
     assert resumed_request.state_id == parent
     assert resumed.attempted_actions(parent) == selector.attempted_actions(parent)
-    assert "CANDIDATE_PREVIEW_PAGE: 3" in resumed_request.guidance
+    assert json.loads(resumed_request.guidance)["candidate_preview_page"] == 3
     graph.close()
 
 
@@ -170,6 +168,56 @@ def test_fba_positive_resource_infeasible_state_is_not_reopened(
     graph.close()
 
 
+@pytest.mark.parametrize("missing", ["fba", "resource_allocation"])
+def test_child_missing_active_gate_remains_retryable(tmp_path: Path, missing: str):
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "partial.sqlite")
+    graph.save_run("run_a", step=1, status="running", config={}, metadata={})
+    parent = _add_state(graph, "parent", ("b0001",))
+    child = _add_state(graph, "partial", ("b0001", "b0002"), missing_evaluator=missing)
+    edge = graph.add_edge(parent, child, DeleteGenes(genes=("b0002",)))
+    _add_attempt(
+        graph,
+        run_id="run_a",
+        decision_id="attempt",
+        parent_id=parent,
+        actions=(("b0002", child, edge.edge_id),),
+    )
+    metrics = (
+        {"feasible": True, "growth_rate": 1.0}
+        if missing == "fba"
+        else {"feasible_at_growth_floor": True}
+    )
+    graph.add_evaluation(
+        child,
+        evaluator_id="stale-identity",
+        evaluator=missing,
+        version="fixture",
+        config_hash="old-config",
+        result=EvaluationResult(metrics=metrics),
+    )
+    selector = _selector()
+    request = selector.select(graph.readonly(), _status("run_a", step=1))[0]
+    assert request.state_id == parent
+    assert json.loads(request.guidance)["attempt"] == 1
+    assert selector.attempted_actions(parent) == frozenset()
+    assert selector._viability_label(graph.evaluations(child)) == "not_evaluated"
+
+    graph.add_evaluation(
+        child,
+        evaluator_id=EVALUATOR_IDS[missing],
+        evaluator=missing,
+        version="fixture",
+        config_hash="fixture",
+        result=EvaluationResult(metrics=metrics),
+    )
+    requests = selector.select(graph.readonly(), _status("run_a", step=2))
+    parent_request = next(request for request in requests if request.state_id == parent)
+    assert json.loads(parent_request.guidance)["attempt"] == 2
+    assert selector.attempted_actions(parent) == frozenset({("b0002",)})
+    assert selector._viability_label(graph.evaluations(child)) == "viable"
+    graph.close()
+
+
 def test_failed_model_call_does_not_consume_attempt_but_valid_empty_does(
     tmp_path: Path,
 ) -> None:
@@ -186,10 +234,10 @@ def test_failed_model_call_does_not_consume_attempt_but_valid_empty_does(
 
     after_failure = selector.select(graph.readonly(), _status("run_a", step=1))[0]
 
-    assert "RECOVERY_ATTEMPT: 1" in (after_failure.guidance or "")
+    assert json.loads(after_failure.guidance)["attempt"] == 1
     _add_empty_decision(graph, "valid-empty", parent, metadata={})
     after_empty = selector.select(graph.readonly(), _status("run_a", step=2))[0]
-    assert "RECOVERY_ATTEMPT: 2" in (after_empty.guidance or "")
+    assert json.loads(after_empty.guidance)["attempt"] == 2
     graph.close()
 
 
@@ -228,7 +276,7 @@ def test_skipped_proposal_remains_retryable_and_does_not_consume_attempt(
 
     request = selector.select(graph.readonly(), _status("run_a", step=1))[0]
 
-    assert "RECOVERY_ATTEMPT: 1" in (request.guidance or "")
+    assert json.loads(request.guidance)["attempt"] == 1
     assert selector.attempted_actions(parent) == frozenset()
     assert "b0002" not in (request.guidance or "")
     graph.close()
@@ -237,9 +285,9 @@ def test_skipped_proposal_remains_retryable_and_does_not_consume_attempt(
 @pytest.mark.asyncio
 async def test_runner_retries_valid_empty_exploration_until_global_limit(
     tmp_path: Path,
+    genes,
 ) -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    problem = EcoliProblem(registry, max_genes_per_action=20)
+    problem = EcoliProblem(genes, max_genes_per_action=20)
     graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "empty.sqlite")
     root_id = problem.state_key(problem.initial_state)
     _add_state(graph, root_id, ())
@@ -251,7 +299,7 @@ async def test_runner_retries_valid_empty_exploration_until_global_limit(
             parents_per_step=1,
         ),
         seed=1,
-        candidate_count=len(registry.search_universe),
+        candidate_count=len(genes),
         candidate_page_size=2,
     )
 
@@ -300,9 +348,9 @@ async def test_runner_retries_valid_empty_exploration_until_global_limit(
 @pytest.mark.asyncio
 async def test_mixed_explorer_failure_still_materializes_successful_sibling(
     tmp_path: Path,
+    genes,
 ) -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    problem = EcoliProblem(registry, max_genes_per_action=20)
+    problem = EcoliProblem(genes, max_genes_per_action=20)
     graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "mixed.sqlite")
     root_id = problem.state_key(problem.initial_state)
     _add_state(graph, root_id, ())
@@ -315,7 +363,7 @@ async def test_mixed_explorer_failure_still_materializes_successful_sibling(
         max_action_size=20,
         config=OpenSetConfig(active_width=2, parents_per_step=2),
         seed=1,
-        candidate_count=len(registry.search_universe),
+        candidate_count=len(genes),
         candidate_page_size=2,
     )
 
@@ -394,6 +442,7 @@ def _add_state(
     resource_feasible: bool = True,
     essential: int = 0,
     broken: int = 0,
+    missing_evaluator: str | None = None,
 ) -> str:
     graph.add_state(state_id, GenomeState(frozenset(genes)))
     evaluations = {
@@ -411,6 +460,8 @@ def _add_state(
         },
     }
     for name, metrics in evaluations.items():
+        if name == missing_evaluator:
+            continue
         graph.add_evaluation(
             state_id,
             evaluator_id=EVALUATOR_IDS[name],

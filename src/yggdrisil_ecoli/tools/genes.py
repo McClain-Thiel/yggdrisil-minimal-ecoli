@@ -1,140 +1,133 @@
-"""Canonical gene and deletion-bundle inspection tools."""
+"""Gene evidence from the shared table, with optional blinded display IDs."""
 
 from __future__ import annotations
 
-from collections import Counter, defaultdict
-from dataclasses import asdict
+import json
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
+from functools import cached_property
 
-from yggdrisil_ecoli.constants import is_b_number
-from yggdrisil_ecoli.data.essentiality import EssentialityDataset
-from yggdrisil_ecoli.data.registry import GeneRegistry
+import pandas as pd
+
 from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 
 
+@dataclass
 class GeneTools:
-    """Evidence lookups that accept canonical `b` identifiers only."""
+    genes: pd.DataFrame
+    modules: ModuleEvaluator
+    aliases: Mapping[str, str] | None = None
+    order: Sequence[str] = ()
+    deleted_genes: frozenset[str] = frozenset()
+    exposed_ids: set[str] | None = None
+    max_bundle_size: int | None = None
 
-    def __init__(
-        self,
-        *,
-        registry: GeneRegistry,
-        essentiality: EssentialityDataset,
-        modules: ModuleEvaluator,
-    ) -> None:
-        self.registry = registry
-        self.essentiality = essentiality
-        self.modules = modules
+    @cached_property
+    def _canonical_ids(self) -> dict[str, str]:
+        return {self.public(gene): gene for gene in self.genes.index}
 
-    def get_essentiality(self, gene: str) -> dict[str, object]:
-        record = self.registry.require(gene)
-        return {"symbol": record.symbol, **self.essentiality.detail(record.b_number)}
+    def public(self, gene: str) -> str:
+        return self.aliases[gene] if self.aliases is not None else gene
 
-    def get_gene_info(self, gene: str) -> dict[str, object]:
-        record = self.registry.require(gene)
-        essentiality = self.essentiality.record(record.b_number)
-        return {
-            "b_number": record.b_number,
-            "symbol": record.symbol,
-            "name": record.name,
-            "description": record.description,
-            "essentiality_classification": essentiality.classification,
-            "m9_ecipkm": essentiality.m9_ecipkm,
-            "lb_ecipkm": essentiality.lb_ecipkm,
-            "ko_ids": record.ko_ids,
-            "kegg_modules": self.modules.modules_for_kos(set(record.ko_ids)),
-            "iml1515_membership": record.in_iml1515,
-        }
+    def canonical(self, gene_id: str) -> str:
+        if self.exposed_ids is not None and gene_id not in self.exposed_ids:
+            raise ValueError("gene identifier was not exposed in this invocation")
+        try:
+            return self._canonical_ids[gene_id]
+        except KeyError as exc:
+            raise ValueError(f"unknown candidate gene id: {gene_id}") from exc
 
-    def analyze_gene_set(self, genes: list[str]) -> dict[str, object]:
-        counts = Counter(genes)
-        duplicates = sorted(gene for gene, count in counts.items() if count > 1)
-        invalid = sorted(
-            gene
-            for gene in counts
-            if not is_b_number(gene) or self.registry.get(gene) is None
-        )
-        valid = tuple(sorted(set(genes) - set(invalid)))
-        records = [self.registry.require(gene) for gene in valid]
-        classes = Counter(
-            self.essentiality.record(record.b_number).classification
-            for record in records
-        )
-        module_genes: dict[str, list[str]] = defaultdict(list)
-        for record in records:
-            for module in self.modules.modules_for_kos(set(record.ko_ids)):
-                module_genes[module].append(record.b_number)
-        result = self.modules.score_deleted(set(valid))
-        return {
-            "valid_genes": list(valid),
-            "invalid_ids": invalid,
-            "duplicate_ids": duplicates,
-            "essentiality_summary": {
-                classification: classes.get(classification, 0)
-                for classification in (
-                    "essential",
-                    "conditionally_essential",
-                    "nonessential",
-                    "ambiguous",
-                    "unknown",
-                )
-            },
-            "shared_kegg_modules": {
-                module: sorted(support)
-                for module, support in sorted(module_genes.items())
-                if len(support) > 1
-            },
-            "modules_likely_affected": sorted(module_genes),
-            "modules_broken_if_deleted": [
-                asdict(module) for module in result.broken_modules
-            ],
-            "iml1515": {
-                "modeled": [record.b_number for record in records if record.in_iml1515],
-                "unmodeled": [
-                    record.b_number for record in records if not record.in_iml1515
-                ],
-            },
-            "annotations": [
-                {
-                    "b_number": record.b_number,
-                    "symbol": record.symbol,
-                    "description": record.description,
-                }
-                for record in records
-            ],
-        }
-
-    def get_module_info(
-        self, module_id: str, *, deleted_genes: list[str] | None = None
+    def list_deletion_candidates(
+        self, page: int = 0, count: int = 24
     ) -> dict[str, object]:
-        entry = self.modules.require_entry(module_id)
-        deleted = frozenset(deleted_genes or ())
-        for gene in deleted:
-            self.registry.require(gene)
-        evaluation = self.modules.evaluate_deleted(module_id, deleted)
-        referenced = self.modules.ko_ids_for_module(module_id)
+        """List a reproducible page of undeleted candidates and allowed evidence."""
+        if page < 0 or not 1 <= count <= 50:
+            raise ValueError("page must be non-negative and count must be 1 to 50")
+        available = [
+            gene
+            for gene in self.order or sorted(self.genes.index)
+            if gene not in self.deleted_genes
+        ]
+        candidates = available[page * count : (page + 1) * count]
+        if self.exposed_ids is not None:
+            self.exposed_ids.update(self.public(gene) for gene in candidates)
+        return {
+            "remaining_candidates": len(available),
+            "candidates": [
+                self.inspect_gene_evidence(self.public(gene)) for gene in candidates
+            ],
+        }
+
+    def inspect_gene_evidence(self, gene_id: str) -> dict[str, object]:
+        """Inspect a table row, exposing only aggregate evidence for blinded IDs."""
+        row = self.genes.loc[self.canonical(gene_id)]
+        columns = [
+            "classification",
+            "coverage",
+            "condition_disagreement",
+            "evidence_conflict",
+        ]
+        if self.aliases is None:
+            columns += [
+                "symbol",
+                "name",
+                "description",
+                "ko_ids",
+                "lb_call_raw",
+                "lb_ecipkm",
+                "m9_call_raw",
+                "m9_ecipkm",
+            ]
+        info = row.loc[columns].copy()
+        info["gene_id"] = gene_id
+        info["in_iml1515"] = pd.notna(row.iml1515_gene_id)
+        info["has_ko_mapping"] = bool(len(row.ko_ids))
+        info["module_membership_count"] = len(
+            self.modules.modules_for_kos(set(row.ko_ids))
+        )
+        result: dict[str, object] = json.loads(info.to_json())
+        return result
+
+    def analyze_deletion_bundle(self, gene_ids: list[str]) -> dict[str, object]:
+        """Summarize the cumulative deletion set after adding this proposed bundle."""
+        if self.max_bundle_size is not None:
+            if not 1 <= len(gene_ids) <= self.max_bundle_size:
+                raise ValueError(
+                    f"bundle must contain 1 to {self.max_bundle_size} genes"
+                )
+            if len(set(gene_ids)) != len(gene_ids):
+                raise ValueError("bundle contains duplicate genes")
+        deleted = self.deleted_genes.union(self.canonical(gene) for gene in gene_ids)
+        rows = self.genes.loc[sorted(deleted)]
+        broken = self.modules.score_deleted(deleted)
+        modeled = int(rows.iml1515_gene_id.notna().sum())
+        mapped = int(rows.ko_ids.map(len).gt(0).sum())
+        result: dict[str, object] = {
+            "proposed_gene_ids": gene_ids,
+            "deleted_genes_total": len(deleted),
+            "essentiality": json.loads(rows.classification.value_counts().to_json()),
+            "model_coverage": {"modeled": modeled, "unmodeled": len(deleted) - modeled},
+            "ko_coverage": {"mapped": mapped, "unmapped": len(deleted) - mapped},
+            "modules_complete": len(self.modules.wt_complete_module_ids) - len(broken),
+            "modules_broken": len(broken),
+        }
+        if self.aliases is None:
+            result.update(deleted_gene_ids=sorted(deleted), broken_module_ids=broken)
+        return result
+
+    def inspect_kegg_module(
+        self, module_id: str, deleted_gene_ids: list[str] | None = None
+    ) -> dict[str, object]:
+        """Inspect a module's definition and completeness after a proposed deletion."""
+        if self.aliases is not None:
+            raise ValueError("module details are unavailable in closed-book mode")
+        deleted = self.deleted_genes.union(
+            self.canonical(gene) for gene in deleted_gene_ids or ()
+        )
         return {
             "module_id": module_id,
-            "name": entry.name,
-            "definition": entry.definition,
-            "module_class": entry.module_class,
-            "wild_type_complete_catalog_member": (
-                module_id in self.modules.wt_complete_module_ids
-            ),
-            "complete_after_deletion": evaluation.complete,
-            "missing_required_kos": list(evaluation.missing_required_kos),
-            "minimal_missing_ko_sets": [
-                list(option) for option in evaluation.minimal_missing_ko_sets
-            ],
-            "referenced_kos": sorted(referenced),
-            "remaining_gene_support_by_ko": {
-                ko: [
-                    record.b_number
-                    for record in self.registry
-                    if record.b_number not in deleted and ko in record.ko_ids
-                ]
-                for ko in sorted(referenced)
-            },
-            "fixed_background_kos": sorted(
-                referenced.intersection(self.modules.background_kos)
+            **self.modules.entries[module_id],
+            "complete_after_deletion": self.modules.evaluate_deleted(
+                module_id, deleted
             ),
         }
