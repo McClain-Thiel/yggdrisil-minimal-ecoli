@@ -5,49 +5,33 @@ from __future__ import annotations
 import random
 from collections.abc import Callable, Mapping, Sequence
 
+import pandas as pd
 from yggdrisil import BestFirstPolicy
 from yggdrisil.types import EvaluationRecord, StateNode
 
 from yggdrisil_ecoli.actions import DeleteGenes
-from yggdrisil_ecoli.data.essentiality import EssentialityDataset
-from yggdrisil_ecoli.data.registry import GeneRegistry
 from yggdrisil_ecoli.state import GenomeState
 
 DeletionSampler = Callable[[GenomeState, random.Random], Sequence[DeleteGenes]]
 
 
 def deletion_sampler(
-    registry: GeneRegistry,
+    genes: pd.DataFrame,
     *,
     bundle_size: int = 1,
-    essentiality: EssentialityDataset | None = None,
-    exclude_known_essential: bool = False,
+    exclude_essential: bool = False,
 ) -> DeletionSampler:
-    """Build a direct-child sampler over the canonical search universe.
-
-    Experimental essentiality is soft evidence by default. The explicit filter is
-    retained only for ablation baselines that intentionally narrow the action space.
-    """
+    """Build a direct-child sampler, optionally excluding known essential genes."""
 
     if bundle_size < 1:
         raise ValueError("bundle_size must be positive")
-    if exclude_known_essential and essentiality is None:
-        raise ValueError(
-            "essentiality is required when exclude_known_essential is enabled"
-        )
-    universe = tuple(sorted(registry.search_universe))
+    eligible = (
+        genes.loc[genes.classification != "essential"] if exclude_essential else genes
+    )
+    universe = tuple(sorted(eligible.index))
 
     def sample(state: GenomeState, rng: random.Random) -> Sequence[DeleteGenes]:
-        available = [
-            gene
-            for gene in universe
-            if gene not in state.deleted_genes
-            and not (
-                exclude_known_essential
-                and essentiality is not None
-                and essentiality.record(gene).classification == "essential"
-            )
-        ]
+        available = [gene for gene in universe if gene not in state.deleted_genes]
         if not available:
             return ()
         count = min(bundle_size, len(available))
@@ -58,13 +42,12 @@ def deletion_sampler(
 
 def make_heuristic_policy(
     *,
-    registry: GeneRegistry,
-    essentiality: EssentialityDataset | None = None,
+    genes: pd.DataFrame,
     evaluator_ids: Mapping[str, str],
     bundle_size: int = 1,
     n_proposals: int = 1,
     seed: int = 0,
-    exclude_known_essential: bool = False,
+    exclude_essential: bool = False,
 ) -> BestFirstPolicy[GenomeState, DeleteGenes]:
     """Build the framework best-first baseline over active scientific evidence."""
 
@@ -94,10 +77,9 @@ def make_heuristic_policy(
 
     return BestFirstPolicy(
         deletion_sampler(
-            registry,
+            genes,
             bundle_size=bundle_size,
-            essentiality=essentiality,
-            exclude_known_essential=exclude_known_essential,
+            exclude_essential=exclude_essential,
         ),
         priority,
         n_proposals=n_proposals,

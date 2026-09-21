@@ -1,15 +1,16 @@
 from pathlib import Path
 
-import pyarrow.parquet as pq
+import pandas as pd
 import pytest
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
+from pydantic import ValidationError
 
 from yggdrisil_ecoli.data.errors import DataValidationError
 from yggdrisil_ecoli.data.essentiality import (
-    EssentialityDataset,
     EssentialityRecord,
     parse_choe_workbook,
 )
+from yggdrisil_ecoli.data.evidence import load_genes, write_genes
 from yggdrisil_ecoli.data.gff import parse_ncbi_gff
 from yggdrisil_ecoli.scorers.essentiality import EssentialityScorer
 from yggdrisil_ecoli.state import GenomeState
@@ -17,15 +18,8 @@ from yggdrisil_ecoli.state import GenomeState
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
-def test_dataset_rejects_duplicate_canonical_genes() -> None:
-    record = _unknown("b0001")
-
-    with pytest.raises(DataValidationError, match="duplicate.*b0001"):
-        EssentialityDataset([record, record])
-
-
 def test_parser_preserves_calls_conflicts_and_coordinate_audit(tmp_path: Path) -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
+    registry, _ = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3")
     workbook_path = tmp_path / "choe.xlsx"
     _write_choe_fixture(workbook_path, mismatch_b0002=True)
 
@@ -33,25 +27,25 @@ def test_parser_preserves_calls_conflicts_and_coordinate_audit(tmp_path: Path) -
         workbook_path, registry, expected_source_counts=None
     )
 
-    assert dataset.record("b0001").classification == "essential"
-    conditional = dataset.record("b0002")
+    assert dataset.loc["b0001"].classification == "essential"
+    conditional = dataset.loc["b0002"]
     assert conditional.classification == "conditionally_essential"
     assert (conditional.lb_call_raw, conditional.m9_call_raw) == ("NE", "E")
     assert (conditional.lb_ecipkm, conditional.m9_ecipkm) == (10.0, 1.0)
-    assert conditional.condition_disagreement is True
-    assert conditional.evidence_conflict is False
-    ambiguous = dataset.record("b0003")
+    assert bool(conditional.condition_disagreement) is True
+    assert bool(conditional.evidence_conflict) is False
+    ambiguous = dataset.loc["b0003"]
     assert ambiguous.classification == "ambiguous"
-    assert ambiguous.evidence_conflict is True
-    assert report.unmapped_source_ids == ("b9999",)
-    assert report.coordinate_mismatches == ("b0002",)
+    assert bool(ambiguous.evidence_conflict) is True
+    assert report["unmapped_source_ids"] == ("b9999",)
+    assert report["coordinate_mismatches"] == ("b0002",)
 
 
 @pytest.mark.asyncio
 async def test_one_table_round_trip_and_scorer_keep_unknown_separate(
     tmp_path: Path,
 ) -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
+    registry, _ = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3")
     workbook_path = tmp_path / "choe.xlsx"
     _write_choe_fixture(workbook_path, omit_b0003=True)
     dataset, report = parse_choe_workbook(
@@ -60,23 +54,25 @@ async def test_one_table_round_trip_and_scorer_keep_unknown_separate(
         expected_source_counts=None,
         metadata={"provenance": {"workbook_sha256": "fixture"}},
     )
-    artifact = tmp_path / "essentiality.parquet"
-    dataset.to_parquet(artifact)
-    loaded = EssentialityDataset.from_parquet(artifact)
+    artifact = tmp_path / "genes.parquet"
+    genes = registry.join(dataset, validate="one_to_one")
+    genes.attrs.update(dataset.attrs)
+    write_genes(genes, artifact)
+    loaded = load_genes(artifact)
 
-    assert pq.read_table(artifact).num_rows == len(registry)
-    assert report.canonical_genes_without_measurement == ("b0003",)
-    assert loaded.record("b0003") == _unknown("b0003")
-    detail = loaded.detail("b0002")
+    assert len(loaded) == len(registry)
+    assert report["canonical_genes_without_measurement"] == ("b0003",)
+    assert loaded.loc["b0003", "classification"] == "unknown"
+    assert loaded.loc["b0003", "coverage"] == "unknown"
+    assert pd.isna(loaded.loc["b0003", "lb_ecipkm"])
+    detail = loaded.loc["b0002"]
     assert detail["classification"] == "conditionally_essential"
     assert (detail["lb_call_raw"], detail["lb_ecipkm"]) == ("NE", 10.0)
     assert (detail["m9_call_raw"], detail["m9_ecipkm"]) == ("E", 1.0)
-    assert detail["source"]["study_id"] == "choe2023_tnseq"
-    assert detail["source"]["provenance"] == {"workbook_sha256": "fixture"}
+    assert loaded.attrs["essentiality"]["study_id"] == "choe2023_tnseq"
+    assert loaded.attrs["essentiality"]["provenance"] == {"workbook_sha256": "fixture"}
 
-    scorer = EssentialityScorer(
-        registry=registry, dataset=loaded, artifact_hash="artifact"
-    )
+    scorer = EssentialityScorer(genes=loaded, artifact_hash="artifact")
     result = await scorer.evaluate(GenomeState(frozenset({"b0001", "b0002", "b0003"})))
 
     assert result.metrics == {
@@ -99,11 +95,9 @@ async def test_one_table_round_trip_and_scorer_keep_unknown_separate(
 
 
 def test_record_rejects_author_call_threshold_disagreement() -> None:
-    with pytest.raises(DataValidationError, match="disagrees with ecIPKM"):
+    with pytest.raises(ValidationError, match="disagrees with ecIPKM"):
         EssentialityRecord(
             b_number="b0001",
-            classification="essential",
-            coverage="measured",
             lb_call_raw="E",
             lb_ecipkm=10.0,
             m9_call_raw="E",
@@ -111,16 +105,55 @@ def test_record_rejects_author_call_threshold_disagreement() -> None:
         )
 
 
-def _unknown(b_number: str) -> EssentialityRecord:
-    return EssentialityRecord(
-        b_number=b_number,
-        classification="unknown",
-        coverage="unknown",
-        lb_call_raw=None,
-        lb_ecipkm=None,
-        m9_call_raw=None,
-        m9_ecipkm=None,
-    )
+@pytest.mark.parametrize(
+    ("cell", "value", "reason"),
+    [
+        ("F5", "wrong", "b_number"),
+        ("O5", "unexpected", "lb_call_raw"),
+        ("N5", 1.0, "disagrees with ecIPKM"),
+    ],
+)
+def test_parser_reports_worksheet_row_after_filtering(
+    tmp_path: Path, cell: str, value: object, reason: str
+) -> None:
+    registry, _ = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3")
+    path = tmp_path / "choe.xlsx"
+    _write_choe_fixture(path)
+    workbook = load_workbook(path)
+    worksheet = workbook["Table S1"]
+    worksheet.insert_rows(4)  # An excluded row before the now-fifth-row thrA record.
+    worksheet["G4"] = "N"
+    worksheet[cell] = value
+    workbook.save(path)
+    workbook.close()
+
+    with pytest.raises(DataValidationError, match=f"(?s)row 5: .*{reason}"):
+        parse_choe_workbook(path, registry, expected_source_counts=None)
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -1.0])
+def test_nonfinite_or_negative_measurements_are_not_nonessential(value: float) -> None:
+    with pytest.raises(ValidationError):
+        EssentialityRecord(
+            b_number="b0001",
+            lb_call_raw="NE",
+            lb_ecipkm=value,
+            m9_call_raw="NE",
+            m9_ecipkm=10.0,
+        )
+
+
+@pytest.mark.parametrize(
+    "measurements",
+    [
+        {"lb_call_raw": "E", "lb_ecipkm": 1.0},
+        {"lb_call_raw": "E", "lb_ecipkm": 1.0, "m9_call_raw": "NE"},
+        {"lb_ecipkm": 1.0, "m9_ecipkm": 3.0},
+    ],
+)
+def test_partial_measurements_are_rejected(measurements: dict[str, object]) -> None:
+    with pytest.raises(ValidationError, match="both LB and M9"):
+        EssentialityRecord.model_validate({"b_number": "b0001", **measurements})
 
 
 def _write_choe_fixture(

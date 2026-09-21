@@ -1,13 +1,16 @@
 import json
-from dataclasses import replace
+from importlib.metadata import version
+from itertools import product
 from pathlib import Path
 
+import pandas as pd
 import pytest
+from yggdrisil import EvaluatorSuite, SQLiteStateGraph
 
+from yggdrisil_ecoli.actions import DeleteGenes
 from yggdrisil_ecoli.data.errors import DataValidationError
-from yggdrisil_ecoli.data.gff import parse_ncbi_gff
+from yggdrisil_ecoli.data.io import file_sha256
 from yggdrisil_ecoli.data.kegg_modules import (
-    KeggModuleEntry,
     ModuleExpressionError,
     evaluate_module_expression,
     parse_kegg_module_flat_file,
@@ -15,7 +18,6 @@ from yggdrisil_ecoli.data.kegg_modules import (
     referenced_ids,
     registry_ko_mapping_hash,
 )
-from yggdrisil_ecoli.data.registry import GeneRegistry, file_sha256
 from yggdrisil_ecoli.module_build import (
     _background_kos,
     _parse_wt_module_ids,
@@ -27,73 +29,70 @@ from yggdrisil_ecoli.state import GenomeState
 FIXTURES = Path(__file__).parent / "fixtures"
 
 
-@pytest.mark.parametrize(
-    ("raw", "present", "complete", "required", "options"),
-    [
-        ("K00001+K00002", {"K00001"}, False, ("K00002",), (("K00002",),)),
-        ("K00001 K00002", {"K00001", "K00002"}, True, (), ()),
-        (
-            "K00001,K00002",
-            set(),
-            False,
-            (),
-            (("K00001",), ("K00002",)),
-        ),
-        (
-            "K00001,K00002 K00003,K00004",
-            {"K00001", "K00003"},
-            True,
-            (),
-            (),
-        ),
-        ("K00001-K00002", {"K00001"}, True, (), ()),
-        ("K00001-K00002", {"K00002"}, False, ("K00001",), (("K00001",),)),
-        ("(K00001 K00002),K00003", {"K00003"}, True, (), ()),
-        (
-            "K00001+(K00002,K00003+K00004)",
-            {"K00001", "K00003"},
-            False,
-            (),
-            (("K00002",), ("K00004",)),
-        ),
-    ],
-)
-def test_module_completeness_semantics(
-    raw: str,
-    present: set[str],
-    complete: bool,
-    required: tuple[str, ...],
-    options: tuple[tuple[str, ...], ...],
-) -> None:
-    result = evaluate_module_expression(parse_module_expression(raw), present)
-
-    assert result.complete is complete
-    assert result.missing_required_kos == required
-    assert result.minimal_missing_ko_sets == options
-
-
-def test_module_references_are_resolved_from_the_same_frozen_snapshot() -> None:
-    definitions = {"M00001": parse_module_expression("K00001,K00002")}
-
-    result = evaluate_module_expression(
-        parse_module_expression("M00001+K00003"),
-        {"K00002"},
-        module_definitions=definitions,
+@pytest.fixture
+def registry() -> pd.DataFrame:
+    return pd.DataFrame(
+        {"ko_ids": [("K00001",), ("K00001",), ()]},
+        index=pd.Index(["b0001", "b0002", "b0003"], name="b_number"),
     )
 
-    assert result.minimal_missing_ko_sets == (("K00003",),)
+
+@pytest.mark.parametrize(
+    ("raw", "present", "complete"),
+    [
+        ("K00001+K00002", {"K00001"}, False),
+        ("K00001 K00002", {"K00001", "K00002"}, True),
+        ("K00001,K00002", set(), False),
+        ("K00001,K00002 K00003,K00004", {"K00001", "K00003"}, True),
+        ("K00001-K00002", {"K00001"}, True),
+        ("K00001-K00002", {"K00002"}, False),
+        ("K00001-(K00002+K00003)", {"K00001"}, True),
+        ("K00001-K00002+K00003", {"K00001"}, False),
+        ("K00001,(K00001+K00002)", set(), False),
+        ("(K00001 K00002),K00003", {"K00003"}, True),
+        ("K00001+(K00002,K00003+K00004)", {"K00001", "K00003"}, False),
+    ],
+)
+def test_module_completeness_semantics(raw, present, complete) -> None:
+    assert evaluate_module_expression(parse_module_expression(raw), present) is complete
+
+
+def test_module_references_use_the_same_frozen_snapshot() -> None:
+    definitions = {"M00001": parse_module_expression("K00001,K00002")}
+    expression = parse_module_expression("M00001+K00003")
+    assert not evaluate_module_expression(
+        expression, {"K00002"}, module_definitions=definitions
+    )
+    assert evaluate_module_expression(
+        expression, {"K00002", "K00003"}, module_definitions=definitions
+    )
+
+
+def test_pathway_spaces_join_complete_alternative_blocks() -> None:
+    expression = parse_module_expression("K00001,K00002 K00003+K00004")
+    for a, b, c, d in product((False, True), repeat=4):
+        present = {
+            f"K{index:05}"
+            for index, included in enumerate((a, b, c, d), start=1)
+            if included
+        }
+        assert evaluate_module_expression(expression, present) == ((a or b) and c and d)
+
+
+def test_unresolved_required_module_reference_is_rejected() -> None:
+    with pytest.raises(ModuleExpressionError, match="unresolved module reference"):
+        evaluate_module_expression(parse_module_expression("M00001"), set())
 
 
 def test_referenced_ids_include_optional_components_and_module_refs() -> None:
-    expression = parse_module_expression("K00001+(K00002,K00003)-K00004")
-
-    assert referenced_ids(expression) == frozenset(
-        {"K00001", "K00002", "K00003", "K00004"}
-    )
-
-    assert referenced_ids(parse_module_expression("M00001+K00001")) == frozenset(
-        {"M00001", "K00001"}
-    )
+    expression = parse_module_expression("M00001+K00001+(K00002,K00003)-K00004")
+    assert referenced_ids(expression) == {
+        "M00001",
+        "K00001",
+        "K00002",
+        "K00003",
+        "K00004",
+    }
 
 
 @pytest.mark.parametrize(
@@ -118,99 +117,78 @@ def test_cyclic_module_reference_is_rejected() -> None:
         "M00001": parse_module_expression("M00002"),
         "M00002": parse_module_expression("M00001"),
     }
-
     with pytest.raises(ModuleExpressionError, match="cyclic"):
         evaluate_module_expression(
-            parse_module_expression("M00001"),
-            set(),
-            module_definitions=definitions,
+            parse_module_expression("M00001"), set(), module_definitions=definitions
         )
 
 
-def test_exact_option_limit_is_enforced() -> None:
-    with pytest.raises(ModuleExpressionError, match="option limit"):
-        evaluate_module_expression(
-            parse_module_expression("K00001,K00002,K00003"),
-            set(),
-            max_options=2,
-        )
+def test_large_module_evaluates_without_enumerating_repairs() -> None:
+    # Forty independent pairs have over a trillion repair combinations.
+    expression = parse_module_expression(
+        " ".join(f"K{index:05},K{index + 1:05}" for index in range(1, 81, 2))
+    )
+    assert not evaluate_module_expression(expression, set())
+    assert evaluate_module_expression(
+        expression, {f"K{index:05}" for index in range(1, 81, 2)}
+    )
 
 
-def test_kegg_flat_file_continuations_are_parsed_without_changing_grammar() -> None:
+def test_kegg_flat_file_continuations_preserve_definition() -> None:
     entries = parse_kegg_module_flat_file(FIXTURES / "kegg_modules_excerpt.txt")
+    assert entries["M00001"]["definition"] == "K00001 (K00002,K00003)"
+    assert entries["M00001"]["name"] == "Synthetic pathway"
+    assert entries["M00002"]["module_class"] == "Pathway modules; Synthetic metabolism"
 
-    assert entries["M00001"].definition == "K00001 (K00002,K00003)"
-    assert entries["M00001"].name == "Synthetic pathway"
-    assert entries["M00002"].module_class == ("Pathway modules; Synthetic metabolism")
 
-
-def test_module_retention_uses_remaining_ko_presence_and_reports_coverage() -> None:
-    base = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    records = [
-        replace(record, ko_ids=("K00001",))
-        if record.b_number in {"b0001", "b0002"}
-        else record
-        for record in base
-    ]
-    registry = GeneRegistry(records)
+def test_remaining_isozymes_preserve_module(registry) -> None:
     evaluator = ModuleEvaluator(
         registry=registry,
         entries={
-            "M00001": KeggModuleEntry(
-                module_id="M00001",
-                name="Duplicate-gene KO fixture",
-                definition="K00001",
-                module_class="Pathway modules; Synthetic",
-            )
+            "M00001": {
+                "name": "Isozyme fixture",
+                "definition": "K00001",
+                "module_class": None,
+            }
         },
         wt_complete_module_ids=("M00001",),
         parser_semantics_version="test",
     )
-
-    one_isozyme_deleted = evaluator.score_deleted({"b0001", "b0003"})
-    both_isozymes_deleted = evaluator.score_deleted({"b0001", "b0002"})
-
-    assert one_isozyme_deleted.n_complete == 1
-    assert one_isozyme_deleted.deleted_genes_without_ko == ("b0003",)
-    assert both_isozymes_deleted.n_broken == 1
-    assert both_isozymes_deleted.broken_modules[0].missing_required_kos == ("K00001",)
+    assert evaluator.score_deleted({"b0001", "b0003"}) == ()
+    assert evaluator.score_deleted({"b0001", "b0002"}) == ("M00001",)
+    with pytest.raises(KeyError):
+        evaluator.score_deleted({"thrA"})
 
 
-def test_non_search_universe_kos_are_fixed_background() -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
+def test_non_search_universe_kos_are_fixed_background(registry) -> None:
     evaluator = ModuleEvaluator(
         registry=registry,
         entries={
-            "M00001": KeggModuleEntry(
-                module_id="M00001",
-                name="Fixed ncRNA fixture",
-                definition="K18513",
-                module_class="Signature modules; Synthetic",
-            )
+            "M00001": {
+                "name": "Fixed ncRNA",
+                "definition": "K18513",
+                "module_class": None,
+            }
         },
         wt_complete_module_ids=("M00001",),
         parser_semantics_version="test",
         background_kos=("K18513",),
     )
-
-    result = evaluator.score_deleted(registry.search_universe)
-
-    assert result.n_complete == 1
+    assert evaluator.score_deleted(set(registry.index)) == ()
 
 
-def test_module_evaluator_rejects_registry_crosswalk_snapshot_mismatch() -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-
+def test_module_evaluator_rejects_registry_crosswalk_snapshot_mismatch(
+    registry,
+) -> None:
     with pytest.raises(DataValidationError, match="different snapshots"):
         ModuleEvaluator(
             registry=registry,
             entries={
-                "M00001": KeggModuleEntry(
-                    module_id="M00001",
-                    name="Mismatch fixture",
-                    definition="K00001",
-                    module_class=None,
-                )
+                "M00001": {
+                    "name": "Mismatch",
+                    "definition": "K00001",
+                    "module_class": None,
+                }
             },
             wt_complete_module_ids=("M00001",),
             parser_semantics_version="test",
@@ -219,23 +197,21 @@ def test_module_evaluator_rejects_registry_crosswalk_snapshot_mismatch() -> None
 
 
 @pytest.mark.asyncio
-async def test_loaded_evaluator_retains_and_emits_all_provenance(
-    tmp_path: Path,
+async def test_historical_catalog_keeps_status_and_provenance(
+    tmp_path, registry
 ) -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
     artifact = tmp_path / "kegg_modules.json"
-    registry_sha = "1" * 64
-    background_sha = "2" * 64
+    provenance = {
+        "reference_registry_sha256": "1" * 64,
+        "reference_registry_ko_mapping_hash": registry_ko_mapping_hash(registry),
+        "background_ko_source_sha256": "2" * 64,
+    }
     artifact.write_text(
         json.dumps(
             {
                 "schema_version": 1,
                 "parser_semantics_version": "test",
-                "reference_registry_sha256": registry_sha,
-                "reference_registry_ko_mapping_hash": registry_ko_mapping_hash(
-                    registry
-                ),
-                "background_ko_source_sha256": background_sha,
+                **provenance,
                 "background_kos": ["K00001"],
                 "wt_complete_module_ids": ["M00001"],
                 "definitions": {
@@ -246,75 +222,151 @@ async def test_loaded_evaluator_retains_and_emits_all_provenance(
                     }
                 },
             }
-        ),
-        encoding="utf-8",
+        )
     )
-
     evaluator = ModuleEvaluator.from_json(artifact, registry)
     result = await evaluator.evaluate(GenomeState(frozenset()))
-
-    assert evaluator.background_ko_source_sha256 == background_sha
-    assert evaluator.reference_registry_sha256 == registry_sha
     assert result.metrics == {"n_complete": 1, "n_broken": 0}
-    assert "complete_modules" not in result.metadata["details"]
-    assert result.metadata["provenance"] == {
-        "artifact_sha256": file_sha256(artifact),
-        "reference_registry_sha256": registry_sha,
-        "reference_registry_ko_mapping_hash": registry_ko_mapping_hash(registry),
-        "registry_ko_mapping_sha256": registry_ko_mapping_hash(registry),
-        "background_ko_source_sha256": background_sha,
+    assert result.metadata == {
+        "coverage": {
+            "deleted_genes_total": 0,
+            "deleted_genes_with_ko": 0,
+            "deleted_genes_without_ko": [],
+        },
+        "details": {"broken_modules": []},
+        "provenance": {
+            **provenance,
+            "artifact_sha256": file_sha256(artifact),
+            "parser_semantics_version": "test",
+            "lark_version": version("lark"),
+            "boolean_py_version": version("boolean.py"),
+        },
+    }
+    assert registry_ko_mapping_hash(registry.iloc[::-1]) == registry_ko_mapping_hash(
+        registry
+    )
+
+
+@pytest.mark.asyncio
+async def test_cached_module_evidence_snapshots_mutable_inputs(
+    tmp_path, registry
+) -> None:
+    entries = {
+        "M00001": {
+            "name": "Isozyme fixture",
+            "definition": "K00001",
+            "module_class": None,
+        }
+    }
+    evaluator = ModuleEvaluator(
+        registry=registry,
+        entries=entries,
+        wt_complete_module_ids=("M00001",),
+        parser_semantics_version="test",
+    )
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "modules.sqlite")
+    state = GenomeState(frozenset({"b0001", "b0003"}))
+    graph.add_state("state", state)
+    suite = EvaluatorSuite([evaluator])
+    first = (await suite.evaluate_cached(graph, "state"))[0]
+
+    registry.at["b0002", "ko_ids"] = ()
+    entries["M00001"]["definition"] = "K99999"
+    direct = await evaluator.evaluate(state)
+    cached = (await suite.evaluate_cached(graph, "state"))[0]
+    assert (
+        first.metrics
+        == direct.metrics
+        == cached.metrics
+        == {
+            "n_complete": 1,
+            "n_broken": 0,
+        }
+    )
+    assert first.evaluation_id == cached.evaluation_id
+    assert evaluator.entries["M00001"]["definition"] == "K00001"
+    assert direct.metadata["coverage"] == {
+        "deleted_genes_total": 2,
+        "deleted_genes_with_ko": 1,
+        "deleted_genes_without_ko": ["b0003"],
+    }
+    assert direct.metadata["details"] == {"broken_modules": []}
+    graph.close()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("change", "expected"),
+    [("definition", (0, 2)), ("wild_type", (1, 0)), ("background", (2, 0))],
+)
+async def test_module_catalog_changes_get_distinct_cached_evidence(
+    tmp_path, registry, change, expected
+) -> None:
+    entries = {
+        "M00001": {"name": "First", "definition": "K00001", "module_class": None},
+        "M00002": {"name": "Second", "definition": "K00002", "module_class": None},
+    }
+    options = {
+        "registry": registry,
+        "entries": entries,
+        "wt_complete_module_ids": ("M00001", "M00002"),
         "parser_semantics_version": "test",
     }
+    original = ModuleEvaluator(**options)
+    if change == "definition":
+        entries["M00001"]["definition"] = "K00002"
+    elif change == "wild_type":
+        options["wt_complete_module_ids"] = ("M00001",)
+    else:
+        options["background_kos"] = ("K00002",)
+    changed = ModuleEvaluator(**options)
+    graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "catalog.sqlite")
+    state = GenomeState(frozenset())
+    graph.add_state("state", state)
+    first = (await EvaluatorSuite([original]).evaluate_cached(graph, "state"))[0]
+    second = (await EvaluatorSuite([changed]).evaluate_cached(graph, "state"))[0]
+    assert first.metrics == {"n_complete": 1, "n_broken": 1}
+    assert second.metrics == (await changed.evaluate(state)).metrics
+    assert second.metrics == {"n_complete": expected[0], "n_broken": expected[1]}
+    assert first.evaluator_id != second.evaluator_id
+    assert len(graph.evaluations("state")) == 2
+    graph.close()
 
 
 def test_module_link_inputs_are_strict_and_keep_out_of_scope_kos(
-    tmp_path: Path,
+    tmp_path, registry
 ) -> None:
-    registry = parse_ncbi_gff(FIXTURES / "mg1655_excerpt.gff3").registry
-    module_links = tmp_path / "modules.tsv"
-    ko_links = tmp_path / "kos.tsv"
-    module_links.write_text(
-        "eco:b0001\tmd:eco_M00001\neco:b0002\tmd:eco_M00002\n",
-        encoding="utf-8",
-    )
-    ko_links.write_text(
-        "eco:b0001\tko:K00001\neco:b9999\tko:K00002\n", encoding="utf-8"
-    )
-
-    assert _parse_wt_module_ids(module_links) == frozenset({"M00001", "M00002"})
-    assert _background_kos(ko_links, registry) == frozenset({"K00002"})
-
-    ko_links.write_text("eco:b9999\textra\tko:K00002\n", encoding="utf-8")
+    module_links, ko_links = tmp_path / "modules.tsv", tmp_path / "kos.tsv"
+    module_links.write_text("eco:b0001\tmd:eco_M00001\neco:b0002\tmd:eco_M00002\n")
+    ko_links.write_text("eco:b0001\tko:K00001\neco:b9999\tko:K00002\n")
+    assert _parse_wt_module_ids(module_links) == {"M00001", "M00002"}
+    assert _background_kos(ko_links, registry) == {"K00002"}
+    ko_links.write_text("eco:b9999\textra\tko:K00002\n")
     with pytest.raises(DataValidationError, match="malformed KEGG gene-KO link"):
         _background_kos(ko_links, registry)
 
 
-def test_background_ko_input_must_match_registry_source_manifest(
-    tmp_path: Path,
-) -> None:
-    registry_path = tmp_path / "gene_registry.parquet"
-    ko_links_path = tmp_path / "kegg_eco_ko_links.tsv"
-    registry_path.write_bytes(b"registry fixture")
-    ko_links_path.write_text("eco:b0001\tko:K00001\n", encoding="utf-8")
+def test_background_ko_input_must_match_registry_source_manifest(tmp_path) -> None:
+    genes_path, ko_links_path = (
+        tmp_path / "genes.parquet",
+        tmp_path / "kegg_eco_ko_links.tsv",
+    )
+    genes_path.write_bytes(b"registry fixture")
+    ko_links_path.write_text("eco:b0001\tko:K00001\n")
     source_manifest = {
-        "sources": [
-            {
-                "name": "kegg_eco_ko_links",
+        "inputs": {
+            "kegg_eco_ko_links.tsv": {
                 "sha256": file_sha256(ko_links_path),
                 "url": "https://rest.kegg.jp/link/ko/eco",
             }
-        ],
-        "outputs": {"gene_registry": {"sha256": file_sha256(registry_path)}},
+        },
+        "outputs": {"genes.parquet": file_sha256(genes_path)},
     }
-    registry_path.with_name("source_manifest.json").write_text(
-        json.dumps(source_manifest), encoding="utf-8"
+    genes_path.with_name("source_manifest.json").write_text(json.dumps(source_manifest))
+    assert (
+        _validated_ko_links_source(genes_path, ko_links_path)
+        == source_manifest["inputs"]["kegg_eco_ko_links.tsv"]
     )
-
-    provenance = _validated_ko_links_source(registry_path, ko_links_path)
-
-    assert provenance["sha256"] == file_sha256(ko_links_path)
-    assert provenance["source"] == source_manifest["sources"][0]
-
-    ko_links_path.write_text("eco:b0002\tko:K00002\n", encoding="utf-8")
+    ko_links_path.write_text("eco:b0002\tko:K00002\n")
     with pytest.raises(DataValidationError, match="snapshot used to build"):
-        _validated_ko_links_source(registry_path, ko_links_path)
+        _validated_ko_links_source(genes_path, ko_links_path)
