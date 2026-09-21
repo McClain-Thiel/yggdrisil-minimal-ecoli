@@ -2,19 +2,21 @@ import subprocess
 import sys
 
 
-def test_public_scorer_api_imports_without_openpyxl() -> None:
+def test_public_scorer_api_imports_without_data_preparation_libraries() -> None:
     script = """
 import importlib.abc
 import sys
 
-class BlockOpenpyxl(importlib.abc.MetaPathFinder):
+class BlockPreparationLibraries(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path, target=None):
-        if fullname == "openpyxl" or fullname.startswith("openpyxl."):
-            raise ModuleNotFoundError("openpyxl deliberately unavailable")
+        if fullname.split('.')[0] in {'openpyxl', 'gffutils', 'pooch', 'pysam', 'pypdf', 'pydantic_ai', 'dotenv', 'rba', 'rbatools', 'swiglpk'}:
+            raise ModuleNotFoundError(f"{fullname} deliberately unavailable")
         return None
 
-sys.meta_path.insert(0, BlockOpenpyxl())
+sys.meta_path.insert(0, BlockPreparationLibraries())
+from yggdrisil_ecoli.data.evidence import load_genes
 import yggdrisil_ecoli.scorers
+from yggdrisil_ecoli.scorers.rba import RBAScorer
 import yggdrisil_ecoli.tools
 """
     result = subprocess.run(

@@ -6,10 +6,26 @@ from collections.abc import Mapping, Sequence
 from typing import TypeAlias
 
 from yggdrisil import EvaluationResult, Evaluator, evaluator_identity
+from yggdrisil.types import EvaluationRecord
 
 from yggdrisil_ecoli.state import GenomeState
 
 ScalarMetric: TypeAlias = float | int | bool | str | None
+
+
+def passes_growth_gates(evidence: Mapping[str, EvaluationRecord]) -> bool:
+    """Require positive FBA growth and fixed-floor RBA feasibility."""
+    fba, resource = evidence.get("fba"), evidence.get("resource_allocation")
+    if fba is None or resource is None:
+        return False
+    growth = fba.metrics.get("growth_rate")
+    return (
+        fba.metrics.get("feasible") is True
+        and isinstance(growth, (int, float))
+        and not isinstance(growth, bool)
+        and growth > 0
+        and resource.metrics.get("feasible_at_growth_floor") is True
+    )
 
 
 def scientific_evaluation(

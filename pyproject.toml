@@ -21,6 +21,9 @@ classifiers = [
 dependencies = [
     "pydantic>=2.10",
     "pyarrow>=18",
+    "pandas>=2.2,<4",
+    "lark>=1.2,<2",
+    "boolean.py>=5,<6",
     "yggdrisil @ git+https://github.com/McClain-Thiel/yggdrisil.git@bf390ddcee567ff705085273394a4b929a8c0005",
 ]
 
@@ -30,8 +33,15 @@ agents = [
     "python-dotenv>=1.0,<2",
 ]
 data = [
+    "gffutils>=0.13,<0.15",
+    "pooch>=1.9,<2",
+    "pysam>=0.23,<0.25",
     "openpyxl>=3.1",
     "pypdf>=5,<7",
+]
+notebooks = [
+    "marimo>=0.21.1,<1",
+    "huggingface-hub>=0.34,<2",
 ]
 fba = [
     "cobra==0.32.1",
@@ -52,9 +62,6 @@ dev = [
     "ruff>=0.9",
 ]
 
-[project.scripts]
-yggdrisil-ecoli-search = "yggdrisil_ecoli.search:main"
-
 [tool.setuptools.packages.find]
 where = ["src"]
 
@@ -62,7 +69,7 @@ where = ["src"]
 yggdrisil_ecoli = ["py.typed"]
 
 [tool.uv]
-# RBAtools pulls SBtab's obsolete openpyxl cap; this evaluator uses no SBtab workbook APIs.
+# RBAtools pulls SBtab's obsolete openpyxl cap; no SBtab workbook APIs are used.
 override-dependencies = ["openpyxl>=3.1"]
 
 [tool.pytest.ini_options]
@@ -79,29 +86,10 @@ select = ["E4", "E7", "E9", "F", "I"]
 
 [tool.mypy]
 python_version = "3.11"
-files = ["src/yggdrisil_ecoli", "scripts"]
+files = ["src/yggdrisil_ecoli"]
 strict = true
 warn_unreachable = true
 
 [[tool.mypy.overrides]]
-module = [
-    "cobra",
-    "cobra.*",
-    "openpyxl",
-    "openpyxl.*",
-    "numpy",
-    "numpy.*",
-    "openai",
-    "openai.*",
-    "pyarrow",
-    "pyarrow.*",
-    "pypdf",
-    "pypdf.*",
-    "rba",
-    "rba.*",
-    "rbatools",
-    "rbatools.*",
-    "swiglpk",
-]
+module = ["cobra", "cobra.*", "openpyxl", "openpyxl.*", "pyarrow", "pyarrow.*", "gffutils", "gffutils.*", "pandas", "pandas.*", "pooch", "pooch.*", "pysam", "pysam.*", "boolean", "boolean.*", "rba", "rba.*", "rbatools", "rbatools.*", "swiglpk"]
 ignore_missing_imports = true
-follow_imports = "skip"
