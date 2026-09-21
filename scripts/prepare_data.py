@@ -4,9 +4,7 @@ __generated_with = "0.24.2"
 app = marimo.App(width="medium")
 
 
-@app.cell
-def imports():
-    import json
+with app.setup:
     from datetime import UTC, datetime
     from pathlib import Path
 
@@ -16,34 +14,15 @@ def imports():
     from yggdrisil_ecoli.data.audit import audit_registry
     from yggdrisil_ecoli.data.crosswalks import add_crosswalks
     from yggdrisil_ecoli.data.essentiality import parse_choe_workbook
-    from yggdrisil_ecoli.data.evidence import validate_genes, write_genes
+    from yggdrisil_ecoli.data.evidence import write_genes
     from yggdrisil_ecoli.data.gff import parse_ncbi_gff
     from yggdrisil_ecoli.data.io import atomic_json, file_sha256
     from yggdrisil_ecoli.data.reduced_genomes import build_validation
     from yggdrisil_ecoli.module_build import build_kegg_modules
 
-    return (
-        Path,
-        UTC,
-        add_crosswalks,
-        atomic_json,
-        audit_registry,
-        build_kegg_modules,
-        build_validation,
-        datetime,
-        file_sha256,
-        json,
-        mo,
-        parse_choe_workbook,
-        parse_ncbi_gff,
-        sources,
-        validate_genes,
-        write_genes,
-    )
-
 
 @app.cell
-def introduction(mo):
+def introduction():
     mo.md("""
     # Prepare the MG1655 evidence
 
@@ -56,7 +35,7 @@ def introduction(mo):
 
 
 @app.cell
-def settings(mo):
+def settings():
     data_folder = mo.ui.text(value="data", label="Dataset folder")
     accept_kegg = mo.ui.checkbox(label="I am permitted to use the KEGG academic API")
     prepare = mo.ui.run_button(label="Prepare evidence")
@@ -65,7 +44,7 @@ def settings(mo):
 
 
 @app.cell
-def acquire(Path, accept_kegg, data_folder, mo, prepare, sources):
+def acquire(accept_kegg, data_folder, prepare):
     mo.stop(not prepare.value, mo.md("Choose a folder and prepare the evidence."))
     mo.stop(not accept_kegg.value, mo.md("Confirm KEGG access before downloading."))
     data_dir = Path(data_folder.value).expanduser()
@@ -89,14 +68,7 @@ def acquire(Path, accept_kegg, data_folder, mo, prepare, sources):
 
 
 @app.cell
-def reference_genes(
-    add_crosswalks,
-    audit_registry,
-    inputs,
-    model_path,
-    parse_ncbi_gff,
-    sources,
-):
+def reference_genes(inputs, model_path):
     reference_genes, reference_metadata = parse_ncbi_gff(
         inputs[sources.NCBI_GFF.filename]
     )
@@ -112,16 +84,7 @@ def reference_genes(
 
 
 @app.cell
-def join_evidence(
-    file_sha256,
-    inputs,
-    parse_choe_workbook,
-    raw,
-    reference_metadata,
-    registry,
-    sources,
-    validate_genes,
-):
+def join_evidence(inputs, raw, reference_metadata, registry):
     _workbook = sources.extract_member(
         inputs[sources.CHOE_2023_SUPPLEMENT_BUNDLE.filename],
         sources.CHOE_2023_MEMBER,
@@ -143,30 +106,21 @@ def join_evidence(
         "reference": reference_metadata,
         "essentiality": measurements.attrs["essentiality"],
     }
-    genes = validate_genes(genes)
     genes.groupby(["coverage", "classification"]).size().rename("genes")
     return essentiality_audit, genes
 
 
 @app.cell
 def write_dataset(
-    UTC,
-    atomic_json,
-    build_kegg_modules,
     crosswalk_audit,
     data_dir,
-    datetime,
     essentiality_audit,
-    file_sha256,
     genes,
     inputs,
-    mo,
     model_path,
     processed,
     reference_metadata,
-    sources,
     specs,
-    write_genes,
 ):
     genes_path = processed / "genes.parquet"
     write_genes(genes, genes_path)
@@ -202,11 +156,11 @@ def write_dataset(
     mo.md(
         f"Prepared **{len(genes):,} genes** in `{data_dir}`. Review the manifest before publishing a dataset."
     )
-    return genes_path, manifest_path
+    return (genes_path,)
 
 
 @app.cell
-def heldout_settings(data_dir, mo):
+def heldout_settings(data_dir):
     heldout_folder = mo.ui.text(
         value=str(data_dir / "validation"), label="Held-out source folder"
     )
@@ -229,19 +183,7 @@ def heldout_settings(data_dir, mo):
 
 
 @app.cell
-def heldout_labels(
-    Path,
-    atomic_json,
-    build_validation,
-    data_dir,
-    file_sha256,
-    genes_path,
-    heldout_folder,
-    json,
-    manifest_path,
-    mo,
-    prepare_labels,
-):
+def heldout_labels(data_dir, genes_path, heldout_folder, prepare_labels):
     mo.stop(not prepare_labels.value, mo.md("Held-out preparation is optional."))
     _validation = Path(heldout_folder.value).expanduser()
     labels = build_validation(
@@ -252,19 +194,6 @@ def heldout_labels(
     )
     label_path = data_dir / "validation" / "reduced_genomes.json"
     atomic_json(label_path, labels)
-    _manifest = json.loads(manifest_path.read_text())
-    _manifest["outputs"][label_path.name] = file_sha256(label_path)
-    _manifest["inputs"].update(
-        {
-            name: {"sha256": file_sha256(_validation / name)}
-            for name in (
-                "NC_000913.3.ncbi.json",
-                "AP012306.ncbi.json",
-                "MS56_Park_2014_supplement.pdf",
-            )
-        }
-    )
-    atomic_json(manifest_path, _manifest)
     {
         name: len(strain["deleted_gene_ids"])
         for name, strain in labels["strains"].items()

@@ -4,8 +4,7 @@ __generated_with = "0.24.2"
 app = marimo.App(width="medium")
 
 
-@app.cell
-def imports():
+with app.setup:
     import json
     from datetime import datetime
     from importlib.metadata import distribution
@@ -27,30 +26,9 @@ def imports():
     from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
     from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 
-    return (
-        EcoliProblem,
-        EssentialityScorer,
-        FBAScorer,
-        GenomeSizeScorer,
-        ModuleEvaluator,
-        Path,
-        active_evaluator_ids,
-        datetime,
-        deletion_sampler,
-        distribution,
-        file_sha256,
-        json,
-        load_genes,
-        mo,
-        snapshot_download,
-        summarize_run,
-        yg,
-        yggdrisil_ecoli,
-    )
-
 
 @app.cell
-def introduction(mo):
+def introduction():
     mo.md("""
     # Minimal *E. coli*
 
@@ -62,7 +40,7 @@ def introduction(mo):
 
 
 @app.cell
-def data_settings(Path, mo):
+def data_settings():
     # Use local prepared data, or supply an existing Hugging Face dataset and commit.
     local_data = Path("data")
     dataset_id = ""
@@ -73,17 +51,7 @@ def data_settings(Path, mo):
 
 
 @app.cell
-def load(
-    Path,
-    data_revision,
-    dataset_id,
-    file_sha256,
-    load_data,
-    load_genes,
-    local_data,
-    mo,
-    snapshot_download,
-):
+def load(data_revision, dataset_id, load_data, local_data):
     mo.stop(not load_data.value, mo.md("Load the prepared data to begin."))
     if dataset_id:
         mo.stop(not data_revision, mo.md("Set the dataset's pinned commit first."))
@@ -109,16 +77,7 @@ def load(
 
 
 @app.cell
-def evaluators(
-    EssentialityScorer,
-    FBAScorer,
-    GenomeSizeScorer,
-    ModuleEvaluator,
-    active_evaluator_ids,
-    genes,
-    input_files,
-    input_hashes,
-):
+def evaluators(genes, input_files, input_hashes):
     module_evaluator = ModuleEvaluator.from_json(input_files["modules"], genes)
     evaluators = [
         GenomeSizeScorer(genes),
@@ -131,7 +90,7 @@ def evaluators(
 
 
 @app.cell
-def search_settings(mo):
+def search_settings():
     seed = 17
     bundle_size = 1
     n_proposals = 2
@@ -156,17 +115,7 @@ def search_settings(mo):
 
 
 @app.cell
-def provenance(
-    Path,
-    distribution,
-    file_sha256,
-    input_hashes,
-    json,
-    mo,
-    start_search,
-    yg,
-    yggdrisil_ecoli,
-):
+def provenance(input_hashes, start_search):
     mo.stop(not start_search.value)
     # Record the exact inputs and code alongside every experiment.
     _package = Path(yggdrisil_ecoli.__file__).parent
@@ -194,23 +143,17 @@ def provenance(
 
 @app.cell
 async def search(
-    EcoliProblem,
-    Path,
     agent_config,
     allow_paid,
     bundle_size,
-    datetime,
-    deletion_sampler,
     evaluator_ids,
     evaluators,
     genes,
     max_states,
-    mo,
     n_proposals,
     provenance,
     seed,
     start_search,
-    yg,
 ):
     mo.stop(not start_search.value, mo.md("Choose a policy below, then run."))
     graph_path = (
@@ -258,7 +201,7 @@ async def search(
 
 
 @app.cell
-def results(graph_path, mo, summarize_run):
+def results(graph_path):
     summary = summarize_run(graph_path)
     _candidate = summary["deepest_viable_candidate"]
     mo.stop(_candidate is None, mo.md("No candidate passed the evidence filters."))
