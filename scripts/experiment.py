@@ -4,8 +4,7 @@ __generated_with = "0.24.2"
 app = marimo.App(width="medium")
 
 
-@app.cell
-def imports():
+with app.setup:
     import json
     import sqlite3
     from contextlib import closing
@@ -30,33 +29,9 @@ def imports():
     from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
     from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
 
-    return (
-        EcoliProblem,
-        EssentialityScorer,
-        FBAScorer,
-        GenomeSizeScorer,
-        ModuleEvaluator,
-        Path,
-        active_evaluator_ids,
-        closing,
-        datetime,
-        deletion_sampler,
-        distribution,
-        file_sha256,
-        json,
-        load_genes,
-        loads,
-        mo,
-        snapshot_download,
-        sqlite3,
-        summarize_run,
-        yg,
-        yggdrisil_ecoli,
-    )
-
 
 @app.cell
-def introduction(mo):
+def introduction():
     mo.md("""
     # Minimal *E. coli*
 
@@ -69,7 +44,7 @@ def introduction(mo):
 
 
 @app.cell
-def data_settings(Path, mo):
+def data_settings():
     # Use local prepared data, or supply an existing Hugging Face dataset and commit.
     local_data = Path("data")
     dataset_id = ""
@@ -80,17 +55,7 @@ def data_settings(Path, mo):
 
 
 @app.cell
-def load(
-    Path,
-    data_revision,
-    dataset_id,
-    file_sha256,
-    load_data,
-    load_genes,
-    local_data,
-    mo,
-    snapshot_download,
-):
+def load(data_revision, dataset_id, load_data, local_data):
     mo.stop(not load_data.value, mo.md("Load the prepared data to begin."))
     if dataset_id:
         mo.stop(not data_revision, mo.md("Set the dataset's pinned commit first."))
@@ -116,16 +81,7 @@ def load(
 
 
 @app.cell
-def evaluators(
-    EssentialityScorer,
-    FBAScorer,
-    GenomeSizeScorer,
-    ModuleEvaluator,
-    active_evaluator_ids,
-    genes,
-    input_files,
-    input_hashes,
-):
+def evaluators(genes, input_files, input_hashes):
     module_evaluator = ModuleEvaluator.from_json(input_files["modules"], genes)
     evaluators = [
         GenomeSizeScorer(genes),
@@ -138,29 +94,21 @@ def evaluators(
 
 
 @app.cell
-def search_settings(mo):
+def search_settings():
     seed = 17
     bundle_size = 1  # Agent actions may contain 1..bundle_size genes (at most 20).
     n_proposals = 2
     agent_config = None
     # For a recoverable open-set agent, replace None with:
     # from yggdrisil_ecoli.agent_policy import AgentSearchConfig
-    # from yggdrisil_ecoli.open_set import OpenSetConfig
     # agent_config = AgentSearchConfig(
     #     model="vendor/model", seed=seed, bundle_size=bundle_size,
-    #     max_actions=n_proposals, mode="closed-book",
-    #     open_set=OpenSetConfig(active_width=16, parents_per_step=4,
-    #         fallback_action_caps=(20, 10, 5, 1)))
+    #     max_actions=n_proposals, mode="closed-book")
     allow_paid = mo.ui.checkbox(label="Enable paid model calls")
     resume_graph = mo.ui.text(label="Resume graph (optional)")
     state_limit = mo.ui.number(value=10, start=1, step=1, label="State limit")
     start_search = mo.ui.run_button(label="Run search")
-    mo.vstack(
-        [
-            resume_graph,
-            mo.hstack([state_limit, allow_paid, start_search], justify="start"),
-        ]
-    )
+    mo.vstack([resume_graph, state_limit, allow_paid, start_search])
     return (
         agent_config,
         allow_paid,
@@ -174,17 +122,7 @@ def search_settings(mo):
 
 
 @app.cell
-def provenance(
-    Path,
-    distribution,
-    file_sha256,
-    input_hashes,
-    json,
-    mo,
-    start_search,
-    yg,
-    yggdrisil_ecoli,
-):
+def provenance(input_hashes, start_search):
     mo.stop(not start_search.value)
     # Record the exact inputs and code alongside every experiment.
     _package = Path(yggdrisil_ecoli.__file__).parent
@@ -212,27 +150,18 @@ def provenance(
 
 @app.cell
 async def search(
-    EcoliProblem,
-    Path,
     agent_config,
     allow_paid,
     bundle_size,
-    closing,
-    datetime,
-    deletion_sampler,
     evaluator_ids,
     evaluators,
     genes,
-    loads,
-    mo,
     n_proposals,
     provenance,
     resume_graph,
     seed,
-    sqlite3,
     start_search,
     state_limit,
-    yg,
 ):
     mo.stop(not start_search.value, mo.md("Choose a policy below, then run."))
     mo.stop(
@@ -302,7 +231,7 @@ async def search(
 
 
 @app.cell
-def results(graph_path, mo, summarize_run):
+def results(graph_path):
     summary = summarize_run(graph_path)
     _candidate = summary["deepest_viable_candidate"]
     mo.stop(_candidate is None, mo.md("No candidate has positive predicted growth."))

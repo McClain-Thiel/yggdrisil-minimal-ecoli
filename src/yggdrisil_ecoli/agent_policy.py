@@ -7,8 +7,10 @@ import json
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
 from decimal import Decimal
+from functools import partial
 from importlib.metadata import version
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, Literal
 
 import pandas as pd
@@ -18,7 +20,11 @@ from yggdrisil.agents import ExplorerContext, ExplorerResult
 from yggdrisil.types import EvaluationRecord
 
 from yggdrisil_ecoli.actions import DeleteGenes
-from yggdrisil_ecoli.open_set import OpenSetConfig, RecoverableOpenSetSelector
+from yggdrisil_ecoli.open_set import (
+    SCHEDULER_VERSION,
+    OpenSetConfig,
+    RecoverableOpenSetSelector,
+)
 from yggdrisil_ecoli.scorers.base import ScalarMetric
 from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.state import GenomeState
@@ -82,9 +88,7 @@ class AgentSearchConfig(BaseModel):
             **self.model_dump(mode="json"),
             "provider": "openrouter",
             "prompt_version": 4,
-            "scheduler": self.open_set.metadata(self.bundle_size),
-            "candidate_preview_count": self.candidate_preview_count,
-            "candidate_preview_rotation": "run_step_mod_remaining_pages",
+            "scheduler_version": SCHEDULER_VERSION,
             "pydantic_ai": version("pydantic-ai"),
             "settings": self.settings,
             "tools": list(self.tool_names),
@@ -136,17 +140,6 @@ def _action_type(tools: GeneTools, bundle_size: int) -> type[DeleteGenes]:
 
 
 @dataclass
-class _LimitedAgent:
-    """Pass PydanticAI budgets through the framework's minimal agent.run interface."""
-
-    inner: Any
-    limits: Any
-
-    async def run(self, prompt: str) -> Any:
-        return await self.inner.run(prompt, usage_limits=self.limits)
-
-
-@dataclass
 class _Explorer:
     evidence: GeneTools
     config: AgentSearchConfig
@@ -157,11 +150,12 @@ class _Explorer:
     def model(self) -> str:
         return f"openrouter:{self.config.model}"
 
-    def format_prompt(self, context: ExplorerContext[GenomeState]) -> str:
-        tools = replace(self.evidence, deleted_genes=context.state.deleted_genes)
-        return self._prompt(context, tools)
-
-    def _prompt(self, context: ExplorerContext[GenomeState], tools: GeneTools) -> str:
+    def format_prompt(
+        self, context: ExplorerContext[GenomeState], tools: GeneTools | None = None
+    ) -> str:
+        tools = tools or replace(
+            self.evidence, deleted_genes=context.state.deleted_genes
+        )
         guidance = json.loads(context.guidance) if context.guidance else {}
         deleted = sorted(tools.public(gene) for gene in context.state.deleted_genes)
         return json.dumps(
@@ -211,10 +205,16 @@ class _Explorer:
                 "preview, then use at most one analyze_deletion_bundle call on the final "
                 "bundle. Respect max_actions and max_genes_per_action in the prompt."
             ),
-            prompt=lambda current: self._prompt(current, tools),
+            prompt=partial(self.format_prompt, tools=tools),
         )
-        explorer.agent.model_settings = self.config.settings
-        explorer.agent = _LimitedAgent(explorer.agent, self.limits)
+        # The framework forwards only the prompt; bind native PydanticAI run options.
+        explorer.agent = SimpleNamespace(
+            run=partial(
+                explorer.agent.run,
+                usage_limits=self.limits,
+                model_settings=self.config.settings,
+            )
+        )
         result = await explorer.explore(context)
         seen = set(self.selector.attempted_actions(context.state_id))
         actions = []
