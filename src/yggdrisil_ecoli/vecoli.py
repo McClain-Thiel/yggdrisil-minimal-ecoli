@@ -7,9 +7,10 @@ import json
 import math
 import sqlite3
 import subprocess
-from dataclasses import dataclass
+from contextlib import closing
 from fractions import Fraction
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 from pydantic import TypeAdapter
@@ -29,51 +30,19 @@ DEFAULT_LINEAGE_SEED = 101
 DEFAULT_MAX_GENERATIONS = 20
 
 
-@dataclass(frozen=True, slots=True)
-class Finalist:
-    """One selected state and the search evidence used to admit it."""
-
-    state_id: str
-    deleted_genes: frozenset[str]
-    fba_growth_rate: float
-    fba_evaluator_id: str
-    resource_evaluator_id: str
-
-    @property
-    def deletion_count(self) -> int:
-        return len(self.deleted_genes)
-
-    @property
-    def deletion_set_sha256(self) -> str:
-        return _json_sha256(sorted(self.deleted_genes))
-
-
-@dataclass(frozen=True, slots=True)
-class FinalistVariant:
-    """Exact canonical-to-vEcoli mapping for one finalist."""
-
-    variant_index: int
-    finalist: Finalist
-    vecoli_gene_ids: tuple[str, ...]
-    gene_mapping: tuple[tuple[str, str], ...]
-
-
 def select_finalists(
     graph_path: str | Path,
     *,
     count: int = DEFAULT_FINALISTS,
     deletion_band: float = DEFAULT_DELETION_BAND,
-) -> tuple[dict[str, object], tuple[Finalist, ...]]:
+) -> tuple[dict[str, object], pd.DataFrame]:
     """Select a frozen, diverse finalist set without loading validation targets."""
 
-    if count < 1:
-        raise ValueError("finalist count must be positive")
-    if not 0 < deletion_band <= 1:
-        raise ValueError("deletion band must be in (0, 1]")
     path = Path(graph_path)
     graph_hashes = _frozen_sqlite_hashes(path)
-    connection = sqlite3.connect(f"file:{path.resolve()}?mode=ro&immutable=1", uri=True)
-    try:
+    with closing(
+        sqlite3.connect(path.resolve().as_uri() + "?mode=ro&immutable=1", uri=True)
+    ) as connection:
         run_row = connection.execute(
             "SELECT run_id, status, metadata_json FROM runs "
             "ORDER BY created_at DESC LIMIT 1"
@@ -89,10 +58,6 @@ def select_finalists(
         if required - evaluator_ids.keys():
             raise ValueError("run lacks active FBA or resource evaluator identity")
         finalists = _load_viable_states(connection, str(run_id), evaluator_ids)
-    finally:
-        connection.close()
-    if len(finalists) < count:
-        raise ValueError(f"graph has only {len(finalists)} jointly feasible states")
     selected = select_diverse_finalists(
         finalists, count=count, deletion_band=deletion_band
     )
@@ -112,70 +77,58 @@ def select_finalists(
 
 
 def select_diverse_finalists(
-    candidates: tuple[Finalist, ...],
-    *,
-    count: int,
-    deletion_band: float,
-) -> tuple[Finalist, ...]:
+    candidates: pd.DataFrame, *, count: int, deletion_band: float
+) -> pd.DataFrame:
     """Choose the deepest state, then maximize minimum deletion-set distance."""
-
-    if count < 1:
-        raise ValueError("finalist count must be positive")
-    if not 0 < deletion_band <= 1:
-        raise ValueError("deletion band must be in (0, 1]")
-    ordered = sorted(
-        candidates,
-        key=lambda item: (-item.deletion_count, -item.fba_growth_rate, item.state_id),
-    )
-    if not ordered:
+    if count < 1 or not 0 < deletion_band <= 1:
+        raise ValueError("count must be positive and deletion band must be in (0, 1]")
+    if candidates.empty:
         raise ValueError("no jointly feasible candidates")
-    minimum_deletions = math.ceil(ordered[0].deletion_count * deletion_band)
-    pool = [item for item in ordered if item.deletion_count >= minimum_deletions]
+    ordered = candidates.sort_values(
+        ["deletion_count", "fba_growth_rate", "state_id"],
+        ascending=[False, False, True],
+    )
+    minimum = math.ceil(ordered.deletion_count.iloc[0] * deletion_band)
+    pool = ordered.loc[ordered.deletion_count >= minimum]
     if len(pool) < count:
         raise ValueError(
             f"deletion band contains {len(pool)} candidates, fewer than {count}"
         )
-    selected = [pool.pop(0)]
+    deletions = pool.deleted_gene_ids.map(set).to_dict()
+    selected = [pool.index[0]]
     while len(selected) < count:
-        pool.sort(
-            key=lambda item: (
-                -_minimum_jaccard_distance(item, selected),
-                -item.deletion_count,
-                -item.fba_growth_rate,
-                item.state_id,
+        pool = pool.drop(index=selected[-1])
+        # The presorted table preserves depth/growth/state-ID tie breaking.
+        selected.append(
+            max(
+                pool.index,
+                key=lambda candidate: min(
+                    Fraction(
+                        len(deletions[candidate] ^ deletions[other]),
+                        len(deletions[candidate] | deletions[other]) or 1,
+                    )
+                    for other in selected
+                ),
             )
         )
-        selected.append(pool.pop(0))
-    return tuple(selected)
+    return candidates.loc[selected]
 
 
-def map_finalists(
-    finalists: tuple[Finalist, ...], genes: pd.DataFrame
-) -> tuple[FinalistVariant, ...]:
-    """Map every deletion through the frozen canonical registry to vEcoli IDs."""
-
-    variants: list[FinalistVariant] = []
-    for variant_index, finalist in enumerate(finalists, start=1):
-        mapping = genes.loc[sorted(finalist.deleted_genes), "ecocyc_id"]
-        if mapping.isna().any():
+def map_finalists(finalists: pd.DataFrame, genes: pd.DataFrame) -> pd.DataFrame:
+    """Add exact EcoCyc mappings and workflow indices to the selected table."""
+    mappings = []
+    for state_id, deleted in finalists.deleted_gene_ids.items():
+        mapping = genes.loc[sorted(deleted), "ecocyc_id"]
+        if mapping.isna().any() or mapping.duplicated().any():
             raise ValueError(
-                f"{finalist.state_id}: deletions lack EcoCyc IDs: "
-                f"{mapping.index[mapping.isna()].tolist()}"
+                f"{state_id}: deletions lack EcoCyc IDs or have ambiguous mappings"
             )
-        if mapping.duplicated().any():
-            raise ValueError(
-                f"{finalist.state_id}: ambiguous EcoCyc mappings: "
-                f"{sorted(mapping[mapping.duplicated()].unique())}"
-            )
-        variants.append(
-            FinalistVariant(
-                variant_index=variant_index,
-                finalist=finalist,
-                vecoli_gene_ids=tuple(mapping),
-                gene_mapping=tuple(mapping.items()),
-            )
-        )
-    return tuple(variants)
+        mappings.append(mapping.rename("vecoli_gene_id").rename_axis("b_number"))
+    return finalists.assign(
+        variant_index=range(1, len(finalists) + 1),
+        vecoli_gene_ids=[mapping.tolist() for mapping in mappings],
+        gene_mapping=[mapping.reset_index().to_dict("records") for mapping in mappings],
+    )
 
 
 def prepare_finalist_workflow(
@@ -191,7 +144,7 @@ def prepare_finalist_workflow(
     lineage_seed: int = DEFAULT_LINEAGE_SEED,
     generations: int = DEFAULT_MAX_GENERATIONS,
     sim_data_path: str | Path | None = None,
-) -> dict[str, object]:
+) -> dict[str, Any]:
     """Freeze candidates, install the adapter, and write a vEcoli workflow."""
 
     if generations < 1 or generations > DEFAULT_MAX_GENERATIONS:
@@ -204,7 +157,7 @@ def prepare_finalist_workflow(
     )
     genes_file = Path(genes_path)
     variants = map_finalists(finalists, load_genes(genes_file))
-    selection_hash = _json_sha256([item.state_id for item in finalists])
+    selection_hash = _json_sha256(finalists.index.tolist())
     experiment_id = f"yggdrisil_finalists_{selection_hash[:12]}_seed{lineage_seed}"
     config = build_workflow_config(
         variants,
@@ -216,7 +169,7 @@ def prepare_finalist_workflow(
     )
     config_file = Path(config_path)
     atomic_json(config_file, config)
-    manifest: dict[str, object] = {
+    manifest: dict[str, Any] = {
         "schema_version": 1,
         "purpose": "predeclared vEcoli finalist validation",
         "application": {
@@ -256,14 +209,14 @@ def prepare_finalist_workflow(
             if sim_data_path
             else None,
         },
-        "finalists": [_variant_payload(item) for item in variants],
+        "finalists": variants.reset_index().to_dict("records"),
     }
     atomic_json(Path(manifest_path), manifest)
     return manifest
 
 
 def build_workflow_config(
-    variants: tuple[FinalistVariant, ...],
+    variants: pd.DataFrame,
     *,
     output_root: Path,
     experiment_id: str,
@@ -273,7 +226,7 @@ def build_workflow_config(
 ) -> dict[str, object]:
     """Build the minimal official vEcoli lineage-workflow configuration."""
 
-    if not variants:
+    if variants.empty:
         raise ValueError("at least one finalist variant is required")
     return {
         "experiment_id": experiment_id,
@@ -293,9 +246,7 @@ def build_workflow_config(
         "different_seeds_per_variant": False,
         "skip_baseline": True,
         "variants": {
-            ADAPTER_MODULE: {
-                "gene_ids": {"value": [list(item.vecoli_gene_ids) for item in variants]}
-            }
+            ADAPTER_MODULE: {"gene_ids": {"value": variants.vecoli_gene_ids.tolist()}}
         },
         "emitter": "parquet",
         "emitter_arg": {"out_dir": str(output_root)},
@@ -355,7 +306,7 @@ def install_vecoli_adapter(checkout: Path) -> Path:
 
 def _load_viable_states(
     connection: sqlite3.Connection, run_id: str, evaluator_ids: dict[str, str]
-) -> tuple[Finalist, ...]:
+) -> pd.DataFrame:
     fba_id = evaluator_ids["fba"]
     resource_id = evaluator_ids["resource_allocation"]
     rows = connection.execute(
@@ -368,7 +319,7 @@ def _load_viable_states(
         "UNION SELECT child_id FROM proposal_events WHERE run_id = ?)",
         (fba_id, resource_id, run_id, run_id),
     ).fetchall()
-    finalists: list[Finalist] = []
+    finalists = {}
     for state_id, raw_state, raw_fba, raw_resource in rows:
         state = loads(str(raw_state))
         if not isinstance(state, GenomeState) or genome_state_key(state) != state_id:
@@ -386,46 +337,16 @@ def _load_viable_states(
         resource_positive = resource.get("feasible_at_growth_floor") is True
         if fba_positive and resource_positive:
             assert isinstance(growth, (int, float)) and not isinstance(growth, bool)
-            finalists.append(
-                Finalist(
-                    state_id=str(state_id),
-                    deleted_genes=state.deleted_genes,
-                    fba_growth_rate=float(growth),
-                    fba_evaluator_id=fba_id,
-                    resource_evaluator_id=resource_id,
-                )
-            )
-    return tuple(finalists)
-
-
-def _minimum_jaccard_distance(
-    candidate: Finalist, selected: list[Finalist]
-) -> Fraction:
-    distances = []
-    for other in selected:
-        union = candidate.deleted_genes | other.deleted_genes
-        intersection = candidate.deleted_genes & other.deleted_genes
-        distances.append(Fraction(len(union) - len(intersection), len(union)))
-    return min(distances)
-
-
-def _variant_payload(variant: FinalistVariant) -> dict[str, object]:
-    finalist = variant.finalist
-    return {
-        "variant_index": variant.variant_index,
-        "state_id": finalist.state_id,
-        "deletion_count": finalist.deletion_count,
-        "deletion_set_sha256": finalist.deletion_set_sha256,
-        "deleted_gene_ids": sorted(finalist.deleted_genes),
-        "fba_growth_rate": finalist.fba_growth_rate,
-        "fba_evaluator_id": finalist.fba_evaluator_id,
-        "resource_evaluator_id": finalist.resource_evaluator_id,
-        "vecoli_gene_ids": list(variant.vecoli_gene_ids),
-        "gene_mapping": [
-            {"b_number": b_number, "vecoli_gene_id": vecoli_gene_id}
-            for b_number, vecoli_gene_id in variant.gene_mapping
-        ],
-    }
+            deleted = sorted(state.deleted_genes)
+            finalists[state_id] = {
+                "deleted_gene_ids": deleted,
+                "deletion_count": len(deleted),
+                "deletion_set_sha256": _json_sha256(deleted),
+                "fba_growth_rate": float(growth),
+                "fba_evaluator_id": fba_id,
+                "resource_evaluator_id": resource_id,
+            }
+    return pd.DataFrame.from_dict(finalists, orient="index").rename_axis("state_id")
 
 
 def _frozen_sqlite_hashes(path: Path) -> dict[str, str]:

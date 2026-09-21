@@ -10,9 +10,10 @@ from pathlib import Path
 from typing import Any
 
 import pyarrow.parquet as pq
+from pydantic import BaseModel, Field, StrictInt, TypeAdapter
 
 from yggdrisil_ecoli.data.io import atomic_json, file_sha256
-from yggdrisil_ecoli.vecoli import validate_vecoli_checkout
+from yggdrisil_ecoli.vecoli import _frozen_sqlite_hashes, validate_vecoli_checkout
 
 _VARIANT = re.compile(r"--variant\s+(\d+)")
 _GENERATION = re.compile(r"generation=(\d+)")
@@ -31,54 +32,44 @@ class SimulationTask:
     wall_time_ms: int | None
 
 
+class _FinalistIdentity(BaseModel):
+    variant_index: StrictInt
+    state_id: str = Field(strict=True, min_length=1)
+    deletion_count: StrictInt
+    deletion_set_sha256: str = Field(strict=True, min_length=1)
+
+
 def summarize_vecoli_lineages(
     manifest_path: str | Path, result_path: str | Path
-) -> dict[str, object]:
-    """Report consecutive successful divisions and explicit terminal reasons."""
-
+) -> dict[str, Any]:
+    """Report consecutive divisions only after checking frozen input provenance."""
     manifest_file = Path(manifest_path)
-    manifest = _mapping(json.loads(manifest_file.read_text()), "manifest")
+    manifest = json.loads(manifest_file.read_text())
     _validate_manifest_provenance(manifest)
-    workflow = _mapping(manifest.get("workflow"), "workflow")
-    config_path = Path(_string(workflow.get("config_path"), "config_path"))
-    expected_config_hash = _string(workflow.get("config_sha256"), "config_sha256")
-    if file_sha256(config_path) != expected_config_hash:
-        raise ValueError("workflow config hash no longer matches the manifest")
-    sim_data_path = workflow.get("sim_data_path")
-    sim_data_hash = workflow.get("sim_data_sha256")
-    if sim_data_path is not None or sim_data_hash is not None:
-        sim_data_file = Path(_string(sim_data_path, "sim_data_path"))
-        if file_sha256(sim_data_file) != _string(sim_data_hash, "sim_data_sha256"):
-            raise ValueError("vEcoli simData hash no longer matches the manifest")
-    output_root = Path(_string(workflow.get("output_root"), "output_root"))
-    experiment_id = _string(workflow.get("experiment_id"), "experiment_id")
-    experiment_dir = output_root / experiment_id
-    workdirs = experiment_dir / "nextflow" / "nextflow_workdirs"
-    if not workdirs.is_dir():
-        raise ValueError(f"Nextflow work directory does not exist: {workdirs}")
-    tasks = _simulation_tasks(workdirs)
-    lineage = _mapping(manifest.get("lineage"), "lineage")
-    seed = _integer(lineage.get("seed"), "lineage seed")
-    max_generations = _integer(lineage.get("max_generations"), "maximum generations")
-    raw_finalists = manifest.get("finalists")
-    if not isinstance(raw_finalists, list) or not raw_finalists:
-        raise ValueError("manifest finalists must be a nonempty list")
+    workflow, lineage = manifest["workflow"], manifest["lineage"]
+    seed, maximum = TypeAdapter(tuple[StrictInt, StrictInt]).validate_python(
+        (lineage["seed"], lineage["max_generations"])
+    )
+    if not 1 <= maximum <= 20 or not manifest["finalists"]:
+        raise ValueError("expected finalists and a maximum of 1 to 20 generations")
+    experiment_dir = Path(workflow["output_root"]) / workflow["experiment_id"]
+    tasks = _simulation_tasks(experiment_dir / "nextflow" / "nextflow_workdirs")
     finalists = [
         _summarize_finalist(
-            _mapping(item, "finalist"),
+            item,
             experiment_dir=experiment_dir,
             tasks=tasks,
             seed=seed,
-            max_generations=max_generations,
+            max_generations=maximum,
         )
-        for item in raw_finalists
+        for item in manifest["finalists"]
     ]
-    result: dict[str, object] = {
+    result = {
         "schema_version": 1,
         "purpose": "vEcoli finalist lineage outcomes",
         "manifest_path": str(manifest_file.resolve()),
         "manifest_sha256": file_sha256(manifest_file),
-        "workflow_config_sha256": expected_config_hash,
+        "workflow_config_sha256": workflow["config_sha256"],
         "experiment_dir": str(experiment_dir),
         "finalists": finalists,
         "all_reached_max_generations": all(
@@ -92,85 +83,58 @@ def summarize_vecoli_lineages(
     return result
 
 
+def _verify_file(path: str | Path, expected_hash: str, label: str) -> None:
+    if file_sha256(path) != expected_hash:
+        raise ValueError(f"{label} hash no longer matches the manifest")
+
+
 def _validate_manifest_provenance(manifest: dict[str, Any]) -> None:
-    raw_application = manifest.get("application")
-    if raw_application is None:
-        _validate_combined_source_graphs(manifest.get("source_graphs"))
+    application = manifest.get("application")
+    if application is not None:
+        _verify_file(
+            application["selection_source_path"],
+            application["selection_source_sha256"],
+            "selection source",
+        )
+        sources = [{"selection": manifest["selection"]}]
     else:
-        application = _mapping(raw_application, "application provenance")
-        selection_source = Path(
-            _string(application.get("selection_source_path"), "selection source path")
-        )
-        if file_sha256(selection_source) != _string(
-            application.get("selection_source_sha256"), "selection source hash"
-        ):
-            raise ValueError("selection source hash no longer matches the manifest")
+        sources = manifest["source_graphs"]
+        if not isinstance(sources, list) or not sources:
+            raise ValueError("combined manifest source_graphs must be a nonempty list")
+    for source in sources:
+        selection = source["selection"]
+        path = Path(selection["graph_path"])
+        expected_hash = selection["graph_files"][path.name]
+        if application is None:
+            backup = source["backup"]
+            if (path.resolve(), expected_hash) != (
+                Path(backup["frozen_path"]).resolve(),
+                backup["frozen_sha256"],
+            ):
+                raise ValueError("selection and backup graph paths or hashes differ")
+        if _frozen_sqlite_hashes(path)[path.name] != expected_hash:
+            raise ValueError("source graph hash no longer matches the manifest")
 
-        selection = _mapping(manifest.get("selection"), "selection")
-        graph_path = Path(_string(selection.get("graph_path"), "graph path"))
-        graph_files = _mapping(selection.get("graph_files"), "graph files")
-        expected_graph_hash = _string(
-            graph_files.get(graph_path.name), "source graph hash"
-        )
-        _validate_source_graph(graph_path, expected_graph_hash)
-
-    registry = _mapping(manifest.get("registry"), "registry")
-    registry_path = Path(_string(registry.get("path"), "registry path"))
-    if file_sha256(registry_path) != _string(registry.get("sha256"), "registry hash"):
-        raise ValueError("registry hash no longer matches the manifest")
-
-    vecoli = _mapping(manifest.get("vecoli"), "vEcoli provenance")
-    checkout = Path(_string(vecoli.get("checkout"), "vEcoli checkout"))
-    current = validate_vecoli_checkout(checkout)
-    for key in ("git_commit", "uv_lock_sha256", "nextflow_version"):
-        if current[key] != vecoli.get(key):
-            raise ValueError(f"vEcoli {key} no longer matches the manifest")
-    adapter_path = Path(_string(vecoli.get("adapter_path"), "adapter path"))
-    if file_sha256(adapter_path) != _string(
-        vecoli.get("adapter_sha256"), "adapter hash"
+    registry, vecoli, workflow = (
+        manifest[key] for key in ("registry", "vecoli", "workflow")
+    )
+    _verify_file(registry["path"], registry["sha256"], "registry")
+    _verify_file(workflow["config_path"], workflow["config_sha256"], "workflow config")
+    if (
+        workflow.get("sim_data_path") is not None
+        or workflow.get("sim_data_sha256") is not None
     ):
-        raise ValueError("vEcoli adapter hash no longer matches the manifest")
-    audit_path = vecoli.get("variant_knockout_audit_path")
-    audit_hash = vecoli.get("variant_knockout_audit_sha256")
-    if (audit_path is None) != (audit_hash is None):
-        raise ValueError("variant knockout audit path and hash must appear together")
-    if audit_path is not None:
-        audit_file = Path(_string(audit_path, "variant knockout audit path"))
-        if file_sha256(audit_file) != _string(
-            audit_hash, "variant knockout audit hash"
-        ):
-            raise ValueError(
-                "variant knockout audit hash no longer matches the manifest"
-            )
-
-
-def _validate_combined_source_graphs(raw_graphs: object) -> None:
-    if not isinstance(raw_graphs, list) or not raw_graphs:
-        raise ValueError("combined manifest source_graphs must be a nonempty list")
-    for raw_record in raw_graphs:
-        record = _mapping(raw_record, "source graph record")
-        backup = _mapping(record.get("backup"), "source graph backup")
-        selection = _mapping(record.get("selection"), "source graph selection")
-        graph_path = Path(_string(selection.get("graph_path"), "graph path"))
-        frozen_path = Path(_string(backup.get("frozen_path"), "frozen graph path"))
-        if graph_path.resolve() != frozen_path.resolve():
-            raise ValueError("selection and backup graph paths differ")
-        graph_files = _mapping(selection.get("graph_files"), "graph files")
-        expected_graph_hash = _string(
-            graph_files.get(graph_path.name), "source graph hash"
+        _verify_file(
+            workflow["sim_data_path"], workflow["sim_data_sha256"], "vEcoli simData"
         )
-        if expected_graph_hash != _string(
-            backup.get("frozen_sha256"), "frozen graph hash"
-        ):
-            raise ValueError("selection and backup graph hashes differ")
-        _validate_source_graph(graph_path, expected_graph_hash)
-
-
-def _validate_source_graph(graph_path: Path, expected_hash: str) -> None:
-    if file_sha256(graph_path) != expected_hash:
-        raise ValueError("source graph hash no longer matches the manifest")
-    if Path(f"{graph_path}-wal").exists() or Path(f"{graph_path}-shm").exists():
-        raise ValueError("source graph acquired SQLite sidecars after selection")
+    current = validate_vecoli_checkout(Path(vecoli["checkout"]))
+    for key in ("git_commit", "uv_lock_sha256", "nextflow_version"):
+        if current[key] != vecoli[key]:
+            raise ValueError(f"vEcoli {key} no longer matches the manifest")
+    for prefix in ("adapter", "variant_knockout_audit"):
+        path, digest = vecoli.get(f"{prefix}_path"), vecoli.get(f"{prefix}_sha256")
+        if prefix == "adapter" or path is not None or digest is not None:
+            _verify_file(path, digest, f"vEcoli {prefix}")
 
 
 def _summarize_finalist(
@@ -181,7 +145,8 @@ def _summarize_finalist(
     seed: int,
     max_generations: int,
 ) -> dict[str, object]:
-    variant_index = _integer(finalist.get("variant_index"), "variant index")
+    identity = _FinalistIdentity.model_validate(finalist)
+    variant_index = identity.variant_index
     generations: list[dict[str, object]] = []
     previous_division_global_time_s = 0.0
     for generation in range(1, max_generations + 1):
@@ -233,12 +198,7 @@ def _summarize_finalist(
         terminal_task, completed=completed, maximum=max_generations
     )
     return {
-        "variant_index": variant_index,
-        "state_id": _string(finalist.get("state_id"), "state ID"),
-        "deletion_count": _integer(finalist.get("deletion_count"), "deletion count"),
-        "deletion_set_sha256": _string(
-            finalist.get("deletion_set_sha256"), "deletion set hash"
-        ),
+        **identity.model_dump(),
         "generations_completed": completed,
         "maximum_generations": max_generations,
         "terminal_reason": terminal_reason,
@@ -323,6 +283,8 @@ def _task_payload(task: SimulationTask, error_sha256: str | None) -> dict[str, o
 
 
 def _simulation_tasks(workdirs: Path) -> dict[tuple[int, int], SimulationTask]:
+    if not workdirs.is_dir():
+        raise ValueError(f"Nextflow work directory does not exist: {workdirs}")
     tasks: dict[tuple[int, int], SimulationTask] = {}
     for command_path in workdirs.rglob(".command.sh"):
         command = command_path.read_text(errors="replace")
@@ -380,21 +342,3 @@ def _wall_time_ms(path: Path) -> int | None:
             value = line.split("=", 1)[1]
             return int(value) if value else None
     return None
-
-
-def _mapping(value: object, label: str) -> dict[str, Any]:
-    if not isinstance(value, dict):
-        raise ValueError(f"{label} must be a mapping")
-    return value
-
-
-def _string(value: object, label: str) -> str:
-    if not isinstance(value, str) or not value:
-        raise ValueError(f"{label} must be a nonempty string")
-    return value
-
-
-def _integer(value: object, label: str) -> int:
-    if not isinstance(value, int) or isinstance(value, bool):
-        raise ValueError(f"{label} must be an integer")
-    return value

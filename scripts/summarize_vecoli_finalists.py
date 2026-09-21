@@ -15,12 +15,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     result = summarize_vecoli_lineages(args.manifest, args.output)
-    finalists = result["finalists"]
-    if not isinstance(finalists, list):
-        raise RuntimeError("result lacks finalists")
-    for finalist in finalists:
-        if not isinstance(finalist, dict):
-            raise RuntimeError("malformed finalist result")
+    for finalist in result["finalists"]:
         print(
             finalist["state_id"],
             f"{finalist['generations_completed']}/{finalist['maximum_generations']}",

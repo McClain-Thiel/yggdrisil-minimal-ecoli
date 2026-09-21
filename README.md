@@ -90,8 +90,8 @@ essentiality, KEGG module retention, and predicted growth separately for
 aerobic M9 with glucose at 37 °C. Missing evidence stays unknown; these scores
 do not prove a strain is viable. KEGG scoring reports complete and broken
 modules, without enumerating possible repairs. The RBA model covers 1,441 of
-4,290 genes; uncovered deletions remain explicit. See
-[the RBA assumptions](docs/resource-viability.md).
+4,290 genes; uncovered deletions remain explicit. RBA uses its published medium
+and exact enzyme/process-machine knockouts at the fixed growth floor.
 
 MDS42 and MS56 are agent-invisible calibration controls, used to check the RBA
 floor before search. Their later overlap scores measure rediscovery, not
@@ -108,9 +108,13 @@ a workflow; it does not launch simulations.
 Run the generated configuration from the pinned vEcoli checkout using its
 `runscripts/workflow.py`, then use `scripts/summarize_vecoli_finalists.py` to report
 completed divisions and distinguish nondivision from model or execution failures.
-Start with one generation before a longer lineage. The
-[validation contract](docs/vecoli-finalist-validation.md) records the frozen
-source, knockout assumptions, and interpretation limits.
+Start with one generation before a longer lineage. Selection uses only the
+frozen search evidence: the largest feasible deletion set, then four diverse
+sets within 90% of its size. The pinned vEcoli workflow disables operons to
+knock out individual genes, follows one daughter for up to 20 generations,
+and checks every targeted expression/regulation parameter. A single simulated
+lineage is not a survival probability; repeat seeds and experimental validation
+are needed for biological conclusions.
 
 ## Development
 

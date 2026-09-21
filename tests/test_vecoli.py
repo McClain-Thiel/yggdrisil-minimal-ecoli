@@ -17,7 +17,6 @@ from yggdrisil.serialize import dumps
 
 from yggdrisil_ecoli.state import GenomeState, genome_state_key
 from yggdrisil_ecoli.vecoli import (
-    Finalist,
     build_workflow_config,
     install_vecoli_adapter,
     map_finalists,
@@ -34,25 +33,39 @@ FBA_ID = "fba-active"
 RESOURCE_ID = "resource-active"
 
 
-def _finalist(name: str, genes: set[str], growth: float = 0.8) -> Finalist:
-    return Finalist(name, frozenset(genes), growth, FBA_ID, RESOURCE_ID)
+def _finalist(name: str, genes: set[str], growth: float = 0.8) -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "deleted_gene_ids": [sorted(genes)],
+            "deletion_count": [len(genes)],
+            "fba_growth_rate": [growth],
+            "fba_evaluator_id": [FBA_ID],
+            "resource_evaluator_id": [RESOURCE_ID],
+        },
+        index=pd.Index([name], name="state_id"),
+    )
 
 
 def test_diverse_selection_starts_deepest_then_spreads() -> None:
-    candidates = (
-        _finalist("deep", {"b0001", "b0002", "b0003", "b0004"}),
-        _finalist("near", {"b0001", "b0002", "b0003"}),
-        _finalist("branch-a", {"b0001", "b0002", "b0005"}),
-        _finalist("branch-b", {"b0003", "b0004", "b0006"}),
+    candidates = pd.concat(
+        [
+            _finalist("deep", {"b0001", "b0002", "b0003", "b0004"}),
+            _finalist("near", {"b0001", "b0002", "b0003"}),
+            _finalist("branch-a", {"b0001", "b0002", "b0005"}),
+            _finalist("branch-b", {"b0003", "b0004", "b0006"}),
+        ]
     )
 
     selected = select_diverse_finalists(candidates, count=3, deletion_band=0.5)
 
-    assert [item.state_id for item in selected] == ["deep", "branch-a", "branch-b"]
+    assert selected.index.tolist() == ["deep", "branch-a", "branch-b"]
 
 
-def test_graph_selection_uses_only_active_viability_evidence(tmp_path: Path) -> None:
-    graph = tmp_path / "run.sqlite"
+@pytest.mark.parametrize("graph_name", ["run.sqlite", "run?question#fragment.sqlite"])
+def test_graph_selection_uses_only_active_viability_evidence(
+    tmp_path: Path, graph_name: str
+) -> None:
+    graph = tmp_path / graph_name
     connection = sqlite3.connect(graph)
     connection.executescript(
         """
@@ -148,7 +161,7 @@ def test_graph_selection_uses_only_active_viability_evidence(tmp_path: Path) -> 
 
     provenance, selected = select_finalists(graph, count=2, deletion_band=0.5)
 
-    assert {item.deleted_genes for item in selected} == {
+    assert {frozenset(genes) for genes in selected.deleted_gene_ids} == {
         frozenset({"b0001"}),
         frozenset({"b0003", "b0004"}),
     }
@@ -164,9 +177,11 @@ def test_mapping_and_workflow_keep_exact_variant_order(tmp_path: Path) -> None:
         {"ecocyc_id": ["EG1", "EG2", "EG3"]},
         index=pd.Index(["b0001", "b0002", "b0003"], name="b_number"),
     )
-    finalists = (
-        _finalist("one", {"b0002", "b0001"}),
-        _finalist("two", {"b0003"}),
+    finalists = pd.concat(
+        [
+            _finalist("one", {"b0002", "b0001"}),
+            _finalist("two", {"b0003"}),
+        ]
     )
 
     variants = map_finalists(finalists, registry)
@@ -179,7 +194,10 @@ def test_mapping_and_workflow_keep_exact_variant_order(tmp_path: Path) -> None:
         sim_data_path=None,
     )
 
-    assert variants[0].gene_mapping == (("b0001", "EG1"), ("b0002", "EG2"))
+    assert variants.iloc[0].gene_mapping == [
+        {"b_number": "b0001", "vecoli_gene_id": "EG1"},
+        {"b_number": "b0002", "vecoli_gene_id": "EG2"},
+    ]
     assert config["variants"] == {
         "yggdrisil_multi_gene_knockout": {
             "gene_ids": {"value": [["EG1", "EG2"], ["EG3"]]}
@@ -194,7 +212,7 @@ def test_mapping_and_workflow_keep_exact_variant_order(tmp_path: Path) -> None:
 
 @pytest.mark.parametrize("missing_value", [None, np.nan, pd.NA])
 def test_mapping_rejects_missing_or_ambiguous_ids(missing_value: object) -> None:
-    finalist = (_finalist("candidate", {"b0001", "b0002"}),)
+    finalist = _finalist("candidate", {"b0001", "b0002"})
     missing = pd.DataFrame(
         {"ecocyc_id": ["EG1", missing_value]}, index=["b0001", "b0002"]
     )
@@ -404,6 +422,13 @@ def test_lineage_summary_distinguishes_division_from_nondivision(
     )
 
     assert combined_result["finalists"] == result["finalists"]
+
+    for source in (selection_source, registry, adapter, config):
+        frozen = source.read_bytes()
+        source.write_text("changed input\n")
+        with pytest.raises(ValueError, match="hash no longer matches"):
+            summarize_vecoli_lineages(manifest, tmp_path / "changed-input-result.json")
+        source.write_bytes(frozen)
 
     graph.write_text("changed graph\n")
     with pytest.raises(ValueError, match="source graph hash"):

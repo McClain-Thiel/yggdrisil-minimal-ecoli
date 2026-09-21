@@ -11,43 +11,26 @@ from yggdrisil_ecoli.vecoli import prepare_finalist_workflow
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--graph", type=Path, required=True)
+    parser.add_argument("--graph", dest="graph_path", type=Path, required=True)
     parser.add_argument(
-        "--genes", type=Path, default=Path("data/processed/genes.parquet")
+        "--genes",
+        dest="genes_path",
+        type=Path,
+        default=Path("data/processed/genes.parquet"),
     )
     parser.add_argument("--vecoli-checkout", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
-    parser.add_argument("--manifest", type=Path, required=True)
-    parser.add_argument("--config", type=Path, required=True)
+    parser.add_argument("--manifest", dest="manifest_path", type=Path, required=True)
+    parser.add_argument("--config", dest="config_path", type=Path, required=True)
     parser.add_argument("--count", type=int, default=5)
     parser.add_argument("--deletion-band", type=float, default=0.9)
     parser.add_argument("--lineage-seed", type=int, default=101)
     parser.add_argument("--generations", type=int, default=20)
     parser.add_argument("--sim-data-path", type=Path)
-    args = parser.parse_args()
-    manifest = prepare_finalist_workflow(
-        graph_path=args.graph,
-        genes_path=args.genes,
-        vecoli_checkout=args.vecoli_checkout,
-        output_root=args.output_root,
-        manifest_path=args.manifest,
-        config_path=args.config,
-        count=args.count,
-        deletion_band=args.deletion_band,
-        lineage_seed=args.lineage_seed,
-        generations=args.generations,
-        sim_data_path=args.sim_data_path,
-    )
-    finalists = manifest["finalists"]
-    if not isinstance(finalists, list):
-        raise RuntimeError("generated manifest lacks finalists")
-    workflow = manifest["workflow"]
-    if not isinstance(workflow, dict):
-        raise RuntimeError("generated manifest lacks workflow")
-    print(f"Prepared {len(finalists)} frozen finalists")
-    print(f"Experiment: {workflow['experiment_id']}")
-    print(f"Manifest: {args.manifest.resolve()}")
-    print(f"Config: {args.config.resolve()}")
+    manifest = prepare_finalist_workflow(**vars(parser.parse_args()))
+    print(f"Prepared {len(manifest['finalists'])} frozen finalists")
+    print(f"Experiment: {manifest['workflow']['experiment_id']}")
+    print(f"Config: {manifest['workflow']['config_path']}")
 
 
 if __name__ == "__main__":

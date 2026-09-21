@@ -75,6 +75,7 @@ def build_rba_artifact(
     from yggdrisil_ecoli.data.sources import SourceSpec, acquire_source
 
     artifact_dir = Path(output_dir)
+    dependencies = _dependency_versions()
     source_records: list[dict[str, object]] = []
     for source_path, sha256 in RBA_MODEL_FILES.items():
         relative_path = Path(source_path)
@@ -98,16 +99,7 @@ def build_rba_artifact(
         )
 
     generated_path = artifact_dir / MODEL_STRUCTURE_PATH
-    generated_path.parent.mkdir(parents=True, exist_ok=True)
-    _generate_model_structure(artifact_dir, generated_path)
-    model_dimensions = _validated_model_dimensions(
-        json.loads(generated_path.read_text())
-    )
-    repository_wt_reference = _read_repository_wt_reference(
-        artifact_dir / RBA_REPOSITORY_WT_GROWTH_PATH
-    )
-    generated_sha256 = file_sha256(generated_path)
-    dependency_versions = _dependency_versions()
+    model_dimensions = _generate_model_structure(artifact_dir, generated_path)
     provenance = {
         "repository": "https://github.com/RBAgroup/RBA-models",
         "commit": RBA_MODELS_COMMIT,
@@ -116,22 +108,21 @@ def build_rba_artifact(
         "generated_files": [
             {
                 "path": MODEL_STRUCTURE_PATH,
-                "sha256": generated_sha256,
+                "sha256": file_sha256(generated_path),
                 "bytes": generated_path.stat().st_size,
             }
         ],
-        "dependencies": dependency_versions,
+        "dependencies": dependencies,
         "model_dimensions": model_dimensions,
         "growth_floor_h": RBA_GROWTH_FLOOR_H,
-        "repository_wild_type_max_growth_rate_h": repository_wt_reference,
+        "repository_wild_type_max_growth_rate_h": RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H,
     }
-    provenance_sha256 = _sha256_json(provenance)
     manifest = {
         "schema_version": 1,
         "artifact": "ecoli_k12_wt_rba",
         "built_at": datetime.now(UTC).isoformat(),
         "provenance": provenance,
-        "provenance_sha256": provenance_sha256,
+        "provenance_sha256": _sha256_json(provenance),
         "artifact_bundle_sha256": _sha256_json(sorted(RBA_MODEL_FILES.items())),
     }
     manifest_path = artifact_dir / RBA_ARTIFACT_MANIFEST
@@ -139,53 +130,39 @@ def build_rba_artifact(
     return manifest_path
 
 
-def _generate_model_structure(artifact_dir: Path, destination: Path) -> None:
+def _generate_model_structure(artifact_dir: Path, destination: Path) -> dict[str, int]:
+    # RBAtools traverses sets while deriving the structure. Fix its hash seed in
+    # a subprocess so repeated builds have the same content and artifact identity.
+    generate = """
+import sys
+from rba import RbaModel
+from rbatools.rba_model_structure import ModelStructureRBA
+model = RbaModel.from_xml(input_dir=sys.argv[1])
+structure = ModelStructureRBA()
+structure.from_files(xml_dir=sys.argv[1], rba_model=model, verbose=False)
+structure.export_json(path=sys.argv[2])
+"""
     destination.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile(
-        prefix=f".{destination.name}.",
-        suffix=".generated",
-        dir=destination.parent,
-        delete=False,
-    ) as handle:
-        temporary = Path(handle.name)
-    environment = os.environ.copy()
-    environment["PYTHONHASHSEED"] = "0"
-    command = [
-        sys.executable,
-        "-c",
-        (
-            "from pathlib import Path; import sys; "
-            "from yggdrisil_ecoli.rba_build import "
-            "_generate_model_structure_in_process as generate; "
-            "generate(Path(sys.argv[1]), Path(sys.argv[2]))"
-        ),
-        str(artifact_dir.resolve()),
-        str(temporary.resolve()),
-    ]
-    try:
-        subprocess.run(command, check=True, env=environment)  # noqa: S603
+    with tempfile.TemporaryDirectory(dir=destination.parent) as staging:
+        temporary = Path(staging) / destination.name
+        try:
+            subprocess.run(
+                [
+                    sys.executable,
+                    "-c",
+                    generate,
+                    str(artifact_dir.resolve()),
+                    str(temporary),
+                ],
+                check=True,
+                env={**os.environ, "PYTHONHASHSEED": "0"},
+            )
+        except subprocess.CalledProcessError as exc:
+            raise DataValidationError("RBA ModelStructure generation failed") from exc
         payload = json.loads(temporary.read_text())
-        _validated_model_dimensions(payload)
+        dimensions = _validated_model_dimensions(payload)
         atomic_json(destination, payload)
-    except subprocess.CalledProcessError as exc:
-        raise DataValidationError("RBA ModelStructure generation failed") from exc
-    finally:
-        temporary.unlink(missing_ok=True)
-
-
-def _generate_model_structure_in_process(artifact_dir: Path, destination: Path) -> None:
-    try:
-        import rba
-        from rbatools.rba_model_structure import ModelStructureRBA
-    except ImportError as exc:  # pragma: no cover - optional dependency guard
-        raise DataValidationError(
-            "RBA artifact building requires the project's pinned 'rba' extra"
-        ) from exc
-
-    model = rba.RbaModel.from_xml(input_dir=str(artifact_dir))
-    structure = ModelStructureRBA()
-    structure.from_files(xml_dir=str(artifact_dir), rba_model=model, verbose=False)
-    structure.export_json(path=str(destination))
+    return dimensions
 
 
 def _dependency_versions() -> dict[str, str]:
@@ -239,19 +216,6 @@ def _validated_model_dimensions(payload: object) -> dict[str, int]:
             f"expected={RBA_EXPECTED_STRUCTURE_DIMENSIONS}, actual={dimensions}"
         )
     return {name: int(value) for name, value in dimensions.items()}
-
-
-def _read_repository_wt_reference(path: Path) -> float:
-    try:
-        fields = path.read_text().strip().split("\t")
-        value = float(fields[1]) if fields[0] == "growth_rate" else float("nan")
-    except (OSError, IndexError, ValueError) as exc:
-        raise DataValidationError("invalid repository WT growth-rate output") from exc
-    if value != RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H:
-        raise DataValidationError(
-            "repository WT growth-rate output differs from the pinned reference"
-        )
-    return value
 
 
 def _sha256_json(value: object) -> str:

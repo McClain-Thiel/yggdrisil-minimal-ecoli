@@ -45,16 +45,11 @@ class RBAScorer:
     ) -> None:
         if solver != "swiglpk":
             raise DataValidationError("RBA supports only the pinned swiglpk solver")
-        self.artifact_dir = Path(artifact_dir)
-        self.solver = solver
-        manifest = _validated_manifest(self.artifact_dir)
+        artifact_dir = Path(artifact_dir)
+        manifest = _validated_manifest(artifact_dir)
         provenance = manifest["provenance"]
-        self.artifact_bundle_sha256 = manifest["artifact_bundle_sha256"]
-        self.provenance_sha256 = manifest["provenance_sha256"]
-        self.model_structure_sha256 = provenance["generated_files"][0]["sha256"]
-        self.artifact_dependency_versions = provenance["dependencies"]
-        self.dependency_versions = _dependency_versions()
-        if self.artifact_dependency_versions != self.dependency_versions:
+        dependencies = _dependency_versions()
+        if provenance["dependencies"] != dependencies:
             raise DataValidationError(
                 "RBA artifact build dependencies differ from the pinned runtime"
             )
@@ -63,23 +58,17 @@ class RBAScorer:
         from rbatools.rba_session import SessionRBA
 
         self._swiglpk: Any = swiglpk
-        self._session: Any = SessionRBA(str(self.artifact_dir), lp_solver=solver)
+        self._session: Any = SessionRBA(str(artifact_dir), lp_solver=solver)
         _glpk_problem(self._session.Problem)
         self._session.set_growth_rate(RBA_GROWTH_FLOOR_H)
-        self.model_dimensions = {
+        dimensions = {
             "rows": len(self._session.Problem.LP.row_names),
             "columns": len(self._session.Problem.LP.col_names),
         }
-        if self.model_dimensions != RBA_EXPECTED_LP_DIMENSIONS:
+        if dimensions != RBA_EXPECTED_LP_DIMENSIONS:
             raise DataValidationError("loaded RBA LP dimensions differ from the pin")
         self._lock = threading.Lock()
         self._variables_by_gene = self._build_variable_map(genes.index)
-        self.registry_mapping_sha256 = _sha256_json(
-            [
-                (gene, list(variables))
-                for gene, variables in self._variables_by_gene.items()
-            ]
-        )
         modeled_variables = sorted(set().union(*self._variables_by_gene.values()))
         mapping_dimensions = {
             "genes": sum(bool(value) for value in self._variables_by_gene.values()),
@@ -91,38 +80,32 @@ class RBAScorer:
             )
         self._base_lower_bounds = self._session.Problem.get_lb(modeled_variables)
         self._base_upper_bounds = self._session.Problem.get_ub(modeled_variables)
-        self.provenance = {
-            "artifact_bundle_sha256": self.artifact_bundle_sha256,
-            "provenance_sha256": self.provenance_sha256,
-            "model_structure_sha256": self.model_structure_sha256,
-            "registry_mapping_sha256": self.registry_mapping_sha256,
+        self.config = {
+            "artifact_bundle_sha256": manifest["artifact_bundle_sha256"],
+            "provenance_sha256": manifest["provenance_sha256"],
+            "model_structure_sha256": provenance["generated_files"][0]["sha256"],
+            "registry_mapping_sha256": _sha256_json(
+                list(self._variables_by_gene.items())
+            ),
             "rba_models_commit": RBA_MODELS_COMMIT,
             "growth_rate_floor_h": RBA_GROWTH_FLOOR_H,
             "repository_wild_type_max_growth_rate_h": (
                 RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H
             ),
-            "model_dimensions": self.model_dimensions,
-            "solver": self.solver,
-            "dependency_versions": self.dependency_versions,
-            "artifact_dependency_versions": self.artifact_dependency_versions,
+            "model_dimensions": dimensions,
+            "solver": solver,
+            "dependency_versions": dependencies,
+            "artifact_dependency_versions": provenance["dependencies"],
         }
-        self.config = self.provenance.copy()
 
     async def evaluate(self, state: GenomeState) -> EvaluationResult:
-        metrics, coverage = await asyncio.to_thread(
-            self._score_deleted, state.deleted_genes
-        )
-        return scientific_evaluation(
-            metrics, coverage=coverage, provenance=self.provenance
-        )
+        return await asyncio.to_thread(self._evaluate, state.deleted_genes)
 
     def variables_for_gene(self, b_number: str) -> tuple[str, ...]:
         """Return exact LP columns; reject genes outside the supplied universe."""
         return self._variables_by_gene[b_number]
 
-    def _score_deleted(
-        self, deleted_genes: set[str] | frozenset[str]
-    ) -> tuple[dict[str, object], dict[str, object]]:
+    def _evaluate(self, deleted_genes: frozenset[str]) -> EvaluationResult:
         deleted = tuple(sorted(deleted_genes))
         modeled = {
             gene: list(self._variables_by_gene[gene])
@@ -133,7 +116,7 @@ class RBAScorer:
         knocked_out = sorted(set().union(*modeled.values()))
         with self._lock:
             status, solution_type = self._solve_with_knockouts(knocked_out)
-        return (
+        return scientific_evaluation(
             {
                 "feasible_at_growth_floor": status in {"optimal", "feasible"},
                 "growth_rate_floor_h": RBA_GROWTH_FLOOR_H,
@@ -145,11 +128,12 @@ class RBAScorer:
                 "knocked_out_variable_ids": knocked_out,
                 "unmodeled_gene_ids": unmodeled,
             },
-            {
+            coverage={
                 "deleted_genes_total": len(deleted),
                 "deleted_genes_modeled": len(modeled),
                 "deleted_genes_unmodeled": len(unmodeled),
             },
+            provenance=self.config,
         )
 
     def _solve_with_knockouts(self, variables: list[str]) -> tuple[str, str]:
