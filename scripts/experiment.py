@@ -1,8 +1,7 @@
 import marimo
 
-__generated_with = "0.24.2"
+__generated_with = "0.25.2"
 app = marimo.App(width="medium")
-
 
 with app.setup:
     import json
@@ -100,7 +99,7 @@ def evaluators(genes, input_files, input_hashes):
         RBAScorer(genes=genes, artifact_dir=input_files["rba_manifest"].parent),
     ]
     evaluator_ids = active_evaluator_ids(evaluators)
-    return evaluator_ids, evaluators
+    return evaluator_ids, evaluators, module_evaluator
 
 
 @app.cell
