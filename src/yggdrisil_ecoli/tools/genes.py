@@ -37,6 +37,64 @@ class GeneTools:
         except KeyError as exc:
             raise ValueError(f"unknown candidate gene id: {gene_id}") from exc
 
+    def resolve_gene_ids(self, identifiers: list[str]) -> list[dict[str, object]]:
+        """Resolve exact reference IDs or annotated names; report every ambiguity."""
+        if self.aliases is not None:
+            raise ValueError("identifier resolution is unavailable in closed-book mode")
+        results: list[dict[str, object]] = []
+        columns = ["symbol", "name", "ncbi_gene_id", "ecocyc_id", "iml1515_gene_id"]
+        positions: dict[str, set[int]] = {}
+        for column in columns:
+            if column not in self.genes.columns:
+                continue
+            for position, value in enumerate(self.genes[column]):
+                if isinstance(value, str):
+                    positions.setdefault(value.casefold(), set()).add(position)
+        for identifier in identifiers:
+            if identifier in self.genes.index:
+                candidates = [identifier]
+            else:
+                candidates = [
+                    str(self.genes.index[position])
+                    for position in sorted(positions.get(identifier.casefold(), ()))
+                ]
+            results.append(
+                {
+                    "input": identifier,
+                    "status": "resolved"
+                    if len(candidates) == 1
+                    else ("ambiguous" if candidates else "unmatched"),
+                    "gene_ids": candidates,
+                }
+            )
+        return results
+
+    def get_deleted_genes(self, offset: int = 0, count: int = 50) -> dict[str, object]:
+        """Read the exact deletion set without a truncated prompt summary."""
+        if offset < 0 or not 1 <= count <= 100:
+            raise ValueError("offset must be non-negative and count must be 1 to 100")
+        genes = sorted(self.public(gene) for gene in self.deleted_genes)
+        return {"total": len(genes), "gene_ids": genes[offset : offset + count]}
+
+    def deletion_delta(
+        self,
+        gene_ids: list[str],
+        offset: int = 0,
+        count: int = 50,
+    ) -> dict[str, object]:
+        """Compare a validated target deletion set with the current genotype."""
+        if offset < 0 or not 1 <= count <= 100:
+            raise ValueError("offset must be non-negative and count must be 1 to 100")
+        target = {self.canonical(gene) for gene in gene_ids}
+        remaining = sorted(target - self.deleted_genes)
+        return {
+            "target_count": len(target),
+            "matched_count": len(target & self.deleted_genes),
+            "remaining_count": len(remaining),
+            "additional_deletion_count": len(self.deleted_genes - target),
+            "remaining_gene_ids": remaining[offset : offset + count],
+        }
+
     def list_deletion_candidates(
         self, page: int = 0, count: int = 24
     ) -> dict[str, object]:

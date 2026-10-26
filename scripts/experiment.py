@@ -1,8 +1,7 @@
 import marimo
 
-__generated_with = "0.24.2"
+__generated_with = "0.25.2"
 app = marimo.App(width="medium")
-
 
 with app.setup:
     import json
@@ -18,6 +17,7 @@ with app.setup:
     from yggdrisil.serialize import loads
 
     import yggdrisil_ecoli
+    from yggdrisil_ecoli.agent_policy import make_agent_policy
     from yggdrisil_ecoli.analysis import summarize_run
     from yggdrisil_ecoli.data.evidence import load_genes
     from yggdrisil_ecoli.data.io import file_sha256
@@ -99,7 +99,7 @@ def evaluators(genes, input_files, input_hashes):
         RBAScorer(genes=genes, artifact_dir=input_files["rba_manifest"].parent),
     ]
     evaluator_ids = active_evaluator_ids(evaluators)
-    return evaluator_ids, evaluators
+    return evaluator_ids, evaluators, module_evaluator
 
 
 @app.cell
@@ -113,6 +113,10 @@ def search_settings():
     # agent_config = AgentSearchConfig(
     #     model="vendor/model", seed=seed, bundle_size=bundle_size,
     #     max_actions=n_proposals, mode="closed-book")
+    # For persistent planning with ordinary literature retrieval, use:
+    # agent_config = AgentSearchConfig(
+    #     model="vendor/model", seed=seed, bundle_size=bundle_size,
+    #     max_actions=n_proposals, mode="research", orchestration="manager")
     allow_paid = mo.ui.checkbox(label="Enable paid model calls")
     resume_graph = mo.ui.text(label="Resume graph (optional)")
     state_limit = mo.ui.number(value=10, start=1, step=1, label="State limit")
@@ -165,6 +169,7 @@ async def search(
     evaluator_ids,
     evaluators,
     genes,
+    module_evaluator,
     n_proposals,
     provenance,
     resume_graph,
@@ -181,23 +186,15 @@ async def search(
         agent_config is not None and not allow_paid.value,
         mo.md("Enable paid model calls before running an agent policy."),
     )
-    policy = yg.RandomPolicy(
-        deletion_sampler(genes, bundle_size=bundle_size),
-        seed=seed,
-        n_proposals=n_proposals,
-        eligible=viability_eligibility(evaluator_ids),
-    )
-    # Replace the policy above with a heuristic or a recoverable open-set agent:
-    # from yggdrisil_ecoli.policies import make_heuristic_policy
-    # policy = make_heuristic_policy(genes=genes, evaluator_ids=evaluator_ids,
-    #     seed=seed, bundle_size=bundle_size, n_proposals=n_proposals)
-    # from yggdrisil_ecoli.agent_policy import make_agent_policy
-    # policy = make_agent_policy(genes=genes, modules=module_evaluator,
-    #     config=agent_config, evaluator_ids=evaluator_ids)
+    if agent_config is not None and (
+        agent_config.bundle_size != bundle_size
+        or agent_config.max_actions != n_proposals
+    ):
+        raise ValueError("agent and experiment action limits must match")
     _metadata = {
         **provenance,
         "evaluators": evaluator_ids,
-        "policy": type(policy).__name__,
+        "policy": "NavigatorExplorerPolicy" if agent_config else "RandomPolicy",
         "seed": seed,
         "bundle_size": bundle_size,
         "n_proposals": n_proposals,
@@ -226,13 +223,31 @@ async def search(
         graph_path.parent.mkdir(exist_ok=True)
         graph_path.touch(exist_ok=False)
     with yg.SQLiteStateGraph(graph_path) as _graph:
+        _run_id = _previous[0] if _previous else graph_path.stem
+        policy = (
+            make_agent_policy(
+                genes=genes,
+                modules=module_evaluator,
+                config=agent_config,
+                evaluator_ids=evaluator_ids,
+                graph=_graph.readonly(),
+                run_id=_run_id,
+            )
+            if agent_config is not None
+            else yg.RandomPolicy(
+                deletion_sampler(genes, bundle_size=bundle_size),
+                seed=seed,
+                n_proposals=n_proposals,
+                eligible=viability_eligibility(evaluator_ids),
+            )
+        )
         run = await yg.Runner(
             EcoliProblem(genes, max_genes_per_action=bundle_size),
             policy,
             _graph,
             yg.RunLimits(max_states=state_limit.value, max_steps=state_limit.value),
             evaluators=yg.EvaluatorSuite(evaluators, concurrent=True),
-            run_id=_previous[0] if _previous else None,
+            run_id=_run_id,
             resume=_previous is not None,
             metadata=_metadata,
         ).run()
