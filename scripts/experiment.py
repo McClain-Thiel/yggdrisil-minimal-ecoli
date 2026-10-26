@@ -98,12 +98,21 @@ def search_settings():
         label="Search policy",
     )
     model_id = mo.ui.text(label="OpenRouter model ID (agents only)")
+    zero_temperature = mo.ui.checkbox(label="Set temperature to zero (if supported)")
     allow_paid = mo.ui.checkbox(label="Enable paid model calls")
     resume_graph = mo.ui.text(label="Resume graph (optional)")
     state_limit = mo.ui.number(value=10, start=1, step=1, label="State limit")
     start_search = mo.ui.run_button(label="Run search")
     mo.vstack(
-        [policy_kind, model_id, resume_graph, state_limit, allow_paid, start_search]
+        [
+            policy_kind,
+            model_id,
+            zero_temperature,
+            resume_graph,
+            state_limit,
+            allow_paid,
+            start_search,
+        ]
     )
     return (
         allow_paid,
@@ -115,17 +124,26 @@ def search_settings():
         seed,
         start_search,
         state_limit,
+        zero_temperature,
     )
 
 
 @app.cell
-def policy_settings(bundle_size, model_id, n_proposals, policy_kind, seed):
+def policy_settings(
+    bundle_size,
+    model_id,
+    n_proposals,
+    policy_kind,
+    seed,
+    zero_temperature,
+):
     agent_config = None
     if policy_kind.value not in {"random", "heuristic"}:
         mo.stop(not model_id.value.strip(), mo.md("Enter a fixed OpenRouter model ID."))
         agent_config = AgentSearchConfig(
             model=model_id.value.strip(),
             seed=seed,
+            temperature=0.0 if zero_temperature.value else None,
             bundle_size=bundle_size,
             max_actions=n_proposals,
             mode="tool-rich" if policy_kind.value == "manager" else policy_kind.value,

@@ -24,7 +24,7 @@ dependencies = [
     "pandas>=2.2,<4",
     "lark>=1.2,<2",
     "boolean.py>=5,<6",
-    "yggdrisil @ git+https://github.com/McClain-Thiel/yggdrisil.git@a538b49aeeb74187c389c1905b0bdc20f7ee0c80",
+    "yggdrisil @ git+https://github.com/McClain-Thiel/yggdrisil.git@ace52681a9b7897419262fbff1f35152ef036700",
 ]
 
 [project.optional-dependencies]

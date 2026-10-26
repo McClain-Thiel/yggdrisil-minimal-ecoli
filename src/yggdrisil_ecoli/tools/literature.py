@@ -17,7 +17,10 @@ def _get(url: str) -> bytes:
 
 
 async def search_literature(query: str, count: int = 5) -> dict[str, object]:
-    """Search scientific papers and return cited metadata and available abstracts."""
+    """Search papers with Europe PMC AND/OR queries and quoted phrases.
+
+    Return cited metadata and available abstracts; hits still need relevance checks.
+    """
     if not query.strip() or not 1 <= count <= 10:
         raise ValueError("query must be nonempty and count must be 1 to 10")
     url = f"{_BASE}/search?" + urlencode(
