@@ -1,8 +1,7 @@
 import marimo
 
-__generated_with = "0.24.2"
+__generated_with = "0.25.2"
 app = marimo.App(width="medium")
-
 
 with app.setup:
     from datetime import UTC, datetime
@@ -17,7 +16,6 @@ with app.setup:
     from yggdrisil_ecoli.data.evidence import write_genes
     from yggdrisil_ecoli.data.gff import parse_ncbi_gff
     from yggdrisil_ecoli.data.io import atomic_json, file_sha256
-    from yggdrisil_ecoli.data.reduced_genomes import build_validation
     from yggdrisil_ecoli.module_build import build_kegg_modules
 
 
@@ -156,7 +154,7 @@ def write_dataset(
     mo.md(
         f"Prepared **{len(genes):,} genes** in `{data_dir}`. Review the manifest before publishing a dataset."
     )
-    return (genes_path,)
+    return
 
 
 @app.cell
@@ -165,7 +163,7 @@ def rba_settings():
     mo.vstack(
         [
             mo.md("""
-    ## Optional resource-balance model
+    ## Resource-balance model
 
     Build `external/rba_ecoli_k12_wt` for the resource gate. Cached sources are
     verified and reused; the manifest records the current numerical dependencies.
@@ -178,7 +176,7 @@ def rba_settings():
 
 @app.cell
 def rba_artifact(data_folder, prepare_rba):
-    mo.stop(not prepare_rba.value, mo.md("RBA preparation is optional."))
+    mo.stop(not prepare_rba.value, mo.md("Prepare RBA before running a search."))
     from yggdrisil_ecoli.rba_build import build_rba_artifact
 
     rba_manifest = build_rba_artifact(
@@ -189,9 +187,10 @@ def rba_artifact(data_folder, prepare_rba):
 
 
 @app.cell
-def heldout_settings(data_dir):
+def heldout_settings(data_folder):
     heldout_folder = mo.ui.text(
-        value=str(data_dir / "validation"), label="Held-out source folder"
+        value=str(Path(data_folder.value).expanduser() / "validation"),
+        label="Held-out source folder",
     )
     prepare_labels = mo.ui.run_button(label="Prepare held-out labels")
     mo.vstack(
@@ -213,16 +212,19 @@ def heldout_settings(data_dir):
 
 
 @app.cell
-def heldout_labels(data_dir, genes_path, heldout_folder, prepare_labels):
+def heldout_labels(data_folder, heldout_folder, prepare_labels):
     mo.stop(not prepare_labels.value, mo.md("Held-out preparation is optional."))
+    from yggdrisil_ecoli.data.reduced_genomes import build_validation
+
+    _data_dir = Path(data_folder.value).expanduser()
     _validation = Path(heldout_folder.value).expanduser()
     labels = build_validation(
-        genes_path=genes_path,
+        genes_path=_data_dir / "processed" / "genes.parquet",
         reference_path=_validation / "NC_000913.3.ncbi.json",
         mds42_path=_validation / "AP012306.ncbi.json",
         ms56_pdf_path=_validation / "MS56_Park_2014_supplement.pdf",
     )
-    label_path = data_dir / "validation" / "reduced_genomes.json"
+    label_path = _data_dir / "validation" / "reduced_genomes.json"
     atomic_json(label_path, labels)
     {
         name: len(strain["deleted_gene_ids"])

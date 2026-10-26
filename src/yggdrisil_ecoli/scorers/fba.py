@@ -66,7 +66,7 @@ class FBAScorer:
     """Score isolated COBRApy model copies; retain coverage and input identities."""
 
     name = "fba"
-    version = "2"
+    version = "3"
 
     def __init__(self, *, model_path: str | Path, genes: pd.DataFrame) -> None:
         self.model_ids = genes.iml1515_gene_id.copy()
@@ -98,6 +98,10 @@ class FBAScorer:
 
     def _evaluate(self, state: GenomeState) -> EvaluationResult:
         solution = self.model_for(state.deleted_genes).optimize()
+        if solution.status not in {"optimal", "infeasible"}:
+            raise DataValidationError(
+                f"FBA solve did not establish feasibility: status={solution.status}"
+            )
         feasible = solution.status == "optimal"
         growth = float(solution.objective_value) if feasible else None
         if growth is not None:

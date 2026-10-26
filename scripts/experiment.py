@@ -13,15 +13,18 @@ with app.setup:
 
     import marimo as mo
     import yggdrisil as yg
-    from huggingface_hub import snapshot_download
     from yggdrisil.serialize import loads
 
     import yggdrisil_ecoli
-    from yggdrisil_ecoli.agent_policy import make_agent_policy
+    from yggdrisil_ecoli.agent_policy import AgentSearchConfig, make_agent_policy
     from yggdrisil_ecoli.analysis import summarize_run
     from yggdrisil_ecoli.data.evidence import load_genes
     from yggdrisil_ecoli.data.io import file_sha256
-    from yggdrisil_ecoli.policies import deletion_sampler, viability_eligibility
+    from yggdrisil_ecoli.policies import (
+        deletion_sampler,
+        make_heuristic_policy,
+        viability_eligibility,
+    )
     from yggdrisil_ecoli.problem import EcoliProblem
     from yggdrisil_ecoli.scorers.base import active_evaluator_ids
     from yggdrisil_ecoli.scorers.essentiality import EssentialityScorer
@@ -46,34 +49,16 @@ def introduction():
 
 @app.cell
 def data_settings():
-    # Use local prepared data, or supply an existing Hugging Face dataset and commit.
-    local_data = Path("data")
-    dataset_id = ""
-    data_revision = ""
+    data_folder = mo.ui.text(value="data", label="Prepared dataset folder")
     load_data = mo.ui.run_button(label="Load prepared data")
-    load_data
-    return data_revision, dataset_id, load_data, local_data
+    mo.vstack([data_folder, load_data])
+    return data_folder, load_data
 
 
 @app.cell
-def load(data_revision, dataset_id, load_data, local_data):
+def load(data_folder, load_data):
     mo.stop(not load_data.value, mo.md("Load the prepared data to begin."))
-    if dataset_id:
-        mo.stop(not data_revision, mo.md("Set the dataset's pinned commit first."))
-        data_dir = Path(
-            snapshot_download(
-                repo_id=dataset_id,
-                repo_type="dataset",
-                revision=data_revision,
-                allow_patterns=[
-                    "processed/*",
-                    "external/iML1515.json",
-                    "external/rba_ecoli_k12_wt/**",
-                ],
-            )
-        )
-    else:
-        data_dir = local_data
+    data_dir = Path(data_folder.value).expanduser()
     input_files = {
         "genes": data_dir / "processed/genes.parquet",
         "modules": data_dir / "processed/kegg_modules.json",
@@ -107,31 +92,48 @@ def search_settings():
     seed = 17
     bundle_size = 1  # Agent actions may contain 1..bundle_size genes (at most 20).
     n_proposals = 2
-    agent_config = None
-    # For a recoverable open-set agent, replace None with:
-    # from yggdrisil_ecoli.agent_policy import AgentSearchConfig
-    # agent_config = AgentSearchConfig(
-    #     model="vendor/model", seed=seed, bundle_size=bundle_size,
-    #     max_actions=n_proposals, mode="closed-book")
-    # For persistent planning with ordinary literature retrieval, use:
-    # agent_config = AgentSearchConfig(
-    #     model="vendor/model", seed=seed, bundle_size=bundle_size,
-    #     max_actions=n_proposals, mode="research", orchestration="manager")
+    policy_kind = mo.ui.dropdown(
+        ["random", "heuristic", "manager", "research", "closed-book"],
+        value="random",
+        label="Search policy",
+    )
+    model_id = mo.ui.text(label="OpenRouter model ID (agents only)")
     allow_paid = mo.ui.checkbox(label="Enable paid model calls")
     resume_graph = mo.ui.text(label="Resume graph (optional)")
     state_limit = mo.ui.number(value=10, start=1, step=1, label="State limit")
     start_search = mo.ui.run_button(label="Run search")
-    mo.vstack([resume_graph, state_limit, allow_paid, start_search])
+    mo.vstack(
+        [policy_kind, model_id, resume_graph, state_limit, allow_paid, start_search]
+    )
     return (
-        agent_config,
         allow_paid,
         bundle_size,
+        model_id,
         n_proposals,
+        policy_kind,
         resume_graph,
         seed,
         start_search,
         state_limit,
     )
+
+
+@app.cell
+def policy_settings(bundle_size, model_id, n_proposals, policy_kind, seed):
+    agent_config = None
+    if policy_kind.value not in {"random", "heuristic"}:
+        mo.stop(not model_id.value.strip(), mo.md("Enter a fixed OpenRouter model ID."))
+        agent_config = AgentSearchConfig(
+            model=model_id.value.strip(),
+            seed=seed,
+            bundle_size=bundle_size,
+            max_actions=n_proposals,
+            mode="tool-rich" if policy_kind.value == "manager" else policy_kind.value,
+            orchestration="recoverable"
+            if policy_kind.value == "closed-book"
+            else "manager",
+        )
+    return (agent_config,)
 
 
 @app.cell
@@ -171,6 +173,7 @@ async def search(
     genes,
     module_evaluator,
     n_proposals,
+    policy_kind,
     provenance,
     resume_graph,
     seed,
@@ -194,7 +197,7 @@ async def search(
     _metadata = {
         **provenance,
         "evaluators": evaluator_ids,
-        "policy": "NavigatorExplorerPolicy" if agent_config else "RandomPolicy",
+        "policy": policy_kind.value,
         "seed": seed,
         "bundle_size": bundle_size,
         "n_proposals": n_proposals,
@@ -224,8 +227,8 @@ async def search(
         graph_path.touch(exist_ok=False)
     with yg.SQLiteStateGraph(graph_path) as _graph:
         _run_id = _previous[0] if _previous else graph_path.stem
-        policy = (
-            make_agent_policy(
+        if agent_config is not None:
+            policy = make_agent_policy(
                 genes=genes,
                 modules=module_evaluator,
                 config=agent_config,
@@ -233,14 +236,21 @@ async def search(
                 graph=_graph.readonly(),
                 run_id=_run_id,
             )
-            if agent_config is not None
-            else yg.RandomPolicy(
+        elif policy_kind.value == "heuristic":
+            policy = make_heuristic_policy(
+                genes=genes,
+                evaluator_ids=evaluator_ids,
+                bundle_size=bundle_size,
+                n_proposals=n_proposals,
+                seed=seed,
+            )
+        else:
+            policy = yg.RandomPolicy(
                 deletion_sampler(genes, bundle_size=bundle_size),
                 seed=seed,
                 n_proposals=n_proposals,
                 eligible=viability_eligibility(evaluator_ids),
             )
-        )
         run = await yg.Runner(
             EcoliProblem(genes, max_genes_per_action=bundle_size),
             policy,

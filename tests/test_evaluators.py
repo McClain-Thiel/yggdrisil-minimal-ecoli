@@ -37,3 +37,18 @@ async def test_genome_size_evaluator_returns_only_exact_gene_counts(
 def test_active_evaluator_names_must_be_unique() -> None:
     with pytest.raises(ValueError, match="unique"):
         active_evaluator_ids((_Evaluator(), _Evaluator()))
+
+
+@pytest.mark.parametrize("status", ["unbounded", "undefined", "time_limit"])
+async def test_fba_unresolved_solver_status_raises(status, monkeypatch):
+    from types import SimpleNamespace
+
+    pytest.importorskip("cobra")
+    from yggdrisil_ecoli.data.errors import DataValidationError
+    from yggdrisil_ecoli.scorers.fba import FBAScorer
+
+    scorer = object.__new__(FBAScorer)
+    model = SimpleNamespace(optimize=lambda: SimpleNamespace(status=status))
+    monkeypatch.setattr(scorer, "model_for", lambda deleted: model)
+    with pytest.raises(DataValidationError, match=f"status={status}"):
+        await scorer.evaluate(GenomeState(frozenset()))

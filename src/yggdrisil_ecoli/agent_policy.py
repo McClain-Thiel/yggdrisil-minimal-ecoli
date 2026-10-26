@@ -10,8 +10,7 @@ from decimal import Decimal
 from functools import partial
 from importlib.metadata import version
 from pathlib import Path
-from types import SimpleNamespace
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 import pandas as pd
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -35,6 +34,9 @@ from yggdrisil_ecoli.scorers.base import ScalarMetric
 from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.state import GenomeState
 from yggdrisil_ecoli.tools.genes import GeneTools
+
+if TYPE_CHECKING:
+    from pydantic_ai import UsageLimits
 
 
 class AgentSearchConfig(BaseModel):
@@ -121,6 +123,17 @@ class AgentSearchConfig(BaseModel):
             else None,
         }
 
+    def usage_limits(self, *, manager: bool = False) -> UsageLimits:
+        from pydantic_ai import UsageLimits
+
+        tokens = self.max_manager_output_tokens if manager else self.max_output_tokens
+        return UsageLimits(
+            cost_limit=self.max_cost_per_call_usd,
+            request_limit=self.max_model_requests,
+            tool_calls_limit=self.max_tool_calls,
+            output_tokens_limit=self.max_model_requests * tokens,
+        )
+
 
 def _gene_order(
     genes: pd.DataFrame, seed: int, namespace: str = "candidate"
@@ -161,8 +174,9 @@ def _action_type(tools: GeneTools, bundle_size: int) -> type[DeleteGenes]:
 class _Explorer:
     evidence: GeneTools
     config: AgentSearchConfig
-    selector: RecoverableOpenSetSelector
-    limits: Any
+    evaluator_ids: Mapping[str, str]
+    limits: UsageLimits
+    selector: RecoverableOpenSetSelector | None = None
     graph: ReadOnlyStateGraph[GenomeState, DeleteGenes] | None = None
     run_id: str | None = None
 
@@ -190,9 +204,7 @@ class _Explorer:
                 "state_id": context.state_id,
                 "deleted_gene_count": len(deleted),
                 "deleted_gene_ids_first_64": deleted[:64],
-                "evaluations": _active_metrics(
-                    context.evaluations, self.selector.evaluator_ids
-                ),
+                "evaluations": _active_metrics(context.evaluations, self.evaluator_ids),
                 "candidate_preview": tools.list_deletion_candidates(
                     page=guidance.get("candidate_preview_page", 0),
                     count=self.config.candidate_preview_count,
@@ -262,17 +274,15 @@ class _Explorer:
                 )
             ),
             prompt=partial(self.format_prompt, tools=tools),
-        )
-        # The framework forwards only the prompt; bind native PydanticAI run options.
-        explorer.agent = SimpleNamespace(
-            run=partial(
-                explorer.agent.run,
-                usage_limits=self.limits,
-                model_settings=self.config.settings,
-            )
+            usage_limits=self.limits,
+            model_settings=self.config.settings,
         )
         result = await explorer.explore(context)
-        seen = set(self.selector.attempted_actions(context.state_id))
+        seen = (
+            set(self.selector.attempted_actions(context.state_id))
+            if self.selector is not None
+            else set()
+        )
         if self.graph is not None and self.run_id is not None:
             seen.update(
                 event.action.genes
@@ -311,21 +321,21 @@ def make_agent_policy(
 ) -> NavigatorExplorerPolicy[GenomeState, DeleteGenes]:
     """Pair bounded model exploration with deterministic, recoverable scheduling."""
     from dotenv import load_dotenv
-    from pydantic_ai import UsageLimits
 
     load_dotenv(Path.home() / ".env", override=False)
-    limits = UsageLimits(
-        cost_limit=config.max_cost_per_call_usd,
-        request_limit=config.max_model_requests,
-        tool_calls_limit=config.max_tool_calls,
-        output_tokens_limit=config.max_model_requests * config.max_output_tokens,
-    )
+    limits = config.usage_limits()
     evidence = GeneTools(
         genes,
         modules,
         aliases=_aliases(genes, config.seed) if config.mode == "closed-book" else None,
         order=_gene_order(genes, config.seed),
     )
+    if config.orchestration == "manager":
+        if graph is None or run_id is None:
+            raise ValueError("manager orchestration requires graph and run_id")
+        return _make_managed_policy(
+            evidence, config, evaluator_ids, limits, graph, run_id
+        )
     selector = RecoverableOpenSetSelector(
         evaluator_ids=evaluator_ids,
         max_action_size=config.bundle_size,
@@ -335,13 +345,9 @@ def make_agent_policy(
         candidate_page_size=config.candidate_preview_count,
         public_gene_id=evidence.public,
     )
-    if config.orchestration == "manager":
-        if graph is None or run_id is None:
-            raise ValueError("manager orchestration requires graph and run_id")
-        return _make_managed_policy(evidence, config, selector, limits, graph, run_id)
     return NavigatorExplorerPolicy(
         None,
-        _Explorer(evidence, config, selector, limits),
+        _Explorer(evidence, config, evaluator_ids, limits, selector=selector),
         max_requests=config.open_set.parents_per_step,
         request_selector=selector,
         tolerate_explorer_failures=True,
@@ -382,12 +388,11 @@ def _gene_set_tools(
 def _make_managed_policy(
     evidence: GeneTools,
     config: AgentSearchConfig,
-    selector: RecoverableOpenSetSelector,
-    limits: Any,
+    evaluator_ids: Mapping[str, str],
+    limits: UsageLimits,
     graph: ReadOnlyStateGraph[GenomeState, DeleteGenes],
     run_id: str,
 ) -> NavigatorExplorerPolicy[GenomeState, DeleteGenes]:
-    from pydantic_ai import UsageLimits
     from yggdrisil.agents.pydantic_ai import (
         DEFAULT_MANAGER_INSTRUCTIONS,
         make_navigator,
@@ -406,6 +411,11 @@ def _make_managed_policy(
     manager = make_navigator(
         f"openrouter:{config.model}",
         tools=tools,
+        usage_limits=config.usage_limits(manager=True),
+        model_settings={
+            **config.settings,
+            "max_tokens": config.max_manager_output_tokens,
+        },
         instructions=DEFAULT_MANAGER_INSTRUCTIONS
         + (
             "\nMinimize MG1655, starting from its full reference genome. "
@@ -425,27 +435,9 @@ def _make_managed_policy(
             )
         ),
     )
-    # A published deletion set needs more output than a single proposed action.
-    manager_limits = UsageLimits(
-        cost_limit=config.max_cost_per_call_usd,
-        request_limit=config.max_model_requests,
-        tool_calls_limit=config.max_tool_calls,
-        output_tokens_limit=config.max_model_requests
-        * config.max_manager_output_tokens,
-    )
-    manager.agent = SimpleNamespace(
-        run=partial(
-            manager.agent.run,
-            usage_limits=manager_limits,
-            model_settings={
-                **config.settings,
-                "max_tokens": config.max_manager_output_tokens,
-            },
-        )
-    )
     return NavigatorExplorerPolicy(
         manager,
-        _Explorer(evidence, config, selector, limits, graph, run_id),
+        _Explorer(evidence, config, evaluator_ids, limits, graph=graph, run_id=run_id),
         goal="Minimize MG1655 for aerobic M9 glucose at 37 C; extend beyond published reductions.",
         max_requests=config.open_set.parents_per_step,
         memory_enabled=True,

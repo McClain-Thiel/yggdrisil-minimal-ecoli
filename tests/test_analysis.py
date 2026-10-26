@@ -10,10 +10,12 @@ from yggdrisil_ecoli.state import GenomeState
 
 @pytest.mark.parametrize("growth", [1.0, 0.0])
 @pytest.mark.parametrize("resource_feasible", [True, False])
+@pytest.mark.parametrize("reported_cost", ["0.02", None])
 def test_summary_uses_active_evidence_and_preserves_trace_audits(
     tmp_path: Path,
     growth: float,
     resource_feasible: bool,
+    reported_cost: str | None,
 ) -> None:
     path = tmp_path / "run.sqlite"
     metrics = {
@@ -67,6 +69,7 @@ def test_summary_uses_active_evidence_and_preserves_trace_audits(
             tool_calls=[
                 {"role": "tool_call", "tool": "analyze_deletion_bundle"},
                 {"role": "tool_return", "tool": "analyze_deletion_bundle"},
+                {"role": "tool_call", "tool": "search_literature"},
                 {
                     "role": "usage",
                     "input_tokens": 10,
@@ -77,7 +80,7 @@ def test_summary_uses_active_evidence_and_preserves_trace_audits(
                     "role": "usage",
                     "input_tokens": 5,
                     "requests": True,
-                    "cost_usd": "0.02",
+                    "cost_usd": reported_cost,
                 },
             ],
         )
@@ -87,12 +90,15 @@ def test_summary_uses_active_evidence_and_preserves_trace_audits(
         assert candidate["deleted_gene_ids"] == ["b0001"]
     else:
         assert candidate is None
-    assert summary["scientific_tool_calls"] == {"analyze_deletion_bundle": 1}
+    assert summary["scientific_tool_calls"] == {
+        "analyze_deletion_bundle": 1,
+        "search_literature": 1,
+    }
     assert summary["canonical_ids_in_model_io"] == ["decision"]
     assert summary["model_usage"] == {
         "input_tokens": 15,
         "requests": 1,
-        "cost_usd": "0.03",
+        "cost_usd": "0.03" if reported_cost else None,
     }
 
 

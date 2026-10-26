@@ -93,8 +93,6 @@ class RBAScorer:
             raise DataValidationError(
                 f"RBA registry mapping dimensions differ from the pin: {mapping_dimensions}"
             )
-        self._base_lower_bounds = self._session.Problem.get_lb(modeled_variables)
-        self._base_upper_bounds = self._session.Problem.get_ub(modeled_variables)
         self._prepare_highs_problem()
         self.config = {
             "artifact_bundle_sha256": manifest["artifact_bundle_sha256"],
@@ -141,7 +139,7 @@ class RBAScorer:
         status, solution_type, attempts = self._solve_with_knockouts(knocked_out)
         return scientific_evaluation(
             {
-                "feasible_at_growth_floor": status in {"optimal", "feasible"},
+                "feasible_at_growth_floor": status == "optimal",
                 "growth_rate_floor_h": RBA_GROWTH_FLOOR_H,
                 "repository_wild_type_max_growth_rate_h": (
                     RBA_REPOSITORY_WT_MAX_GROWTH_RATE_H
