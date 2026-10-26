@@ -4,20 +4,27 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
 from decimal import Decimal
+from functools import partial
 from importlib.metadata import version
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, Literal
 
 import pandas as pd
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from yggdrisil import NavigatorExplorerPolicy
-from yggdrisil.agents import ExplorerContext, ExplorerResult, NavigatorContext
+from yggdrisil.agents import ExplorerContext, ExplorerResult
 from yggdrisil.types import EvaluationRecord
 
 from yggdrisil_ecoli.actions import DeleteGenes
+from yggdrisil_ecoli.open_set import (
+    SCHEDULER_VERSION,
+    OpenSetConfig,
+    RecoverableOpenSetSelector,
+)
 from yggdrisil_ecoli.scorers.base import ScalarMetric
 from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.state import GenomeState
@@ -31,9 +38,9 @@ class AgentSearchConfig(BaseModel):
     model: str
     mode: Literal["closed-book", "tool-rich"] = "closed-book"
     seed: int = 0
-    bundle_size: int = Field(default=1, gt=0)
+    bundle_size: int = Field(default=1, gt=0, le=20)
     max_actions: int = Field(default=2, gt=0)
-    max_navigator_requests: int = Field(default=1, gt=0)
+    open_set: OpenSetConfig = OpenSetConfig()
     max_model_requests: int = Field(default=6, gt=0)
     max_tool_calls: int = Field(default=16, gt=0)
     max_output_tokens: int = Field(default=800, gt=0)
@@ -59,6 +66,10 @@ class AgentSearchConfig(BaseModel):
         return tools
 
     @property
+    def candidate_preview_count(self) -> int:
+        return min(50, max(8, self.bundle_size * self.max_actions * 2))
+
+    @property
     def settings(self) -> dict[str, Any]:
         return {
             "max_tokens": self.max_output_tokens,
@@ -76,7 +87,8 @@ class AgentSearchConfig(BaseModel):
         return {
             **self.model_dump(mode="json"),
             "provider": "openrouter",
-            "prompt_version": 3,
+            "prompt_version": 4,
+            "scheduler_version": SCHEDULER_VERSION,
             "pydantic_ai": version("pydantic-ai"),
             "settings": self.settings,
             "tools": list(self.tool_names),
@@ -128,29 +140,23 @@ def _action_type(tools: GeneTools, bundle_size: int) -> type[DeleteGenes]:
 
 
 @dataclass
-class _LimitedAgent:
-    """Pass PydanticAI budgets through the framework's minimal agent.run interface."""
-
-    inner: Any
-    limits: Any
-
-    async def run(self, prompt: str) -> Any:
-        return await self.inner.run(prompt, usage_limits=self.limits)
-
-
-@dataclass
 class _Explorer:
     evidence: GeneTools
     config: AgentSearchConfig
-    evaluator_ids: Mapping[str, str]
+    selector: RecoverableOpenSetSelector
     limits: Any
 
     @property
     def model(self) -> str:
         return f"openrouter:{self.config.model}"
 
-    def format_prompt(self, context: ExplorerContext[GenomeState]) -> str:
-        tools = replace(self.evidence, deleted_genes=context.state.deleted_genes)
+    def format_prompt(
+        self, context: ExplorerContext[GenomeState], tools: GeneTools | None = None
+    ) -> str:
+        tools = tools or replace(
+            self.evidence, deleted_genes=context.state.deleted_genes
+        )
+        guidance = json.loads(context.guidance) if context.guidance else {}
         deleted = sorted(tools.public(gene) for gene in context.state.deleted_genes)
         return json.dumps(
             {
@@ -159,8 +165,14 @@ class _Explorer:
                 "state_id": context.state_id,
                 "deleted_gene_count": len(deleted),
                 "deleted_gene_ids_first_64": deleted[:64],
-                "evaluations": _active_metrics(context.evaluations, self.evaluator_ids),
-                "candidate_preview": tools.list_deletion_candidates(count=8),
+                "evaluations": _active_metrics(
+                    context.evaluations, self.selector.evaluator_ids
+                ),
+                "candidate_preview": tools.list_deletion_candidates(
+                    page=guidance.get("candidate_preview_page", 0),
+                    count=self.config.candidate_preview_count,
+                ),
+                "recovery": guidance,
                 "max_actions": self.config.max_actions,
                 "max_genes_per_action": self.config.bundle_size,
             },
@@ -172,29 +184,53 @@ class _Explorer:
     ) -> ExplorerResult[DeleteGenes]:
         from yggdrisil.agents.pydantic_ai import make_explorer
 
-        tools = replace(self.evidence, deleted_genes=context.state.deleted_genes)
+        tools = replace(
+            self.evidence,
+            deleted_genes=context.state.deleted_genes,
+            exposed_ids=set(),
+            max_bundle_size=self.config.bundle_size,
+        )
         explorer = make_explorer(
             self.model,
             _action_type(tools, self.config.bundle_size),
             tools=[getattr(tools, name) for name in self.config.tool_names],
             instructions=(
                 "Propose direct deletion actions using only candidate IDs and evidence from "
-                "this invocation. Do not use web or literature knowledge. Avoid essential "
-                "genes; prefer experimentally nonessential candidates. Shortlist from the "
+                "this invocation. Only use genes exposed in the preview or candidate-list "
+                "tool. Do not use web or literature knowledge. Essentiality, modules and "
+                "unknown annotations rank risk; only positive feasible FBA gates viability. "
+                "The action-size maximum and fallback ceiling are not targets: choose "
+                "each size independently from 1 to max_genes_per_action. Do not repeat "
+                "previous sibling actions; learn from lethal siblings. Shortlist from the "
                 "preview, then use at most one analyze_deletion_bundle call on the final "
                 "bundle. Respect max_actions and max_genes_per_action in the prompt."
             ),
-            prompt=self.format_prompt,
+            prompt=partial(self.format_prompt, tools=tools),
         )
-        explorer.agent.model_settings = self.config.settings
-        explorer.agent = _LimitedAgent(explorer.agent, self.limits)
+        # The framework forwards only the prompt; bind native PydanticAI run options.
+        explorer.agent = SimpleNamespace(
+            run=partial(
+                explorer.agent.run,
+                usage_limits=self.limits,
+                model_settings=self.config.settings,
+            )
+        )
         result = await explorer.explore(context)
+        seen = set(self.selector.attempted_actions(context.state_id))
+        actions = []
+        for action in result.actions[: self.config.max_actions]:
+            if action.genes not in seen:
+                actions.append(DeleteGenes(genes=action.genes))
+                seen.add(action.genes)
+        rejected = min(len(result.actions), self.config.max_actions) - len(actions)
+        note = result.note
+        if rejected:
+            note = (
+                f"{note + '; ' if note else ''}omitted {rejected} duplicate action(s)"
+            )
         return ExplorerResult(
-            actions=[
-                DeleteGenes(genes=action.genes)
-                for action in result.actions[: self.config.max_actions]
-            ],
-            note=result.note,
+            actions=actions,
+            note=note,
             trace=result.trace,
         )
 
@@ -205,12 +241,10 @@ def make_agent_policy(
     modules: ModuleEvaluator,
     config: AgentSearchConfig,
     evaluator_ids: Mapping[str, str],
-    evaluations: Callable[[str], list[EvaluationRecord]],
 ) -> NavigatorExplorerPolicy[GenomeState, DeleteGenes]:
-    """Build the two model roles; the framework owns graph traversal and traces."""
+    """Pair bounded model exploration with deterministic, recoverable scheduling."""
     from dotenv import load_dotenv
     from pydantic_ai import UsageLimits
-    from yggdrisil.agents.pydantic_ai import make_navigator
 
     load_dotenv(Path.home() / ".env", override=False)
     limits = UsageLimits(
@@ -219,58 +253,27 @@ def make_agent_policy(
         tool_calls_limit=config.max_tool_calls,
         output_tokens_limit=config.max_model_requests * config.max_output_tokens,
     )
-    explorer = _Explorer(
-        GeneTools(
-            genes,
-            modules,
-            aliases=_aliases(genes, config.seed)
-            if config.mode == "closed-book"
-            else None,
-            order=_gene_order(genes, config.seed),
-        ),
-        config,
-        evaluator_ids,
-        limits,
+    evidence = GeneTools(
+        genes,
+        modules,
+        aliases=_aliases(genes, config.seed) if config.mode == "closed-book" else None,
+        order=_gene_order(genes, config.seed),
     )
-
-    def navigator_prompt(context: NavigatorContext) -> str:
-        # The pinned framework omits evaluator IDs from its recent-state summaries.
-        recent = [
-            {
-                **item,
-                "evaluations": _active_metrics(
-                    evaluations(item["state_id"]), evaluator_ids
-                ),
-            }
-            for item in context.recent
-        ]
-        return json.dumps(
-            {
-                "goal": context.goal,
-                "step": context.status.step,
-                "select_at_most": config.max_navigator_requests,
-                "frontier_ids": context.frontier_ids,
-                "recent_states": recent,
-                "notes": context.summaries,
-            },
-            sort_keys=True,
-        )
-
-    navigator = make_navigator(
-        explorer.model,
-        prompt=navigator_prompt,
-        instructions=(
-            "Select existing frontier states with zero essential deletions, "
-            "feasible positive FBA growth, fewer remaining genes and fewer broken "
-            "modules. Unknown evidence is risk, not proof of safety."
-        ),
+    selector = RecoverableOpenSetSelector(
+        evaluator_ids=evaluator_ids,
+        max_action_size=config.bundle_size,
+        config=config.open_set,
+        seed=config.seed,
+        candidate_count=len(genes),
+        candidate_page_size=config.candidate_preview_count,
+        public_gene_id=evidence.public,
     )
-    navigator.agent.model_settings = config.settings
-    navigator.agent = _LimitedAgent(navigator.agent, limits)
     return NavigatorExplorerPolicy(
-        navigator,
-        explorer,
-        max_requests=config.max_navigator_requests,
+        None,
+        _Explorer(evidence, config, selector, limits),
+        max_requests=config.open_set.parents_per_step,
+        request_selector=selector,
+        tolerate_explorer_failures=True,
         goal="Minimize the MG1655 protein-coding genome for aerobic M9 glucose at 37 C while retaining predicted viability.",
     )
 

@@ -1,17 +1,16 @@
 import json
-from contextlib import ExitStack
 from dataclasses import replace
 
 import pytest
 from pydantic import ValidationError
 from yggdrisil.agents import ExplorerContext
+from yggdrisil.types import EvaluationRecord
 
 from yggdrisil_ecoli.actions import DeleteGenes
 from yggdrisil_ecoli.agent_policy import (
     AgentSearchConfig,
     _action_type,
     _aliases,
-    _LimitedAgent,
     make_agent_policy,
 )
 from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
@@ -32,6 +31,24 @@ def evidence(genes) -> GeneTools:
     )
 
 
+@pytest.fixture
+def offline_model(monkeypatch):
+    """Use real PydanticAI validation and limits with an in-process model."""
+    from yggdrisil.agents import pydantic_ai as adapter
+
+    make_explorer = adapter.make_explorer
+
+    def install(model):
+        def create(*args, **kwargs):
+            explorer = make_explorer(*args, **kwargs)
+            explorer.agent.model = model
+            return explorer
+
+        monkeypatch.setattr(adapter, "make_explorer", create)
+
+    return install
+
+
 def context(deleted=frozenset()) -> ExplorerContext:
     return ExplorerContext(
         goal="minimize",
@@ -39,6 +56,17 @@ def context(deleted=frozenset()) -> ExplorerContext:
         state=GenomeState(deleted),
         lineage=[],
         guidance=None,
+        evaluations=[
+            EvaluationRecord(
+                "evaluation",
+                "fba-fixture",
+                "fixture",
+                "fba",
+                "fixture",
+                "fixture",
+                {"feasible": True, "growth_rate": 1.0},
+            ),
+        ],
     )
 
 
@@ -51,8 +79,7 @@ def policy(evidence, config, monkeypatch):
         genes=evidence.genes,
         modules=evidence.modules,
         config=config,
-        evaluator_ids={},
-        evaluations=lambda state_id: [],
+        evaluator_ids={"fba": "fba-fixture"},
     )
 
 
@@ -121,26 +148,12 @@ def test_prompt_and_tools_obey_evidence_arm(evidence, monkeypatch, mode):
 
 
 @pytest.mark.asyncio
-async def test_provider_errors_propagate_with_limits():
-    limits = object()
-
-    class FailingAgent:
-        async def run(self, prompt, *, usage_limits):
-            assert usage_limits is limits
-            raise ValueError("provider failed")
-
-    with pytest.raises(ValueError, match="provider failed"):
-        await _LimitedAgent(FailingAgent(), limits).run("prompt")
-
-
-@pytest.mark.asyncio
 @pytest.mark.parametrize("mode", ["closed-book", "tool-rich"])
 async def test_native_framework_adapter_validates_actions_and_keeps_usage_trace(
-    evidence, monkeypatch, mode
+    evidence, monkeypatch, mode, offline_model
 ):
     from pydantic_ai.exceptions import CostNotFoundWarning
     from pydantic_ai.models.test import TestModel
-    from yggdrisil.agents import pydantic_ai as adapter
 
     config = AgentSearchConfig(model="vendor/model", mode=mode, seed=7)
     agent = policy(evidence, config, monkeypatch)
@@ -150,15 +163,8 @@ async def test_native_framework_adapter_validates_actions_and_keeps_usage_trace(
             "actions": [{"genes": [agent.explorer.evidence.public("b0002")]}],
         },
     )
-    make_explorer = adapter.make_explorer
-    with ExitStack() as stack, pytest.warns(CostNotFoundWarning):
-
-        def offline_explorer(*args, **kwargs):
-            explorer = make_explorer(*args, **kwargs)
-            stack.enter_context(explorer.agent.override(model=model))
-            return explorer
-
-        monkeypatch.setattr(adapter, "make_explorer", offline_explorer)
+    offline_model(model)
+    with pytest.warns(CostNotFoundWarning):
         result = await agent.explorer.explore(context())
     assert result.actions == [DeleteGenes(genes=("b0002",))]
     assert {
@@ -194,3 +200,141 @@ def test_consolidated_tools_report_cumulative_module_status_and_coverage(genes):
     assert result["essentiality"] == {"nonessential": 2}
     assert result["model_coverage"] == {"modeled": 1, "unmodeled": 1}
     assert result["ko_coverage"] == {"mapped": 2, "unmapped": 0}
+
+
+@pytest.mark.parametrize("mode", ["closed-book", "tool-rich"])
+def test_invocation_exposure_and_bundle_limits(evidence, mode):
+    tools = replace(
+        evidence,
+        aliases=_aliases(evidence.genes, 0) if mode == "closed-book" else None,
+        exposed_ids=set(),
+        max_bundle_size=2,
+    )
+    first, second = tools.public("b0001"), tools.public("b0002")
+    tools.list_deletion_candidates(count=1)
+    assert tools.inspect_gene_evidence(first)["gene_id"] == first
+    for operation in (
+        lambda: tools.inspect_gene_evidence(second),
+        lambda: tools.analyze_deletion_bundle([second]),
+        lambda: _action_type(tools, 2)(genes=(second,)),
+    ):
+        with pytest.raises(ValueError, match="not exposed"):
+            operation()
+    tools.list_deletion_candidates(page=1, count=1)
+    assert _action_type(tools, 2)(genes=(second, first)).genes == ("b0001", "b0002")
+    for invalid, message in [
+        ([], "1 to 2"),
+        ([first] * 3, "1 to 2"),
+        ([first] * 2, "duplicate"),
+    ]:
+        with pytest.raises(ValueError, match=message):
+            tools.analyze_deletion_bundle(invalid)
+
+
+@pytest.mark.asyncio
+async def test_native_output_keeps_variable_sizes_and_deduplicates_siblings(
+    evidence, monkeypatch, offline_model
+):
+    from pydantic_ai.exceptions import CostNotFoundWarning
+    from pydantic_ai.models.test import TestModel
+
+    agent = policy(
+        evidence,
+        AgentSearchConfig(model="vendor/model", bundle_size=3, max_actions=4),
+        monkeypatch,
+    )
+    agent.request_selector._attempted = {"fixture": frozenset({("b0001",)})}
+    public = agent.explorer.evidence.public
+    model = TestModel(
+        call_tools=[],
+        custom_output_args={
+            "actions": [
+                {"genes": [public("b0001")]},
+                {"genes": [public("b0002"), public("b0003")]},
+                {"genes": [public("b0003"), public("b0002")]},
+                {"genes": [public("b0003")]},
+            ]
+        },
+    )
+    offline_model(model)
+    with pytest.warns(CostNotFoundWarning):
+        result = await agent.explorer.explore(context())
+    assert result.actions == [
+        DeleteGenes(genes=("b0002", "b0003")),
+        DeleteGenes(genes=("b0003",)),
+    ]
+    assert "omitted 2 duplicate" in result.note
+    assert "b000" not in json.dumps(result.trace)
+
+
+@pytest.mark.asyncio
+async def test_rotating_preview_does_not_share_exposure_between_invocations(
+    genes, monkeypatch, offline_model
+):
+    import pandas as pd
+    from pydantic_ai.exceptions import CostNotFoundWarning, UnexpectedModelBehavior
+    from pydantic_ai.models.test import TestModel
+
+    genes = pd.concat([genes.iloc[[0]]] * 16, ignore_index=True)
+    genes.index = [f"b{index:04d}" for index in range(16)]
+    evidence = GeneTools(
+        genes,
+        ModuleEvaluator(
+            registry=genes,
+            entries={},
+            wt_complete_module_ids=(),
+            parser_semantics_version="fixture",
+        ),
+    )
+    agent = policy(evidence, AgentSearchConfig(model="vendor/model"), monkeypatch)
+    first = context()
+    second = replace(first, guidance=json.dumps({"candidate_preview_page": 1}))
+    preview = json.loads(agent.explorer.format_prompt(first))["candidate_preview"]
+    gene_id = preview["candidates"][0]["gene_id"]
+    assert gene_id not in {
+        row["gene_id"]
+        for row in json.loads(agent.explorer.format_prompt(second))[
+            "candidate_preview"
+        ]["candidates"]
+    }
+    model = TestModel(
+        call_tools=[], custom_output_args={"actions": [{"genes": [gene_id]}]}
+    )
+    offline_model(model)
+    with pytest.warns(CostNotFoundWarning):
+        result = await agent.explorer.explore(first)
+        assert len(result.actions) == 1
+        with pytest.raises(UnexpectedModelBehavior, match="retries"):
+            await agent.explorer.explore(second)
+    assert agent.explorer.evidence.exposed_ids is None
+
+
+@pytest.mark.asyncio
+async def test_native_request_budget_stops_validation_retry(
+    evidence, monkeypatch, offline_model
+):
+    from pydantic_ai.exceptions import UsageLimitExceeded
+    from pydantic_ai.messages import ModelResponse, ToolCallPart
+    from pydantic_ai.models.function import FunctionModel
+
+    calls = []
+
+    def invalid_output(messages, info):
+        calls.append(messages)
+        return ModelResponse(
+            parts=[
+                ToolCallPart(
+                    info.output_tools[0].name,
+                    {
+                        "actions": [{"genes": ["never-exposed"]}],
+                    },
+                )
+            ]
+        )
+
+    config = AgentSearchConfig(model="vendor/model", max_model_requests=1)
+    agent = policy(evidence, config, monkeypatch)
+    offline_model(FunctionModel(invalid_output))
+    with pytest.raises(UsageLimitExceeded, match="request_limit"):
+        await agent.explorer.explore(context())
+    assert len(calls) == 1

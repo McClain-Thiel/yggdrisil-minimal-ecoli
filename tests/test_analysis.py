@@ -8,13 +8,15 @@ from yggdrisil_ecoli.analysis import score_rediscovery, summarize_run
 from yggdrisil_ecoli.state import GenomeState
 
 
+@pytest.mark.parametrize("growth", [1.0, 0.0])
 def test_summary_uses_active_evidence_and_preserves_trace_audits(
     tmp_path: Path,
+    growth: float,
 ) -> None:
     path = tmp_path / "run.sqlite"
     metrics = {
-        "essentiality": {"n_essential_deleted": 0},
-        "fba": {"feasible": True, "growth_rate": 1.0},
+        "essentiality": {"n_essential_deleted": 1},
+        "fba": {"feasible": True, "growth_rate": growth},
         "genome_size": {"genes_deleted": 0},
         "module_retention": {"n_complete": 2},
     }
@@ -77,7 +79,11 @@ def test_summary_uses_active_evidence_and_preserves_trace_audits(
             ],
         )
     summary = summarize_run(path)
-    assert summary["deepest_viable_candidate"]["deleted_gene_ids"] == ["b0001"]
+    candidate = summary["deepest_viable_candidate"]
+    if growth > 0:
+        assert candidate["deleted_gene_ids"] == ["b0001"]
+    else:
+        assert candidate is None
     assert summary["scientific_tool_calls"] == {"analyze_deletion_bundle": 1}
     assert summary["canonical_ids_in_model_io"] == ["decision"]
     assert summary["model_usage"] == {

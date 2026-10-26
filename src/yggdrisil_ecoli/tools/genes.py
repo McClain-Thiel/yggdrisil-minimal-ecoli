@@ -19,6 +19,8 @@ class GeneTools:
     aliases: Mapping[str, str] | None = None
     order: Sequence[str] = ()
     deleted_genes: frozenset[str] = frozenset()
+    exposed_ids: set[str] | None = None
+    max_bundle_size: int | None = None
 
     @cached_property
     def _canonical_ids(self) -> dict[str, str]:
@@ -28,6 +30,8 @@ class GeneTools:
         return self.aliases[gene] if self.aliases is not None else gene
 
     def canonical(self, gene_id: str) -> str:
+        if self.exposed_ids is not None and gene_id not in self.exposed_ids:
+            raise ValueError("gene identifier was not exposed in this invocation")
         try:
             return self._canonical_ids[gene_id]
         except KeyError as exc:
@@ -45,6 +49,8 @@ class GeneTools:
             if gene not in self.deleted_genes
         ]
         candidates = available[page * count : (page + 1) * count]
+        if self.exposed_ids is not None:
+            self.exposed_ids.update(self.public(gene) for gene in candidates)
         return {
             "remaining_candidates": len(available),
             "candidates": [
@@ -84,6 +90,13 @@ class GeneTools:
 
     def analyze_deletion_bundle(self, gene_ids: list[str]) -> dict[str, object]:
         """Summarize the cumulative deletion set after adding this proposed bundle."""
+        if self.max_bundle_size is not None:
+            if not 1 <= len(gene_ids) <= self.max_bundle_size:
+                raise ValueError(
+                    f"bundle must contain 1 to {self.max_bundle_size} genes"
+                )
+            if len(set(gene_ids)) != len(gene_ids):
+                raise ValueError("bundle contains duplicate genes")
         deleted = self.deleted_genes.union(self.canonical(gene) for gene in gene_ids)
         rows = self.genes.loc[sorted(deleted)]
         broken = self.modules.score_deleted(deleted)

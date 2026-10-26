@@ -17,8 +17,14 @@ uv run marimo edit scripts/experiment.py
 
 The notebook shows the complete flow: load data, construct evaluators, choose a
 policy, run Yggdrisil, and inspect results. It starts with a small random search;
-examples show how to substitute a heuristic or model-backed policy. Each run
-saves a fresh SQLite graph under `runs/`.
+examples show how to substitute a heuristic or model-backed policy. New
+experiments save a fresh SQLite graph under `runs/`. To continue the same
+experiment, enter its graph path and increase the state limit; changed inputs,
+code, evaluator identities, or policy settings are rejected before resume.
+
+Agent searches keep viable parents available after failed deletions and use
+smaller bundles as fallback guidance. Positive FBA growth is the eligibility
+gate; essentiality and KEGG modules remain separate ranking evidence.
 
 Model-backed searches are optional: install `--extra agents`, set
 `OPENROUTER_API_KEY` in your environment or `~/.env`, and provide a fixed model
@@ -92,4 +98,4 @@ uv run mypy src
 
 Yggdrisil's revision and the numerical solver versions are pinned in
 `pyproject.toml`. Search graphs record input identities and settings so a
-run can be traced to its inputs. Each experiment requires a new graph path.
+run can be traced to its inputs. Independent experiments use separate graph paths.

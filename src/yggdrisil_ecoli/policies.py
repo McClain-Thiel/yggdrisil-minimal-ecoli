@@ -47,10 +47,11 @@ def make_heuristic_policy(
     bundle_size: int = 1,
     n_proposals: int = 1,
     seed: int = 0,
+    exclude_essential: bool = False,
 ) -> BestFirstPolicy[GenomeState, DeleteGenes]:
     """Build the framework best-first baseline over active scientific evidence."""
 
-    missing = {"essentiality", "fba"} - set(evaluator_ids)
+    missing = {"fba"} - set(evaluator_ids)
     if missing:
         raise ValueError(f"missing evaluator identities: {sorted(missing)}")
 
@@ -58,14 +59,12 @@ def make_heuristic_policy(
         node: StateNode[GenomeState], records: Sequence[EvaluationRecord]
     ) -> bool:
         by_id = {record.evaluator_id: record for record in records}
-        essential = by_id.get(evaluator_ids["essentiality"])
         fba = by_id.get(evaluator_ids["fba"])
-        if essential is None or fba is None:
+        if fba is None:
             return False
         growth = fba.metrics.get("growth_rate")
         return (
-            essential.metrics.get("n_essential_deleted") == 0
-            and fba.metrics.get("feasible") is True
+            fba.metrics.get("feasible") is True
             and isinstance(growth, (int, float))
             and not isinstance(growth, bool)
             and growth > 0
@@ -80,7 +79,7 @@ def make_heuristic_policy(
         deletion_sampler(
             genes,
             bundle_size=bundle_size,
-            exclude_essential=True,
+            exclude_essential=exclude_essential,
         ),
         priority,
         n_proposals=n_proposals,

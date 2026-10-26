@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -134,7 +135,7 @@ async def test_framework_suite_uses_yggdrisil_cache(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
-async def test_simple_heuristic_avoids_infeasible_parent_and_essential_gene(
+async def test_simple_heuristic_accepts_fba_positive_parent_with_essential_deletion(
     tmp_path: Path,
     genes: pd.DataFrame,
 ) -> None:
@@ -146,7 +147,7 @@ async def test_simple_heuristic_avoids_infeasible_parent_and_essential_gene(
         problem.initial_state,
     )
     children = []
-    for gene in ("b0002", "b0003"):
+    for gene in ("b0001", "b0002"):
         action = DeleteGenes(genes=(gene,))
         state = problem.apply(problem.initial_state, action)
         node, _edge, _node_created, _edge_created = graph.add_transition(
@@ -180,12 +181,26 @@ async def test_simple_heuristic_avoids_infeasible_parent_and_essential_gene(
         ),
     )
 
+    assert decisions
     proposal = decisions[0].proposals[0]
-    viable_child = next(
-        node for node in children if node.state.deleted_genes == frozenset({"b0003"})
+    fba_positive_child = next(
+        node for node in children if node.state.deleted_genes == frozenset({"b0001"})
     )
-    assert proposal.parent_id == viable_child.state_id
-    assert proposal.action.genes == ("b0002",)
+    assert proposal.parent_id == fba_positive_child.state_id
+
+
+def test_deletion_sampler_does_not_silently_exclude_essential_genes(genes) -> None:
+    genes.loc["b0001", "classification"] = "essential"
+    state = GenomeState(frozenset({"b0002", "b0003"}))
+
+    default_actions = deletion_sampler(genes)(state, random.Random(0))
+    filtered_actions = deletion_sampler(
+        genes,
+        exclude_essential=True,
+    )(GenomeState(frozenset({"b0002"})), random.Random(0))
+
+    assert default_actions == (DeleteGenes(genes=("b0001",)),)
+    assert filtered_actions == (DeleteGenes(genes=("b0003",)),)
 
 
 @pytest.mark.asyncio
@@ -265,6 +280,7 @@ async def test_agent_prompts_select_active_cached_evaluations(
         parser_semantics_version="fixture",
     )
     graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "agent-cache.sqlite")
+    graph.save_run("agent-cache", step=0, status="running", config={}, metadata={})
     graph.add_state("root", GenomeState(frozenset()))
     active = _FixedScorer("fba", {"feasible": True, "growth_rate": 1.0}, "config-a")
     inactive = _FixedScorer("fba", {"feasible": False, "growth_rate": 0.0}, "config-b")
@@ -275,19 +291,21 @@ async def test_agent_prompts_select_active_cached_evaluations(
         modules=modules,
         config=AgentSearchConfig(model="vendor/model"),
         evaluator_ids=active_evaluator_ids([active]),
-        evaluations=graph.evaluations,
     )
     status = RunStatus(
-        step=0, unique_states=1, edges=0, elapsed_s=0, limits=RunLimits(max_states=2)
+        step=0,
+        unique_states=1,
+        edges=0,
+        elapsed_s=0,
+        limits=RunLimits(max_states=2),
+        run_id="agent-cache",
     )
     explorer_prompt = policy.explorer.format_prompt(
         policy._explorer_context(graph.readonly(), ExplorationRequest("root"))
     )
-    navigator_prompt = policy.navigator.format_prompt(
-        policy._navigator_context(graph.readonly(), status)
-    )
+    requests = policy.request_selector.select(graph.readonly(), status)
 
     expected = {"fba": {"feasible": True, "growth_rate": 1.0}}
     assert json.loads(explorer_prompt)["evaluations"] == expected
-    assert json.loads(navigator_prompt)["recent_states"][0]["evaluations"] == expected
+    assert [request.state_id for request in requests] == ["root"]
     graph.close()

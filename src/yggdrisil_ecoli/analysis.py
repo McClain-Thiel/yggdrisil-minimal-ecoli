@@ -70,8 +70,7 @@ def summarize_run(
                 evidence[name] = record
             growth = evidence["fba"].metrics.get("growth_rate")
             if (
-                evidence["essentiality"].metrics.get("n_essential_deleted") == 0
-                and evidence["fba"].metrics.get("feasible") is True
+                evidence["fba"].metrics.get("feasible") is True
                 and isinstance(growth, (int, float))
                 and not isinstance(growth, bool)
                 and growth > 0
