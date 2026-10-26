@@ -206,6 +206,12 @@ async def test_managed_search_walks_from_mg1655_and_resumes_without_paid_calls(
                 graph=graph.readonly(),
                 run_id="managed",
             )
+            assert policy.navigator.agent.run.keywords["model_settings"][
+                "max_tokens"
+            ] == (config.max_manager_output_tokens)
+            assert policy.explorer.limits.output_tokens_limit == (
+                config.max_model_requests * config.max_output_tokens
+            )
             with pytest.warns(CostNotFoundWarning):
                 await Runner(
                     problem,

@@ -51,6 +51,7 @@ class AgentSearchConfig(BaseModel):
     max_model_requests: int = Field(default=6, gt=0)
     max_tool_calls: int = Field(default=16, gt=0)
     max_output_tokens: int = Field(default=800, gt=0)
+    max_manager_output_tokens: int = Field(default=8192, gt=0)
     max_cost_per_call_usd: Decimal = Field(default=Decimal("0.02"), gt=0)
 
     @model_validator(mode="after")
@@ -386,6 +387,7 @@ def _make_managed_policy(
     graph: ReadOnlyStateGraph[GenomeState, DeleteGenes],
     run_id: str,
 ) -> NavigatorExplorerPolicy[GenomeState, DeleteGenes]:
+    from pydantic_ai import UsageLimits
     from yggdrisil.agents.pydantic_ai import (
         DEFAULT_MANAGER_INSTRUCTIONS,
         make_navigator,
@@ -423,11 +425,22 @@ def _make_managed_policy(
             )
         ),
     )
+    # A published deletion set needs more output than a single proposed action.
+    manager_limits = UsageLimits(
+        cost_limit=config.max_cost_per_call_usd,
+        request_limit=config.max_model_requests,
+        tool_calls_limit=config.max_tool_calls,
+        output_tokens_limit=config.max_model_requests
+        * config.max_manager_output_tokens,
+    )
     manager.agent = SimpleNamespace(
         run=partial(
             manager.agent.run,
-            usage_limits=limits,
-            model_settings=config.settings,
+            usage_limits=manager_limits,
+            model_settings={
+                **config.settings,
+                "max_tokens": config.max_manager_output_tokens,
+            },
         )
     )
     return NavigatorExplorerPolicy(
