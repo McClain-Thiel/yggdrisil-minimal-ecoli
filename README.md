@@ -32,6 +32,28 @@ Model-backed searches are optional: install `--extra agents`, set
 `OPENROUTER_API_KEY` in your environment or `~/.env`, and provide a fixed model
 ID. The notebook requires a separate action to enable a paid search.
 
+For persistent manager/worker search, set `AgentSearchConfig(...,
+mode="research", orchestration="manager")` in the experiment notebook.
+Every run still starts at full MG1655. The manager owns an application-defined
+checkpoint and shared, revisioned documents in the search database; workers
+propose evaluated gene deletions. Restarting the same graph restores this state.
+`mode="tool-rich", orchestration="manager"` uses the same orchestration without
+external retrieval. The original closed-book/recoverable configuration remains
+available as a separate policy condition.
+
+The research mode provides ordinary Europe PMC search and accessible full text.
+It has no Edison integration. Source availability failures raise explicitly.
+Gene tools resolve annotated identifiers without guessing ambiguous matches and
+compare cited deletion sets against graph states. Saved deletion-set metadata
+must include `reference="NC_000913.3"`, canonical `gene_ids`, and `source_url`.
+Published noncoding changes or compensatory mutations remain qualifications:
+the executable state represents protein-coding gene deletions only.
+
+Manager and worker invocations each use the configured model limits. Enable
+paid calls only after choosing a fixed model and a state/step budget. The offline
+managed-search tests exercise restart and target reconstruction without model
+or literature requests.
+
 ## Layout
 
 ```text

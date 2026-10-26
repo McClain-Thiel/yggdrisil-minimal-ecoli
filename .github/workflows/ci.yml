@@ -1,0 +1,28 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install
+        run: pip install ".[agents,data,fba,rba,notebooks,dev]"
+      - name: Test
+        run: pytest
+      - name: Lint
+        run: ruff check src tests scripts
+      - name: Check types
+        run: mypy src
+      - name: Check experiment notebook
+        run: marimo check scripts/experiment.py
