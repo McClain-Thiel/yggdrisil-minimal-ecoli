@@ -98,6 +98,24 @@ floor before search. Their later overlap scores measure rediscovery, not
 independent viability validation. `scripts/calibrate_resource_gate.py` reproduces
 those checks against a frozen prior FBA-only candidate.
 
+## vEcoli finalists
+
+After search, `scripts/prepare_vecoli_finalists.py` freezes five diverse finalists
+that pass both growth gates and maps the same `genes.parquet` to exact vEcoli IDs.
+Run it with `--help` for the graph, pinned checkout, and output paths. It prepares
+a workflow; it does not launch simulations.
+
+Run the generated configuration from the pinned vEcoli checkout using its
+`runscripts/workflow.py`, then use `scripts/summarize_vecoli_finalists.py` to report
+completed divisions and distinguish nondivision from model or execution failures.
+Start with one generation before a longer lineage. Selection uses only the
+frozen search evidence: the largest feasible deletion set, then four diverse
+sets within 90% of its size. The pinned vEcoli workflow disables operons to
+knock out individual genes, follows one daughter for up to 20 generations,
+and checks every targeted expression/regulation parameter. A single simulated
+lineage is not a survival probability; repeat seeds and experimental validation
+are needed for biological conclusions.
+
 ## Development
 
 ```bash
