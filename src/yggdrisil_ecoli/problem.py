@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
+import pandas as pd
 from yggdrisil import stable_hash
 
 from yggdrisil_ecoli.actions import DeleteGenes
 from yggdrisil_ecoli.data.errors import DataValidationError
-from yggdrisil_ecoli.data.registry import GeneRegistry
 from yggdrisil_ecoli.state import GenomeState, genome_state_key
 
 
@@ -15,13 +15,13 @@ class EcoliProblem:
 
     def __init__(
         self,
-        registry: GeneRegistry,
+        genes: pd.DataFrame,
         *,
         max_genes_per_action: int | None = None,
     ) -> None:
         if max_genes_per_action is not None and max_genes_per_action < 1:
             raise ValueError("max_genes_per_action must be positive")
-        self.registry = registry
+        self.universe = frozenset(genes.index)
         self.max_genes_per_action = max_genes_per_action
         self.initial_state = GenomeState(deleted_genes=frozenset())
 
@@ -30,7 +30,7 @@ class EcoliProblem:
         return genome_state_key(state)
 
     def validate_state(self, state: GenomeState) -> None:
-        outside = sorted(state.deleted_genes - self.registry.search_universe)
+        outside = sorted(state.deleted_genes - self.universe)
         if outside:
             raise DataValidationError(
                 f"state contains genes outside the search universe: {outside}"
@@ -39,7 +39,7 @@ class EcoliProblem:
     def validate_action(self, state: GenomeState, action: DeleteGenes) -> None:
         self.validate_state(state)
         requested = frozenset(action.genes)
-        outside = sorted(requested - self.registry.search_universe)
+        outside = sorted(requested - self.universe)
         if outside:
             raise DataValidationError(
                 f"action contains genes outside the search universe: {outside}"
@@ -62,9 +62,9 @@ class EcoliProblem:
         return GenomeState(deleted_genes=state.deleted_genes.union(action.genes))
 
     def problem_fingerprint(self) -> dict[str, object]:
-        """Identify the deletion universe and action constraint for safe resume."""
+        """Identify the deletion universe and action constraint for stored run provenance."""
 
         return {
-            "search_universe": stable_hash(sorted(self.registry.search_universe)),
+            "search_universe": stable_hash(sorted(self.universe)),
             "max_genes_per_action": self.max_genes_per_action,
         }

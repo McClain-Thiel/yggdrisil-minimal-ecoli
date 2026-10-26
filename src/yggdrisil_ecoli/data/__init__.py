@@ -1,5 +1,5 @@
-"""Canonical registry and source-specific data adapters."""
+"""Prepared gene evidence for experiments."""
 
-from yggdrisil_ecoli.data.registry import GeneRecord, GeneRegistry
+from yggdrisil_ecoli.data.evidence import load_genes, validate_genes, write_genes
 
-__all__ = ["GeneRecord", "GeneRegistry"]
+__all__ = ["load_genes", "validate_genes", "write_genes"]

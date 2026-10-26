@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from yggdrisil import EvaluationResult
+import pandas as pd
+from yggdrisil import EvaluationResult, stable_hash
 
-from yggdrisil_ecoli.data.essentiality import EssentialityDataset
-from yggdrisil_ecoli.data.registry import GeneRegistry
 from yggdrisil_ecoli.scorers.base import scientific_evaluation
 from yggdrisil_ecoli.state import GenomeState
 
@@ -17,27 +16,22 @@ class EssentialityScorer:
     def __init__(
         self,
         *,
-        registry: GeneRegistry,
-        dataset: EssentialityDataset,
+        genes: pd.DataFrame,
         artifact_hash: str,
     ) -> None:
-        self.registry = registry
-        self.dataset = dataset
+        self.classification = genes.classification.copy()
         self.artifact_hash = artifact_hash
-        self.config = {"artifact_sha256": artifact_hash}
+        self.config = {
+            "artifact_sha256": artifact_hash,
+            "classification_sha256": stable_hash(self.classification.to_dict()),
+        }
 
     async def evaluate(self, state: GenomeState) -> EvaluationResult:
-        categories: dict[str, list[str]] = {
-            "essential": [],
-            "conditionally_essential": [],
-            "ambiguous": [],
-            "unknown": [],
+        deleted = self.classification.loc[sorted(state.deleted_genes)]
+        categories = {
+            name: deleted.loc[deleted == name].index.tolist()
+            for name in ("essential", "conditionally_essential", "ambiguous", "unknown")
         }
-        for b_number in sorted(state.deleted_genes):
-            self.registry.require(b_number)
-            classification = self.dataset.record(b_number).classification
-            if classification != "nonessential":
-                categories[classification].append(b_number)
 
         unknown = categories["unknown"]
         metrics: dict[str, object] = {}

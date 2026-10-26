@@ -2,12 +2,9 @@
 
 from __future__ import annotations
 
-import hashlib
-import json
+import pandas as pd
+from yggdrisil import EvaluationResult, stable_hash
 
-from yggdrisil import EvaluationResult
-
-from yggdrisil_ecoli.data.registry import GeneRegistry
 from yggdrisil_ecoli.scorers.base import scientific_evaluation
 from yggdrisil_ecoli.state import GenomeState
 
@@ -16,10 +13,9 @@ class GenomeSizeScorer:
     name = "genome_size"
     version = "1"
 
-    def __init__(self, registry: GeneRegistry) -> None:
-        self._universe = registry.search_universe
-        payload = json.dumps(sorted(self._universe), separators=(",", ":")).encode()
-        self.config = {"search_universe_sha256": hashlib.sha256(payload).hexdigest()}
+    def __init__(self, genes: pd.DataFrame) -> None:
+        self._universe = frozenset(genes.index)
+        self.config = {"search_universe_sha256": stable_hash(sorted(self._universe))}
 
     async def evaluate(self, state: GenomeState) -> EvaluationResult:
         outside = state.deleted_genes - self._universe
