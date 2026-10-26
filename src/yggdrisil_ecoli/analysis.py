@@ -14,6 +14,7 @@ from yggdrisil import SQLiteStateGraph
 from yggdrisil.types import EvaluationRecord
 
 from yggdrisil_ecoli.actions import DeleteGenes
+from yggdrisil_ecoli.scorers.base import passes_growth_gates
 from yggdrisil_ecoli.state import GenomeState
 
 _CANONICAL_ID = re.compile(r"\bb\d{4}\b")
@@ -57,7 +58,13 @@ def summarize_run(
         identities = TypeAdapter(dict[str, str]).validate_python(
             run.metadata.get("evaluators"), strict=True
         )
-        required = {"essentiality", "fba", "genome_size", "module_retention"}
+        required = {
+            "essentiality",
+            "fba",
+            "genome_size",
+            "module_retention",
+            "resource_allocation",
+        }
         if required - identities.keys():
             raise ValueError("run metadata lacks required evaluator identities")
         viable = []
@@ -68,13 +75,7 @@ def summarize_run(
                 if record is None:
                     raise ValueError(f"state lacks active evaluation: {name}")
                 evidence[name] = record
-            growth = evidence["fba"].metrics.get("growth_rate")
-            if (
-                evidence["fba"].metrics.get("feasible") is True
-                and isinstance(growth, (int, float))
-                and not isinstance(growth, bool)
-                and growth > 0
-            ):
+            if passes_growth_gates(evidence):
                 viable.append((node, evidence))
         best = max(
             viable,

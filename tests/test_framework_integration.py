@@ -17,7 +17,11 @@ from yggdrisil import (
 )
 
 from yggdrisil_ecoli.actions import DeleteGenes
-from yggdrisil_ecoli.policies import deletion_sampler, make_heuristic_policy
+from yggdrisil_ecoli.policies import (
+    deletion_sampler,
+    make_heuristic_policy,
+    viability_eligibility,
+)
 from yggdrisil_ecoli.problem import EcoliProblem
 from yggdrisil_ecoli.scorers.base import (
     active_evaluator_ids,
@@ -55,6 +59,8 @@ class _StateEvidenceScorer:
     async def evaluate(self, state: GenomeState) -> EvaluationResult:
         if self.name == "essentiality":
             value: object = int("b0001" in state.deleted_genes)
+        elif self.name == "fba":
+            value = True
         else:
             value = "b0002" not in state.deleted_genes
         metrics = {self.metric: value}
@@ -135,9 +141,11 @@ async def test_framework_suite_uses_yggdrisil_cache(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
-async def test_simple_heuristic_accepts_fba_positive_parent_with_essential_deletion(
+@pytest.mark.parametrize("policy_name", ["random", "heuristic"])
+async def test_baseline_requires_resource_growth_but_allows_essential_deletion(
     tmp_path: Path,
     genes: pd.DataFrame,
+    policy_name: str,
 ) -> None:
     problem = EcoliProblem(genes)
     genes.loc["b0001", "classification"] = "essential"
@@ -160,14 +168,18 @@ async def test_simple_heuristic_accepts_fba_positive_parent_with_essential_delet
     scorers = (
         _StateEvidenceScorer("essentiality", "n_essential_deleted"),
         _StateEvidenceScorer("fba", "feasible"),
+        _StateEvidenceScorer("resource_allocation", "feasible_at_growth_floor"),
     )
     suite = EvaluatorSuite(list(scorers), concurrent=True)
     for node in graph.states():
         await suite.evaluate_cached(graph, node.state_id)
-    policy = make_heuristic_policy(
-        genes=genes,
-        evaluator_ids=active_evaluator_ids(scorers),
-        seed=3,
+    identities = active_evaluator_ids(scorers)
+    policy = (
+        make_heuristic_policy(genes=genes, evaluator_ids=identities, seed=3)
+        if policy_name == "heuristic"
+        else RandomPolicy(
+            deletion_sampler(genes), seed=3, eligible=viability_eligibility(identities)
+        )
     )
 
     decisions = await policy.step(
@@ -221,6 +233,9 @@ async def test_heuristic_selects_active_cached_identity_after_config_reversion(
             {"feasible": True, "growth_rate": 1.0},
             "config-a",
         ),
+        _FixedScorer(
+            "resource_allocation", {"feasible_at_growth_floor": True}, "config-a"
+        ),
     )
     inactive = (
         _FixedScorer(
@@ -232,6 +247,9 @@ async def test_heuristic_selects_active_cached_identity_after_config_reversion(
             "fba",
             {"feasible": False, "growth_rate": 0.0},
             "config-b",
+        ),
+        _FixedScorer(
+            "resource_allocation", {"feasible_at_growth_floor": False}, "config-b"
         ),
     )
     await EvaluatorSuite(list(active), concurrent=True).evaluate_cached(graph, "root")
@@ -282,15 +300,25 @@ async def test_agent_prompts_select_active_cached_evaluations(
     graph = SQLiteStateGraph[GenomeState, DeleteGenes](tmp_path / "agent-cache.sqlite")
     graph.save_run("agent-cache", step=0, status="running", config={}, metadata={})
     graph.add_state("root", GenomeState(frozenset()))
-    active = _FixedScorer("fba", {"feasible": True, "growth_rate": 1.0}, "config-a")
-    inactive = _FixedScorer("fba", {"feasible": False, "growth_rate": 0.0}, "config-b")
-    for scorer in (active, inactive, active):
-        await EvaluatorSuite([scorer]).evaluate_cached(graph, "root")
+    active = [
+        _FixedScorer("fba", {"feasible": True, "growth_rate": 1.0}, "config-a"),
+        _FixedScorer(
+            "resource_allocation", {"feasible_at_growth_floor": True}, "config-a"
+        ),
+    ]
+    inactive = [
+        _FixedScorer("fba", {"feasible": False, "growth_rate": 0.0}, "config-b"),
+        _FixedScorer(
+            "resource_allocation", {"feasible_at_growth_floor": False}, "config-b"
+        ),
+    ]
+    for scorers in (active, inactive, active):
+        await EvaluatorSuite(scorers).evaluate_cached(graph, "root")
     policy = make_agent_policy(
         genes=genes,
         modules=modules,
         config=AgentSearchConfig(model="vendor/model"),
-        evaluator_ids=active_evaluator_ids([active]),
+        evaluator_ids=active_evaluator_ids(active),
     )
     status = RunStatus(
         step=0,
@@ -305,7 +333,10 @@ async def test_agent_prompts_select_active_cached_evaluations(
     )
     requests = policy.request_selector.select(graph.readonly(), status)
 
-    expected = {"fba": {"feasible": True, "growth_rate": 1.0}}
+    expected = {
+        "fba": {"feasible": True, "growth_rate": 1.0},
+        "resource_allocation": {"feasible_at_growth_floor": True},
+    }
     assert json.loads(explorer_prompt)["evaluations"] == expected
     assert [request.state_id for request in requests] == ["root"]
     graph.close()

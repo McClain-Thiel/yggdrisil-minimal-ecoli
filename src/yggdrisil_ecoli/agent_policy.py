@@ -87,7 +87,7 @@ class AgentSearchConfig(BaseModel):
         return {
             **self.model_dump(mode="json"),
             "provider": "openrouter",
-            "prompt_version": 4,
+            "prompt_version": 5,
             "scheduler_version": SCHEDULER_VERSION,
             "pydantic_ai": version("pydantic-ai"),
             "settings": self.settings,
@@ -198,7 +198,8 @@ class _Explorer:
                 "Propose direct deletion actions using only candidate IDs and evidence from "
                 "this invocation. Only use genes exposed in the preview or candidate-list "
                 "tool. Do not use web or literature knowledge. Essentiality, modules and "
-                "unknown annotations rank risk; only positive feasible FBA gates viability. "
+                "unknown annotations rank risk; viability requires positive feasible FBA "
+                "and resource-allocation feasibility at the fixed 0.1/h growth floor. "
                 "The action-size maximum and fallback ceiling are not targets: choose "
                 "each size independently from 1 to max_genes_per_action. Do not repeat "
                 "previous sibling actions; learn from lethal siblings. Shortlist from the "

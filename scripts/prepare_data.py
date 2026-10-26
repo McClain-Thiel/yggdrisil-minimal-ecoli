@@ -160,6 +160,35 @@ def write_dataset(
 
 
 @app.cell
+def rba_settings():
+    prepare_rba = mo.ui.run_button(label="Prepare RBA model")
+    mo.vstack(
+        [
+            mo.md("""
+    ## Optional resource-balance model
+
+    Build `external/rba_ecoli_k12_wt` for the resource gate. Cached sources are
+    verified and reused; the manifest records the current numerical dependencies.
+    """),
+            prepare_rba,
+        ]
+    )
+    return (prepare_rba,)
+
+
+@app.cell
+def rba_artifact(data_folder, prepare_rba):
+    mo.stop(not prepare_rba.value, mo.md("RBA preparation is optional."))
+    from yggdrisil_ecoli.rba_build import build_rba_artifact
+
+    rba_manifest = build_rba_artifact(
+        Path(data_folder.value).expanduser() / "external" / "rba_ecoli_k12_wt"
+    )
+    mo.md(f"Prepared RBA model. Provenance: `{rba_manifest}`.")
+    return
+
+
+@app.cell
 def heldout_settings(data_dir):
     heldout_folder = mo.ui.text(
         value=str(data_dir / "validation"), label="Held-out source folder"
@@ -170,7 +199,8 @@ def heldout_settings(data_dir):
             mo.md("""
     ## Optional held-out labels
 
-    These labels are for post-hoc comparison and stay outside the search inputs.
+    These labels stay outside the search inputs. If used to calibrate the resource
+    gate, they are not an independent viability test.
     Put `NC_000913.3.ncbi.json`, `AP012306.ncbi.json`, and
     `MS56_Park_2014_supplement.pdf` in the folder below. The sequence files are the
     NCBI fetch output; deriving MDS42 deletions also requires `minimap2` on PATH.

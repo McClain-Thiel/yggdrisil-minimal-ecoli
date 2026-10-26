@@ -10,6 +10,7 @@ from yggdrisil import BestFirstPolicy
 from yggdrisil.types import EvaluationRecord, StateNode
 
 from yggdrisil_ecoli.actions import DeleteGenes
+from yggdrisil_ecoli.scorers.base import passes_growth_gates
 from yggdrisil_ecoli.state import GenomeState
 
 DeletionSampler = Callable[[GenomeState, random.Random], Sequence[DeleteGenes]]
@@ -51,25 +52,6 @@ def make_heuristic_policy(
 ) -> BestFirstPolicy[GenomeState, DeleteGenes]:
     """Build the framework best-first baseline over active scientific evidence."""
 
-    missing = {"fba"} - set(evaluator_ids)
-    if missing:
-        raise ValueError(f"missing evaluator identities: {sorted(missing)}")
-
-    def eligible(
-        node: StateNode[GenomeState], records: Sequence[EvaluationRecord]
-    ) -> bool:
-        by_id = {record.evaluator_id: record for record in records}
-        fba = by_id.get(evaluator_ids["fba"])
-        if fba is None:
-            return False
-        growth = fba.metrics.get("growth_rate")
-        return (
-            fba.metrics.get("feasible") is True
-            and isinstance(growth, (int, float))
-            and not isinstance(growth, bool)
-            and growth > 0
-        )
-
     def priority(
         node: StateNode[GenomeState], records: Sequence[EvaluationRecord]
     ) -> float:
@@ -84,5 +66,24 @@ def make_heuristic_policy(
         priority,
         n_proposals=n_proposals,
         seed=seed,
-        eligible=eligible,
+        eligible=viability_eligibility(evaluator_ids),
     )
+
+
+def viability_eligibility(
+    evaluator_ids: Mapping[str, str],
+) -> Callable[[StateNode[GenomeState], Sequence[EvaluationRecord]], bool]:
+    """Use the same active growth gates for random and heuristic policies."""
+    missing = {"fba", "resource_allocation"} - evaluator_ids.keys()
+    if missing:
+        raise ValueError(f"missing evaluator identities: {sorted(missing)}")
+
+    def eligible(
+        node: StateNode[GenomeState], records: Sequence[EvaluationRecord]
+    ) -> bool:
+        by_id = {record.evaluator_id: record for record in records}
+        return passes_growth_gates(
+            {name: by_id[key] for name, key in evaluator_ids.items() if key in by_id}
+        )
+
+    return eligible
