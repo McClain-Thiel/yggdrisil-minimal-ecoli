@@ -17,12 +17,14 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install
-        run: pip install ".[agents,data,fba,rba,notebooks,dev]"
+        run: |
+          pip install uv
+          uv sync --extra agents --extra data --extra fba --extra rba --extra notebooks --extra dev
       - name: Test
-        run: pytest
+        run: .venv/bin/python -m pytest
       - name: Lint
-        run: ruff check src tests scripts
+        run: .venv/bin/ruff check src tests scripts
       - name: Check types
-        run: mypy src
+        run: .venv/bin/mypy src
       - name: Check experiment notebook
-        run: marimo check scripts/experiment.py
+        run: .venv/bin/marimo check scripts/experiment.py
