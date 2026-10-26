@@ -43,18 +43,20 @@ class GeneTools:
             raise ValueError("identifier resolution is unavailable in closed-book mode")
         results: list[dict[str, object]] = []
         columns = ["symbol", "name", "ncbi_gene_id", "ecocyc_id", "iml1515_gene_id"]
+        positions: dict[str, set[int]] = {}
+        for column in columns:
+            if column not in self.genes.columns:
+                continue
+            for position, value in enumerate(self.genes[column]):
+                if isinstance(value, str):
+                    positions.setdefault(value.casefold(), set()).add(position)
         for identifier in identifiers:
             if identifier in self.genes.index:
                 candidates = [identifier]
             else:
                 candidates = [
-                    str(gene)
-                    for gene, row in self.genes.iterrows()
-                    if any(
-                        isinstance(row.get(column), str)
-                        and row[column].casefold() == identifier.casefold()
-                        for column in columns
-                    )
+                    str(self.genes.index[position])
+                    for position in sorted(positions.get(identifier.casefold(), ()))
                 ]
             results.append(
                 {
