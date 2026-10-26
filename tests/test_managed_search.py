@@ -34,12 +34,14 @@ def modules(genes):
 def test_identifier_resolution_reports_ambiguity_and_unmatched_inputs(genes):
     genes = genes.copy()
     genes.loc[["b0001", "b0002"], "symbol"] = "shared"
+    genes.loc["b0001", "kegg_gene_id"] = "eco:b0001"
     tools = GeneTools(genes, modules(genes))
-    result = tools.resolve_gene_ids(["b0001", "SHARED", "absent"])
+    result = tools.resolve_gene_ids(["b0001", "SHARED", "absent", "eco:b0001"])
     assert result == [
         {"input": "b0001", "status": "resolved", "gene_ids": ["b0001"]},
         {"input": "SHARED", "status": "ambiguous", "gene_ids": ["b0001", "b0002"]},
         {"input": "absent", "status": "unmatched", "gene_ids": []},
+        {"input": "eco:b0001", "status": "resolved", "gene_ids": ["b0001"]},
     ]
     tools.deleted_genes = frozenset({"b0001"})
     assert tools.deletion_delta(["b0001", "b0002"])["remaining_gene_ids"] == ["b0002"]
@@ -206,9 +208,9 @@ async def test_managed_search_walks_from_mg1655_and_resumes_without_paid_calls(
                 graph=graph.readonly(),
                 run_id="managed",
             )
-            assert policy.navigator.agent.run.keywords["model_settings"][
-                "max_tokens"
-            ] == (config.max_manager_output_tokens)
+            assert policy.navigator.model_settings["max_tokens"] == (
+                config.max_manager_output_tokens
+            )
             assert policy.explorer.limits.output_tokens_limit == (
                 config.max_model_requests * config.max_output_tokens
             )

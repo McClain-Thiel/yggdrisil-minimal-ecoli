@@ -193,9 +193,7 @@ async def test_infeasible_sibling_does_not_contaminate_repeated_solves(
 async def test_concurrent_evaluations_are_isolated_and_deterministic(
     scorer: RBAScorer,
 ) -> None:
-    variables = list(scorer._base_lower_bounds)
-    lower_before = dict(scorer._session.Problem.get_lb(variables))
-    upper_before = dict(scorer._session.Problem.get_ub(variables))
+    bounds_before = scorer._base_bounds.tolist()
     states = [
         GenomeState(frozenset()),
         GenomeState(frozenset({"b0023"})),
@@ -208,8 +206,7 @@ async def test_concurrent_evaluations_are_isolated_and_deterministic(
     assert [result.metrics["feasible_at_growth_floor"] for result in results] == (
         [True, False, True, False] * 3
     )
-    assert dict(scorer._session.Problem.get_lb(variables)) == lower_before
-    assert dict(scorer._session.Problem.get_ub(variables)) == upper_before
+    assert scorer._base_bounds.tolist() == bounds_before
 
 
 def test_artifact_and_mapping_participate_in_evaluator_identity(

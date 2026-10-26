@@ -42,7 +42,14 @@ class GeneTools:
         if self.aliases is not None:
             raise ValueError("identifier resolution is unavailable in closed-book mode")
         results: list[dict[str, object]] = []
-        columns = ["symbol", "name", "ncbi_gene_id", "ecocyc_id", "iml1515_gene_id"]
+        columns = [
+            "symbol",
+            "name",
+            "ncbi_gene_id",
+            "ecocyc_id",
+            "kegg_gene_id",
+            "iml1515_gene_id",
+        ]
         positions: dict[str, set[int]] = {}
         for column in columns:
             if column not in self.genes.columns:

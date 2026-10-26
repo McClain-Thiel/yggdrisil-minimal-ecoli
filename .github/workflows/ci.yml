@@ -26,7 +26,9 @@ jobs:
         run: .venv/bin/python -m pytest
       - name: Lint
         run: .venv/bin/ruff check src tests scripts
+      - name: Format
+        run: .venv/bin/ruff format --check src tests scripts
       - name: Check types
         run: .venv/bin/mypy src
-      - name: Check experiment notebook
-        run: .venv/bin/marimo check scripts/experiment.py
+      - name: Check notebooks
+        run: .venv/bin/marimo check scripts/experiment.py scripts/prepare_data.py

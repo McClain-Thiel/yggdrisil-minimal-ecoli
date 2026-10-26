@@ -17,8 +17,9 @@ uv run marimo edit scripts/experiment.py
 ```
 
 The notebook shows the complete flow: load data, construct evaluators, choose a
-policy, run Yggdrisil, and inspect results. It starts with a small random search;
-examples show how to substitute a heuristic or model-backed policy. New
+policy, run Yggdrisil, and inspect results. The policy selector offers random and
+heuristic baselines, persistent manager search, literature research, and the
+original closed-book experiment. New
 experiments save a fresh SQLite graph under `runs/`. To continue the same
 experiment, enter its graph path and increase the state limit; changed inputs,
 code, evaluator identities, or policy settings are rejected before resume.
@@ -32,14 +33,13 @@ Model-backed searches are optional: install `--extra agents`, set
 `OPENROUTER_API_KEY` in your environment or `~/.env`, and provide a fixed model
 ID. The notebook requires a separate action to enable a paid search.
 
-For persistent manager/worker search, set `AgentSearchConfig(...,
-mode="research", orchestration="manager")` in the experiment notebook.
+Choose `research` in the notebook for persistent manager/worker search with
+ordinary literature retrieval; `manager` uses only local evidence.
 Every run still starts at full MG1655. The manager owns an application-defined
 checkpoint and shared, revisioned documents in the search database; workers
 propose evaluated gene deletions. Restarting the same graph restores this state.
-`mode="tool-rich", orchestration="manager"` uses the same orchestration without
-external retrieval. The original closed-book/recoverable configuration remains
-available as a separate policy condition.
+The original closed-book/recoverable configuration remains available as a
+separate policy condition.
 
 The research mode provides ordinary Europe PMC search and accessible full text.
 It has no Edison integration. Source availability failures raise explicitly.
@@ -69,9 +69,9 @@ interactive experiments and ordinary Python for batch runs.
 
 ## Data
 
-Large inputs and generated results belong outside Git. The notebook accepts a
-local prepared-data directory or a Hugging Face dataset ID and pinned revision.
-No dataset has been published for this prototype yet. Local data are ignored;
+Large inputs and generated results belong outside Git. Point the notebook at a
+local prepared-data directory. No dataset has been published for this prototype
+yet. Local data are ignored;
 small synthetic fixtures remain with the tests.
 
 For one-time source preparation:

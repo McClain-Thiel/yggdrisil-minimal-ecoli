@@ -23,6 +23,12 @@ _SCIENTIFIC_TOOLS = {
     "inspect_gene_evidence",
     "analyze_deletion_bundle",
     "inspect_kegg_module",
+    "resolve_gene_ids",
+    "get_deleted_genes",
+    "deletion_delta",
+    "compare_saved_gene_set",
+    "search_literature",
+    "read_literature",
 }
 _USAGE_FIELDS = {
     "requests",
@@ -118,6 +124,7 @@ def summarize_run(
             (Decimal(event.get("cost_usd") or "0") for event in usage_events),
             Decimal("0"),
         )
+        cost_complete = all(event.get("cost_usd") is not None for event in usage_events)
         result: dict[str, object] = {
             "graph": str(path.resolve()),
             "run_id": run.run_id,
@@ -137,7 +144,7 @@ def summarize_run(
                     and event.get("tool") in _SCIENTIFIC_TOOLS
                 )
             ),
-            "model_usage": {**usage, "cost_usd": str(cost)},
+            "model_usage": {**usage, "cost_usd": str(cost) if cost_complete else None},
             "canonical_ids_in_model_io": [
                 decision.decision_id
                 for decision in decisions

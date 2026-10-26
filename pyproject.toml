@@ -24,7 +24,7 @@ dependencies = [
     "pandas>=2.2,<4",
     "lark>=1.2,<2",
     "boolean.py>=5,<6",
-    "yggdrisil @ git+https://github.com/McClain-Thiel/yggdrisil.git@108f01fb85db964051a21aad54cb3ec6361fbc21",
+    "yggdrisil @ git+https://github.com/McClain-Thiel/yggdrisil.git@a538b49aeeb74187c389c1905b0bdc20f7ee0c80",
 ]
 
 [project.optional-dependencies]
@@ -41,7 +41,6 @@ data = [
 ]
 notebooks = [
     "marimo>=0.21.1,<1",
-    "huggingface-hub>=0.34,<2",
 ]
 fba = [
     "cobra==0.32.1",
