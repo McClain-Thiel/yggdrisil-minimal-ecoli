@@ -98,7 +98,12 @@ async def test_managed_search_walks_from_mg1655_and_resumes_without_paid_calls(
 ):
     from pydantic_ai import models
     from pydantic_ai.exceptions import CostNotFoundWarning
-    from pydantic_ai.messages import ModelResponse, ToolCallPart
+    from pydantic_ai.messages import (
+        ModelResponse,
+        TextPart,
+        ToolCallPart,
+        ToolReturnPart,
+    )
     from pydantic_ai.models.function import FunctionModel
     from yggdrisil.agents import pydantic_ai as adapter
 
@@ -109,9 +114,29 @@ async def test_managed_search_walks_from_mg1655_and_resumes_without_paid_calls(
     first = problem.state_key(GenomeState(frozenset({"b0001"})))
     calls = []
 
+    async def search_literature(query: str, count: int = 5):
+        return {"source_url": "https://example.org/fixture", "papers": []}
+
+    monkeypatch.setattr(literature, "search_literature", search_literature)
+
     def manager_response(messages, info):
-        step = len(calls) + 1
-        calls.append(messages)
+        retry = any(
+            text in str(messages)
+            for text in ("Return a nonempty checkpoint", "Unknown state_id")
+        )
+        if not retry:
+            calls.append(messages)
+        step = len(calls)
+        if "Return a nonempty checkpoint" in str(messages):
+            assert "expected_revision=0" in str(messages)
+        if step == 1 and not retry:
+            return ModelResponse(
+                parts=[
+                    ToolCallPart("get_state", {"state_id": "mistyped-state-id"}),
+                    ToolCallPart("get_state", {"state_id": root}),
+                    ToolCallPart("search_literature", {"query": "fixture"}),
+                ]
+            )
         arguments = {
             "requests": [
                 {
@@ -131,24 +156,74 @@ async def test_managed_search_walks_from_mg1655_and_resumes_without_paid_calls(
                         "gene_ids": ["b0001", "b0002"],
                         "source_url": "https://example.org/fixture",
                     },
-                }
+                },
+                {"key": "literature", "content": "A paper summary, not a gene set"},
             ]
         else:
             assert "published-target" in str(messages)
             assert "created" in str(messages)
             assert "reconstruct cited gene set" in str(messages)
-        return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, arguments)])
+        if step == 1 and "Return a nonempty checkpoint" not in str(messages):
+            arguments["checkpoint"] = {}
+            arguments["requests"][0]["memory_keys"] = ["published-target"]
+            arguments["memory_updates"][0]["expected_revision"] = 1
+        if step == 2 and not retry:
+            arguments["requests"][0]["state_id"] = "mistyped-state-id"
+        assert not info.output_tools
+        return ModelResponse(parts=[TextPart(json.dumps(arguments))])
 
     def worker_response(messages, info):
+        retries = [
+            part
+            for message in messages
+            for part in message.parts
+            if isinstance(part, ToolReturnPart) and part.outcome == "retried"
+        ]
+        if len(calls) == 1 and not retries:
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        "compare_saved_gene_set",
+                        {"key": "invented-target", "state_id": root},
+                    )
+                ]
+            )
+        if len(calls) == 1:
+            assert "does not exist" in retries[-1].content
+            assert "published-target" in retries[-1].content
+        if len(calls) == 2 and not retries:
+            return ModelResponse(
+                parts=[
+                    ToolCallPart(
+                        "compare_saved_gene_set",
+                        {"key": "literature", "state_id": first},
+                    )
+                ]
+            )
+        if len(calls) == 2:
+            assert "not a validated MG1655 deletion target" in retries[-1].content
         gene = "b0001" if len(calls) == 1 else "b0002"
+        memory_updates = []
+        if len(calls) == 1:
+            memory_updates = [
+                {
+                    "key": "worker-evidence",
+                    "content": "A reusable worker finding",
+                    "expected_revision": 0
+                    if "expected_revision=0" in str(messages)
+                    else 1,
+                }
+            ]
         return ModelResponse(
             parts=[
-                ToolCallPart(
-                    info.output_tools[0].name,
-                    {
-                        "actions": [{"genes": [gene]}],
-                        "note": "proposed one target deletion",
-                    },
+                TextPart(
+                    json.dumps(
+                        {
+                            "actions": [{"genes": [gene]}],
+                            "note": "proposed one target deletion",
+                            "memory_updates": memory_updates,
+                        }
+                    ),
                 )
             ]
         )
@@ -198,7 +273,7 @@ async def test_managed_search_walks_from_mg1655_and_resumes_without_paid_calls(
         model="vendor/model", mode="research", orchestration="manager"
     )
     path = tmp_path / "managed.sqlite"
-    for steps in (1, 2):
+    for steps in (2, 3):
         with SQLiteStateGraph[GenomeState, DeleteGenes](path) as graph:
             policy = make_agent_policy(
                 genes=genes,
@@ -224,8 +299,9 @@ async def test_managed_search_walks_from_mg1655_and_resumes_without_paid_calls(
                     run_id="managed",
                     metadata={"evaluators": identities},
                 ).run()
-            assert len(graph) == steps + 1
+            assert len(graph) == steps
             assert graph.memory("managed", "published-target").revision == 1
+            assert graph.memory("managed", "worker-evidence").revision == 1
     summary = summarize_run(path)
     assert summary["deepest_viable_candidate"]["deleted_gene_ids"] == ["b0001", "b0002"]
     assert len(calls) == 2

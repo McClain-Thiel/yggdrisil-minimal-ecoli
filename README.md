@@ -30,8 +30,8 @@ and RBA feasibility at the fixed 0.1 h⁻¹ growth floor. Essentiality and KEGG
 modules remain separate ranking evidence.
 
 Model-backed searches are optional: install `--extra agents`, set
-`OPENROUTER_API_KEY` in your environment or `~/.env`, and provide a fixed model
-ID. The notebook requires a separate action to enable a paid search.
+`OPENROUTER_API_KEY` in your environment, repo `.env`, or `~/.env`, and provide a
+fixed model ID. The notebook requires a separate action to enable a paid search.
 
 Choose `research` in the notebook for persistent manager/worker search with
 ordinary literature retrieval; `manager` uses only local evidence.

@@ -14,13 +14,15 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import pandas as pd
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
-from yggdrisil import NavigatorExplorerPolicy, ReadOnlyStateGraph
+from yggdrisil import MemoryUpdate, NavigatorExplorerPolicy, ReadOnlyStateGraph
 from yggdrisil.agents import (
     ExplorerContext,
     ExplorerResult,
-    bind_graph_tools,
+    NavigationPlan,
+    ToolInputError,
     bind_memory_tools,
 )
+from yggdrisil.exceptions import UnknownStateError
 from yggdrisil.types import EvaluationRecord
 
 from yggdrisil_ecoli.actions import DeleteGenes
@@ -36,7 +38,7 @@ from yggdrisil_ecoli.state import GenomeState
 from yggdrisil_ecoli.tools.genes import GeneTools
 
 if TYPE_CHECKING:
-    from pydantic_ai import UsageLimits
+    from pydantic_ai import RunContext, UsageLimits
 
 
 class AgentSearchConfig(BaseModel):
@@ -47,6 +49,7 @@ class AgentSearchConfig(BaseModel):
     mode: Literal["closed-book", "tool-rich", "research"] = "closed-book"
     orchestration: Literal["recoverable", "manager"] = "recoverable"
     seed: int = 0
+    temperature: float | None = Field(default=0.0, ge=0, le=2)
     bundle_size: int = Field(default=1, gt=0, le=20)
     max_actions: int = Field(default=2, gt=0)
     open_set: OpenSetConfig = OpenSetConfig()
@@ -91,9 +94,8 @@ class AgentSearchConfig(BaseModel):
 
     @property
     def settings(self) -> dict[str, Any]:
-        return {
+        settings: dict[str, Any] = {
             "max_tokens": self.max_output_tokens,
-            "temperature": 0.0,
             "seed": self.seed,
             "openrouter_provider": {
                 "require_parameters": True,
@@ -101,13 +103,16 @@ class AgentSearchConfig(BaseModel):
             },
             "openrouter_usage": {"include": True},
         }
+        if self.temperature is not None:
+            settings["temperature"] = self.temperature
+        return settings
 
     def metadata(self, genes: pd.DataFrame) -> dict[str, object]:
         aliases = _aliases(genes, self.seed) if self.mode == "closed-book" else None
         return {
             **self.model_dump(mode="json"),
             "provider": "openrouter",
-            "prompt_version": 5,
+            "prompt_version": 7,
             "scheduler_version": SCHEDULER_VERSION,
             "pydantic_ai": version("pydantic-ai"),
             "settings": self.settings,
@@ -253,7 +258,9 @@ class _Explorer:
                 "Any validated canonical MG1655 b-number still present is allowed. "
                 "Resolve literature identifiers explicitly; never guess ambiguous mappings. "
                 "Use compare_saved_gene_set to walk toward a cited deletion set, then "
-                "continue investigating additional deletions. The root is always MG1655. "
+                "continue investigating additional deletions. Only use saved gene sets "
+                "whose keys appear in shared_memory_keys; never invent a target key. "
+                "The root is always MG1655. "
                 "Report findings, uncertainties and suggested plan changes in note. "
                 "Return shared memory updates only for reusable findings, with their "
                 "expected revision and source metadata. Evaluation happens after you "
@@ -276,7 +283,21 @@ class _Explorer:
             prompt=partial(self.format_prompt, tools=tools),
             usage_limits=self.limits,
             model_settings=self.config.settings,
+            output_mode="prompted"
+            if self.config.orchestration == "manager"
+            else "tool",
         )
+        graph, run_id = self.graph, self.run_id
+        if graph is not None and run_id is not None:
+            from pydantic_ai import ModelRetry
+
+            def require_memory_revisions(output: Any) -> Any:
+                errors = _memory_update_errors(graph, run_id, output.memory_updates)
+                if errors:
+                    raise ModelRetry("\n".join(errors))
+                return output
+
+            explorer.agent.output_validator(require_memory_revisions)
         result = await explorer.explore(context)
         seen = (
             set(self.selector.attempted_actions(context.state_id))
@@ -322,6 +343,7 @@ def make_agent_policy(
     """Pair bounded model exploration with deterministic, recoverable scheduling."""
     from dotenv import load_dotenv
 
+    load_dotenv(Path.cwd() / ".env", override=False)
     load_dotenv(Path.home() / ".env", override=False)
     limits = config.usage_limits()
     evidence = GeneTools(
@@ -355,6 +377,24 @@ def make_agent_policy(
     )
 
 
+def _memory_update_errors(
+    graph: ReadOnlyStateGraph[GenomeState, DeleteGenes],
+    namespace: str,
+    updates: Sequence[MemoryUpdate],
+) -> list[str]:
+    revisions = {entry.key: entry.revision for entry in graph.memories(namespace)}
+    errors = []
+    for update in updates:
+        revision = revisions.get(update.key, 0)
+        if update.expected_revision != revision:
+            errors.append(
+                f"Shared document {update.key!r} needs expected_revision={revision}; "
+                "revision 0 creates a new document."
+            )
+        revisions[update.key] = revision + 1
+    return errors
+
+
 def _gene_set_tools(
     graph: ReadOnlyStateGraph[GenomeState, DeleteGenes],
     run_id: str,
@@ -367,16 +407,26 @@ def _gene_set_tools(
         count: int = 50,
     ) -> dict[str, object]:
         """Read a cited target set's remaining delta against an existing graph state."""
-        entry = graph.memory(run_id, key)
+        try:
+            entry = graph.memory(run_id, key)
+        except KeyError as exc:
+            keys = [entry.key for entry in graph.memories(run_id)]
+            raise ToolInputError(
+                f"Shared document {key!r} does not exist. Available keys: {keys}. "
+                "Use an existing cited target, or propose from local gene evidence."
+            ) from exc
         if entry.metadata.get("reference") != REFERENCE_ACCESSION:
-            raise ValueError("saved gene set must specify reference NC_000913.3")
+            raise ToolInputError(
+                "This document is not a validated MG1655 deletion target: "
+                "saved gene set must specify reference NC_000913.3"
+            )
         genes = entry.metadata.get("gene_ids")
         if not isinstance(genes, list) or not all(
             isinstance(gene, str) for gene in genes
         ):
-            raise ValueError("saved gene set metadata must contain a gene_ids list")
+            raise ToolInputError("saved gene set metadata must contain a gene_ids list")
         if not entry.metadata.get("source_url"):
-            raise ValueError("saved gene set must cite its source_url")
+            raise ToolInputError("saved gene set must cite its source_url")
         tools = replace(
             evidence, deleted_genes=graph.get_state(state_id).state.deleted_genes
         )
@@ -393,13 +443,32 @@ def _make_managed_policy(
     graph: ReadOnlyStateGraph[GenomeState, DeleteGenes],
     run_id: str,
 ) -> NavigatorExplorerPolicy[GenomeState, DeleteGenes]:
+    from pydantic_ai import ModelRetry
     from yggdrisil.agents.pydantic_ai import (
         DEFAULT_MANAGER_INSTRUCTIONS,
         make_navigator,
     )
 
+    def get_state(state_id: str) -> dict[str, object]:
+        """Read an existing state; copy its ID exactly from the supplied context."""
+        try:
+            node = graph.get_state(state_id)
+        except UnknownStateError as exc:
+            recent = [node.state_id for node in graph.states(limit=10, newest=True)]
+            raise ToolInputError(
+                f"Unknown state_id {state_id!r}. Recent existing state IDs: {recent}"
+            ) from exc
+        return {
+            "state_id": node.state_id,
+            "deleted_gene_ids": sorted(node.state.deleted_genes),
+            "created_step": node.created_step,
+            "evaluations": _active_metrics(
+                graph.evaluations(node.state_id), evaluator_ids
+            ),
+        }
+
     tools = (
-        bind_graph_tools(graph)
+        [get_state]
         + bind_memory_tools(graph, run_id)
         + _gene_set_tools(graph, run_id, evidence)
         + [evidence.resolve_gene_ids, evidence.inspect_gene_evidence]
@@ -412,6 +481,7 @@ def _make_managed_policy(
         f"openrouter:{config.model}",
         tools=tools,
         usage_limits=config.usage_limits(manager=True),
+        output_mode="prompted",
         model_settings={
             **config.settings,
             "max_tokens": config.max_manager_output_tokens,
@@ -421,26 +491,104 @@ def _make_managed_policy(
             "\nMinimize MG1655, starting from its full reference genome. "
             "Choose existing states that pass the recorded FBA and resource-allocation "
             "checks. You own the persistent checkpoint; use any useful structure for "
-            "your plan, evidence, open questions and progress. Separate observed facts "
-            "from hypotheses. Delegate bounded deletion proposals to worker 'explorer'. "
+            "your plan, evidence, open questions and progress, and return it every turn. "
+            "Separate observed facts from hypotheses. Delegate bounded deletion "
+            "proposals to worker 'explorer'. "
             "Learn from evaluated outcomes rather than assuming proposals succeeded. "
+            "Use recent evaluations and worker reports already in your context; "
+            "fetch a stored state only when needed information is absent. "
             "Published reduced genomes may inform a target, but never replace the root. "
             "To save a deletion target, return a memory update with metadata containing "
             "reference='NC_000913.3', canonical gene_ids and source_url. "
             "Further reductions beyond a retrieved target remain part of the task. "
+            "The coordinator commits your shared memory updates before dispatching "
+            "selected workers, so they may request keys you are saving in this plan. "
             + (
-                "Use ordinary literature retrieval when it can resolve a concrete question."
+                "Begin with one focused literature search for published MG1655 genome "
+                "reductions, and save useful sources in shared memory. Reuse retrieved "
+                "evidence; search again only to resolve a concrete open question. "
+                "Read at most one full-text page per turn. If research needs another "
+                "turn, save progress, return no requests, and set continue_on_empty=true."
                 if config.mode == "research"
                 else "Use local annotations and shared records; external retrieval is disabled."
             )
+            + f" Each invocation allows {config.max_model_requests} model requests "
+            f"and {config.max_tool_calls} tool calls; reserve a request for your final plan."
         ),
     )
+
+    retrieval_seen = any(
+        event.get("role") == "tool_return" and event.get("tool") == "search_literature"
+        for decision in graph.decisions()
+        if decision.run_id == run_id
+        for event in decision.tool_calls
+    )
+
+    def require_plan(context: RunContext[Any], plan: NavigationPlan) -> NavigationPlan:
+        nonlocal retrieval_seen
+        retrieval_seen = retrieval_seen or any(
+            getattr(part, "tool_name", None) == "search_literature"
+            and part.part_kind == "tool-return"
+            for message in context.messages
+            for part in message.parts
+        )
+        errors = _memory_update_errors(graph, run_id, plan.memory_updates)
+        if not plan.checkpoint:
+            errors.append(
+                "Return a nonempty checkpoint with your current plan and next step. "
+                "Do not discard the persistent manager plan between turns."
+            )
+        memory_keys = {entry.key for entry in graph.memories(run_id)}
+        if config.mode == "research" and not retrieval_seen:
+            errors.append(
+                "Call search_literature to retrieve actual evidence before finishing "
+                "this research plan; do not substitute remembered or invented sources."
+            )
+        if config.mode == "research" and not memory_keys and not plan.memory_updates:
+            errors.append(
+                "Save retrieved evidence in memory_updates. Return no worker requests "
+                "and continue_on_empty=true to commit the evidence first."
+            )
+        for request in plan.requests:
+            try:
+                get_state(request.state_id)
+            except ToolInputError as exc:
+                errors.append(str(exc))
+            missing = (
+                set(request.memory_keys)
+                - memory_keys
+                - {update.key for update in plan.memory_updates}
+            )
+            if missing:
+                errors.append(
+                    f"Unknown worker memory keys: {sorted(missing)}. "
+                    "Use an existing key or include the document in memory_updates."
+                )
+        if errors:
+            raise ModelRetry(
+                "\n".join(errors)
+                + "\nReturn the complete corrected plan, including your nonempty "
+                "checkpoint, requests, memory_updates and continue_on_empty."
+            )
+        return plan
+
+    manager.agent.output_validator(require_plan)
     return NavigatorExplorerPolicy(
         manager,
         _Explorer(evidence, config, evaluator_ids, limits, graph=graph, run_id=run_id),
-        goal="Minimize MG1655 for aerobic M9 glucose at 37 C; extend beyond published reductions.",
+        goal=(
+            "Minimize MG1655 for aerobic M9 glucose at 37 C; extend beyond published reductions."
+            + (
+                " First search the literature for published MG1655 reductions, save cited "
+                "evidence in shared memory, and keep a nonempty checkpoint with the next step. "
+                "Then delegate deletions from the full MG1655 root."
+                if config.mode == "research"
+                else ""
+            )
+        ),
         max_requests=config.open_set.parents_per_step,
         memory_enabled=True,
+        commit_memory_before_exploration=True,
     )
 
 
