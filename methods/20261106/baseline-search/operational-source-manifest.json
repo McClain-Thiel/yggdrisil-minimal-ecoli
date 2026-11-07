@@ -1,0 +1,31 @@
+{
+  "files": {
+    "cloud-init.sh": "5cbe70643efb3afc178166a84b5dc4475ccbfa906513489a0ad67803bf51b676",
+    "publish-preparation.py": "4129f5265b71ca394d0249f3e92f7a2818fb28ece42f2667f48da750a9252329",
+    "yggdrisil-audit-baseline-startup-attempt.py": "9978c3efc2a43fd8fc73986ec129d10418f832025766ea2a1291c7a3131bda9d",
+    "yggdrisil-baseline-preflight.py": "f32d8e72114fe839a190c594f801bc8b4b5414fbb98351a3f5734c3ca82fab9c",
+    "yggdrisil-baseline-supervisor-retry1.py": "3e938c529cda0aebdc0cb0c92b82053b651f7094f3704631ced0fe7417229a41",
+    "yggdrisil-baseline-supervisor.py": "bc409932a2649b48b7ba11054b8e2f27e13a1feda51906cd39652fe6c0ba3686",
+    "yggdrisil-cleanup-baseline-worker.py": "088e60a88cb6f88f7d016592096293c709b4e0557fbf3c3d552df58d58f3a624",
+    "yggdrisil-fetch-baseline-final.py": "29b933bb0da78485e9f893127a0b54f75339182c23c5562e20b23ebdf09997c3",
+    "yggdrisil-fetch-baseline-metadata.py": "17ea795d3be2a9fd50535f640571cd4dd8b65c4e9b3167f88667dcdedbfd6e46",
+    "yggdrisil-finalize-baseline-audit.py": "dedd1d4710c23e5ddb5cdce2fc7f97867c6e9c1be8a28d1804cb41b523c86476",
+    "yggdrisil-inspect-baselines.py": "e91e1aa20d5692767587ace23f9332a9f834cac033989190816b46125ef233ff",
+    "yggdrisil-provision-baselines.py": "2727160fd84acd36ecc8df1b737fc90b8911aeccb08a11b53030c5fff9e8e5a5",
+    "yggdrisil-publish-baseline-completion-before-e59d155765c8f7868120793bd990c969ec8789a59b7992935e49a098499c23bf.py": "e59d155765c8f7868120793bd990c969ec8789a59b7992935e49a098499c23bf",
+    "yggdrisil-publish-baseline-completion.py": "4c83ee88dddce3131883e7afa1c751aa896eef676a5afa5ee619861d2c84490f",
+    "yggdrisil-publish-baseline-final-records-retry1.py": "38ec4a85a698a04c883338cacba011463cac6ed6c0a5cf656161832795bfe89b",
+    "yggdrisil-publish-baseline-final-records.py": "6e58d09ba0bd1f7762e1117fca226f8b1042b4bd532959c58ca7c1288485c3b7",
+    "yggdrisil-publish-baseline-launch.py": "f40bf54ff66d5c9dd2165e177c72b03103200b73be8ac12fa883d5609d6a40c3",
+    "yggdrisil-repair-baseline-metadata.py": "90f5e73b5e886c51d986412d060c5bcb4b36ef66dc134a487c7aa713701afc15",
+    "yggdrisil-restore-baseline-inputs.py": "b8e5e1d13259f24f15afbf3e833d4593ebe1bb43c7b6ff585772d3c926f13712",
+    "yggdrisil-start-baselines-retry1.py": "afe61f66724d9023da66e9549e394242d66b1a47471b34115a0cf0af5965fd82",
+    "yggdrisil-start-baselines.py": "8b02e04c4a670d090a8f389050351f9ca5b93726a631cf3eae2b2d04155deafe",
+    "yggdrisil-test-baseline-supervisor.py": "d13922ebfdf74b587dd390115856648371e10674fa50a462704b132f210019e7"
+  },
+  "local_source_directory": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/deletion-baselines-20261106/source/operations",
+  "metadata_headers_verified": 2,
+  "recorded_at": "2026-11-06T17:06:52.115953+00:00",
+  "remote_frozen_source_count": 84,
+  "source_uploaded_as_data": false
+}

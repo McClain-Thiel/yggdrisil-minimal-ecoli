@@ -9,7 +9,7 @@ import sys
 
 class BlockPreparationLibraries(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path, target=None):
-        if fullname.split('.')[0] in {'openpyxl', 'gffutils', 'pooch', 'pysam', 'pypdf', 'pydantic_ai', 'dotenv', 'rba', 'rbatools', 'swiglpk'}:
+        if fullname.startswith('google.adk') or fullname.split('.')[0] in {'openpyxl', 'gffutils', 'pooch', 'pysam', 'pypdf', 'litellm', 'dotenv', 'rba', 'rbatools', 'swiglpk'}:
             raise ModuleNotFoundError(f"{fullname} deliberately unavailable")
         return None
 

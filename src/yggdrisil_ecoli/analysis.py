@@ -7,7 +7,7 @@ import re
 from collections import Counter
 from decimal import Decimal
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from pydantic import BaseModel, StrictStr, TypeAdapter
 from yggdrisil import SQLiteStateGraph
@@ -21,14 +21,19 @@ _CANONICAL_ID = re.compile(r"\bb\d{4}\b")
 _SCIENTIFIC_TOOLS = {
     "list_deletion_candidates",
     "inspect_gene_evidence",
+    "inspect_genes",
     "analyze_deletion_bundle",
     "inspect_kegg_module",
     "resolve_gene_ids",
     "get_deleted_genes",
     "deletion_delta",
     "compare_saved_gene_set",
+    "research_literature",
     "search_literature",
     "read_literature",
+    "search_edison",
+    "submit_edison",
+    "check_edison",
 }
 _USAGE_FIELDS = {
     "requests",
@@ -83,12 +88,12 @@ def summarize_run(
                 evidence[name] = record
             if passes_growth_gates(evidence):
                 viable.append((node, evidence))
-        best = max(
+        best = min(
             viable,
             default=None,
             key=lambda item: (
-                len(item[0].state.deleted_genes),
-                item[1]["fba"].metrics["growth_rate"],
+                -len(item[0].state.deleted_genes),
+                -cast(float, item[1]["fba"].metrics["growth_rate"]),
                 item[0].state_id,
             ),
         )
@@ -110,6 +115,28 @@ def summarize_run(
             }
         decisions = graph.decisions(run.run_id)
         events = [event for decision in decisions for event in decision.tool_calls]
+        edison_jobs: set[str] = set()
+        for event in events:
+            if event.get("role") == "tool_return" and event.get("tool") in {
+                "search_edison",
+                "submit_edison",
+                "check_edison",
+            }:
+                content = event.get("content")
+                if isinstance(content, dict) and isinstance(
+                    content.get("task_id"), str
+                ):
+                    edison_jobs.add(content["task_id"])
+        jobs = {
+            entry.metadata["task_id"]: entry.metadata
+            for entry in graph.memories(run.run_id)
+            if entry.key.startswith("edison/")
+        }
+        for event in events:
+            if event.get("role") == "state_update":
+                for job in event.get("state", {}).get("user:edison_jobs", []):
+                    jobs[job["task_id"]] = job
+                    edison_jobs.add(job["task_id"])
         usage_events = [event for event in events if event.get("role") == "usage"]
         usage: Counter[str] = Counter()
         for event in usage_events:
@@ -145,6 +172,11 @@ def summarize_run(
                 )
             ),
             "model_usage": {**usage, "cost_usd": str(cost) if cost_complete else None},
+            "edison_job_ids": sorted(edison_jobs),
+            "literature_jobs": [
+                {name: job[name] for name in ("task_id", "status", "source_url")}
+                for job in jobs.values()
+            ],
             "canonical_ids_in_model_io": [
                 decision.decision_id
                 for decision in decisions
@@ -178,6 +210,7 @@ def score_rediscovery(
             if interval.gene_ids
         ]
         hits = sum(bool(deleted_gene_ids & genes) for genes in intervals)
+        complete = sum(genes <= deleted_gene_ids for genes in intervals)
         scores[name] = {
             "published_deleted_genes": len(truth),
             "candidate_genes": len(deleted_gene_ids),
@@ -193,6 +226,12 @@ def score_rediscovery(
             "published_intervals_with_search_genes": len(intervals),
             "published_intervals_hit": hits,
             "published_deletion_interval_recall": _ratio(hits, len(intervals))
+            if intervals
+            else None,
+            "published_intervals_fully_recovered": complete,
+            "published_deletion_interval_complete_recall": _ratio(
+                complete, len(intervals)
+            )
             if intervals
             else None,
         }

@@ -4,41 +4,44 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Mapping, Sequence
-from dataclasses import asdict, dataclass, replace
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import dataclass, field, replace
 from decimal import Decimal
 from functools import partial
 from importlib.metadata import version
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal
+from typing import Any, Literal
 
 import pandas as pd
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
-from yggdrisil import MemoryUpdate, NavigatorExplorerPolicy, ReadOnlyStateGraph
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    computed_field,
+    field_validator,
+    model_validator,
+)
+from yggdrisil import NavigatorExplorerPolicy, ReadOnlyStateGraph
 from yggdrisil.agents import (
     ExplorerContext,
     ExplorerResult,
-    NavigationPlan,
     ToolInputError,
-    bind_memory_tools,
 )
+from yggdrisil.agents.adk import UsageLimits
 from yggdrisil.exceptions import UnknownStateError
 from yggdrisil.types import EvaluationRecord
 
 from yggdrisil_ecoli.actions import DeleteGenes
-from yggdrisil_ecoli.constants import REFERENCE_ACCESSION
 from yggdrisil_ecoli.open_set import (
     SCHEDULER_VERSION,
     OpenSetConfig,
     RecoverableOpenSetSelector,
 )
+from yggdrisil_ecoli.policies import viability_eligibility
 from yggdrisil_ecoli.scorers.base import ScalarMetric
 from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 from yggdrisil_ecoli.state import GenomeState
 from yggdrisil_ecoli.tools.genes import GeneTools
-
-if TYPE_CHECKING:
-    from pydantic_ai import RunContext, UsageLimits
 
 
 class AgentSearchConfig(BaseModel):
@@ -48,13 +51,22 @@ class AgentSearchConfig(BaseModel):
     model: str
     mode: Literal["closed-book", "tool-rich", "research"] = "closed-book"
     orchestration: Literal["recoverable", "manager"] = "recoverable"
+    edison: bool = False
+    require_initial_research: bool = False
+    edison_cache_path: Path = Path("runs/edison.sqlite")
+    session_path: Path = Path("runs/agents.sqlite")
     seed: int = 0
+    send_model_seed: bool = True
+    reasoning_effort: (
+        Literal["none", "minimal", "low", "medium", "high", "xhigh", "max"] | None
+    ) = None
     temperature: float | None = Field(default=0.0, ge=0, le=2)
-    bundle_size: int = Field(default=1, gt=0, le=20)
+    bundle_size: int = Field(default=1, gt=0, le=100)
     max_actions: int = Field(default=2, gt=0)
     open_set: OpenSetConfig = OpenSetConfig()
-    max_model_requests: int = Field(default=6, gt=0)
+    max_model_requests: int = Field(default=8, gt=0)
     max_tool_calls: int = Field(default=16, gt=0)
+    max_gene_inspections: int = Field(default=200, gt=0)
     max_output_tokens: int = Field(default=800, gt=0)
     max_manager_output_tokens: int = Field(default=8192, gt=0)
     max_cost_per_call_usd: Decimal = Field(default=Decimal("0.02"), gt=0)
@@ -65,6 +77,10 @@ class AgentSearchConfig(BaseModel):
             raise ValueError("manager orchestration requires real gene identities")
         if self.mode == "research" and self.orchestration != "manager":
             raise ValueError("research mode requires manager orchestration")
+        if self.edison and self.mode != "research":
+            raise ValueError("Edison requires research mode")
+        if self.require_initial_research and self.mode != "research":
+            raise ValueError("Initial research requires research mode")
         return self
 
     @field_validator("model")
@@ -79,30 +95,37 @@ class AgentSearchConfig(BaseModel):
     def tool_names(self) -> tuple[str, ...]:
         tools: tuple[str, ...] = ("analyze_deletion_bundle",)
         if self.mode != "closed-book":
-            tools += (
-                "list_deletion_candidates",
-                "inspect_gene_evidence",
-                "inspect_kegg_module",
-            )
+            tools += ("inspect_genes", "inspect_kegg_module")
+            if self.orchestration != "manager":
+                tools += ("list_deletion_candidates",)
         if self.orchestration == "manager":
             tools += ("resolve_gene_ids", "get_deleted_genes", "deletion_delta")
         return tools
 
     @property
     def candidate_preview_count(self) -> int:
-        return min(50, max(8, self.bundle_size * self.max_actions * 2))
+        return min(
+            100,
+            self.max_gene_inspections,
+            max(8, self.bundle_size * self.max_actions * 2),
+        )
 
     @property
     def settings(self) -> dict[str, Any]:
         settings: dict[str, Any] = {
             "max_tokens": self.max_output_tokens,
-            "seed": self.seed,
-            "openrouter_provider": {
-                "require_parameters": True,
-                "data_collection": "deny",
+            "extra_body": {
+                "provider": {
+                    "require_parameters": True,
+                    "data_collection": "deny",
+                },
+                "usage": {"include": True},
             },
-            "openrouter_usage": {"include": True},
         }
+        if self.send_model_seed:
+            settings["seed"] = self.seed
+        if self.reasoning_effort is not None:
+            settings["extra_body"]["reasoning"] = {"effort": self.reasoning_effort}
         if self.temperature is not None:
             settings["temperature"] = self.temperature
         return settings
@@ -112,9 +135,10 @@ class AgentSearchConfig(BaseModel):
         return {
             **self.model_dump(mode="json"),
             "provider": "openrouter",
-            "prompt_version": 7,
+            "prompt_version": 22,
             "scheduler_version": SCHEDULER_VERSION,
-            "pydantic_ai": version("pydantic-ai"),
+            "agent_runtime": "google-adk",
+            "google_adk": version("google-adk"),
             "settings": self.settings,
             "tools": list(self.tool_names),
             "candidate_order_sha256": hashlib.sha256(
@@ -128,15 +152,11 @@ class AgentSearchConfig(BaseModel):
             else None,
         }
 
-    def usage_limits(self, *, manager: bool = False) -> UsageLimits:
-        from pydantic_ai import UsageLimits
-
-        tokens = self.max_manager_output_tokens if manager else self.max_output_tokens
+    def usage_limits(self) -> UsageLimits:
         return UsageLimits(
             cost_limit=self.max_cost_per_call_usd,
             request_limit=self.max_model_requests,
             tool_calls_limit=self.max_tool_calls,
-            output_tokens_limit=self.max_model_requests * tokens,
         )
 
 
@@ -170,7 +190,7 @@ def _action_type(tools: GeneTools, bundle_size: int) -> type[DeleteGenes]:
             action = DeleteGenes(genes=tuple(tools.canonical(gene) for gene in genes))
             if tools.deleted_genes.intersection(action.genes):
                 raise ValueError("action includes an already deleted gene")
-            return action.genes
+            return tuple(sorted(genes, key=tools.canonical))
 
     return ProposedDeletion
 
@@ -184,6 +204,7 @@ class _Explorer:
     selector: RecoverableOpenSetSelector | None = None
     graph: ReadOnlyStateGraph[GenomeState, DeleteGenes] | None = None
     run_id: str | None = None
+    last_trace: list[dict[str, Any]] = field(default_factory=list, init=False)
 
     @property
     def model(self) -> str:
@@ -193,7 +214,9 @@ class _Explorer:
         self, context: ExplorerContext[GenomeState], tools: GeneTools | None = None
     ) -> str:
         tools = tools or replace(
-            self.evidence, deleted_genes=context.state.deleted_genes
+            self.evidence,
+            deleted_genes=context.state.deleted_genes,
+            max_gene_inspections=self.config.max_gene_inspections,
         )
         managed = self.config.orchestration == "manager"
         guidance = (
@@ -217,12 +240,10 @@ class _Explorer:
                 "recovery": guidance,
                 "max_actions": self.config.max_actions,
                 "max_genes_per_action": self.config.bundle_size,
+                "max_gene_inspections": self.config.max_gene_inspections,
                 **(
                     {
                         "manager_guidance": context.guidance,
-                        "manager_checkpoint": context.checkpoint,
-                        "shared_memory": [asdict(entry) for entry in context.memory],
-                        "shared_memory_keys": context.memory_keys,
                     }
                     if managed
                     else {}
@@ -234,21 +255,23 @@ class _Explorer:
     async def explore(
         self, context: ExplorerContext[GenomeState]
     ) -> ExplorerResult[DeleteGenes]:
-        from yggdrisil.agents.pydantic_ai import make_explorer
+        from yggdrisil.agents.adk import make_explorer
+
+        from yggdrisil_ecoli.research import memory_tools
 
         tools = replace(
             self.evidence,
             deleted_genes=context.state.deleted_genes,
             exposed_ids=None if self.config.orchestration == "manager" else set(),
             max_bundle_size=self.config.bundle_size,
+            max_gene_inspections=self.config.max_gene_inspections,
         )
         explorer = make_explorer(
             self.model,
             _action_type(tools, self.config.bundle_size),
             tools=[getattr(tools, name) for name in self.config.tool_names]
             + (
-                bind_memory_tools(self.graph, self.run_id)
-                + _gene_set_tools(self.graph, self.run_id, self.evidence)
+                memory_tools(self.evidence, self.graph)
                 if self.graph is not None and self.run_id is not None
                 else []
             ),
@@ -257,14 +280,24 @@ class _Explorer:
                 "Use the manager's checkpoint, guidance and cited shared evidence. "
                 "Any validated canonical MG1655 b-number still present is allowed. "
                 "Resolve literature identifiers explicitly; never guess ambiguous mappings. "
-                "Use compare_saved_gene_set to walk toward a cited deletion set, then "
-                "continue investigating additional deletions. Only use saved gene sets "
-                "whose keys appear in shared_memory_keys; never invent a target key. "
-                "The root is always MG1655. "
+                "Only protein-coding genes in the prepared registry are actionable; "
+                "skip unmatched identifiers, including noncoding loci in published intervals. "
+                "Use compare_saved_gene_set only for saved documents with metadata.gene_ids "
+                "and reference NC_000913.3; never invent a target key. The initial dossier "
+                "is prose, not a structured deletion set. Resolve identifiers mentioned in "
+                "it in batches of at most 100. Resolve returns remaining_gene_ids; "
+                "inspect only unambiguously resolved genes still present. "
+                "The preview and inspect_genes share max_gene_inspections "
+                "per turn. Already-deleted and already-inspected genes return only a status. "
+                "The preview is your general shortlist. Use it plus one focused literature-derived shortlist; avoid exhaustive "
+                "catalogues. Analyze each proposed bundle once, then submit actions immediately. "
+                "If no defensible proposal remains, return no actions and explain why in note. "
+                "All deletion IDs refer to MG1655; the experiment goal specifies the starting genotype. "
                 "Report findings, uncertainties and suggested plan changes in note. "
-                "Return shared memory updates only for reusable findings, with their "
-                "expected revision and source metadata. Evaluation happens after you "
+                "The research specialist owns shared documents. Evaluation happens after you "
                 "propose an action; do not assert biological viability from literature. "
+                "When evaluated bundles succeed, try larger coherent bundles; split failed "
+                "combinations into smaller bundles. The size limit is a ceiling, not a target. "
                 "Respect max_actions and max_genes_per_action."
                 if self.config.orchestration == "manager"
                 else (
@@ -283,22 +316,19 @@ class _Explorer:
             prompt=partial(self.format_prompt, tools=tools),
             usage_limits=self.limits,
             model_settings=self.config.settings,
-            output_mode="prompted"
-            if self.config.orchestration == "manager"
-            else "tool",
+            session_path=self.config.session_path if self.run_id else None,
+            user_id=self.run_id or "baseline",
+            session_id=f"explorer-{context.state_id}",
         )
-        graph, run_id = self.graph, self.run_id
-        if graph is not None and run_id is not None:
-            from pydantic_ai import ModelRetry
-
-            def require_memory_revisions(output: Any) -> Any:
-                errors = _memory_update_errors(graph, run_id, output.memory_updates)
-                if errors:
-                    raise ModelRetry("\n".join(errors))
-                return output
-
-            explorer.agent.output_validator(require_memory_revisions)
-        result = await explorer.explore(context)
+        if self.config.orchestration == "manager":
+            instruction = explorer.agent.instruction
+            assert isinstance(instruction, str)
+            explorer.agent.instruction = instruction + "\nPersistent plan: {user:plan?}"
+        self.last_trace = []
+        try:
+            result = await explorer.explore(context)
+        finally:
+            self.last_trace = explorer.last_trace
         seen = (
             set(self.selector.attempted_actions(context.state_id))
             if self.selector is not None
@@ -313,7 +343,10 @@ class _Explorer:
                 if event.parent_id == context.state_id
             )
         actions = []
-        for action in result.actions[: self.config.max_actions]:
+        for proposed in result.actions[: self.config.max_actions]:
+            action = DeleteGenes(
+                genes=tuple(tools.canonical(gene) for gene in proposed.genes)
+            )
             if action.genes not in seen:
                 actions.append(DeleteGenes(genes=action.genes))
                 seen.add(action.genes)
@@ -327,7 +360,6 @@ class _Explorer:
             actions=actions,
             note=note,
             trace=result.trace,
-            memory_updates=result.memory_updates,
         )
 
 
@@ -339,6 +371,7 @@ def make_agent_policy(
     evaluator_ids: Mapping[str, str],
     graph: ReadOnlyStateGraph[GenomeState, DeleteGenes] | None = None,
     run_id: str | None = None,
+    goal: str | None = None,
 ) -> NavigatorExplorerPolicy[GenomeState, DeleteGenes]:
     """Pair bounded model exploration with deterministic, recoverable scheduling."""
     from dotenv import load_dotenv
@@ -356,7 +389,7 @@ def make_agent_policy(
         if graph is None or run_id is None:
             raise ValueError("manager orchestration requires graph and run_id")
         return _make_managed_policy(
-            evidence, config, evaluator_ids, limits, graph, run_id
+            evidence, config, evaluator_ids, limits, graph, run_id, goal
         )
     selector = RecoverableOpenSetSelector(
         evaluator_ids=evaluator_ids,
@@ -369,70 +402,15 @@ def make_agent_policy(
     )
     return NavigatorExplorerPolicy(
         None,
-        _Explorer(evidence, config, evaluator_ids, limits, selector=selector),
+        _Explorer(
+            evidence, config, evaluator_ids, limits, selector=selector, run_id=run_id
+        ),
         max_requests=config.open_set.parents_per_step,
         request_selector=selector,
         tolerate_explorer_failures=True,
-        goal="Minimize the MG1655 protein-coding genome for aerobic M9 glucose at 37 C while retaining predicted viability.",
+        goal=goal
+        or "Minimize the MG1655 protein-coding genome for aerobic M9 glucose at 37 C while retaining predicted viability.",
     )
-
-
-def _memory_update_errors(
-    graph: ReadOnlyStateGraph[GenomeState, DeleteGenes],
-    namespace: str,
-    updates: Sequence[MemoryUpdate],
-) -> list[str]:
-    revisions = {entry.key: entry.revision for entry in graph.memories(namespace)}
-    errors = []
-    for update in updates:
-        revision = revisions.get(update.key, 0)
-        if update.expected_revision != revision:
-            errors.append(
-                f"Shared document {update.key!r} needs expected_revision={revision}; "
-                "revision 0 creates a new document."
-            )
-        revisions[update.key] = revision + 1
-    return errors
-
-
-def _gene_set_tools(
-    graph: ReadOnlyStateGraph[GenomeState, DeleteGenes],
-    run_id: str,
-    evidence: GeneTools,
-) -> list[Any]:
-    def compare_saved_gene_set(
-        key: str,
-        state_id: str,
-        offset: int = 0,
-        count: int = 50,
-    ) -> dict[str, object]:
-        """Read a cited target set's remaining delta against an existing graph state."""
-        try:
-            entry = graph.memory(run_id, key)
-        except KeyError as exc:
-            keys = [entry.key for entry in graph.memories(run_id)]
-            raise ToolInputError(
-                f"Shared document {key!r} does not exist. Available keys: {keys}. "
-                "Use an existing cited target, or propose from local gene evidence."
-            ) from exc
-        if entry.metadata.get("reference") != REFERENCE_ACCESSION:
-            raise ToolInputError(
-                "This document is not a validated MG1655 deletion target: "
-                "saved gene set must specify reference NC_000913.3"
-            )
-        genes = entry.metadata.get("gene_ids")
-        if not isinstance(genes, list) or not all(
-            isinstance(gene, str) for gene in genes
-        ):
-            raise ToolInputError("saved gene set metadata must contain a gene_ids list")
-        if not entry.metadata.get("source_url"):
-            raise ToolInputError("saved gene set must cite its source_url")
-        tools = replace(
-            evidence, deleted_genes=graph.get_state(state_id).state.deleted_genes
-        )
-        return tools.deletion_delta(genes, offset, count)
-
-    return [compare_saved_gene_set]
 
 
 def _make_managed_policy(
@@ -442,153 +420,167 @@ def _make_managed_policy(
     limits: UsageLimits,
     graph: ReadOnlyStateGraph[GenomeState, DeleteGenes],
     run_id: str,
+    goal: str | None,
 ) -> NavigatorExplorerPolicy[GenomeState, DeleteGenes]:
-    from pydantic_ai import ModelRetry
-    from yggdrisil.agents.pydantic_ai import (
-        DEFAULT_MANAGER_INSTRUCTIONS,
-        make_navigator,
+    from google.adk import Agent
+    from yggdrisil.agents.adk import (
+        AdkInvocation,
+        AdkNavigator,
+        make_model,
+        retryable_tool,
+    )
+
+    from yggdrisil_ecoli.research import make_research_agent, memory_tools
+    from yggdrisil_ecoli.tools.edison import EdisonLiterature
+
+    eligible = viability_eligibility(evaluator_ids)
+    edison = (
+        EdisonLiterature(config.edison_cache_path, run_id) if config.edison else None
     )
 
     def get_state(state_id: str) -> dict[str, object]:
-        """Read an existing state; copy its ID exactly from the supplied context."""
+        """Read a stored genome and its evaluations; copy an existing ID exactly."""
         try:
             node = graph.get_state(state_id)
         except UnknownStateError as exc:
-            recent = [node.state_id for node in graph.states(limit=10, newest=True)]
-            raise ToolInputError(
-                f"Unknown state_id {state_id!r}. Recent existing state IDs: {recent}"
-            ) from exc
+            raise ToolInputError(f"Unknown state_id {state_id!r}") from exc
         return {
-            "state_id": node.state_id,
+            "state_id": state_id,
             "deleted_gene_ids": sorted(node.state.deleted_genes),
-            "created_step": node.created_step,
-            "evaluations": _active_metrics(
-                graph.evaluations(node.state_id), evaluator_ids
-            ),
+            "evaluations": _active_metrics(graph.evaluations(state_id), evaluator_ids),
         }
 
-    tools = (
-        [get_state]
-        + bind_memory_tools(graph, run_id)
-        + _gene_set_tools(graph, run_id, evidence)
-        + [evidence.resolve_gene_ids, evidence.inspect_gene_evidence]
-    )
-    if config.mode == "research":
-        from yggdrisil_ecoli.tools.literature import read_literature, search_literature
+    class Request(BaseModel):
+        state_id: str
+        guidance: str | None = None
 
-        tools += [search_literature, read_literature]
-    manager = make_navigator(
-        f"openrouter:{config.model}",
-        tools=tools,
-        usage_limits=config.usage_limits(manager=True),
-        output_mode="prompted",
-        model_settings={
-            **config.settings,
-            "max_tokens": config.max_manager_output_tokens,
-        },
-        instructions=DEFAULT_MANAGER_INSTRUCTIONS
-        + (
-            "\nMinimize MG1655, starting from its full reference genome. "
-            "Choose existing states that pass the recorded FBA and resource-allocation "
-            "checks. You own the persistent checkpoint; use any useful structure for "
-            "your plan, evidence, open questions and progress, and return it every turn. "
-            "Separate observed facts from hypotheses. Delegate bounded deletion "
-            "proposals to worker 'explorer'. "
-            "Learn from evaluated outcomes rather than assuming proposals succeeded. "
-            "Use recent evaluations and worker reports already in your context; "
-            "fetch a stored state only when needed information is absent. "
-            "Published reduced genomes may inform a target, but never replace the root. "
-            "To save a deletion target, return a memory update with metadata containing "
-            "reference='NC_000913.3', canonical gene_ids and source_url. "
-            "Further reductions beyond a retrieved target remain part of the task. "
-            "The coordinator commits your shared memory updates before dispatching "
-            "selected workers, so they may request keys you are saving in this plan. "
-            + (
-                "Begin with one focused literature search for published MG1655 genome "
-                "reductions, and save useful sources in shared memory. Reuse retrieved "
-                "evidence; search again only to resolve a concrete open question. "
-                "Read at most one full-text page per turn. If research needs another "
-                "turn, save progress, return no requests, and set continue_on_empty=true."
-                if config.mode == "research"
-                else "Use local annotations and shared records; external retrieval is disabled."
-            )
-            + f" Each invocation allows {config.max_model_requests} model requests "
-            f"and {config.max_tool_calls} tool calls; reserve a request for your final plan."
-        ),
-    )
-
-    retrieval_seen = any(
-        event.get("role") == "tool_return" and event.get("tool") == "search_literature"
-        for decision in graph.decisions()
-        if decision.run_id == run_id
-        for event in decision.tool_calls
-    )
-
-    def require_plan(context: RunContext[Any], plan: NavigationPlan) -> NavigationPlan:
-        nonlocal retrieval_seen
-        retrieval_seen = retrieval_seen or any(
-            getattr(part, "tool_name", None) == "search_literature"
-            and part.part_kind == "tool-return"
-            for message in context.messages
-            for part in message.parts
-        )
-        errors = _memory_update_errors(graph, run_id, plan.memory_updates)
-        if not plan.checkpoint:
-            errors.append(
-                "Return a nonempty checkpoint with your current plan and next step. "
-                "Do not discard the persistent manager plan between turns."
-            )
-        memory_keys = {entry.key for entry in graph.memories(run_id)}
-        if config.mode == "research" and not retrieval_seen:
-            errors.append(
-                "Call search_literature to retrieve actual evidence before finishing "
-                "this research plan; do not substitute remembered or invented sources."
-            )
-        if config.mode == "research" and not memory_keys and not plan.memory_updates:
-            errors.append(
-                "Save retrieved evidence in memory_updates. Return no worker requests "
-                "and continue_on_empty=true to commit the evidence first."
-            )
-        for request in plan.requests:
-            try:
-                get_state(request.state_id)
-            except ToolInputError as exc:
-                errors.append(str(exc))
-            missing = (
-                set(request.memory_keys)
-                - memory_keys
-                - {update.key for update in plan.memory_updates}
-            )
-            if missing:
-                errors.append(
-                    f"Unknown worker memory keys: {sorted(missing)}. "
-                    "Use an existing key or include the document in memory_updates."
+        @field_validator("state_id")
+        @classmethod
+        def viable_parent(cls, state_id: str) -> str:
+            get_state(state_id)
+            if not eligible(graph.get_state(state_id), graph.evaluations(state_id)):
+                raise ValueError(
+                    "Select a parent with positive feasible FBA growth AND feasible RBA"
                 )
-        if errors:
-            raise ModelRetry(
-                "\n".join(errors)
-                + "\nReturn the complete corrected plan, including your nonempty "
-                "checkpoint, requests, memory_updates and continue_on_empty."
-            )
-        return plan
+            return state_id
 
-    manager.agent.output_validator(require_plan)
-    return NavigatorExplorerPolicy(
-        manager,
-        _Explorer(evidence, config, evaluator_ids, limits, graph=graph, run_id=run_id),
-        goal=(
-            "Minimize MG1655 for aerobic M9 glucose at 37 C; extend beyond published reductions."
+    class Plan(BaseModel):
+        plan: str = Field(
+            min_length=1,
+            description="Persistent plan, evidence, open questions and next steps",
+        )
+        requests: list[Request] = Field(max_length=config.open_set.parents_per_step)
+
+        @computed_field
+        def continue_on_empty(self) -> bool:
+            # An empty worker result must reach the manager before the search stops.
+            return bool(self.requests)
+
+    async def before_navigator(callback_context: Any) -> None:
+        if edison:
+            await edison.poll_pending()
+            jobs = edison.snapshots()
+            callback_context.state["user:edison_jobs"] = jobs
+            if any(job.get("formatted_answer") for job in jobs):
+                callback_context.state["user:evidence_retrieved"] = True
+
+    def after_navigator(callback_context: Any) -> None:
+        output = callback_context.state.get("user:plan")
+        if not output:
+            raise ValueError("Navigator did not save its plan")
+        if config.require_initial_research and not callback_context.state.get(
+            "user:literature_search_count", 0
+        ):
+            raise ValueError(
+                "Adaptive research requires a successful Europe PMC search before "
+                "exploration; the dossier alone does not satisfy this requirement"
+            )
+
+    def instructions(context: Any) -> str:
+        return (
+            "Minimize the MG1655-derived starting genotype specified in the experiment goal. Choose existing viable states and "
+            "delegate direct deletion proposals to the explorer. Learn from actual evaluated outcomes. "
+            f"Select at most {config.open_set.parents_per_step} parents per turn; each explorer proposes at most "
+            f"{config.max_actions} actions deleting at most {config.bundle_size} genes. "
+            "Keep a persistent plan describing evidence, uncertainty, open questions and next steps. "
+            "Published reductions may guide targets; never replace the experiment's starting genotype. Extend beyond published targets. "
+            "The initial dossier is prose, not a structured deletion set. Use compare_saved_gene_set "
+            "only for listed documents with metadata.gene_ids and reference NC_000913.3. "
+            "Never invent document keys. Read the dossier for guidance and let the explorer "
+            "resolve its candidate identifiers and compute deletion deltas. "
+            "Your job is to choose a parent and strategy; delegate detailed gene screening to the explorer. "
             + (
-                " First search the literature for published MG1655 reductions, save cited "
-                "evidence in shared memory, and keep a nonempty checkpoint with the next step. "
-                "Then delegate deletions from the full MG1655 root."
+                "Read the initial dossier when present. Use research_literature to search Europe PMC "
+                "for larger deletion targets, gene interactions, and explanations of failed bundles. "
+                "Research is allowed while exploration is progressing; do not wait until you are stuck. "
+                "Revisit the literature when choosing a new deletion block or revising a failed strategy. "
+                "At most one research call per turn. The research agent saves findings directly in shared "
+                "state; the explorer can read them immediately. "
+                if config.mode == "research"
+                else "External retrieval is disabled. "
+            )
+            + (
+                "Before returning your first exploration requests, call research_literature with a "
+                "focused request for a fresh Europe PMC search relevant to the starting genotype. "
+                "Reading the frozen dossier does not count. "
+                if config.require_initial_research
+                and not context.state.get("user:literature_search_count", 0)
+                else ""
+            )
+            + (
+                "Edison is a separate slow service. Continue exploration while Edison is pending; "
+                "never wait or spend turns polling. "
+                if edison
+                else "Live Edison is disabled; ordinary Europe PMC research remains available. "
                 if config.mode == "research"
                 else ""
             )
+            + "Return a complete plan and exploration requests before the request budget runs out.\n"
+            + "PERSISTENT_PLAN: "
+            + json.dumps(context.state.get("user:plan", {}))
+            + "\nSHARED_MEMORY_KEYS: "
+            + json.dumps(sorted(context.state.get("user:documents", {})))
+            + "\nINITIAL_DOSSIER: "
+            + json.dumps(context.state.get("user:initial_dossier"))
+            + "\nEDISON_JOBS: "
+            + json.dumps(context.state.get("user:edison_jobs", []))
+        )
+
+    tools: list[Callable[..., Any]] = [
+        get_state,
+        *memory_tools(evidence, graph),
+    ]
+    manager = Agent(
+        name="navigator",
+        model=make_model(
+            f"openrouter:{config.model}",
+            {**config.settings, "max_tokens": config.max_manager_output_tokens},
         ),
+        instruction=instructions,
+        include_contents="none",
+        output_schema=Plan,
+        output_key="user:plan",
+        tools=[retryable_tool(t) for t in tools],
+        sub_agents=[make_research_agent(evidence, config, graph, edison)]
+        if config.mode == "research"
+        else [],
+        before_agent_callback=before_navigator,
+        after_agent_callback=after_navigator,
+    )
+    navigator = AdkNavigator(
+        AdkInvocation(
+            manager,
+            session_path=config.session_path,
+            user_id=run_id,
+            usage_limits=config.usage_limits(),
+        )
+    )
+    return NavigatorExplorerPolicy(
+        navigator,
+        _Explorer(evidence, config, evaluator_ids, limits, graph=graph, run_id=run_id),
+        goal=goal
+        or "Minimize MG1655 from its full reference genome for aerobic M9 glucose at 37 C; extend beyond published reductions.",
         max_requests=config.open_set.parents_per_step,
-        memory_enabled=True,
-        commit_memory_before_exploration=True,
     )
 
 

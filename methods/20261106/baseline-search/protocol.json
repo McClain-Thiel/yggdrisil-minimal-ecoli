@@ -1,0 +1,208 @@
+{
+  "analysis": {
+    "failures": "Retain every seed, failed gate, exception and deadline-censored run; never substitute a more favorable seed.",
+    "functional_mapping": {
+      "bytes": 635940,
+      "sha256": "159d79a9fb2b4b9c23165e14ea7074b58091126b8ef34c7e79f0d25205d941af",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/analysis/159d79a9fb2b4b9c23165e14ea7074b58091126b8ef34c7e79f0d25205d941af.json"
+    },
+    "historical_comparison": "Existing LLM arms each have one search seed and model-budget termination. Compare curves only over overlapping actual evaluation counts; a 500-state cap is not evidence that existing arms consumed 500 states. Continuations use inherited graphs and must be shown separately from common-root searches.",
+    "inference_limit": "Five baseline seeds quantify baseline variability, not LLM-method replication or a statistically established method advantage.",
+    "primary": "Additional jointly feasible deletions versus cumulative new evaluated states; final distributions across all five seeds.",
+    "secondary": [
+      "gene-registry deletion percentage",
+      "current functional-gene percentage",
+      "shared functional-gene percentage",
+      "FBA growth",
+      "essential-annotation overlap",
+      "module retention",
+      "wall time and cost"
+    ]
+  },
+  "authorization": {
+    "approved_budget_usd": null,
+    "model_calls_allowed": false,
+    "paid_launch": false,
+    "preparation": true,
+    "scope": "User authorized design and implementation of baseline investigation. Existing $50 approval remains assigned to continuation and validation."
+  },
+  "budget_accounting": {
+    "auxiliary": [
+      "all proposals and decisions",
+      "all evaluator identities and records",
+      "wall time including checkpoint overhead",
+      "real cloud costs",
+      "zero model calls and model spend"
+    ],
+    "primary": "Unique new candidate states, including failed growth gates; root evaluation separate. Incomplete evaluations counted as attempted and reported separately.",
+    "resume": "Reconstruct proposals from persistent graph, retain original absolute deadline and total state/step caps. Resume never resets budget."
+  },
+  "cost_proposal": {
+    "maximum_approval_usd": 25,
+    "maximum_compute_usd": 19.3536,
+    "maximum_worker_hours": 24,
+    "on_demand_hourly_usd": 0.8064,
+    "pricing_basis": {
+      "checked_on": "2026-11-06",
+      "product": {
+        "description": "$0.8064 per On Demand Linux m7i.4xlarge Instance Hour",
+        "effective_date": "2026-11-01T00:00:00Z",
+        "sku": "NQPHP68K4VGS8SQ7",
+        "unit": "Hrs",
+        "usd": "0.8064000000"
+      },
+      "region": "us-east-1",
+      "source": "AWS Pricing GetProducts"
+    },
+    "runtime_estimate": "Unknown until measured; ten jobs, four at a time, each capped at six hours; worst-case three waves plus setup and archival within 24 hours. This is a cap, not a promised completion ETA.",
+    "storage_and_transfer_reserve_usd": 5.6464
+  },
+  "evaluator_ids": {
+    "essentiality": "8939b4281ff028967f6a6f188a1e23a7d5128e9b174212f5cdd7f2cd65e1d1a5",
+    "fba": "583a179d05ef19c643fccf5fe00bc95a83b2123bdacf5c5df2669db97a17d466",
+    "genome_size": "1218f065b8ecd291f64800ed768e830b095083209eac483715227c888b4e3946",
+    "module_retention": "b5c46d84f805847ec8356af3ebac80f923867987be63ddbc0becd84d350e447a",
+    "resource_allocation": "a4592a05342c0b10b18cf1e158644aa3d825c05eb046f7e4349b355b246813d6"
+  },
+  "execution": {
+    "encrypted_scratch_gib": 200,
+    "job_command": [
+      "python",
+      "-m",
+      "scripts.run_deletion_baseline",
+      "--bundle",
+      "<frozen-bundle>",
+      "--job-index",
+      "<0..9>",
+      "--repo-root",
+      "<remote-application>",
+      "--approval",
+      "<experiment-approval.json>"
+    ],
+    "max_concurrent_jobs": 4,
+    "native_threads_per_job": 1,
+    "new_model_calls": 0,
+    "platform": "remote_linux_only",
+    "proposed_instance_type": "m7i.4xlarge",
+    "shared_worker": "leave running"
+  },
+  "experiment_id": "deletion-baselines-20261106",
+  "growth_gates": {
+    "fba_growth_strictly_positive": true,
+    "rba_growth_floor_per_hour": 0.1
+  },
+  "held_out_validation": {
+    "feedback_to_search": false,
+    "requested_followup": "Cost and approve validation separately, retaining the prior 20-generation, three-seed protocol and uniform numerical checks. No validation is launched by this search runner.",
+    "selection": "Nominate one final jointly feasible state per run using the frozen ordering; deduplicate exact genotypes. Report no improvement explicitly. Freeze the entire nomination list before any vEcoli results.",
+    "status": "planned_not_authorized"
+  },
+  "input_restore_index": {
+    "sha256": "0830845f20ebe8f35d49b9024329fa241b83a78f6a302420f52a150583f024ee",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-0830845f20ebe8f35d49b9024329fa241b83a78f6a302420f52a150583f024ee.json"
+  },
+  "inputs": {
+    "fba_model": {
+      "path": "data/external/iML1515.json",
+      "sha256": "832e706681b60eeefce844348dd7ded1520b7f8d2c2d72d423e0b77cc473dc45"
+    },
+    "genes": {
+      "path": "data/processed/genes.parquet",
+      "sha256": "b2469b1112bb1f8ca5eab4ccc2952df3e67a61d1c683d4ac98ef16ac20f77d1b"
+    },
+    "modules": {
+      "path": "data/processed/kegg_modules.json",
+      "sha256": "27b3013a9c0dfcbc5734b066466307669a3c64d0fc1097a9dd6ae69030c115db"
+    },
+    "rba_manifest": {
+      "path": "data/external/rba_ecoli_k12_wt/rba_artifact_manifest.json",
+      "sha256": "80f69f9bb926455f1bb94a5bf7578ec31e7b42f224134c9ff09121feb1511793"
+    }
+  },
+  "launch_requirements": [
+    "New experiment-specific cost approval and authorized tracking-credential transfer if needed",
+    "Fresh price check and dedicated worker identity",
+    "Restore and verify all scientific inputs and exact Linux package versions",
+    "Install bounded science and absolute shutdown timers before dispatch; verify timers survive any reboot",
+    "Run offline smoke tests on frozen deployment before loading models; enforce maximum four simultaneous jobs",
+    "Freeze approval with exact protocol SHA, worker, spending cap and absolute deadlines; preserve worker data on backup failure",
+    "Publish final catalog and independently verify archive members before removing worker disk"
+  ],
+  "limits": {
+    "max_steps": 750,
+    "max_wall_time_s": 21600,
+    "new_evaluated_states": 500
+  },
+  "methods": [
+    "randomized_block",
+    "greedy_block"
+  ],
+  "policy": {
+    "algorithm_version": "block-v1",
+    "block_definition": "Gene sets, not necessarily chromosome-contiguous intervals. The final partition block may be smaller.",
+    "block_sizes": [
+      100,
+      50,
+      25,
+      10,
+      5,
+      1
+    ],
+    "eligible_genes": "All undeleted genes in the same 4290-gene registry. Do not silently exclude essential annotations.",
+    "exhaustion": "Stop when no unseen block remains at the incumbent; this is a local heuristic, not proof of global minimality.",
+    "greedy_block": "Sampled best improvement. Evaluate up to eight ordered candidates from the same parent, then retain the best feasible incumbent.",
+    "greedy_neighborhood_size": 8,
+    "parent_and_finalist_order": "deletion count descending, FBA growth descending, state ID ascending",
+    "proposal_order": "Sort undeleted canonical genes by SHA256(block-v1:seed:parent_state_id:gene), partition at each size; skip evaluated states and duplicate blocks.",
+    "randomized_block": "First feasible improvement. One candidate at a time, retaining the best feasible incumbent.",
+    "schedule": "Coarse to fine. Exhaust unseen blocks at a resolution before trying smaller ones. A successful descendant never resets to a larger block resolution."
+  },
+  "purpose": "Competent non-LLM controls for gene-deletion search, with independently replicated policy seeds and the same scientific evaluators.",
+  "reproducibility": {
+    "backups": "Read-only SQLite backup/quick_check; data-only content-addressed archives and member indexes; full S3 GET SHA256 and COMMITTED W&B download checks before advancing.",
+    "canonical_data": "Per-run SQLite graph containing every state, evaluation, decision and proposal. Curves/results are derived, never a replacement for the graph.",
+    "credentials": "Never bundled or printed; configured credentials and credential patterns screened before upload.",
+    "snapshots": "Protocol, genotype, input data, runtime source and evaluator SHA256 identities checked before execution; all installed package versions captured.",
+    "source": "Source snapshots retained as source locally and deployed as code, excluded from scientific data archives.",
+    "storage_layout": [
+      "protocol.json",
+      "jobs.json",
+      "manifest.json",
+      "inputs/starting-genotype.json",
+      "source-manifest.json",
+      "source/",
+      "search/<run-id>/",
+      "catalog.json"
+    ]
+  },
+  "required_versions": {
+    "RBApy": "3.0.3",
+    "RBAtools": "2.0.1",
+    "cobra": "0.32.1",
+    "pandas": "2.3.3"
+  },
+  "schema_version": 1,
+  "seeds": [
+    17,
+    29,
+    43,
+    59,
+    71
+  ],
+  "starting_genotype": {
+    "deletion_count": 1030,
+    "deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52",
+    "name": "common-1030-deletion-root",
+    "provenance_experiment": "literature-ablation-kimi-full-20261105",
+    "reference": "NC_000913.3",
+    "registry_genes": 4290
+  },
+  "status": "prepared_not_launched",
+  "tracking": {
+    "entity": "mcclain",
+    "project": "yggdrisil",
+    "region": "us-east-1",
+    "s3_bucket": "phd-research-storage-1758274488",
+    "s3_prefix": "yggdrisil/experiments/deletion-baselines-20261106/"
+  }
+}

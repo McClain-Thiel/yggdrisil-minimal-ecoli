@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "experiment_id": "literature-ablation-pilot-20261103",
+  "status": "draft",
+  "arms": ["no_retrieval", "frozen_dossier", "adaptive_literature"],
+  "search_seeds": [17, 29, 43],
+  "starting_genotype": {
+    "catalog": {
+      "path": "runs/published-genome-benchmarks-20261027/catalog.json",
+      "sha256": "38252b5592ac6046e864b1b724007102e644eeb014b460cef294edd64f7258f3"
+    },
+    "strain": "MS56",
+    "expected_deletion_count": 893,
+    "reference": "NC_000913.3"
+  },
+  "dossier": {
+    "cache_path": "runs/edison-comparison-20261026-173024/edison.sqlite",
+    "namespace": "edison-comparison-20261026-173024-edison-seed-17",
+    "task_id": "e71b4b18-c0a0-49b3-b232-18486c1c0526",
+    "answer_sha256": "45655e67cda79cf86913e5b84d90d03fd3540978fa3e25a302908d49517b9ec7"
+  },
+  "inputs": {
+    "genes": {
+      "path": "data/processed/genes.parquet",
+      "sha256": "b2469b1112bb1f8ca5eab4ccc2952df3e67a61d1c683d4ac98ef16ac20f77d1b"
+    },
+    "modules": {
+      "path": "data/processed/kegg_modules.json",
+      "sha256": "27b3013a9c0dfcbc5734b066466307669a3c64d0fc1097a9dd6ae69030c115db"
+    },
+    "fba_model": {
+      "path": "data/external/iML1515.json",
+      "sha256": "832e706681b60eeefce844348dd7ded1520b7f8d2c2d72d423e0b77cc473dc45"
+    },
+    "rba_manifest": {
+      "path": "data/external/rba_ecoli_k12_wt/rba_artifact_manifest.json",
+      "sha256": "80f69f9bb926455f1bb94a5bf7578ec31e7b42f224134c9ff09121feb1511793"
+    }
+  },
+  "agent": {
+    "model": "openai/gpt-5.4",
+    "temperature": null,
+    "orchestration": "manager",
+    "edison": false,
+    "bundle_size": 20,
+    "max_actions": 2,
+    "max_model_requests": 12,
+    "max_tool_calls": 64,
+    "max_output_tokens": 3000,
+    "max_manager_output_tokens": 5000,
+    "max_cost_per_call_usd": "0.40",
+    "open_set": {"active_width": 12, "parents_per_step": 1}
+  },
+  "search": {
+    "unique_new_states": 50,
+    "max_steps": 75,
+    "max_wall_time_s": 3600,
+    "finalists_per_run": 1,
+    "selection": "positive FBA and feasible RBA; additional deletions descending, FBA growth descending, state_id ascending"
+  },
+  "validation": {
+    "generations": 12,
+    "lineage_seeds": [101, 211, 307],
+    "followed_daughters": 1,
+    "controls": ["MS56", "MG1655"],
+    "late_cycle_generations": [9, 10, 11, 12],
+    "acceptance_thresholds": null,
+    "vecoli_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+    "nextflow_version": "25.10.4",
+    "sim_data_sha256": "3d1af7d45a596519279e3a57380481ee1ff6ae5cd75e80e3216c7abe90d63b29"
+  },
+  "tracking": {
+    "entity": "mcclain",
+    "project": "yggdrisil",
+    "tags": ["yggdrisil", "literature-ablation", "pilot"],
+    "s3_artifact_prefix": null
+  },
+  "execution": {
+    "backend": "aws-ec2",
+    "region": "us-east-1",
+    "instance_type": "m7i.2xlarge",
+    "max_parallel_cells": 2,
+    "ucl": "deferred",
+    "on_demand_usd_per_hour": "0.4032",
+    "price_checked_on": "2026-11-03",
+    "price_source": "AWS Pricing GetProducts, Linux shared tenancy, us-east-1; excludes storage, transfer and model APIs"
+  },
+  "spending": {
+    "approved_model_usd": null,
+    "approved_compute_usd": null,
+    "new_edison_jobs": 0
+  },
+  "pending_before_execution": [
+    "Implement and test the headless runner, including idempotent frozen-dossier injection and resume verification.",
+    "Apply identical state budgets and reserve model costs before requests; retain invalid, failed and duplicate proposals in traces.",
+    "Freeze source and Linux dependencies for the application and the locally installed ADK framework; the current Git pin is insufficient.",
+    "Confirm native Linux vEcoli parity, memory and runtime with parent controls; freeze acceptance thresholds before finalist evaluation.",
+    "Choose an existing suitable S3 destination and freeze immutable code/data artifact references.",
+    "Approve model and AWS budgets after a concrete launch estimate; configure a wall-time cutoff and resource cleanup."
+  ]
+}

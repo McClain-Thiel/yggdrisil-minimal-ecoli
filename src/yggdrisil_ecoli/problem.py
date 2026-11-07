@@ -18,12 +18,14 @@ class EcoliProblem:
         genes: pd.DataFrame,
         *,
         max_genes_per_action: int | None = None,
+        initial_state: GenomeState | None = None,
     ) -> None:
         if max_genes_per_action is not None and max_genes_per_action < 1:
             raise ValueError("max_genes_per_action must be positive")
         self.universe = frozenset(genes.index)
         self.max_genes_per_action = max_genes_per_action
-        self.initial_state = GenomeState(deleted_genes=frozenset())
+        self.initial_state = initial_state or GenomeState(deleted_genes=frozenset())
+        self.validate_state(self.initial_state)
 
     def state_key(self, state: GenomeState) -> str:
         self.validate_state(state)

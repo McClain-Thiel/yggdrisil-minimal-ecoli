@@ -113,3 +113,33 @@ def test_summary_uses_active_evidence_and_preserves_trace_audits(
 def test_rediscovery_rejects_malformed_truth_instead_of_coercing(strain: dict) -> None:
     with pytest.raises(ValidationError):
         score_rediscovery({"b0001"}, {"strains": {"MDS42": strain}})
+
+
+def test_finalist_tie_uses_ascending_state_id(tmp_path):
+    path = tmp_path / "ties.sqlite"
+    metrics = {
+        "genome_size": {},
+        "essentiality": {},
+        "module_retention": {},
+        "fba": {"feasible": True, "growth_rate": 1.0},
+        "resource_allocation": {"feasible_at_growth_floor": True},
+    }
+    with SQLiteStateGraph(path) as graph:
+        graph.save_run(
+            "run",
+            step=1,
+            status="completed",
+            metadata={"evaluators": {key: key for key in metrics}},
+        )
+        for state_id, genes in [("z", ["b0001"]), ("a", ["b0002"])]:
+            graph.add_state(state_id, GenomeState(frozenset(genes)))
+            for name, values in metrics.items():
+                graph.add_evaluation(
+                    state_id,
+                    evaluator_id=name,
+                    evaluator=name,
+                    version="test",
+                    config_hash="test",
+                    result=EvaluationResult(values),
+                )
+    assert summarize_run(path)["deepest_viable_candidate"]["state_id"] == "a"

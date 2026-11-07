@@ -35,24 +35,61 @@ fixed model ID. The notebook requires a separate action to enable a paid search.
 
 Choose `research` in the notebook for persistent manager/worker search with
 ordinary literature retrieval; `manager` uses only local evidence.
-Every run still starts at full MG1655. The manager owns an application-defined
-checkpoint and shared, revisioned documents in the search database; workers
-propose evaluated gene deletions. Restarting the same graph restores this state.
-The original closed-book/recoverable configuration remains available as a
-separate policy condition.
+Every run starts at full MG1655. Google ADK owns the persistent plan, shared
+research documents, delegation and event history in `runs/agents.sqlite` (set
+`session_path` to change it). The search database owns genome states, proposals
+and evaluator results. Run IDs isolate agent memory. Keep both databases when
+resuming or sharing a run. The closed-book/recoverable policy remains available;
+ADK runs use a new prompt/runtime version and should be compared as a new condition.
 
-The research mode provides ordinary Europe PMC search and accessible full text.
-It has no Edison integration. Source availability failures raise explicitly.
+The navigator calls the native ADK `research_literature(request)` subagent as a
+tool. It retrieves sources, resolves IDs and saves cited documents in shared
+state, immediately available to genome explorers. Only explorers propose
+changes to genomes. Research is limited to one invocation per navigator turn.
+
+For Edison, set `EDISON_PLATFORM_API_KEY` in `.env` and enable the notebook's
+Edison checkbox. The research specialist can submit one new Literature question
+per experiment. Submission returns a job ID immediately; Edison takes about
+13–20 minutes. The coordinator checks jobs between exploration steps without
+model calls, then exposes finished reports in read-only job state.
+The research tool resolves reports into actionable targets when asked by the navigator.
+Jobs and cited answers are cached in `runs/edison.sqlite`; exact repeated
+questions reuse the same job, including after restart. Cache entries and the
+query limit are isolated by run ID. If exploration reaches its budget first,
+resume the same graph later to collect the result. The remote job continues,
+but the local coordinator does not keep running after the experiment stops.
+Later questions use ordinary search and shared documents. Edison costs are
+separate from model-call budgets. Retrieval failures raise explicitly.
 Gene tools resolve annotated identifiers without guessing ambiguous matches and
 compare cited deletion sets against graph states. Saved deletion-set metadata
 must include `reference="NC_000913.3"`, canonical `gene_ids`, and `source_url`.
 Published noncoding changes or compensatory mutations remain qualifications:
 the executable state represents protein-coding gene deletions only.
 
-Manager and worker invocations each use the configured model limits. Enable
+A navigator and its research subagent share one invocation budget; each genome
+explorer has its own budget. Enable
 paid calls only after choosing a fixed model and a state/step budget. The offline
 managed-search tests exercise restart and target reconstruction without model
 or literature requests.
+
+For local framework development, install the edited core into this environment
+with `uv pip install "/path/to/yggdrisil[agents]"` after syncing dependencies.
+The Git dependency pin must be updated to the ADK framework revision before
+these application changes can be installed directly from GitHub.
+
+## Recorded experiments
+
+The [experiment ledger](experiments/README.md) links the verified agent and
+non-LLM baseline results to their exact source, frozen configurations, S3 data,
+W&B artifact versions, and independent audits. The [historical methods
+snapshots](methods/20261106/README.md) preserve the code actually used, including
+the framework revision and validation overlays. These studies used a common
+1,030-deletion starting genome and recorded checkpoint continuations; they do
+not use the default full-MG1655 start described above.
+
+Genomic searches, simulations, and their controllers run only on remote Linux.
+Local inspection, editing, and lightweight tests are allowed. Full scientific
+data stays in private S3; Git contains source and compact ledger records.
 
 ## Layout
 

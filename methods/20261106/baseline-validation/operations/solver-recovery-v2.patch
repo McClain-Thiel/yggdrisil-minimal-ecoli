@@ -1,0 +1,90 @@
+diff --git a/wholecell/utils/_netflow/nf_glpk.py b/wholecell/utils/_netflow/nf_glpk.py
+index 704ec75e..cbdf857d 100644
+--- a/wholecell/utils/_netflow/nf_glpk.py
++++ b/wholecell/utils/_netflow/nf_glpk.py
+@@ -24,6 +24,11 @@ environment, losing state info.
+ # TODO(Jerry): Check that integer arguments are in range so GLPK won't exit?
+ 
+ from collections import defaultdict
++import hashlib
++import json
++import os
++from pathlib import Path
++import time
+ from enum import Enum
+ 
+ import numpy as np
+@@ -105,6 +110,7 @@ class NetworkFlowGLPK(NetworkFlowProblemBase):
+         if quadratic_objective:
+             raise ValueError("Quadratic objective not supported for GLPK")
+ 
++        self._recovery_failure = None
+         self._lp = glp.glp_create_prob()
+         self._smcp = glp.glp_smcp()  # simplex solver control parameters
+         glp.glp_init_smcp(self._smcp)
+@@ -483,6 +489,8 @@ class NetworkFlowGLPK(NetworkFlowProblemBase):
+             self._coeff_arrays[material] = coeff
+ 
+     def _solve(self):
++        if self._recovery_failure is not None:
++            raise RuntimeError("Previous recovery failed validation: " + self._recovery_failure)
+         if self._solved:
+             return
+ 
+@@ -527,6 +535,56 @@ class NetworkFlowGLPK(NetworkFlowProblemBase):
+                     )
+                 )
+             glp.glp_unscale_prob(self._lp)
++        if self.status_code == glp.GLP_UNBND:
++            self._recovery_failure = "LP recovery has not passed strict checks"
++            # Preserve the LP before discarding a potentially stale warm-start basis.
++            directory = Path(os.environ["YGGDRISIL_SOLVER_DIAGNOSTICS"])
++            directory.mkdir(parents=True, exist_ok=True)
++            prefix = directory / str(time.time_ns())
++            before = prefix.with_suffix(".before.glp")
++            after = prefix.with_suffix(".after.glp")
++            if glp.glp_write_prob(self._lp, 0, str(before)) != 0:
++                raise RuntimeError("Failed to preserve the unbounded LP")
++            original_hash = hashlib.sha256(before.read_bytes()).hexdigest()
++            print("Warning: GLP_UNBND; retrying unchanged LP once with a fresh basis and presolve", flush=True)
++            presolve = self._smcp.presolve
++            try:
++                glp.glp_std_basis(self._lp)
++                self._smcp.presolve = glp.GLP_ON
++                result = glp.glp_simplex(self._lp, self._smcp)
++            finally:
++                self._smcp.presolve = presolve
++            if result == 0 and self.status_code == glp.GLP_OPT:
++                # Presolve's reconstructed basis may need an ordinary simplex refinement.
++                try:
++                    self._smcp.presolve = glp.GLP_OFF
++                    result = glp.glp_simplex(self._lp, self._smcp)
++                finally:
++                    self._smcp.presolve = presolve
++            if glp.glp_write_prob(self._lp, 0, str(after)) != 0:
++                raise RuntimeError("Failed to preserve the retried LP")
++            unchanged = hashlib.sha256(after.read_bytes()).hexdigest() == original_hash
++            checks = {}
++            if result == 0 and self.status_code == glp.GLP_OPT:
++                for condition in (glp.GLP_KKT_PE, glp.GLP_KKT_PB, glp.GLP_KKT_DE, glp.GLP_KKT_DB):
++                    absolute, relative = glp.doubleArray(1), glp.doubleArray(1)
++                    absolute_index, relative_index = glp.intArray(1), glp.intArray(1)
++                    glp.glp_check_kkt(self._lp, glp.GLP_SOL, condition,
++                                      absolute, absolute_index, relative, relative_index)
++                    checks[str(condition)] = {"absolute_error": absolute[0], "relative_error": relative[0]}
++            report = {"original_lp_sha256": original_hash, "model_unchanged": unchanged,
++                      "return_code": result, "status": self.status_string, "kkt": checks,
++                      "tolerance_bound": self._smcp.tol_bnd, "tolerance_dual": self._smcp.tol_dj}
++            prefix.with_suffix(".json").write_text(json.dumps(report, indent=2) + "\n")
++            if not unchanged:
++                raise RuntimeError("LP model changed during basis recovery")
++            if result != 0 or self.status_code != glp.GLP_OPT:
++                raise RuntimeError(f"Fresh-basis retry failed: return={result}, {self.status_string}")
++            if not checks or any(not np.isfinite(c["relative_error"]) or c["relative_error"] > 1e-7
++                                 for c in checks.values()):
++                raise RuntimeError("Fresh-basis solution failed strict KKT residual checks")
++            self._recovery_failure = None
++            print("Fresh-basis recovery passed: unchanged LP, optimal status, finite KKT residuals <= 1e-7", flush=True)
+         if self.status_code != glp.GLP_OPT:
+             raise RuntimeError(self.status_string)
+ 

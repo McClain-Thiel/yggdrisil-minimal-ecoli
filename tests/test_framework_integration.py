@@ -283,14 +283,12 @@ async def test_agent_prompts_select_active_cached_evaluations(
 ) -> None:
     import json
 
-    from pydantic_ai import models
     from yggdrisil.agents import ExplorationRequest
 
     from yggdrisil_ecoli.agent_policy import AgentSearchConfig, make_agent_policy
     from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
 
     monkeypatch.setenv("OPENROUTER_API_KEY", "test-placeholder")
-    monkeypatch.setattr(models, "ALLOW_MODEL_REQUESTS", False)
     modules = ModuleEvaluator(
         registry=genes,
         entries={},
