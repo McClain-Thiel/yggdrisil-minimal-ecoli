@@ -1,0 +1,257 @@
+{
+  "aggregate_key_cap_usd": 30,
+  "analysis": "runs/literature-ablation-qwen-deployment-20261104/smoke-analysis.json",
+  "authorization": {
+    "approved_at": "2026-11-04T15:53:14.273731+00:00",
+    "authorization": "User replied \"run it\" to the proposed $30 model-spending ceiling: three smoke tests then three longer Qwen searches.",
+    "credential_transfer": {
+      "approved_at": "2026-11-04T17:07:18.484741+00:00",
+      "authorization": "User explicitly replied yes to transferring the six experiment-specific OpenRouter keys with a $30 combined cap to g6-big2.",
+      "destination": "g6-big2 /home/ubuntu/yggdrisil-literature-qwen-long-20261104/credentials",
+      "key_count": 6,
+      "management_key_transferred": false,
+      "reuse_existing_remote_wandb_credentials": true
+    },
+    "estimate_note": "Qwen3.7 Flash: $5\u201320 estimated model calls for the staged smoke tests and three 500-candidate continuations; provider caps sum to $30. No model quality or candidate-completion guarantee. No fallback to another model without review.",
+    "existing_instance_id": "i-0cda00ffb3cacfc12",
+    "include_long": true,
+    "long_jobs": 3,
+    "long_key_cap_usd": 8,
+    "model_budget_usd": 30,
+    "new_ec2_instances": false,
+    "new_edison_jobs": false,
+    "notify_on_completion_or_failure": true,
+    "paid_storage": false,
+    "preservation": "W&B per-job config/metrics/final data artifacts; off-instance read-only SQLite backup checkpoints at least every 20 minutes, quick_check and SHA256 verified, no secrets or source in uploads.",
+    "remote_root": "/home/ubuntu/yggdrisil-literature-qwen-long-20261104",
+    "reuse_environment_from": "/home/ubuntu/yggdrisil-literature-pilot-20261103/env",
+    "smoke_jobs": 3,
+    "smoke_key_cap_usd": 2,
+    "status": "approved",
+    "stop_later_stages_on_failure": true,
+    "total_budget_usd": 30
+  },
+  "budget_request": "runs/literature-ablation-long-preparation-20261104/qwen-budget-request.json",
+  "bundle": "runs/literature-ablation-qwen-long-20261104",
+  "checkpoints": [
+    {
+      "archive_sha256": "af220c8e42ddf58664e7e327653be0e14d304c796594844e03c85edd56fb2978",
+      "created_at": "2026-11-04T17:09:34.209263+00:00",
+      "files": 38,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-qwen-deployment-20261104/checkpoints/20261104T170934Z.tar.gz",
+      "local_file_hashes_verified": 38,
+      "local_sqlite_quick_check": "passed",
+      "local_verified_at": "2026-11-04T17:09:36.384353+00:00",
+      "remote_archive": "/home/ubuntu/yggdrisil-literature-qwen-long-20261104/checkpoints/20261104T170934Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 167032,
+      "sqlite_backups": 6
+    },
+    {
+      "archive_sha256": "5027da56bc010f760b0b263a80b75bc013b67782f85238d816c6186306f41165",
+      "files": 44,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-qwen-deployment-20261104/checkpoints/20261104T171141Z.tar.gz",
+      "local_extracted": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-qwen-deployment-20261104/checkpoints/20261104T171141Z",
+      "local_sqlite_quick_check": "passed",
+      "local_verified_at": "2026-11-04T17:12:10.777525+00:00",
+      "remote_archive": "/home/ubuntu/yggdrisil-literature-qwen-long-20261104/checkpoints/20261104T171141Z.tar.gz",
+      "remote_archive_hash_verified": true,
+      "secret_scan": "passed by remote helper before transfer",
+      "size_bytes": 288994,
+      "sqlite_backups": 6
+    }
+  ],
+  "completed_at": "2026-11-04T17:15:44.889251+00:00",
+  "cost_estimate": "runs/literature-ablation-long-preparation-20261104/qwen-cost-estimate.json",
+  "created_at": "2026-11-04T15:18:13.488625+00:00",
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "status": "verified"
+  },
+  "dedicated_key_count": 6,
+  "deployment": "runs/literature-ablation-qwen-deployment-20261104",
+  "id": "literature-ablation-qwen-long-20261104",
+  "keys_disabled": true,
+  "latest_checkpoint": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-qwen-deployment-20261104/checkpoints/20261104T171141Z.tar.gz",
+  "launch_block_resolved_at": "2026-11-04T17:09:00.608386+00:00",
+  "launch_blocked": "runs/literature-ablation-qwen-deployment-20261104/launch-blocked.json",
+  "launched_at": "2026-11-04T17:08:26.666938+00:00",
+  "limits": {
+    "finalists_per_run": 1,
+    "max_steps": 750,
+    "max_wall_time_s": 21600,
+    "require_initial_research": true,
+    "selection": "positive FBA and feasible RBA; additional deletions descending, FBA growth descending, state_id ascending",
+    "unique_new_states": 500
+  },
+  "literature_health_check": "runs/literature-ablation-long-preparation-20261104/literature-health-check.json",
+  "long_jobs_launched": false,
+  "max_genes_per_action": 100,
+  "model": "qwen/qwen3.7-flash",
+  "monitor_automation_id": "monitor-qwen-genome-continuation",
+  "monitor_status": "PAUSED",
+  "preparation": "runs/literature-ablation-long-preparation-20261104/qwen-protocol.json",
+  "preservation": "W&B data artifacts plus verified off-instance SQLite backups during execution; freeze all starting inputs and preserve every attempt.",
+  "process": "runs/literature-ablation-qwen-deployment-20261104/process.json",
+  "protocol": "runs/literature-ablation-long-preparation-20261104/qwen-protocol.json",
+  "provider_accounting": "runs/literature-ablation-qwen-deployment-20261104/provider-accounting.json",
+  "purpose": "Long exploratory continuation with larger deletion batches and mandatory initial adaptive retrieval.",
+  "remote_root": "/home/ubuntu/yggdrisil-literature-qwen-long-20261104",
+  "results": {
+    "fresh_literature_searches": 5,
+    "literature_reads": 1,
+    "new_candidate_states": 2,
+    "new_valid_candidates": 0,
+    "smoke_failed": 2,
+    "smoke_passed": 1
+  },
+  "s3_migration": {
+    "group_indexes": {
+      "application/runs/literature-ablation-long-preparation-20261104": {
+        "bytes": 1297,
+        "sha256": "562f7ab92ff1168ad7118d37194e2d5e28af64173f661b469baaf4475e1311b4",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-562f7ab92ff1168ad7118d37194e2d5e28af64173f661b469baaf4475e1311b4.json",
+        "verified_at": "2026-11-05T22:51:01.780169+00:00"
+      },
+      "application/runs/literature-ablation-qwen-deployment-20261104": {
+        "bytes": 1295,
+        "sha256": "6a222255d7ede2de16cd414bdc16aafaace075e0353a72e32120338cd681f87a",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-6a222255d7ede2de16cd414bdc16aafaace075e0353a72e32120338cd681f87a.json",
+        "verified_at": "2026-11-05T22:51:03.242630+00:00"
+      },
+      "application/runs/literature-ablation-qwen-long-20261104": {
+        "bytes": 1272,
+        "sha256": "745be68cd4bad67172e8cbd5b969d97ba7027de4d1d22c778453a6a1fac3c88c",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-745be68cd4bad67172e8cbd5b969d97ba7027de4d1d22c778453a6a1fac3c88c.json",
+        "verified_at": "2026-11-05T22:51:03.615780+00:00"
+      },
+      "application/runs/literature-ablation-qwen-long-20261104-smoke": {
+        "bytes": 1290,
+        "sha256": "5a5b6f61fced0d7b3905b9963310749f541096cbe07d81c98515c45d277f8336",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-5a5b6f61fced0d7b3905b9963310749f541096cbe07d81c98515c45d277f8336.json",
+        "verified_at": "2026-11-05T22:51:03.984001+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "search_runs": 3,
+  "search_seeds": [
+    59
+  ],
+  "smoke_bundle": "runs/literature-ablation-qwen-long-20261104-smoke",
+  "source_archive": "runs/literature-ablation-long-preparation-20261104/qwen-source-and-bundles.tar.gz",
+  "source_archive_sha256": "f30cceea77bb3bbba337417c7dcc1c7465b28b74429378c82175e8bdf074351e",
+  "source_snapshot": "runs/literature-ablation-long-preparation-20261104/qwen-source-snapshot.json",
+  "spending": {
+    "model_usd": 0.016447544,
+    "new_edison_jobs": 0,
+    "new_instances": 0,
+    "note": "Final provider usage equals persisted event costs; all six dedicated keys disabled; no long jobs launched."
+  },
+  "stage": "smoke",
+  "starting_genotype": {
+    "deleted_coding_genes": 1030,
+    "interpretation": "Selected computational pilot finalist, not a lab-validated strain.",
+    "percent_of_4290_registry_genes": 24.009324009324008,
+    "source_run_id": "literature-ablation-pilot-20261103-no-retrieval-seed-29",
+    "source_state_id": "11a12418d088502a6d28f143e2a1b98fdb308e592d1be3009748b7eed3480343"
+  },
+  "status": "smoke_failed",
+  "supersedes": "literature-ablation-long-20261104",
+  "tracking": {
+    "entity": "mcclain",
+    "project": "yggdrisil",
+    "runs": [
+      {
+        "artifact": "mcclain/yggdrisil/literature-ablation-qwen-long-20261104-smoke-adaptive-literature-seed-59-data:v0",
+        "artifact_state": "COMMITTED",
+        "digest": "29e20bf7d9588a85b71d599bf5c8e9bb",
+        "files": [
+          "agents.sqlite",
+          "config.json",
+          "failure.json",
+          "graph.sqlite",
+          "launch.json",
+          "progress.json",
+          "tracking.json"
+        ],
+        "run_id": "literature-ablation-qwen-long-20261104-smoke-adaptive-literature-seed-59",
+        "run_state": "failed",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/885e0364a9ac"
+      },
+      {
+        "artifact": "mcclain/yggdrisil/literature-ablation-qwen-long-20261104-smoke-no-retrieval-seed-59-data:v0",
+        "artifact_state": "COMMITTED",
+        "digest": "02b3db928ff13e4ec2790d47e6a4dcbf",
+        "files": [
+          "agents.sqlite",
+          "config.json",
+          "failure.json",
+          "graph.sqlite",
+          "launch.json",
+          "progress.json",
+          "tracking.json"
+        ],
+        "run_id": "literature-ablation-qwen-long-20261104-smoke-no-retrieval-seed-59",
+        "run_state": "failed",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/4ee78dec8c83"
+      },
+      {
+        "artifact": "mcclain/yggdrisil/literature-ablation-qwen-long-20261104-smoke-frozen-dossier-seed-59-data:v0",
+        "artifact_state": "COMMITTED",
+        "digest": "7f8f0003d6258ee9d5307dd60af02cd2",
+        "files": [
+          "agents.sqlite",
+          "config.json",
+          "graph.sqlite",
+          "launch.json",
+          "progress.json",
+          "result.json",
+          "tracking.json"
+        ],
+        "run_id": "literature-ablation-qwen-long-20261104-smoke-frozen-dossier-seed-59",
+        "run_state": "finished",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/9f22cd5535a7"
+      }
+    ],
+    "smoke_runs": [
+      {
+        "metadata": {
+          "wandb_id": "885e0364a9ac",
+          "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/885e0364a9ac"
+        },
+        "path": "application/runs/literature-ablation-qwen-long-20261104-smoke/search/literature-ablation-qwen-long-20261104-smoke-adaptive-literature-seed-59/tracking.json"
+      },
+      {
+        "metadata": {
+          "wandb_id": "9f22cd5535a7",
+          "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/9f22cd5535a7"
+        },
+        "path": "application/runs/literature-ablation-qwen-long-20261104-smoke/search/literature-ablation-qwen-long-20261104-smoke-frozen-dossier-seed-59/tracking.json"
+      },
+      {
+        "metadata": {
+          "wandb_id": "4ee78dec8c83",
+          "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/4ee78dec8c83"
+        },
+        "path": "application/runs/literature-ablation-qwen-long-20261104-smoke/search/literature-ablation-qwen-long-20261104-smoke-no-retrieval-seed-59/tracking.json"
+      }
+    ],
+    "status": "smoke_failed"
+  },
+  "verification": {
+    "after_type_narrowing": "22 passed",
+    "application": "239 passed",
+    "git_diff_check": "passed",
+    "mypy": "37 source files passed; cache moved to /private/tmp after iCloud-local cache SQLite I/O failure",
+    "ruff": "passed",
+    "targeted": "48 passed"
+  }
+}

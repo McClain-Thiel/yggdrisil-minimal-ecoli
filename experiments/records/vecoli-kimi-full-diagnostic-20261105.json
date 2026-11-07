@@ -1,0 +1,108 @@
+{
+  "config": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-kimi-full-diagnostic-20261105/workflow.json",
+  "controller_log": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-kimi-full-diagnostic-20261105/controller.log",
+  "controller_pid": 33204,
+  "created_at": "2026-11-05T15:20:58.671660+00:00",
+  "data_backup": {
+    "completed_cell_cycles": 12,
+    "parent_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-analysis:v0",
+    "progress_sha256": "984773063a5fad545b44a552442e3e20045739ed9d78b607ba4562c8256d4c6e",
+    "scope": "12 completed cell cycles plus stopped partial outputs and interruption logs; incomplete diagnostic.",
+    "status": "verified",
+    "verified_at": "2026-11-05T16:15:57.800559+00:00",
+    "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-full-diagnostic-20261105-data:v11"
+  },
+  "error": "RuntimeError('Less than 5 GiB free; stopping before data loss')",
+  "event_log": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-kimi-full-diagnostic-20261105/events.jsonl",
+  "failed_at": "2026-11-05T16:02:02.126162+00:00",
+  "failure_classification": "local_disk_safety_stop",
+  "finished_at": null,
+  "genotype_count": 5,
+  "id": "vecoli-kimi-full-diagnostic-20261105",
+  "input_backup": {
+    "artifact": "mcclain/yggdrisil/vecoli-kimi-full-diagnostic-20261105-inputs:v0",
+    "includes_fitted_model": true,
+    "sha256": {
+      "inputs/adaptive-literature-result.json": "8a7fd0d6ffbf3a62051e74fc1c888f0dd18e63c75e7ee2250e4a476c79c1d86f",
+      "inputs/frozen-dossier-result.json": "4f1d02ec18e01672fe6529cbd9b6d1ab9af04dca0b3bbdf723b24921483f1e34",
+      "inputs/no-retrieval-result.json": "bac14899b6f065d5ce6c72610f40ebcb9da9106fee6f0d98f9ae0a5b5dbcb918",
+      "inputs/simData.cPickle.gz": "d7dcbf9f7391c585909c9d5343031baa615a80b85975599709fc66a5f442f68a",
+      "inputs/starting_genotype.json": "5b84803ec0194eca76ffd92abfb19dc57c3d4eba8cd8ef54e057efa65ce5d16d",
+      "manifest.json": "310cbaa443cd11256d05013626f54b3894c68ba7258b0d002b417a0588c2a2be",
+      "nominations.json": "bd747febccc6734d5354259914b4e754d7404c7d3fd12e145063e7f0b6702e1b",
+      "preflight.json": "c34baebfa4f4a660dccf7afcbfb5cf50c82542a9adc4c058013135cdc8e96ed5",
+      "variant-knockout-audit.json": "e82a78b863777ae8f5188e5c1e41e36edcdad56c68af2f22bfd0ca5cd75a9f33",
+      "workflow.json": "8d9cac8535a4b06694f2038b98434110c289f0c21b6d04f3497a6911e836935d"
+    },
+    "source_code_uploaded": false,
+    "state": "COMMITTED",
+    "verified_at": "2026-11-05T15:26:33.792369+00:00"
+  },
+  "interruption_backup": {
+    "added_bytes": 1563091,
+    "artifact": "mcclain/yggdrisil/vecoli-kimi-full-diagnostic-20261105-data:v11",
+    "file_hashes": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-kimi-full-diagnostic-20261105/interruption-file-hashes.json",
+    "new_or_updated_files_round_trip_verified": 25,
+    "progress_sha256": "984773063a5fad545b44a552442e3e20045739ed9d78b607ba4562c8256d4c6e",
+    "source_code_uploaded": false,
+    "state": "COMMITTED",
+    "verified_at": "2026-11-05T16:15:57.800559+00:00"
+  },
+  "interruption_report": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-kimi-full-diagnostic-20261105/interruption.json",
+  "kind": "whole_cell_diagnostic",
+  "local_root": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-kimi-full-diagnostic-20261105",
+  "manifest": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-kimi-full-diagnostic-20261105/manifest.json",
+  "model_budget_usd": 0,
+  "new_edison_jobs": 0,
+  "paid_compute": false,
+  "parent_ids": [
+    "literature-ablation-kimi-full-20261105"
+  ],
+  "progress": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-kimi-full-diagnostic-20261105/progress.json",
+  "purpose": "Four-generation diagnostic of the three frozen Kimi finalists versus MG1655 and their common 1030-deletion parent; no candidate substitution after observing simulation results",
+  "results": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-kimi-full-diagnostic-20261105/results.json",
+  "s3_backup": {
+    "archives": [
+      "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/vecoli-kimi-full-diagnostic-20261105-inputs-v0/9e01ed0650d2de9f9f9f7b80856c71d34d27b013e1f4046aff450e80b8dfdb4b.tar.gz",
+      "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/vecoli-kimi-full-diagnostic-20261105-data-v11/e42221f14c2cde86eff5cea2db077a6e02d46b522d1e5ea35a88350b112ed333.tar.gz"
+    ],
+    "local_manifest": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-kimi-full-diagnostic-20261105/s3-backup.json",
+    "manifest_sha256": "85ef2e1aed1baa86acfc34ce465bbc2c52c2fc3abe614e714a01a686ebd737b6",
+    "manifest_uri": "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/manifests/85ef2e1aed1baa86acfc34ce465bbc2c52c2fc3abe614e714a01a686ebd737b6.json",
+    "status": "round_trip_verified",
+    "verified_at": "2026-11-05T17:32:39.708966+00:00"
+  },
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/vecoli-kimi-full-diagnostic-20261105": {
+        "bytes": 2964,
+        "sha256": "911fa65f30f184f5e4f9bb4344143728c241829eabeda776961b31680c9d9f5c",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-911fa65f30f184f5e4f9bb4344143728c241829eabeda776961b31680c9d9f5c.json",
+        "verified_at": "2026-11-05T22:51:20.903868+00:00"
+      },
+      "application/runs/vecoli-kimi-full-diagnostic-20261105": {
+        "bytes": 5483,
+        "sha256": "291e1606c9cc702894ee78cb16e8335c521b83a6375bee904dc7014867cb9512",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-291e1606c9cc702894ee78cb16e8335c521b83a6375bee904dc7014867cb9512.json",
+        "verified_at": "2026-11-05T22:51:08.478256+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "seed_count": 1,
+  "started_at": "2026-11-05T15:27:49.477711+00:00",
+  "status": "failed",
+  "target_generations": 4,
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/7dca58779319"
+  ],
+  "workflow_exit_code": null,
+  "workflow_log": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-kimi-full-diagnostic-20261105/workflow.log"
+}

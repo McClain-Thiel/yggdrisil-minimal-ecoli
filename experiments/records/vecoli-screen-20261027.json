@@ -1,0 +1,46 @@
+{
+  "config": "runs/long-genomic-search-20261027-074708/vecoli-validation/finalists-workflow.json",
+  "data_backup": {
+    "record": "runs/long-genomic-search-20261027-074708/remote-backup.json",
+    "status": "verified",
+    "validation_archive_sha256": "c4715148c5d7cc1529da5e356fe5ba1d9fed868589fe45200ac2bc30be6e6851",
+    "wandb_artifact": "mcclain/yggdrisil/genomic-search-20261027-complete-data:v1"
+  },
+  "genotypes": "runs/long-genomic-search-20261027-074708/vecoli-validation/genotypes.json",
+  "id": "vecoli-screen-20261027",
+  "kind": "whole_cell_validation",
+  "local_root": "runs/long-genomic-search-20261027-074708/vecoli-validation",
+  "parent_ids": [
+    "long-genomic-search-20261027-074708"
+  ],
+  "purpose": "One/two-generation screen of seven fixed genotypes",
+  "results": "runs/long-genomic-search-20261027-074708/vecoli-validation/screen-summary.json",
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/long-genomic-search-20261027-074708": {
+        "bytes": 1265,
+        "sha256": "7523a75f741eefc050490babf91aa7101e4cfdd49a1c8474e7495d7319c63cdd",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-7523a75f741eefc050490babf91aa7101e4cfdd49a1c8474e7495d7319c63cdd.json",
+        "verified_at": "2026-11-05T22:51:19.063626+00:00"
+      },
+      "application/runs/long-genomic-search-20261027-074708": {
+        "bytes": 11348,
+        "sha256": "a9a9831ef9d4cf6b5a91577853237d50ec30978eb16dfacbc66c8cd60bded035",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-a9a9831ef9d4cf6b5a91577853237d50ec30978eb16dfacbc66c8cd60bded035.json",
+        "verified_at": "2026-11-05T22:51:06.219829+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "completed",
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/k8zjyz0f"
+  ]
+}

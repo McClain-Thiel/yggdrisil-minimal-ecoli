@@ -1,0 +1,644 @@
+{
+  "experiments": [
+    {
+      "bytes": 2446,
+      "id": "adk-make24-validation-20261026-233203",
+      "path": "records/adk-make24-validation-20261026-233203.json",
+      "sha256": "72e5cb3feb2ec31760775cfd2ced2a072285214e3637b784c1495a6710f42444",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 2446,
+      "id": "adk-make24-validation-20261026-233908",
+      "path": "records/adk-make24-validation-20261026-233908.json",
+      "sha256": "7d942105bd830b3aea533495fac1d6626e3125bfccf2ae2f7bcfa8f21cd89ba4",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 3560,
+      "id": "adk-migration-validation-20261026-232810",
+      "path": "records/adk-migration-validation-20261026-232810.json",
+      "sha256": "5706d4438df43a01606d8e433aed913770cbc63fcc3d98c9874823c5ad437c2c",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 3560,
+      "id": "adk-migration-validation-20261026-233050",
+      "path": "records/adk-migration-validation-20261026-233050.json",
+      "sha256": "d9077da10d757e57cfcdeb23806e24f745d14e02be31cc015d4889e27cb849dc",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 3704,
+      "id": "adk-migration-validation-20261026-233601",
+      "path": "records/adk-migration-validation-20261026-233601.json",
+      "sha256": "1f61c943f4a733e404a708b87edfc54f9b2fe21df99170e567bbbc5bb2ee5fbc",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 2784,
+      "id": "audit-smoke-20261026-151031",
+      "path": "records/audit-smoke-20261026-151031.json",
+      "sha256": "0901ecec4a2b25c2c63348cfbf0a8927772e2615b030e8c41007274cddddeb14",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 3833,
+      "id": "edison-comparison-20261026-173024",
+      "path": "records/edison-comparison-20261026-173024.json",
+      "sha256": "39f01cfbd9e362f81e413ac66685d9335555e2a51c404a0741c7ab7f984c5f34",
+      "status": "superseded"
+    },
+    {
+      "bytes": 4027,
+      "id": "edison-confirmation-20261026-175429",
+      "path": "records/edison-confirmation-20261026-175429.json",
+      "sha256": "1d2addeea24229b4545152495c8d3fe1a5fcbc3c175365e4898d802bfa4364fc",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 3318,
+      "id": "edison-final-validation-20261026-174717",
+      "path": "records/edison-final-validation-20261026-174717.json",
+      "sha256": "1b7c0b9fa68298ba64cdde210f0b03ceb0f25a7fff2a7b26ae29069209a490f1",
+      "status": "superseded"
+    },
+    {
+      "bytes": 3906,
+      "id": "edison-gpt54-validation-20261026-175016",
+      "path": "records/edison-gpt54-validation-20261026-175016.json",
+      "sha256": "c6f11dc508aa30bca9126af9e3b7e3d96b3972546b4081a22a0342f317245f6b",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 3833,
+      "id": "edison-validation-20261026-174413",
+      "path": "records/edison-validation-20261026-174413.json",
+      "sha256": "b794b063d9982dcf3469fdf0f3c3e1be1819a17ffa9141bc19e208f395c8d9bd",
+      "status": "superseded"
+    },
+    {
+      "bytes": 1759,
+      "id": "framework-post-fix-smoke-20261026",
+      "path": "records/framework-post-fix-smoke-20261026.json",
+      "sha256": "d70241442c2b2aef658d614fcce761c640bd852c0ecf70c8ec7d9390323548e2",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 2127,
+      "id": "genomic-live-audit-20261026-170516",
+      "path": "records/genomic-live-audit-20261026-170516.json",
+      "sha256": "90ac425307afd96adf59fd8239a49245847592f545a39b6f2406f06a64b7f472",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 1725,
+      "id": "genomic-live-research-20261026-155420",
+      "path": "records/genomic-live-research-20261026-155420.json",
+      "sha256": "e9c7fad563e94a33f19691b059d758f7595c7604db23ef3541970779c29e467d",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 1725,
+      "id": "genomic-live-research-20261026-155837",
+      "path": "records/genomic-live-research-20261026-155837.json",
+      "sha256": "93a46f50eea2102fe14c063a46a60ffcefd5315da5ffc5060b7628eb9ef63974",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 1914,
+      "id": "genomic-live-research-20261026-160048",
+      "path": "records/genomic-live-research-20261026-160048.json",
+      "sha256": "c524eccd7047ae5ffb15ed00d668a6d08e98748355b58ffb320dc01dbaad8a98",
+      "status": "failed"
+    },
+    {
+      "bytes": 1979,
+      "id": "genomic-live-research-20261026-160430",
+      "path": "records/genomic-live-research-20261026-160430.json",
+      "sha256": "a85052bcb6781c82881d4addfe3d0265c0b212c6e5424caa36fe5cea481b77ab",
+      "status": "failed"
+    },
+    {
+      "bytes": 1914,
+      "id": "genomic-live-research-20261026-160702",
+      "path": "records/genomic-live-research-20261026-160702.json",
+      "sha256": "205beabc4eb7ccaf22eaf49f49f07d4234c4f5ac9c31ecc8c87915b72258c072",
+      "status": "failed"
+    },
+    {
+      "bytes": 2324,
+      "id": "genomic-live-research-20261026-160847",
+      "path": "records/genomic-live-research-20261026-160847.json",
+      "sha256": "25993b2786c0ac64286aef06e7772b51e209b305d237195a937a0a9c0205a1a9",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 1979,
+      "id": "genomic-live-research-20261026-161136",
+      "path": "records/genomic-live-research-20261026-161136.json",
+      "sha256": "d54dd33d5d8331748ffa4dcc3f1b8dd6a8a5b33dd9cff4c03a2158a870579d08",
+      "status": "failed"
+    },
+    {
+      "bytes": 1914,
+      "id": "genomic-live-research-20261026-161522",
+      "path": "records/genomic-live-research-20261026-161522.json",
+      "sha256": "9d0ce207f10afb318670054ec3512f4045f5921915a0bf9451dac542fd872b6e",
+      "status": "failed"
+    },
+    {
+      "bytes": 1914,
+      "id": "genomic-live-research-20261026-161857",
+      "path": "records/genomic-live-research-20261026-161857.json",
+      "sha256": "b5ce4eacb8b0bf75e9b86d29d89495d866eeadf0af39542feabacafd33dca43d",
+      "status": "failed"
+    },
+    {
+      "bytes": 1914,
+      "id": "genomic-live-research-20261026-162335",
+      "path": "records/genomic-live-research-20261026-162335.json",
+      "sha256": "0c132ecdec17456d493128218740c899093ba8147c4409bd29986881b56e04b7",
+      "status": "failed"
+    },
+    {
+      "bytes": 1914,
+      "id": "genomic-live-research-20261026-162538",
+      "path": "records/genomic-live-research-20261026-162538.json",
+      "sha256": "9782ac03965872936c236ebdd89a8c3f31a50e3e5801f3710aa535fd188a0a85",
+      "status": "failed"
+    },
+    {
+      "bytes": 1914,
+      "id": "genomic-live-research-20261026-162918",
+      "path": "records/genomic-live-research-20261026-162918.json",
+      "sha256": "a7fec752da5575e99e12391c52dc72c7239e387da41ee3dd4ac1f0320622b24a",
+      "status": "failed"
+    },
+    {
+      "bytes": 1914,
+      "id": "genomic-live-research-20261026-163241",
+      "path": "records/genomic-live-research-20261026-163241.json",
+      "sha256": "39480e547769f54de218a9ccc6311105eb3dd238aaefbe93651fb3227c740d61",
+      "status": "failed"
+    },
+    {
+      "bytes": 1914,
+      "id": "genomic-live-research-20261026-163424",
+      "path": "records/genomic-live-research-20261026-163424.json",
+      "sha256": "264a2be3256b39f76af4e338642b7799c83d308f24c5931f814988c85ec41371",
+      "status": "failed"
+    },
+    {
+      "bytes": 1914,
+      "id": "genomic-live-research-20261026-163712",
+      "path": "records/genomic-live-research-20261026-163712.json",
+      "sha256": "084b047d69c1aa7c626c1525ba4a639b1fb5c7db1c8a2bbeddb0beba11be41f1",
+      "status": "failed"
+    },
+    {
+      "bytes": 2324,
+      "id": "genomic-live-research-20261026-163859",
+      "path": "records/genomic-live-research-20261026-163859.json",
+      "sha256": "64a41c25fc996921a9c504ccfac91b46d9787f73c9f3e1c012cbe1108e75a70b",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 1656,
+      "id": "genomic-live-research-20261026-164313",
+      "path": "records/genomic-live-research-20261026-164313.json",
+      "sha256": "42894a404e46e2d292696399f92850881ab636ff8f8feaa120a59d138fdb868f",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 1914,
+      "id": "genomic-live-research-20261026-164449",
+      "path": "records/genomic-live-research-20261026-164449.json",
+      "sha256": "7711281ce9ff399593674b189a5a472c7ff452424966d2c4c52030f9aafd9c5a",
+      "status": "failed"
+    },
+    {
+      "bytes": 1914,
+      "id": "genomic-live-research-20261026-164653",
+      "path": "records/genomic-live-research-20261026-164653.json",
+      "sha256": "ccb8db0efb50fc8d0e29711008a68a714df474311dd366cfc0418c85d073a43b",
+      "status": "failed"
+    },
+    {
+      "bytes": 2537,
+      "id": "genomic-live-research-20261026-165458",
+      "path": "records/genomic-live-research-20261026-165458.json",
+      "sha256": "30c81faddb9ec0c35a627f38a628dfca43e139c96e3fb3c24e991f1efaa8d8c7",
+      "status": "failed"
+    },
+    {
+      "bytes": 2731,
+      "id": "genomic-manager-control-20261026-153133",
+      "path": "records/genomic-manager-control-20261026-153133.json",
+      "sha256": "abe220bf95ecc752e86988955b6f2481feb31f2bd59666b77941d9d43f4e1e76",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 3095,
+      "id": "literature-worker-validation-20261026-223731",
+      "path": "records/literature-worker-validation-20261026-223731.json",
+      "sha256": "cb913de9e3dedf3260eb2ece5bd05912e848731c94111d788130ceb180444e0b",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 3170,
+      "id": "literature-worker-validation-20261026-224049",
+      "path": "records/literature-worker-validation-20261026-224049.json",
+      "sha256": "5480221e2e0ed3d891f61e6bf01875ec0b596d38a720bc08112980e491ad231a",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 3890,
+      "id": "long-genomic-search-20261027-072322",
+      "path": "records/long-genomic-search-20261027-072322.json",
+      "sha256": "82864c2f10bb65b0cd287681ff657f95cc88bfea7fbe88c3661192bd196d0466",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 2518,
+      "id": "long-genomic-search-20261027-072817",
+      "path": "records/long-genomic-search-20261027-072817.json",
+      "sha256": "2688b8a3c2c146a1525a50fb34069b7265a104c5cd90e4b84689fc554fe97844",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 3224,
+      "id": "long-genomic-search-20261027-073319",
+      "path": "records/long-genomic-search-20261027-073319.json",
+      "sha256": "cada711ce7cb44dcbf0357c4e95624a0f6b7efce3ae796481b6cc194c3de2226",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 6216,
+      "id": "long-genomic-search-20261027-074708",
+      "path": "records/long-genomic-search-20261027-074708.json",
+      "sha256": "8f09e56e18b6d11bb2378ccc60d287c855237d1a73e72751bf1dfd42a61dcb10",
+      "status": "completed"
+    },
+    {
+      "bytes": 2643,
+      "id": "long-run-preflight-20261027",
+      "path": "records/long-run-preflight-20261027.json",
+      "sha256": "b3d28b8914e11bda2a476841536b30b9333fdf86ca22bc445f1607b357914751",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 3043,
+      "id": "research-tool-validation-20261026-230233",
+      "path": "records/research-tool-validation-20261026-230233.json",
+      "sha256": "0a919d772693f32adf5b663c42626563547c1c98f9d218dde3287a50a1662bd5",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 3114,
+      "id": "research-tool-validation-20261026-230702",
+      "path": "records/research-tool-validation-20261026-230702.json",
+      "sha256": "0892f30aec81414d7e8181ffa82e3081dd26b93fb028e1f983f5cf025bee9df3",
+      "status": "historical_recorded"
+    },
+    {
+      "bytes": 2430,
+      "id": "vecoli-screen-20261027",
+      "path": "records/vecoli-screen-20261027.json",
+      "sha256": "b7f67aae0fc900b5f7c3b5dd52fe262b2a6d1e476552731e45beb9f09a21c303",
+      "status": "completed"
+    },
+    {
+      "bytes": 4698,
+      "id": "vecoli-lineage12-20261027-095332",
+      "path": "records/vecoli-lineage12-20261027-095332.json",
+      "sha256": "a54c20323b50c9257c95de9b9cb18b03559f82d66a3ede4b2c919db5d724eaca",
+      "status": "completed"
+    },
+    {
+      "bytes": 3866,
+      "id": "published-genome-benchmarks-20261027",
+      "path": "records/published-genome-benchmarks-20261027.json",
+      "sha256": "ccc5a9511c8daf543f9ecb06d5ddefa0ebcc73acfb690814da426add5601eae8",
+      "status": "completed_with_model_disagreements"
+    },
+    {
+      "bytes": 4567,
+      "id": "vecoli-published-diagnostic-20261027",
+      "path": "records/vecoli-published-diagnostic-20261027.json",
+      "sha256": "85d7a93beed92464968916ae6c4de3b2705a4bbbf460a768a39c7aa7a80b40e1",
+      "status": "completed_with_nondivision"
+    },
+    {
+      "bytes": 39539,
+      "id": "literature-ablation-pilot-20261103",
+      "path": "records/literature-ablation-pilot-20261103.json",
+      "sha256": "4b485d12840969a38eb1dc6d1e4bfd5bfe43bc50c258a41254606f1a96052077",
+      "status": "search_complete_validation_pending"
+    },
+    {
+      "bytes": 4467,
+      "id": "literature-ablation-long-20261104",
+      "path": "records/literature-ablation-long-20261104.json",
+      "sha256": "9979beabdbdadb918753594310ee8ed92967753ae67dea27a1b7d46c6dd096f9",
+      "status": "superseded_before_launch"
+    },
+    {
+      "bytes": 12872,
+      "id": "literature-ablation-qwen-long-20261104",
+      "path": "records/literature-ablation-qwen-long-20261104.json",
+      "sha256": "580d2a3e240956e9ff705392d94d0849fdd676466cff21bd5f4170d822922f88",
+      "status": "smoke_failed"
+    },
+    {
+      "bytes": 13058,
+      "id": "literature-ablation-kimi-long-20261104",
+      "path": "records/literature-ablation-kimi-long-20261104.json",
+      "sha256": "c720058fedecab8e91b045c4caa6b8675c6468fa4bbfeed499a6cdece76e64d7",
+      "status": "smoke_failed"
+    },
+    {
+      "bytes": 11209,
+      "id": "literature-ablation-kimi-ab-fix-20261104",
+      "path": "records/literature-ablation-kimi-ab-fix-20261104.json",
+      "sha256": "22ddc1b4af3b7242415e19e74c0b083d5bf64205a83f9124900277919877a01e",
+      "status": "smoke_failed"
+    },
+    {
+      "bytes": 15575,
+      "id": "literature-ablation-kimi-ab-tuned-20261104",
+      "path": "records/literature-ablation-kimi-ab-tuned-20261104.json",
+      "sha256": "025e0372d2171febd99a81b4ae018c01d9b25647bceccc31f96774198013e8f6",
+      "status": "smoke_failed"
+    },
+    {
+      "bytes": 6045,
+      "id": "literature-ablation-kimi-bounded-20261105",
+      "path": "records/literature-ablation-kimi-bounded-20261105.json",
+      "sha256": "ca8f3b907e3e63c477b2bd389901fbbe037f81fa2ea5f183a02dd768bb30a893",
+      "status": "smoke_complete"
+    },
+    {
+      "bytes": 9129,
+      "id": "literature-ablation-kimi-shortlist-20261105",
+      "path": "records/literature-ablation-kimi-shortlist-20261105.json",
+      "sha256": "3e6788735100d6655bac68b86215271d1f124bca3596ff9214abc61be86b0625",
+      "status": "failed"
+    },
+    {
+      "bytes": 53267,
+      "id": "literature-ablation-kimi-full-20261105",
+      "path": "records/literature-ablation-kimi-full-20261105.json",
+      "sha256": "8510a7ae0c64a0a2e9ed50984d3b08fdb50a458404c9f83c78a1ed11e580db73",
+      "status": "search_and_validation_complete_with_exceptions"
+    },
+    {
+      "bytes": 6790,
+      "id": "vecoli-kimi-full-diagnostic-20261105",
+      "path": "records/vecoli-kimi-full-diagnostic-20261105.json",
+      "sha256": "7749f6dd0b382a9022c3f4dbee758316fae0004b9e3c3289919e23df7cca97df",
+      "status": "failed"
+    },
+    {
+      "bytes": 85337,
+      "id": "vecoli-kimi-20gen-3seed-20261105",
+      "path": "records/vecoli-kimi-20gen-3seed-20261105.json",
+      "sha256": "56cb9af6bbdf4a34be787141c3b4b189e50fe725cb935efda234fab11912b723",
+      "status": "completed_with_exceptions_verified"
+    },
+    {
+      "bytes": 38635,
+      "id": "literature-ablation-kimi-continuation-20261106",
+      "path": "records/literature-ablation-kimi-continuation-20261106.json",
+      "sha256": "52a579152603905abfab6948e6fb24f332ebdac32364f53c8cdbed0805aa9265",
+      "status": "search_and_validation_complete_with_exceptions"
+    },
+    {
+      "bytes": 78415,
+      "id": "vecoli-kimi-continuation-20gen-3seed-20261106",
+      "path": "records/vecoli-kimi-continuation-20gen-3seed-20261106.json",
+      "sha256": "6f57617084c0a38f14f970ed95cab03b80c5bbf62b138f4bbf3821d2164f4a91",
+      "status": "completed_with_exceptions_verified"
+    },
+    {
+      "bytes": 60660,
+      "id": "deletion-baselines-20261106",
+      "path": "records/deletion-baselines-20261106.json",
+      "sha256": "5f835f13d9b021de18a855c9171c8a8a502b15443744e42bb7a190c055ab69c4",
+      "status": "completed_verified"
+    },
+    {
+      "bytes": 35084,
+      "id": "vecoli-deletion-baselines-20gen-3seed-20261106",
+      "path": "records/vecoli-deletion-baselines-20gen-3seed-20261106.json",
+      "sha256": "1014f2f7109f1e21095df48a41679f1fd6056793a923e0fc383a34f718b2ba06",
+      "status": "completed_verified"
+    }
+  ],
+  "export_schema_version": 1,
+  "full_ledger": {
+    "bytes": 660195,
+    "sha256": "46b947116c8d9ebb4f66cad6795c6fa98925814b2407d70e6b7859a6b33382bc",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/catalogs/20261107/ledger/46b947116c8d9ebb4f66cad6795c6fa98925814b2407d70e6b7859a6b33382bc.json"
+  },
+  "ledger_metadata": {
+    "catalog_corrections": [
+      {
+        "at": "2026-11-07T00:45:29.990639+00:00",
+        "changes": [
+          {
+            "current": "deleted",
+            "evidence": {
+              "automation_id": "monitor-continuation-and-validation",
+              "deleted_at": "2026-11-06T15:48:34.543984+00:00",
+              "reason": "Completed science, all final data independently verified, dedicated worker and volume deleted.",
+              "status": "deleted"
+            },
+            "experiment_id": "literature-ablation-kimi-continuation-20261106",
+            "field": "monitoring_automation.status",
+            "previous": "active"
+          },
+          {
+            "current": "deleted",
+            "evidence": {
+              "automation_id": "monitor-continuation-and-validation",
+              "deleted_at": "2026-11-06T15:48:34.544121+00:00",
+              "reason": "Completed science, all final data independently verified, dedicated worker and volume deleted.",
+              "status": "deleted"
+            },
+            "experiment_id": "vecoli-kimi-continuation-20gen-3seed-20261106",
+            "field": "monitoring_automation.status",
+            "previous": "active"
+          },
+          {
+            "current": "completed_verified",
+            "evidence": {
+              "bytes": 349987,
+              "sha256": "ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70",
+              "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70.json"
+            },
+            "experiment_id": "deletion-baselines-20261106",
+            "field": "nominations.validation_status",
+            "previous": "not_launched_not_authorized"
+          }
+        ],
+        "reason": "Reconcile stale current-status fields with preserved completion records; frozen protocols and scientific outcomes unchanged"
+      }
+    ],
+    "dependencies": {
+      "vecoli": {
+        "git_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+        "local_root": "runs/vecoli-runtime",
+        "lock_sha256": "3115727471eabd133f75b6943b069a18db814fc0876e26a3af96da24c59c06f8"
+      }
+    },
+    "path_base": "repository root; local_root and file references are relative to this checkout",
+    "research_comparisons": {
+      "agent-baselines-20261106": {
+        "experiment_ids": [
+          "literature-ablation-kimi-continuation-20261106",
+          "vecoli-kimi-continuation-20gen-3seed-20261106",
+          "deletion-baselines-20261106",
+          "vecoli-deletion-baselines-20gen-3seed-20261106"
+        ],
+        "git_source_commit": "3a748e37da91122df62e0440e3bb3b6ce2f0489b",
+        "limitations": [
+          "Agent conditions each have one search seed and inherited search graphs; baselines have five search seeds per method from the common 1030-deletion root.",
+          "Simulation seeds repeat each genome; they are not independent genome-search replicates. Controls are repeated in both validation studies.",
+          "Baseline searches used 500 new evaluated states each; agent searches stopped on model budgets. This is not a matched-cost or matched-evaluation comparison.",
+          "Functional percentages use the same five-process accounting rule and 1915-gene current-model set; the shared historical panel contains 1197 genes.",
+          "Model exceptions remain separate from nondivision at the 10800-second simulated cell-time cap.",
+          "Expression-knockout projection in aerobic M9 glucose; no physical chromosome reduction or laboratory viability claim.",
+          "The same strict v2 numerical fallback policy applies to both validation studies; assisted generations remain explicitly marked.",
+          "These results do not independently establish a benefit from literature retrieval or a statistically replicated agent-method advantage."
+        ],
+        "methods": {
+          "bytes": 95610,
+          "sha256": "931fd4a86f0d790102f4fcd414f23802314ae2d759eefa1a3fc1fd2f014d3a2d",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/catalogs/20261107/records/931fd4a86f0d790102f4fcd414f23802314ae2d759eefa1a3fc1fd2f014d3a2d.json"
+        },
+        "results": {
+          "bytes": 28622,
+          "sha256": "7bbb90b2cfc81f4f849c02e753d24ad8360421372e2f140c3b0278f0764d8c25",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/catalogs/20261107/records/7bbb90b2cfc81f4f849c02e753d24ad8360421372e2f140c3b0278f0764d8c25.json"
+        },
+        "summary": {
+          "agent": {
+            "completed_divisions": 174,
+            "distinct_genotypes": 3,
+            "lineages": 9,
+            "lineages_at_20": 8,
+            "terminal_reasons": {
+              "model_exception": 1,
+              "reached_max_generations": 8
+            }
+          },
+          "baseline": {
+            "completed_divisions": 30,
+            "distinct_genotypes": 10,
+            "lineages": 30,
+            "lineages_at_20": 0,
+            "terminal_reasons": {
+              "model_exception": 1,
+              "nondivision_max_duration": 29
+            }
+          },
+          "controls": {
+            "completed_divisions": 240,
+            "distinct_genotypes": 2,
+            "lineages": 12,
+            "lineages_at_20": 12,
+            "terminal_reasons": {
+              "reached_max_generations": 12
+            }
+          }
+        }
+      }
+    },
+    "schema_version": 1,
+    "storage_migration": {
+      "archive_bytes": 3085688584,
+      "archived_files": 9867,
+      "cache_duplicates_removed": 1767,
+      "cache_format_review": {
+        "bytes": 36918,
+        "sha256": "b87391df8b38b72a67098ef55e99034651d449886fa9e8fc3a67dd5b4d49b277",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/cache-format-review-b87391df8b38b72a67098ef55e99034651d449886fa9e8fc3a67dd5b4d49b277.json",
+        "verified_at": "2026-11-05T22:51:27.253694+00:00"
+      },
+      "cache_rebuildable_removed": 426,
+      "cache_review": {
+        "bytes": 2841362,
+        "sha256": "d27ce610cac619ce30ca8c4efafce5a8ec34fe083bab6b266206effade4c6510",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/cache-review-final-d27ce610cac619ce30ca8c4efafce5a8ec34fe083bab6b266206effade4c6510.json",
+        "verified_at": "2026-11-05T22:51:24.563173+00:00"
+      },
+      "cache_selection": {
+        "bytes": 880409,
+        "sha256": "e4e64dc37400dceadae811517b5f90e8ec2835544e0b1570d49e0621308f233d",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/cache-selection-final-e4e64dc37400dceadae811517b5f90e8ec2835544e0b1570d49e0621308f233d.json",
+        "verified_at": "2026-11-05T22:51:25.200418+00:00"
+      },
+      "cache_sidecar_cleanup": {
+        "bytes": 130397,
+        "sha256": "b535b42082c0685eeed0ec3418cdca83d081b70a7c6eded77254b8615c2a4337",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/cache-sidecar-cleanup-b535b42082c0685eeed0ec3418cdca83d081b70a7c6eded77254b8615c2a4337.json",
+        "verified_at": "2026-11-05T22:51:26.881826+00:00"
+      },
+      "checksum_cache_cleanup": {
+        "bytes": 246055,
+        "sha256": "04fede05c3d9005007afb6c54abeeef53b43da74cd14c652f4e695886c340447",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/cache-checksum-cleanup-04fede05c3d9005007afb6c54abeeef53b43da74cd14c652f4e695886c340447.json",
+        "verified_at": "2026-11-05T22:51:27.741239+00:00"
+      },
+      "cleanup_audit": {
+        "bytes": 264953,
+        "sha256": "6aa55fea30ba5bd1bbb49f80131ed2eb8240bd571d39ceb3744cd0211e7747e4",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/cleanup-audit-6aa55fea30ba5bd1bbb49f80131ed2eb8240bd571d39ceb3744cd0211e7747e4.json",
+        "verified_at": "2026-11-05T22:51:28.717183+00:00"
+      },
+      "data_bytes": 7915146389,
+      "group_index": {
+        "bytes": 42319,
+        "sha256": "11456ea40737de03f94a0553d6711d8da50f74d53037b629f3607d4ac53a9c6a",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/groups-11456ea40737de03f94a0553d6711d8da50f74d53037b629f3607d4ac53a9c6a.json",
+        "verified_at": "2026-11-05T22:51:29.385891+00:00"
+      },
+      "inventory": {
+        "sha256": "969794326ccef6b64342f7e81d0ead12baffdbed6ee82db4208c4e3c7d86c02e",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/inventory-969794326ccef6b64342f7e81d0ead12baffdbed6ee82db4208c4e3c7d86c02e.json",
+        "verified_at": "2026-11-05T22:52:36.720916+00:00"
+      },
+      "local_data_files_removed": 9867,
+      "member_audit": {
+        "bytes": 70476,
+        "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+        "verified_at": "2026-11-05T22:51:28.122870+00:00"
+      },
+      "orphan_sidecars_removed": 638,
+      "retained_source_cache_files": 360,
+      "s3_prefix": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/",
+      "sidecar_cleanup": {
+        "bytes": 626037,
+        "sha256": "c6a7bc259d89bc61a5d74d9234a982f473ed6e0e9147e085b7097d9ce96f11f1",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/sidecar-cleanup-c6a7bc259d89bc61a5d74d9234a982f473ed6e0e9147e085b7097d9ce96f11f1.json",
+        "verified_at": "2026-11-05T22:51:26.494916+00:00"
+      },
+      "status": "completed_verified",
+      "updated_at": "2026-11-05T22:51:31.516855+00:00",
+      "verified_archives": 193,
+      "verified_groups": 110
+    },
+    "storage_policy": {
+      "backups": "Verified S3 group indexes link immutable archives and file manifests; full GET and per-member SHA256 checks are recorded. W&B metric links alone are not raw-data backups.",
+      "canonical_genome_identity": "NC_000913.3 canonical b-number deletion set and SHA-256 state identity",
+      "durable_storage": "Private S3 bucket phd-research-storage-1758274488, prefix yggdrisil/. W&B records experiment tracking and artifact provenance. Local data may be removed only after content verification and an exact ledger mapping.",
+      "execution": "Remote-only for genomic searches, vEcoli simulations, sweeps and experiment controllers. The Mac is for editing, inspection and lightweight tests; never launch experiment compute here.",
+      "model_spending": "Only explicitly approved, experiment-specific paid runs are authorized; current continuation cap is $50 additional including $36 model keys and $14 compute/storage/transfers. No blanket authority for other model, Edison or compute spending.",
+      "progress": "Active experiment controllers run remotely; record remote progress/events and verified S3 checkpoints here.",
+      "registry": "This compact catalog stays in Git. Historical local data paths are restore paths after migration; bulk data and complete inventories are in private S3."
+    },
+    "updated_at": "2026-11-07T00:45:29.990656+00:00"
+  }
+}

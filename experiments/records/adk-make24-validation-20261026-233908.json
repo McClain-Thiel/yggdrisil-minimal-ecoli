@@ -1,0 +1,51 @@
+{
+  "child_runs": [
+    {
+      "id": "make24",
+      "local_root": "runs/adk-make24-validation-20261026-233908/make24",
+      "records": {
+        "graph": "runs/adk-make24-validation-20261026-233908/make24/graph.sqlite",
+        "summary": "runs/adk-make24-validation-20261026-233908/make24/summary.json"
+      }
+    }
+  ],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "adk-make24-validation-20261026-233908",
+  "kind": "historical_validation_or_pilot",
+  "local_root": "runs/adk-make24-validation-20261026-233908",
+  "records": [
+    "runs/adk-make24-validation-20261026-233908/summary.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/adk-make24-validation-20261026-233908": {
+        "bytes": 1273,
+        "sha256": "3efffa91fb27f831d80c262d49881615f0925153a744dde0ab97fd86b0e3fe96",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-3efffa91fb27f831d80c262d49881615f0925153a744dde0ab97fd86b0e3fe96.json",
+        "verified_at": "2026-11-05T22:51:11.799018+00:00"
+      },
+      "application/runs/adk-make24-validation-20261026-233908": {
+        "bytes": 1271,
+        "sha256": "f955a54ddc2e273c49cd9d6a79ba186f8b14cb07dce8af152bf7ee9469bb4361",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-f955a54ddc2e273c49cd9d6a79ba186f8b14cb07dce8af152bf7ee9469bb4361.json",
+        "verified_at": "2026-11-05T22:50:40.962415+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "historical_recorded",
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/224d3fa2"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "child_runs": [],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "genomic-live-research-20261026-163859",
+  "kind": "historical_validation_or_pilot",
+  "local_root": "runs/genomic-live-research-20261026-163859",
+  "records": [
+    "runs/genomic-live-research-20261026-163859/audit_summary.json",
+    "runs/genomic-live-research-20261026-163859/config.json",
+    "runs/genomic-live-research-20261026-163859/graph.json",
+    "runs/genomic-live-research-20261026-163859/graph.run.json",
+    "runs/genomic-live-research-20261026-163859/summary.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/genomic-live-research-20261026-163859": {
+        "bytes": 1269,
+        "sha256": "70b9efdb94cc13bdaeb43e2e39db25fcacdac1cfaebb5af2f252b22e1a170acc",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-70b9efdb94cc13bdaeb43e2e39db25fcacdac1cfaebb5af2f252b22e1a170acc.json",
+        "verified_at": "2026-11-05T22:51:15.822561+00:00"
+      },
+      "application/runs/genomic-live-research-20261026-163859": {
+        "bytes": 1272,
+        "sha256": "c985d45a497716c6f93e26a563113e9455f803195bd69db5e461942147b52605",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-c985d45a497716c6f93e26a563113e9455f803195bd69db5e461942147b52605.json",
+        "verified_at": "2026-11-05T22:50:51.313209+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "historical_recorded",
+  "wandb_run_urls": []
+}

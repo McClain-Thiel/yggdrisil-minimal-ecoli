@@ -1,0 +1,106 @@
+{
+  "child_runs": [
+    {
+      "id": "1-mg1655-ordinary-seed-17",
+      "local_root": "runs/long-genomic-search-20261027-074708/1-mg1655-ordinary-seed-17",
+      "records": {
+        "agent_memory": "runs/long-genomic-search-20261027-074708/1-mg1655-ordinary-seed-17/agents.sqlite",
+        "audit": "runs/long-genomic-search-20261027-074708/1-mg1655-ordinary-seed-17/audit.json",
+        "config": "runs/long-genomic-search-20261027-074708/1-mg1655-ordinary-seed-17/config.json",
+        "graph": "runs/long-genomic-search-20261027-074708/1-mg1655-ordinary-seed-17/graph.sqlite",
+        "summary": "runs/long-genomic-search-20261027-074708/1-mg1655-ordinary-seed-17/summary.json"
+      }
+    },
+    {
+      "id": "2-ms56-ordinary-seed-17",
+      "local_root": "runs/long-genomic-search-20261027-074708/2-ms56-ordinary-seed-17",
+      "records": {
+        "agent_memory": "runs/long-genomic-search-20261027-074708/2-ms56-ordinary-seed-17/agents.sqlite",
+        "audit": "runs/long-genomic-search-20261027-074708/2-ms56-ordinary-seed-17/audit.json",
+        "config": "runs/long-genomic-search-20261027-074708/2-ms56-ordinary-seed-17/config.json",
+        "graph": "runs/long-genomic-search-20261027-074708/2-ms56-ordinary-seed-17/graph.sqlite",
+        "summary": "runs/long-genomic-search-20261027-074708/2-ms56-ordinary-seed-17/summary.json"
+      }
+    },
+    {
+      "id": "3-ms56-cached-edison-seed-17",
+      "local_root": "runs/long-genomic-search-20261027-074708/3-ms56-cached-edison-seed-17",
+      "records": {
+        "agent_memory": "runs/long-genomic-search-20261027-074708/3-ms56-cached-edison-seed-17/agents.sqlite",
+        "audit": "runs/long-genomic-search-20261027-074708/3-ms56-cached-edison-seed-17/audit.json",
+        "config": "runs/long-genomic-search-20261027-074708/3-ms56-cached-edison-seed-17/config.json",
+        "edison_cache": "runs/long-genomic-search-20261027-074708/3-ms56-cached-edison-seed-17/edison.sqlite",
+        "graph": "runs/long-genomic-search-20261027-074708/3-ms56-cached-edison-seed-17/graph.sqlite",
+        "summary": "runs/long-genomic-search-20261027-074708/3-ms56-cached-edison-seed-17/summary.json"
+      }
+    },
+    {
+      "id": "4-ms56-cached-edison-resumed-seed-17",
+      "local_root": "runs/long-genomic-search-20261027-074708/4-ms56-cached-edison-resumed-seed-17",
+      "records": {
+        "agent_memory": "runs/long-genomic-search-20261027-074708/4-ms56-cached-edison-resumed-seed-17/agents.sqlite",
+        "audit": "runs/long-genomic-search-20261027-074708/4-ms56-cached-edison-resumed-seed-17/audit.json",
+        "config": "runs/long-genomic-search-20261027-074708/4-ms56-cached-edison-resumed-seed-17/config.json",
+        "edison_cache": "runs/long-genomic-search-20261027-074708/4-ms56-cached-edison-resumed-seed-17/edison.sqlite",
+        "graph": "runs/long-genomic-search-20261027-074708/4-ms56-cached-edison-resumed-seed-17/graph.sqlite",
+        "summary": "runs/long-genomic-search-20261027-074708/4-ms56-cached-edison-resumed-seed-17/summary.json"
+      }
+    }
+  ],
+  "data_backup": {
+    "archive_sha256": "a9d6a63ff314dbf5ffcfa3176d8f8ce3a9388ee0b3a0adab6dece0f300e0308f",
+    "record": "runs/long-genomic-search-20261027-074708/remote-backup.json",
+    "status": "verified",
+    "validation_archive_sha256": "c4715148c5d7cc1529da5e356fe5ba1d9fed868589fe45200ac2bc30be6e6851",
+    "wandb_artifact": "mcclain/yggdrisil/genomic-search-20261027-complete-data:v1"
+  },
+  "genome_reference": "NC_000913.3",
+  "id": "long-genomic-search-20261027-074708",
+  "kind": "genomic_search",
+  "local_root": "runs/long-genomic-search-20261027-074708",
+  "model_spend_usd": "11.4597450",
+  "purpose": "MG1655 baseline and ordinary/cached-Edison MS56 coding-projection continuations",
+  "records": [
+    "runs/long-genomic-search-20261027-074708/audit.json",
+    "runs/long-genomic-search-20261027-074708/billing-midrun.json",
+    "runs/long-genomic-search-20261027-074708/continuation-summary.json",
+    "runs/long-genomic-search-20261027-074708/fresh-solver-checks.json",
+    "runs/long-genomic-search-20261027-074708/initial-phase-summary.json",
+    "runs/long-genomic-search-20261027-074708/plan.json",
+    "runs/long-genomic-search-20261027-074708/remote-backup.json",
+    "runs/long-genomic-search-20261027-074708/summary.json",
+    "runs/long-genomic-search-20261027-074708/verification.json"
+  ],
+  "results": "runs/long-genomic-search-20261027-074708/summary.json",
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/long-genomic-search-20261027-074708": {
+        "bytes": 1265,
+        "sha256": "7523a75f741eefc050490babf91aa7101e4cfdd49a1c8474e7495d7319c63cdd",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-7523a75f741eefc050490babf91aa7101e4cfdd49a1c8474e7495d7319c63cdd.json",
+        "verified_at": "2026-11-05T22:51:19.063626+00:00"
+      },
+      "application/runs/long-genomic-search-20261027-074708": {
+        "bytes": 11348,
+        "sha256": "a9a9831ef9d4cf6b5a91577853237d50ec30978eb16dfacbc66c8cd60bded035",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-a9a9831ef9d4cf6b5a91577853237d50ec30978eb16dfacbc66c8cd60bded035.json",
+        "verified_at": "2026-11-05T22:51:06.219829+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "completed",
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/34zi5uxf",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/coy6uodv",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/i4rdy6pf",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/qfhdgvg2"
+  ]
+}

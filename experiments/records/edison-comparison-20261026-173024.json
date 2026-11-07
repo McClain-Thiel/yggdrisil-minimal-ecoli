@@ -1,0 +1,80 @@
+{
+  "child_runs": [
+    {
+      "id": "edison-seed-17",
+      "local_root": "runs/edison-comparison-20261026-173024/edison-seed-17",
+      "records": {
+        "config": "runs/edison-comparison-20261026-173024/edison-seed-17/config.json",
+        "graph": "runs/edison-comparison-20261026-173024/edison-seed-17/graph.sqlite",
+        "summary": "runs/edison-comparison-20261026-173024/edison-seed-17/summary.json"
+      }
+    },
+    {
+      "id": "edison-seed-18",
+      "local_root": "runs/edison-comparison-20261026-173024/edison-seed-18",
+      "records": {
+        "config": "runs/edison-comparison-20261026-173024/edison-seed-18/config.json",
+        "graph": "runs/edison-comparison-20261026-173024/edison-seed-18/graph.sqlite",
+        "summary": "runs/edison-comparison-20261026-173024/edison-seed-18/summary.json"
+      }
+    },
+    {
+      "id": "ordinary-seed-17",
+      "local_root": "runs/edison-comparison-20261026-173024/ordinary-seed-17",
+      "records": {
+        "config": "runs/edison-comparison-20261026-173024/ordinary-seed-17/config.json",
+        "graph": "runs/edison-comparison-20261026-173024/ordinary-seed-17/graph.sqlite",
+        "summary": "runs/edison-comparison-20261026-173024/ordinary-seed-17/summary.json"
+      }
+    },
+    {
+      "id": "ordinary-seed-18",
+      "local_root": "runs/edison-comparison-20261026-173024/ordinary-seed-18",
+      "records": {
+        "config": "runs/edison-comparison-20261026-173024/ordinary-seed-18/config.json",
+        "graph": "runs/edison-comparison-20261026-173024/ordinary-seed-18/graph.sqlite",
+        "summary": "runs/edison-comparison-20261026-173024/ordinary-seed-18/summary.json"
+      }
+    }
+  ],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "edison-comparison-20261026-173024",
+  "kind": "historical_validation_or_pilot",
+  "local_root": "runs/edison-comparison-20261026-173024",
+  "records": [
+    "runs/edison-comparison-20261026-173024/summary.json",
+    "runs/edison-comparison-20261026-173024/superseded.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/edison-comparison-20261026-173024": {
+        "bytes": 1262,
+        "sha256": "2ed65098e35927100d628f2a5cd945979fd8131a4468fb634bda367e7258fd55",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-2ed65098e35927100d628f2a5cd945979fd8131a4468fb634bda367e7258fd55.json",
+        "verified_at": "2026-11-05T22:51:13.632584+00:00"
+      },
+      "application/runs/edison-comparison-20261026-173024": {
+        "bytes": 1262,
+        "sha256": "b0f8875f10979bdb7a7800356e035cc2f3d2d117141db48427944c8c1f8b5948",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-b0f8875f10979bdb7a7800356e035cc2f3d2d117141db48427944c8c1f8b5948.json",
+        "verified_at": "2026-11-05T22:50:43.149448+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "superseded",
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/vihr09ar"
+  ]
+}

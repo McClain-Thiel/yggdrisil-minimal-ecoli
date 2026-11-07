@@ -1,0 +1,47 @@
+{
+  "child_runs": [],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "genomic-live-research-20261026-165458",
+  "kind": "historical_validation_or_pilot",
+  "local_root": "runs/genomic-live-research-20261026-165458",
+  "records": [
+    "runs/genomic-live-research-20261026-165458/audit_summary.json",
+    "runs/genomic-live-research-20261026-165458/config.json",
+    "runs/genomic-live-research-20261026-165458/failure.json",
+    "runs/genomic-live-research-20261026-165458/first-manager-messages.json",
+    "runs/genomic-live-research-20261026-165458/graph.json",
+    "runs/genomic-live-research-20261026-165458/graph.run.json",
+    "runs/genomic-live-research-20261026-165458/resume-config-20261026-165809.json",
+    "runs/genomic-live-research-20261026-165458/summary.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/genomic-live-research-20261026-165458": {
+        "bytes": 1269,
+        "sha256": "f827096b7275b5e7c2abad913632e5412230f8b6f186e441d7ebc9ae5aa67765",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-f827096b7275b5e7c2abad913632e5412230f8b6f186e441d7ebc9ae5aa67765.json",
+        "verified_at": "2026-11-05T22:51:16.179153+00:00"
+      },
+      "application/runs/genomic-live-research-20261026-165458": {
+        "bytes": 1274,
+        "sha256": "329d98e3a5ee42c9c85e3f29c14f8d02ccd734f535968af5f7b385936cd80ec2",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-329d98e3a5ee42c9c85e3f29c14f8d02ccd734f535968af5f7b385936cd80ec2.json",
+        "verified_at": "2026-11-05T22:50:52.814831+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "failed",
+  "wandb_run_urls": []
+}

@@ -1,0 +1,1833 @@
+{
+  "authorization": {
+    "approval": "User explicitly approved up to $30 in this chat.",
+    "approved_at": "2026-11-05T21:16:28.137565+00:00",
+    "budget_usd": 30,
+    "launch": true,
+    "model_api_calls": false,
+    "new_edison_jobs": false,
+    "preparation": true
+  },
+  "aws_region": "us-east-1",
+  "budget_usd": 30,
+  "calibration": {
+    "cell_wall_minutes": [
+      5.3724,
+      5.9561166666666665
+    ],
+    "division_simulated_minutes": [
+      36.75,
+      44.93333333333333
+    ],
+    "divisions": 2,
+    "peak_rss_bytes": 1377865728,
+    "status": "passed"
+  },
+  "calibration_cell_simulations": 2,
+  "completed_at": "2026-11-06T03:26:38.089374+00:00",
+  "controller_pid": 848988,
+  "controller_started_at": "2026-11-05T21:39:51.721807+00:00",
+  "data_backup": {
+    "all_final_wandb_artifacts": {
+      "calibration": {
+        "artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-calibration-retry1-data:v3",
+        "bytes": 26746113,
+        "checkpoint": {
+          "bytes": 17993,
+          "sha256": "baaca9dc64d453938836f46b3fd0f453ff470803f29c0d18ffddec6a4b222042",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/calibration-retry1/checkpoints/baaca9dc64d453938836f46b3fd0f453ff470803f29c0d18ffddec6a4b222042.json"
+        },
+        "files_downloaded_and_sha256_verified": 44,
+        "progress_sha256": "08d3d9a5f79148433306837c789159148e7a2b3932541f2a81e90a21b88b79b8",
+        "state": "COMMITTED"
+      },
+      "seed-101": {
+        "artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-seed-101-data:v82",
+        "bytes": 340886795,
+        "checkpoint": {
+          "bytes": 596233,
+          "sha256": "a208f0a61d3744fb8e39321bd62cb4dcd1b4a87fdc91beef92e59576d6dd7f1a",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101/checkpoints/a208f0a61d3744fb8e39321bd62cb4dcd1b4a87fdc91beef92e59576d6dd7f1a.json"
+        },
+        "files_downloaded_and_sha256_verified": 1389,
+        "progress_sha256": "f2600d0cd8c75fb0afbc06765e38770198737094ba5727734a62b780a3497f1b",
+        "state": "COMMITTED"
+      },
+      "seed-101-frozen-dossier-recovery": {
+        "artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-seed-101-frozen-dossier-recovery-data:v2",
+        "bytes": 2063851,
+        "checkpoint": {
+          "bytes": 7060,
+          "sha256": "1fd560b0d9015d606a6b61f336a0784c8e378823017e89798ef75000e6a50b6b",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery/checkpoints/1fd560b0d9015d606a6b61f336a0784c8e378823017e89798ef75000e6a50b6b.json"
+        },
+        "files_downloaded_and_sha256_verified": 17,
+        "progress_sha256": "81e887ff413cf30dcb63d7930304eeeebc9afa654fbe9f9bd6c94c1c9f4dfb73",
+        "state": "COMMITTED"
+      },
+      "seed-101-frozen-dossier-recovery-v2": {
+        "artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-seed-101-frozen-dossier-recovery-v2-data:v17",
+        "bytes": 233947996,
+        "checkpoint": {
+          "bytes": 123069,
+          "sha256": "9c39279e1345434c54a87a9b82aea8b5b666bfbdcbf425c16899a23021eaddf2",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/checkpoints/9c39279e1345434c54a87a9b82aea8b5b666bfbdcbf425c16899a23021eaddf2.json"
+        },
+        "files_downloaded_and_sha256_verified": 258,
+        "progress_sha256": "8f6c8da94d38b9b689583c37191213f4f1d48ddfd7154dc9a16429fa90401228",
+        "state": "COMMITTED"
+      },
+      "seed-211": {
+        "artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-seed-211-data:v85",
+        "bytes": 350431581,
+        "checkpoint": {
+          "bytes": 620412,
+          "sha256": "f457ecfd1293b47c93f01e23ade890947dfa7dee480d20de6e284bc7ac727077",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-211/checkpoints/f457ecfd1293b47c93f01e23ade890947dfa7dee480d20de6e284bc7ac727077.json"
+        },
+        "files_downloaded_and_sha256_verified": 1445,
+        "progress_sha256": "ede2df4c19b978435ed0f80f404c407c1605ef186801f8e346d8949747d27c13",
+        "state": "COMMITTED"
+      },
+      "seed-307": {
+        "artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-seed-307-data:v95",
+        "bytes": 380049164,
+        "checkpoint": {
+          "bytes": 686999,
+          "sha256": "c4d4b60a1de63a3802479f557b1e8b475d87ab409f77fa031cb23489d551bcec",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-307/checkpoints/c4d4b60a1de63a3802479f557b1e8b475d87ab409f77fa031cb23489d551bcec.json"
+        },
+        "files_downloaded_and_sha256_verified": 1599,
+        "progress_sha256": "e5ecebc9a5e2700a7d1dbe3b75f4c5e162cf794d850c604aa7da73cdd671cda7",
+        "state": "COMMITTED"
+      }
+    },
+    "archive_member_audit": {
+      "full_get_sha256": "806359cda7544ac04e15f71bcd92d743b48730044a558deefc34bc36bf7c70c5",
+      "member_bytes": 6493278559,
+      "members": 6027,
+      "metadata_differences": [
+        {
+          "archive_sha256": "acebf4fa34bdcc82a5b4a39ef4ec2835f5fb5f116cf1046537463e4a8c5ce6b3",
+          "path": "batch-progress.json",
+          "reason": "Final backup reference added after archive creation",
+          "worker_sha256": "967d1eea85113cbf7cf96ad5942b60165ed6a498193b9cc675fe85e3820795e4"
+        }
+      ],
+      "status": "verified",
+      "worker_comparison": "All members match; explicitly recorded final-batch metadata update only"
+    },
+    "final_archive": {
+      "bytes": 1405025591,
+      "file_count": 6027,
+      "index_sha256": "eb481a14443c8c6e37e82beef73179edf1b709cf1f6df75268edbb4a0bcc183c",
+      "index_uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/final/eb481a14443c8c6e37e82beef73179edf1b709cf1f6df75268edbb4a0bcc183c.json",
+      "sha256": "806359cda7544ac04e15f71bcd92d743b48730044a558deefc34bc36bf7c70c5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/final/806359cda7544ac04e15f71bcd92d743b48730044a558deefc34bc36bf7c70c5.tar.gz"
+    },
+    "final_index": {
+      "bytes": 1820514,
+      "sha256": "eb481a14443c8c6e37e82beef73179edf1b709cf1f6df75268edbb4a0bcc183c",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/final/eb481a14443c8c6e37e82beef73179edf1b709cf1f6df75268edbb4a0bcc183c.json"
+    },
+    "independent_verification": {
+      "bytes": 6305,
+      "sha256": "b3d2acee7f15e05200fca5b897261ed9b584eba02c95f584fe688dd9251e3c65",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/verification/b3d2acee7f15e05200fca5b897261ed9b584eba02c95f584fe688dd9251e3c65.json"
+    },
+    "input_archives": [
+      {
+        "s3_uri": "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/vecoli-kimi-full-diagnostic-20261105-inputs-v0/9e01ed0650d2de9f9f9f7b80856c71d34d27b013e1f4046aff450e80b8dfdb4b.tar.gz",
+        "sha256": "9e01ed0650d2de9f9f9f7b80856c71d34d27b013e1f4046aff450e80b8dfdb4b",
+        "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-full-diagnostic-20261105-inputs:v0"
+      }
+    ],
+    "jobs": {
+      "calibration": {
+        "completed_cell_cycles": 2,
+        "parent_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-analysis:v0",
+        "progress_sha256": "08d3d9a5f79148433306837c789159148e7a2b3932541f2a81e90a21b88b79b8",
+        "s3_checkpoint": {
+          "bytes": 17993,
+          "sha256": "baaca9dc64d453938836f46b3fd0f453ff470803f29c0d18ffddec6a4b222042",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/calibration-retry1/checkpoints/baaca9dc64d453938836f46b3fd0f453ff470803f29c0d18ffddec6a4b222042.json"
+        },
+        "scope": "Closed cell outputs; running cells are backed up after completion.",
+        "status": "verified",
+        "verified_at": "2026-11-05T21:51:53.989569+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-calibration-retry1-data:v3"
+      },
+      "seed-101": {
+        "completed_cell_cycles": 86,
+        "parent_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-analysis:v0",
+        "progress_sha256": "f2600d0cd8c75fb0afbc06765e38770198737094ba5727734a62b780a3497f1b",
+        "s3_checkpoint": {
+          "bytes": 596233,
+          "sha256": "a208f0a61d3744fb8e39321bd62cb4dcd1b4a87fdc91beef92e59576d6dd7f1a",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101/checkpoints/a208f0a61d3744fb8e39321bd62cb4dcd1b4a87fdc91beef92e59576d6dd7f1a.json"
+        },
+        "scope": "Closed cell outputs; running cells are backed up after completion.",
+        "status": "verified",
+        "verified_at": "2026-11-06T02:00:52.523506+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-seed-101-data:v82"
+      },
+      "seed-211": {
+        "completed_cell_cycles": 89,
+        "parent_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-analysis:v0",
+        "progress_sha256": "ede2df4c19b978435ed0f80f404c407c1605ef186801f8e346d8949747d27c13",
+        "s3_checkpoint": {
+          "bytes": 620412,
+          "sha256": "f457ecfd1293b47c93f01e23ade890947dfa7dee480d20de6e284bc7ac727077",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-211/checkpoints/f457ecfd1293b47c93f01e23ade890947dfa7dee480d20de6e284bc7ac727077.json"
+        },
+        "scope": "Closed cell outputs; running cells are backed up after completion.",
+        "status": "verified",
+        "verified_at": "2026-11-06T01:58:45.416064+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-seed-211-data:v85"
+      },
+      "seed-307": {
+        "completed_cell_cycles": 100,
+        "parent_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-analysis:v0",
+        "progress_sha256": "e5ecebc9a5e2700a7d1dbe3b75f4c5e162cf794d850c604aa7da73cdd671cda7",
+        "s3_checkpoint": {
+          "bytes": 686999,
+          "sha256": "c4d4b60a1de63a3802479f557b1e8b475d87ab409f77fa031cb23489d551bcec",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-307/checkpoints/c4d4b60a1de63a3802479f557b1e8b475d87ab409f77fa031cb23489d551bcec.json"
+        },
+        "scope": "Closed cell outputs; running cells are backed up after completion.",
+        "status": "verified",
+        "verified_at": "2026-11-06T02:22:32.597012+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-seed-307-data:v95"
+      }
+    },
+    "scope": "Complete final archive independently streamed and every member name/size/SHA256 checked against worker files; all six committed W&B data artifacts downloaded and every file SHA256 verified against checkpoint indexes. Analysis separately preserved in S3 and W&B.",
+    "status": "verified",
+    "verification_record": "runs/storage-migration-20261105/remote-validation/final-backup-verification.json",
+    "verification_record_sha256": "1cafb140a1e61e5a4f4a3682b1f0cf27bc55c977aa5182ab4b722b43c33d8c9b",
+    "verified_at": "2026-11-06T03:44:51.330707+00:00"
+  },
+  "execution_backend": "Native Nextflow local executor on one dedicated remote Linux EC2 CPU worker; three separate seed workflows",
+  "final_analysis": {
+    "accepted_recovered_cycles": 14,
+    "all_accepted_daughter_transcript_checks": "passed",
+    "all_accepted_mass_time_history_checks": "passed",
+    "analysis_checked_at": "2026-11-06T03:30:46.370149+00:00",
+    "lineages": [
+      {
+        "birth_dry_mass_last_over_first": 0.6080677703701962,
+        "deletion_count": 0,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.8323275901601586,
+          "duration_cv": 0.19205676265482072,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 57.29,
+          "mean_dry_mass_fold_change": 1.9338783245380338
+        },
+        "name": "mg1655-control",
+        "removed_fraction_of_4290": 0.0,
+        "seed": 101,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.9133759628736866,
+        "deletion_count": 1030,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.112885538653719,
+          "duration_cv": 0.060412228006591275,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 45.46333333333334,
+          "mean_dry_mass_fold_change": 2.0137430935611924
+        },
+        "name": "starting-genome-control",
+        "removed_fraction_of_4290": 0.2400932400932401,
+        "seed": 101,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.8599222710207389,
+        "deletion_count": 1589,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.0462718690378543,
+          "duration_cv": 0.04275670612037437,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 48.13666666666666,
+          "mean_dry_mass_fold_change": 2.022705400796212
+        },
+        "name": "no-retrieval",
+        "removed_fraction_of_4290": 0.3703962703962704,
+        "seed": 101,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.923194091534004,
+        "deletion_count": 1228,
+        "generations_completed": 6,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.9758672521435329,
+          "duration_cv": 0.04164303753270982,
+          "generations": [
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "mean_division_minutes": 42.233333333333334,
+          "mean_dry_mass_fold_change": 1.9941760192397808
+        },
+        "name": "frozen-dossier",
+        "removed_fraction_of_4290": 0.2862470862470862,
+        "seed": 101,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "model_exception"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.7974939727049101,
+        "deletion_count": 1323,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.9721885296404739,
+          "duration_cv": 0.03959413016297919,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 50.230000000000004,
+          "mean_dry_mass_fold_change": 2.0070773475653776
+        },
+        "name": "adaptive-literature",
+        "removed_fraction_of_4290": 0.3083916083916084,
+        "seed": 101,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.8034192675590718,
+        "deletion_count": 0,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.9729520470199888,
+          "duration_cv": 0.024945173179701054,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 59.97666666666667,
+          "mean_dry_mass_fold_change": 1.9584283477687474
+        },
+        "name": "mg1655-control",
+        "removed_fraction_of_4290": 0.0,
+        "seed": 211,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.9737189522414585,
+        "deletion_count": 1030,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.1067218873133164,
+          "duration_cv": 0.06999380539838498,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 51.39333333333333,
+          "mean_dry_mass_fold_change": 2.0426243850249977
+        },
+        "name": "starting-genome-control",
+        "removed_fraction_of_4290": 0.2400932400932401,
+        "seed": 211,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.9612818580899363,
+        "deletion_count": 1589,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.8895972629938643,
+          "duration_cv": 0.06600588439422138,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 45.79333333333333,
+          "mean_dry_mass_fold_change": 1.961602145308564
+        },
+        "name": "no-retrieval",
+        "removed_fraction_of_4290": 0.3703962703962704,
+        "seed": 211,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.9890466972402494,
+        "deletion_count": 1228,
+        "generations_completed": 9,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.0135957010476677,
+          "duration_cv": 0.07229017573055045,
+          "generations": [
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "mean_division_minutes": 51.06333333333334,
+          "mean_dry_mass_fold_change": 1.99824148548087
+        },
+        "name": "frozen-dossier",
+        "removed_fraction_of_4290": 0.2862470862470862,
+        "seed": 211,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "model_exception"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.9624147849359044,
+        "deletion_count": 1323,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.9078072685146138,
+          "duration_cv": 0.06748110453891809,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 45.75666666666667,
+          "mean_dry_mass_fold_change": 1.9754327371401947
+        },
+        "name": "adaptive-literature",
+        "removed_fraction_of_4290": 0.3083916083916084,
+        "seed": 211,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.9442647904090695,
+        "deletion_count": 0,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.8851712148367293,
+          "duration_cv": 0.08557448828669673,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 55.25666666666667,
+          "mean_dry_mass_fold_change": 1.9436267015714448
+        },
+        "name": "mg1655-control",
+        "removed_fraction_of_4290": 0.0,
+        "seed": 307,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 1.160692636078034,
+        "deletion_count": 1030,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.9898108257809669,
+          "duration_cv": 0.03630772357359842,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 47.20333333333333,
+          "mean_dry_mass_fold_change": 1.9517064391022583
+        },
+        "name": "starting-genome-control",
+        "removed_fraction_of_4290": 0.2400932400932401,
+        "seed": 307,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 1.2986911888706558,
+        "deletion_count": 1589,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.1838708199123538,
+          "duration_cv": 0.07190277873364771,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 44.49666666666667,
+          "mean_dry_mass_fold_change": 2.060835232677465
+        },
+        "name": "no-retrieval",
+        "removed_fraction_of_4290": 0.3703962703962704,
+        "seed": 307,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 1.11426887665347,
+        "deletion_count": 1228,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.9313308790057528,
+          "duration_cv": 0.05230415282652724,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 45.336666666666666,
+          "mean_dry_mass_fold_change": 1.9940203038252113
+        },
+        "name": "frozen-dossier",
+        "removed_fraction_of_4290": 0.2862470862470862,
+        "seed": 307,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 1.1889838281971896,
+        "deletion_count": 1323,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.840506868451037,
+          "duration_cv": 0.06782585938043396,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 42.333333333333336,
+          "mean_dry_mass_fold_change": 1.9423756393831433
+        },
+        "name": "adaptive-literature",
+        "removed_fraction_of_4290": 0.3083916083916084,
+        "seed": 307,
+        "separate_numerical_protocol": false,
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.6930672996209123,
+        "deletion_count": 1228,
+        "generations_completed": 20,
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.8272995369643732,
+          "duration_cv": 0.08349758964528584,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 51.806666666666665,
+          "mean_dry_mass_fold_change": 1.9008147605244519
+        },
+        "name": "frozen-dossier",
+        "removed_fraction_of_4290": 0.2862470862470862,
+        "seed": 101,
+        "separate_numerical_protocol": true,
+        "terminal_reason": "reached_max_generations_with_numerical_recovery"
+      }
+    ],
+    "numerical_warning_counts": {
+      "/home/ubuntu/yggdrisil-vecoli-20261105/native-solver-recovery-v2/ecoli/processes/polypeptide_elongation.py:1495: RuntimeWarning: divide by zero encountered in divide": 2,
+      "/home/ubuntu/yggdrisil-vecoli-20261105/native/.venv/lib/python3.12/site-packages/scipy/integrate/_ivp/bdf.py:415: RuntimeWarning: invalid value encountered in subtract": 27,
+      "/home/ubuntu/yggdrisil-vecoli-20261105/native/ecoli/processes/polypeptide_elongation.py:1495: RuntimeWarning: divide by zero encountered in divide": 16,
+      "<string>:1: RuntimeWarning: divide by zero encountered in scalar divide": 71,
+      "RuntimeError: GLP_UNBND: unbounded": 2
+    },
+    "original_completed_cycles": 275,
+    "original_lineages_at_20": 13,
+    "path": "runs/storage-migration-20261105/remote-validation/final-analysis.json",
+    "s3": {
+      "bytes": 307329,
+      "sha256": "81615e4479504b6c087fcec8788dd41b34c731027f30b4815695b6cb7ba9665f",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/analysis/81615e4479504b6c087fcec8788dd41b34c731027f30b4815695b6cb7ba9665f.json"
+    },
+    "scope": "Expression-knockout model evidence; original and patched protocols reported separately. Birth-mass drift and numerical warnings remain; twenty divisions do not establish laboratory viability or stable long-term growth.",
+    "separately_recovered_lineages_at_20": 1,
+    "sha256": "dca32ec810dd8f4b7c8afbf4d3a0cccd96887906aa87929248fe05d087ae6fce",
+    "unresolved_lineages": [
+      {
+        "generations": 9,
+        "name": "frozen-dossier",
+        "reason": "GLP_UNBND model exception; no numerical recovery authorized",
+        "seed": 211
+      }
+    ],
+    "wandb": {
+      "artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-final-analysis:v0",
+      "full_download_sha256_verified": true,
+      "run_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/v20final20261106",
+      "state": "COMMITTED"
+    }
+  },
+  "final_worker_state": "terminated",
+  "followup_intent": {
+    "launch_authorized": false,
+    "pending": "New priced model and compute budget approval required under AGENTS.md",
+    "prepared_search_experiment_id": "literature-ablation-kimi-continuation-20261106",
+    "prepared_validation_experiment_id": "vecoli-kimi-continuation-20gen-3seed-20261106",
+    "requested_at": "2026-11-06T07:33:42.554498+00:00",
+    "scope": "Continue all three conditions from saved search checkpoints, maximize additional deletions, then repeat remote vEcoli validation"
+  },
+  "full_run_started_at": "2026-11-05T21:52:06Z",
+  "genotype_count": 5,
+  "id": "vecoli-kimi-20gen-3seed-20261105",
+  "instance_deadline_hours": 24,
+  "instance_id": "i-0c5c019cddd5be31f",
+  "instance_stop_deadline": "2026-11-06T21:17:03Z",
+  "instance_type": "m7i.4xlarge",
+  "kind": "remote_vecoli_validation",
+  "last_checked_at": "2026-11-06T03:46:21.390667+00:00",
+  "latest_monitor_record": {
+    "path": "runs/storage-migration-20261105/remote-validation/final-backup-verification.json",
+    "sha256": "1cafb140a1e61e5a4f4a3682b1f0cf27bc55c977aa5182ab4b722b43c33d8c9b"
+  },
+  "latest_progress": {
+    "accepted_recovered_cell_cycles": 14,
+    "all_accepted_cell_cycles_excluding_calibration": 289,
+    "checked_at": "2026-11-06T03:44:51.330707+00:00",
+    "completed_full_run_cell_cycles": 275,
+    "lineages_with_model_exception": 2,
+    "newly_closed_cycles_after_verified_snapshots": 0,
+    "original_completed_cell_cycles": 275,
+    "original_lineages_at_target": [
+      {
+        "generations_completed": 20,
+        "genotype": "mg1655-control",
+        "job": "seed-101"
+      },
+      {
+        "generations_completed": 20,
+        "genotype": "starting-genome-control",
+        "job": "seed-101"
+      },
+      {
+        "generations_completed": 20,
+        "genotype": "no-retrieval",
+        "job": "seed-101"
+      },
+      {
+        "generations_completed": 20,
+        "genotype": "adaptive-literature",
+        "job": "seed-101"
+      },
+      {
+        "generations_completed": 20,
+        "genotype": "mg1655-control",
+        "job": "seed-211"
+      },
+      {
+        "generations_completed": 20,
+        "genotype": "starting-genome-control",
+        "job": "seed-211"
+      },
+      {
+        "generations_completed": 20,
+        "genotype": "no-retrieval",
+        "job": "seed-211"
+      },
+      {
+        "generations_completed": 20,
+        "genotype": "adaptive-literature",
+        "job": "seed-211"
+      },
+      {
+        "generations_completed": 20,
+        "genotype": "mg1655-control",
+        "job": "seed-307"
+      },
+      {
+        "generations_completed": 20,
+        "genotype": "starting-genome-control",
+        "job": "seed-307"
+      },
+      {
+        "generations_completed": 20,
+        "genotype": "no-retrieval",
+        "job": "seed-307"
+      },
+      {
+        "generations_completed": 20,
+        "genotype": "frozen-dossier",
+        "job": "seed-307"
+      },
+      {
+        "generations_completed": 20,
+        "genotype": "adaptive-literature",
+        "job": "seed-307"
+      }
+    ],
+    "original_workflow_statuses": {
+      "calibration": "completed",
+      "seed-101": "failed",
+      "seed-211": "failed",
+      "seed-307": "completed"
+    },
+    "original_workflows_finished": true,
+    "recovery_active_generation": null,
+    "recovery_attempts": {
+      "1": "failed",
+      "2": "completed"
+    },
+    "recovery_generations_completed": 20,
+    "recovery_status": "completed",
+    "running_cells": 0,
+    "verification_completed_at": "2026-11-06T03:44:51.330707+00:00",
+    "verified_backup_full_run_cell_cycles": 275
+  },
+  "launched_at": "2026-11-05 21:16:43+00:00",
+  "lineage_failures": [
+    {
+      "classification": "model_exception",
+      "data_backup": {
+        "bytes": 2048,
+        "sha256": "9244c65c172ae43e0bc6e45941f69857f9c9c9758880a004802feb973ac7cb5a",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/diagnostics/9244c65c172ae43e0bc6e45941f69857f9c9c9758880a004802feb973ac7cb5a.json"
+      },
+      "diagnostic_record": "runs/storage-migration-20261105/remote-validation/model-exception-seed101-frozen-dossier.json",
+      "diagnostic_record_sha256": "72ecea51166ec53aa59e075e3b063ca24c1ccf2d04e061273608f5f045f8c4dd",
+      "error": "RuntimeError: GLP_UNBND: unbounded",
+      "failed_generation": 7,
+      "generations_completed": 6,
+      "genotype": "frozen-dossier",
+      "job": "seed-101",
+      "notified_at": "2026-11-05T23:28:06.089163+00:00",
+      "stderr_backup": {
+        "bytes": 3566,
+        "member": "output/nextflow/nextflow_workdirs/b1/80f9a703e1c38b2bb6fa7bdf2b77ea/.command.err",
+        "sha256": "f5f9e4bba503db5e8134d651eb2f4795c5c475e895d2a3a0c84b40787a1a7665",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101/objects/f5f9e4bba503db5e8134d651eb2f4795c5c475e895d2a3a0c84b40787a1a7665"
+      },
+      "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-seed-101-data:v31"
+    },
+    {
+      "classification": "model_exception",
+      "data_backup": {
+        "bytes": 2369,
+        "sha256": "2d6dd2661d77b5b23d1c21b9ec282724c0fdb3cff5c89a51d076799916340c6b",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/diagnostics/2d6dd2661d77b5b23d1c21b9ec282724c0fdb3cff5c89a51d076799916340c6b.json"
+      },
+      "diagnostic_record": "runs/storage-migration-20261105/remote-validation/model-exception-seed211-frozen-dossier.json",
+      "diagnostic_record_sha256": "29ba2f4bb8fe2557adb87bab0758d8428a0351d3b5bf330c37ca34b11b33ee3e",
+      "error": "RuntimeError: GLP_UNBND: unbounded",
+      "failed_generation": 10,
+      "generations_completed": 9,
+      "genotype": "frozen-dossier",
+      "interpretation": "Native metabolic optimization raised an unbounded-solver exception. This is not an observed nondivision endpoint. It has the same error label as seed101, but the numerical cause has not been established for this cell.",
+      "job": "seed-211",
+      "notified_at": "2026-11-06T00:31:41.551554+00:00",
+      "recovery_status": "not_launched",
+      "stderr_backup": {
+        "bytes": 3349,
+        "member": "output/nextflow/nextflow_workdirs/ed/657a2e7101c292c8ce97be3497031a/.command.err",
+        "sha256": "36b414d22b1bc58e272386582ed589f8d7269f46bbc741c07d5dfeab0e530820",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-211/objects/36b414d22b1bc58e272386582ed589f8d7269f46bbc741c07d5dfeab0e530820"
+      },
+      "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-seed-211-data:v56"
+    }
+  ],
+  "maximum_cell_simulations": 300,
+  "model_budget_usd": 0,
+  "monitor_automation": "monitor-remote-20-generation-vecoli-validation",
+  "monitor_completion": {
+    "automation_id": "monitor-remote-20-generation-vecoli-validation",
+    "reason": "Science, full backup verification, final analysis and dedicated worker cleanup complete; deletion confirmed by the app.",
+    "status": "deleted"
+  },
+  "new_edison_jobs": false,
+  "operational_final_record": {
+    "path": "runs/storage-migration-20261105/remote-validation/operational-final-record.json",
+    "s3": {
+      "bytes": 36004,
+      "sha256": "bf1aa0931220f12cd7ae6aa024bba7eb85bcf52a7664ee59d76478670cc8bcc7",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/completion/bf1aa0931220f12cd7ae6aa024bba7eb85bcf52a7664ee59d76478670cc8bcc7.json"
+    },
+    "sha256": "494fd6b1a920a335eefd8af360db968e2b1573b3534e851e92e51e006a0e93c6"
+  },
+  "operational_repair": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/storage-migration-20261105/remote-validation/launch-directory-repair.json",
+  "parent_ids": [
+    "vecoli-kimi-full-diagnostic-20261105"
+  ],
+  "protocol": "benchmarks/vecoli_20gen_remote.json",
+  "recorded_for_followup_at": "2026-11-06T07:33:42.554498+00:00",
+  "remote_host": "3.83.129.167",
+  "remote_root": "/home/ubuntu/yggdrisil-vecoli-20261105",
+  "resource_cleanup": {
+    "authorized_budget_usd": 30,
+    "confirmed_at": "2026-11-06T03:46:21.390667+00:00",
+    "cost_note": "Conservative elapsed-time VM estimate includes the brief stopped interval; not a settled bill. Storage, requests and transfers are additional within the approved $30 cap.",
+    "credential_copy_removed_with_deleted_volume": true,
+    "estimated_instance_cost_upper_bound_usd": 5.236759509408,
+    "experiment_id": "vecoli-kimi-20gen-3seed-20261105",
+    "hourly_instance_price_usd": 0.8064,
+    "initial_launch_time": "2026-11-05T21:16:43+00:00",
+    "instance_id": "i-0c5c019cddd5be31f",
+    "instance_state": "terminated",
+    "preexisting_shared_running_instances": [
+      "i-0cda00ffb3cacfc12"
+    ],
+    "region": "us-east-1",
+    "requested_at": "2026-11-06T03:45:41.727479+00:00",
+    "shared_instances_unchanged": true,
+    "verification_record": {
+      "bytes": 6305,
+      "sha256": "b3d2acee7f15e05200fca5b897261ed9b584eba02c95f584fe688dd9251e3c65",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/verification/b3d2acee7f15e05200fca5b897261ed9b584eba02c95f584fe688dd9251e3c65.json"
+    },
+    "volume_deleted": true,
+    "volume_id": "vol-06160116242244b5f",
+    "wall_hours_upper_bound": 6.4939974075
+  },
+  "retained_local_scope": "Compact metadata and source only; all scientific bulk data remote in S3 and W&B.",
+  "runtime_metadata": "runs/storage-migration-20261105/remote-validation",
+  "s3_prefix": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/",
+  "scientific_deadline": "2026-11-06T20:16:43Z",
+  "seeds": [
+    101,
+    211,
+    307
+  ],
+  "setup_attempts": [
+    {
+      "data_backup": {
+        "bytes": 95880970,
+        "file_count": 62,
+        "index_sha256": "cd50445ff750bb7fca67bfb391857c4656a673b192871035fb8dca38dcb915e4",
+        "index_uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/final/cd50445ff750bb7fca67bfb391857c4656a673b192871035fb8dca38dcb915e4.json",
+        "sha256": "a5a015d406406cdbc93e249a19ab529500f712122e74e4651362f0e41e03ccc3",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/final/a5a015d406406cdbc93e249a19ab529500f712122e74e4651362f0e41e03ccc3.tar.gz"
+      },
+      "reason": "Native standard profile requires native runscripts and ecoli under launchDir",
+      "status": "failed_before_cells"
+    }
+  ],
+  "solver_recovery": {
+    "accepted_recovered_generations": 14,
+    "active_generation": null,
+    "attempt": 2,
+    "authorized_by": "Explicit user request to fix and restart failed lineage",
+    "continuation": "Completed through generation20 under the separately labelled numerical recovery protocol; no further science scheduled.",
+    "data_backup": {
+      "progress_sha256": "8f6c8da94d38b9b689583c37191213f4f1d48ddfd7154dc9a16429fa90401228",
+      "recovered_cells": 14,
+      "s3_checkpoint": {
+        "bytes": 123069,
+        "sha256": "9c39279e1345434c54a87a9b82aea8b5b666bfbdcbf425c16899a23021eaddf2",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/checkpoints/9c39279e1345434c54a87a9b82aea8b5b666bfbdcbf425c16899a23021eaddf2.json"
+      },
+      "status": "verified",
+      "verified_at": "2026-11-06T03:26:41.873814+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-seed-101-frozen-dossier-recovery-v2-data:v17"
+    },
+    "first_recovered_generation": 7,
+    "generations_completed": 20,
+    "last_verified_at": "2026-11-06T03:33:40.002974+00:00",
+    "latest_verification_record": {
+      "path": "runs/storage-migration-20261105/remote-validation/recovery-verification-final.json",
+      "s3": {
+        "bytes": 35247,
+        "sha256": "033852a51dacfe27687a1618da706395bb190e0ab0168ec3a4b04a876846fe08",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/diagnostics/recovery/033852a51dacfe27687a1618da706395bb190e0ab0168ec3a4b04a876846fe08.json"
+      },
+      "sha256": "3bb6366bc217fd4038d1cec4fe7264a4b637385a656a36d28b033b0e222e5e1e"
+    },
+    "local_record": "runs/storage-migration-20261105/remote-validation/solver-recovery-attempt2.json",
+    "local_record_sha256": "2ec004c0a6deaf05dee906e63ba0cf7df39d341ec980473c98a83d202bd229ea",
+    "manifest_sha256": "084a90bbf8c9ddf37b50ec56b87d19fac5f1d83ab02165f1a6fdf60f0e4f835d",
+    "original_failure_point_recovered": true,
+    "original_failure_retained": true,
+    "original_generations": 6,
+    "provenance": {
+      "bytes": 13084,
+      "sha256": "6d62851beb5d2e7e8f7cbb6dc31a9bb2c7a3fc4d0f98441f0ddd2617facd39c8",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/diagnostics/recovery/6d62851beb5d2e7e8f7cbb6dc31a9bb2c7a3fc4d0f98441f0ddd2617facd39c8.json"
+    },
+    "reason": "Authorized separate numerical recovery reached generation20; original six divisions and original failure retained. Three unchanged-LP/GLP_OPT/strict-KKT fallbacks accepted at generations7,11,15.",
+    "recovered_generations": [
+      {
+        "daughter_sha256": "f8a33cbf88f013907cad4defda41a75b7ce91124e08cc2489db3a0a12963b6d6",
+        "division_global_time_s": 17420.0,
+        "final_cell_mass_fg": 2681.9268005777626,
+        "final_dry_mass_fg": 805.0981597839445,
+        "final_dry_mass_fold_change": 2.0392604138874875,
+        "finite_history_check": "passed",
+        "generation": 7,
+        "generation_duration_s": 2544.0,
+        "solver_recoveries": 1,
+        "transcript_check": "passed",
+        "wall_time_s": 435.4167628720006
+      },
+      {
+        "daughter_sha256": "a74dc6a465b16c1d6267b3cb30be76188fd7964b8a8d345e1e17bda1f29a52ff",
+        "division_global_time_s": 19800.0,
+        "final_cell_mass_fg": 2570.956300620373,
+        "final_dry_mass_fg": 771.8388917473444,
+        "final_dry_mass_fold_change": 1.918133455847902,
+        "finite_history_check": "passed",
+        "generation": 8,
+        "generation_duration_s": 2380.0,
+        "solver_recoveries": 0,
+        "transcript_check": "passed",
+        "wall_time_s": 365.2373369529996
+      },
+      {
+        "daughter_sha256": "cfab1fa26e17bd972b9062166a1dba5729364e64031a50ad16e620ad40ce065b",
+        "division_global_time_s": 22465.0,
+        "final_cell_mass_fg": 2880.722225753158,
+        "final_dry_mass_fg": 864.7931032727079,
+        "final_dry_mass_fold_change": 2.2485155447896923,
+        "finite_history_check": "passed",
+        "generation": 9,
+        "generation_duration_s": 2665.0,
+        "solver_recoveries": 0,
+        "transcript_check": "passed",
+        "wall_time_s": 430.23001075200045
+      },
+      {
+        "daughter_sha256": "554bafa055979de0842d059cc063391f86a746d61f3a1a6677e9afed877c208d",
+        "division_global_time_s": 24747.0,
+        "final_cell_mass_fg": 2678.74546628038,
+        "final_dry_mass_fg": 804.1061965836182,
+        "final_dry_mass_fold_change": 1.8576204242004912,
+        "finite_history_check": "passed",
+        "generation": 10,
+        "generation_duration_s": 2282.0,
+        "solver_recoveries": 0,
+        "transcript_check": "passed",
+        "wall_time_s": 360.21380330800093
+      },
+      {
+        "daughter_sha256": "89edfea7dc302dcc05bbc735bf6de1ade29adfdedc84797c80cfc37586925bb1",
+        "division_global_time_s": 27170.0,
+        "final_cell_mass_fg": 2403.115539817281,
+        "final_dry_mass_fg": 721.3206031802054,
+        "final_dry_mass_fold_change": 1.790808639348349,
+        "finite_history_check": "passed",
+        "generation": 11,
+        "generation_duration_s": 2423.0,
+        "solver_recoveries": 1,
+        "transcript_check": "passed",
+        "wall_time_s": 350.19765473400184
+      },
+      {
+        "daughter_sha256": "db7df8cd85a122b3b3ba2b2c361ba12000d914d0163b1a86b90890b65436b044",
+        "division_global_time_s": 29905.0,
+        "final_cell_mass_fg": 2413.091095586229,
+        "final_dry_mass_fg": 724.3422352708069,
+        "final_dry_mass_fold_change": 2.0106937699451626,
+        "finite_history_check": "passed",
+        "generation": 12,
+        "generation_duration_s": 2735.0,
+        "solver_recoveries": 0,
+        "transcript_check": "passed",
+        "wall_time_s": 390.19884767999974
+      },
+      {
+        "daughter_sha256": "b305867b87aec93ad830388a6556332de30113f4f13c22501b54d3cddb919048",
+        "division_global_time_s": 32679.0,
+        "final_cell_mass_fg": 2469.7732883401636,
+        "final_dry_mass_fg": 741.3759202663143,
+        "final_dry_mass_fold_change": 2.0570460264901973,
+        "finite_history_check": "passed",
+        "generation": 13,
+        "generation_duration_s": 2774.0,
+        "solver_recoveries": 0,
+        "transcript_check": "passed",
+        "wall_time_s": 395.20388928100147
+      },
+      {
+        "daughter_sha256": "e3a11cf900ecf974633cab4f743ed4222451b0beb78faf5a9862c036883862d0",
+        "division_global_time_s": 35352.0,
+        "final_cell_mass_fg": 2552.530533922995,
+        "final_dry_mass_fg": 766.2405381041658,
+        "final_dry_mass_fold_change": 2.0682518879225125,
+        "finite_history_check": "passed",
+        "generation": 14,
+        "generation_duration_s": 2673.0,
+        "solver_recoveries": 0,
+        "transcript_check": "passed",
+        "wall_time_s": 395.21263211599944
+      },
+      {
+        "daughter_sha256": "40eea0aac95fa4bd9677baca35141971edf0a42408b69b0c91db0e7222f4cfc6",
+        "division_global_time_s": 37957.0,
+        "final_cell_mass_fg": 2384.939719876226,
+        "final_dry_mass_fg": 715.8748159173219,
+        "final_dry_mass_fold_change": 1.867711581848744,
+        "finite_history_check": "passed",
+        "generation": 15,
+        "generation_duration_s": 2605.0,
+        "solver_recoveries": 1,
+        "transcript_check": "passed",
+        "wall_time_s": 365.25740045800194
+      },
+      {
+        "daughter_sha256": "8271df0b4b3da8e45db4ce88bd137d7b052d0887ec2ce73c9ca5422bbe8ede44",
+        "division_global_time_s": 40696.0,
+        "final_cell_mass_fg": 2220.7921305277873,
+        "final_dry_mass_fg": 666.6011022846264,
+        "final_dry_mass_fold_change": 1.8638101496018027,
+        "finite_history_check": "passed",
+        "generation": 16,
+        "generation_duration_s": 2739.0,
+        "solver_recoveries": 0,
+        "transcript_check": "passed",
+        "wall_time_s": 375.1882340480006
+      },
+      {
+        "daughter_sha256": "2bd8c91d3fd5c61ad75a22c40f450bba8508c7fd120152d0170955d3e0ed95ee",
+        "division_global_time_s": 43726.0,
+        "final_cell_mass_fg": 2161.580441482987,
+        "final_dry_mass_fg": 648.812143880458,
+        "final_dry_mass_fold_change": 1.9490158530535093,
+        "finite_history_check": "passed",
+        "generation": 17,
+        "generation_duration_s": 3030.0,
+        "solver_recoveries": 0,
+        "transcript_check": "passed",
+        "wall_time_s": 400.1848617270007
+      },
+      {
+        "daughter_sha256": "1da9c021c25f5804060e61bdd12a948f0eed66c34d629cb111312d848bc758cd",
+        "division_global_time_s": 46869.0,
+        "final_cell_mass_fg": 2154.3265065530577,
+        "final_dry_mass_fg": 646.596404750605,
+        "final_dry_mass_fold_change": 1.991853262620791,
+        "finite_history_check": "passed",
+        "generation": 18,
+        "generation_duration_s": 3143.0,
+        "solver_recoveries": 0,
+        "transcript_check": "passed",
+        "wall_time_s": 410.1939531740027
+      },
+      {
+        "daughter_sha256": "88fa9fc62bfda4be493db26558be10e086cea7bfec18624633b478562e14bed5",
+        "division_global_time_s": 49952.0,
+        "final_cell_mass_fg": 1972.257286287867,
+        "final_dry_mass_fg": 591.9481043345127,
+        "final_dry_mass_fold_change": 1.8302394013717014,
+        "finite_history_check": "passed",
+        "generation": 19,
+        "generation_duration_s": 3083.0,
+        "solver_recoveries": 0,
+        "transcript_check": "passed",
+        "wall_time_s": 400.1810886789972
+      },
+      {
+        "daughter_sha256": "a1e62d9ba71d65e97f8508ed5f528ee3cf31cfcfc05847c4f84640bc7b5fb376",
+        "division_global_time_s": 53499.0,
+        "final_cell_mass_fg": 1842.6684247010376,
+        "final_dry_mass_fg": 553.060299801255,
+        "final_dry_mass_fold_change": 1.8691551359744547,
+        "finite_history_check": "passed",
+        "generation": 20,
+        "generation_duration_s": 3547.0,
+        "solver_recoveries": 0,
+        "transcript_check": "passed",
+        "wall_time_s": 440.17921401199783
+      }
+    ],
+    "remote_root": "/home/ubuntu/yggdrisil-vecoli-20261105/runs/seed-101-frozen-dossier-recovery-v2",
+    "separate_numerical_protocol": true,
+    "solver_reports": {
+      "cells/generation-11/solver-diagnostics/1793931745223971212.json": {
+        "kkt": {
+          "1": {
+            "absolute_error": 2.1316282072803006e-14,
+            "relative_error": 3.0928834502585003e-16
+          },
+          "2": {
+            "absolute_error": 5.551115123125783e-17,
+            "relative_error": 5.551115123125783e-17
+          },
+          "3": {
+            "absolute_error": 2.2737367544323206e-13,
+            "relative_error": 4.877837584516945e-16
+          },
+          "4": {
+            "absolute_error": 7.926761003956687e-08,
+            "relative_error": 7.926761003956687e-08
+          }
+        },
+        "model_unchanged": true,
+        "original_lp_sha256": "96cc5b012d138616d0d90f92748cef8cdb81ded5a833c402d51bf7d022e632c3",
+        "return_code": 0,
+        "status": "GLP_OPT: optimal",
+        "tolerance_bound": 1e-07,
+        "tolerance_dual": 1e-07
+      },
+      "cells/generation-15/solver-diagnostics/1793933186905500174.json": {
+        "kkt": {
+          "1": {
+            "absolute_error": 2.1827872842550278e-11,
+            "relative_error": 3.099976766805245e-16
+          },
+          "2": {
+            "absolute_error": 8.218252467440124e-17,
+            "relative_error": 8.218252467440124e-17
+          },
+          "3": {
+            "absolute_error": 5.684341886080802e-14,
+            "relative_error": 1.4514441560484074e-15
+          },
+          "4": {
+            "absolute_error": 8.103692064515179e-08,
+            "relative_error": 8.103692064515179e-08
+          }
+        },
+        "model_unchanged": true,
+        "original_lp_sha256": "b976056b203ff46522d4cafe93f307565e5f6d9355b91a9bb4025f723ac6c718",
+        "return_code": 0,
+        "status": "GLP_OPT: optimal",
+        "tolerance_bound": 1e-07,
+        "tolerance_dual": 1e-07
+      },
+      "cells/generation-7/solver-diagnostics/1793924167092101972.json": {
+        "kkt": {
+          "1": {
+            "absolute_error": 3.637978807091713e-11,
+            "relative_error": 8.511709855459541e-16
+          },
+          "2": {
+            "absolute_error": 1.457167719820518e-16,
+            "relative_error": 1.457167719820518e-16
+          },
+          "3": {
+            "absolute_error": 7.105427357601002e-15,
+            "relative_error": 4.9405526034556e-16
+          },
+          "4": {
+            "absolute_error": 8.805040157481691e-08,
+            "relative_error": 8.805040157481691e-08
+          }
+        },
+        "model_unchanged": true,
+        "original_lp_sha256": "4285d638fd5e7530546d8d8b043089ff3232e3af6315ad2b84928b814e29faad",
+        "return_code": 0,
+        "status": "GLP_OPT: optimal",
+        "tolerance_bound": 1e-07,
+        "tolerance_dual": 1e-07
+      }
+    },
+    "status": "completed",
+    "supervisor_adoption": {
+      "at": "2026-11-06T00:10:37.221913+00:00",
+      "authorized_by": "User requested fixing and restarting the failed lineage",
+      "budget_unchanged_usd": 30,
+      "change": "Adopt live controllers; wait for all independent jobs and separately tracked recovery before final backup/shutdown",
+      "controllers": {
+        "seed-101": {
+          "command": "/home/ubuntu/yggdrisil-vecoli-20261105/controller-env/bin/python /home/ubuntu/yggdrisil-vecoli-20261105/application/scripts/track_vecoli_experiment.py --manifest /home/ubuntu/yggdrisil-vecoli-20261105/runs/seed-101/manifest.json --catalog /home/ubuntu/yggdrisil-vecoli-20261105/runs/seed-101/experiments.json ",
+          "pid": 10772,
+          "start_ticks": 89501
+        },
+        "seed-211": {
+          "command": "/home/ubuntu/yggdrisil-vecoli-20261105/controller-env/bin/python /home/ubuntu/yggdrisil-vecoli-20261105/application/scripts/track_vecoli_experiment.py --manifest /home/ubuntu/yggdrisil-vecoli-20261105/runs/seed-211/manifest.json --catalog /home/ubuntu/yggdrisil-vecoli-20261105/runs/seed-211/experiments.json ",
+          "pid": 10773,
+          "start_ticks": 89501
+        },
+        "seed-307": {
+          "command": "/home/ubuntu/yggdrisil-vecoli-20261105/controller-env/bin/python /home/ubuntu/yggdrisil-vecoli-20261105/application/scripts/track_vecoli_experiment.py --manifest /home/ubuntu/yggdrisil-vecoli-20261105/runs/seed-307/manifest.json --catalog /home/ubuntu/yggdrisil-vecoli-20261105/runs/seed-307/experiments.json ",
+          "pid": 10774,
+          "start_ticks": 89501
+        }
+      },
+      "deadline_unchanged": "2026-11-06T20:16:43+00:00",
+      "launched_at": "2026-11-06T00:10:37.326447+00:00",
+      "new_supervisor_pid": 848988,
+      "previous_supervisor": {
+        "command": "/home/ubuntu/yggdrisil-vecoli-20261105/controller-env/bin/python -u /home/ubuntu/yggdrisil-vecoli-20261105/yggdrisil-adopting-supervisor.py ",
+        "pid": 771629,
+        "start_ticks": 833579
+      },
+      "seed101_scheduler": {
+        "command": "/usr/bin/java --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/java.nio.file.spi=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.nio.fs=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.http=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.https=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.ftp=ALL-UNNAMED --add-opens=java.base/sun.net.www.protocol.file=ALL-UNNAMED --add-opens=java.base/jdk.internal.misc=ALL-UNNAMED --add-opens=java.base/jdk.internal.vm=ALL-UNNAMED --add-opens=java.base/java.util.regex=ALL-UNNAMED -Dfile.encoding=UTF-8 -Dcapsule.trampoline -Dcapsule.java.cmd=/usr/bin/java -Dcom.sun.security.enableAIAcaIssuers=true -Djava.awt.headless=true -jar /home/ubuntu/.nextflow/framework/25.10.4/nextflow-25.10.4-one.jar -C /home/ubuntu/yggdrisil-vecoli-20261105/native/nextflow_temp/vecoli_kimi_20gen_3seed_20261105_seed_101/nextflow.config run /home/ubuntu/yggdrisil-vecoli-20261105/native/nextflow_temp/vecoli_kimi_20gen_3seed_20261105_seed_101/main.nf -profile standard -with-report /home/ubuntu/yggdrisil-vecoli-20261105/runs/seed-101/output/vecoli_kimi_20gen_3seed_20261105_seed_101/nextflow/vecoli_kimi_20gen_3seed_20261105_seed_101_report.html -work-dir /home/ubuntu/yggdrisil-vecoli-20261105/runs/seed-101/output/vecoli_kimi_20gen_3seed_20261105_seed_101/nextflow/nextflow_workdirs ",
+        "pid": 11197,
+        "start_ticks": 89830
+      },
+      "source_sha256": {
+        "run-solver-recovery-v2.py": "b30312526093e10195e3d4768e37a8311ce2eb6edb631bdd686477e58d2bed65",
+        "yggdrisil-adopting-supervisor-v2.py": "1987338412ea77321959e0996457aba52f6037e6ca981cdb4fe3f1a1260ecb55"
+      }
+    },
+    "target_generation": 20,
+    "trajectory_comparison": {
+      "last_original_global_time": 15524.0,
+      "max_abs_difference_before_original_failure": {
+        "listeners__mass__cell_mass": 0.0,
+        "listeners__mass__dry_mass": 0.0,
+        "listeners__mass__dry_mass_fold_change": 0.0
+      },
+      "original_failed_samples": 648,
+      "replay_last_global_time": 17419.0,
+      "replay_samples": 2543
+    },
+    "updated_at": "2026-11-06T03:33:40.002974+00:00",
+    "verified_closed_output": {
+      "bytes": 6576943,
+      "generation": 20,
+      "member": "daughters/generation-20/daughter_state_0.json",
+      "sha256": "a1e62d9ba71d65e97f8508ed5f528ee3cf31cfcfc05847c4f84640bc7b5fb376",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/a1e62d9ba71d65e97f8508ed5f528ee3cf31cfcfc05847c4f84640bc7b5fb376",
+      "wandb_matches_s3": true
+    },
+    "verified_closed_outputs": [
+      {
+        "bytes": 8478947,
+        "generation": 7,
+        "member": "daughters/generation-7/daughter_state_0.json",
+        "sha256": "f8a33cbf88f013907cad4defda41a75b7ce91124e08cc2489db3a0a12963b6d6",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/f8a33cbf88f013907cad4defda41a75b7ce91124e08cc2489db3a0a12963b6d6",
+        "wandb_matches_s3": true
+      },
+      {
+        "bytes": 8310598,
+        "generation": 8,
+        "member": "daughters/generation-8/daughter_state_0.json",
+        "sha256": "a74dc6a465b16c1d6267b3cb30be76188fd7964b8a8d345e1e17bda1f29a52ff",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/a74dc6a465b16c1d6267b3cb30be76188fd7964b8a8d345e1e17bda1f29a52ff",
+        "wandb_matches_s3": true
+      },
+      {
+        "bytes": 8897297,
+        "generation": 9,
+        "member": "daughters/generation-9/daughter_state_0.json",
+        "sha256": "cfab1fa26e17bd972b9062166a1dba5729364e64031a50ad16e620ad40ce065b",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/cfab1fa26e17bd972b9062166a1dba5729364e64031a50ad16e620ad40ce065b",
+        "wandb_matches_s3": true
+      },
+      {
+        "bytes": 8568300,
+        "generation": 10,
+        "member": "daughters/generation-10/daughter_state_0.json",
+        "sha256": "554bafa055979de0842d059cc063391f86a746d61f3a1a6677e9afed877c208d",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/554bafa055979de0842d059cc063391f86a746d61f3a1a6677e9afed877c208d",
+        "wandb_matches_s3": true
+      },
+      {
+        "bytes": 7803193,
+        "generation": 11,
+        "member": "daughters/generation-11/daughter_state_0.json",
+        "sha256": "89edfea7dc302dcc05bbc735bf6de1ade29adfdedc84797c80cfc37586925bb1",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/89edfea7dc302dcc05bbc735bf6de1ade29adfdedc84797c80cfc37586925bb1",
+        "wandb_matches_s3": true
+      },
+      {
+        "bytes": 7749475,
+        "generation": 12,
+        "member": "daughters/generation-12/daughter_state_0.json",
+        "sha256": "db7df8cd85a122b3b3ba2b2c361ba12000d914d0163b1a86b90890b65436b044",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/db7df8cd85a122b3b3ba2b2c361ba12000d914d0163b1a86b90890b65436b044",
+        "wandb_matches_s3": true
+      },
+      {
+        "bytes": 8122446,
+        "generation": 13,
+        "member": "daughters/generation-13/daughter_state_0.json",
+        "sha256": "b305867b87aec93ad830388a6556332de30113f4f13c22501b54d3cddb919048",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/b305867b87aec93ad830388a6556332de30113f4f13c22501b54d3cddb919048",
+        "wandb_matches_s3": true
+      },
+      {
+        "bytes": 8320137,
+        "generation": 14,
+        "member": "daughters/generation-14/daughter_state_0.json",
+        "sha256": "e3a11cf900ecf974633cab4f743ed4222451b0beb78faf5a9862c036883862d0",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/e3a11cf900ecf974633cab4f743ed4222451b0beb78faf5a9862c036883862d0",
+        "wandb_matches_s3": true
+      },
+      {
+        "bytes": 7868838,
+        "generation": 15,
+        "member": "daughters/generation-15/daughter_state_0.json",
+        "sha256": "40eea0aac95fa4bd9677baca35141971edf0a42408b69b0c91db0e7222f4cfc6",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/40eea0aac95fa4bd9677baca35141971edf0a42408b69b0c91db0e7222f4cfc6",
+        "wandb_matches_s3": true
+      },
+      {
+        "bytes": 7263256,
+        "generation": 16,
+        "member": "daughters/generation-16/daughter_state_0.json",
+        "sha256": "8271df0b4b3da8e45db4ce88bd137d7b052d0887ec2ce73c9ca5422bbe8ede44",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/8271df0b4b3da8e45db4ce88bd137d7b052d0887ec2ce73c9ca5422bbe8ede44",
+        "wandb_matches_s3": true
+      },
+      {
+        "bytes": 7186251,
+        "generation": 17,
+        "member": "daughters/generation-17/daughter_state_0.json",
+        "sha256": "2bd8c91d3fd5c61ad75a22c40f450bba8508c7fd120152d0170955d3e0ed95ee",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/2bd8c91d3fd5c61ad75a22c40f450bba8508c7fd120152d0170955d3e0ed95ee",
+        "wandb_matches_s3": true
+      },
+      {
+        "bytes": 7328218,
+        "generation": 18,
+        "member": "daughters/generation-18/daughter_state_0.json",
+        "sha256": "1da9c021c25f5804060e61bdd12a948f0eed66c34d629cb111312d848bc758cd",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/1da9c021c25f5804060e61bdd12a948f0eed66c34d629cb111312d848bc758cd",
+        "wandb_matches_s3": true
+      },
+      {
+        "bytes": 6708820,
+        "generation": 19,
+        "member": "daughters/generation-19/daughter_state_0.json",
+        "sha256": "88fa9fc62bfda4be493db26558be10e086cea7bfec18624633b478562e14bed5",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/88fa9fc62bfda4be493db26558be10e086cea7bfec18624633b478562e14bed5",
+        "wandb_matches_s3": true
+      },
+      {
+        "bytes": 6576943,
+        "generation": 20,
+        "member": "daughters/generation-20/daughter_state_0.json",
+        "sha256": "a1e62d9ba71d65e97f8508ed5f528ee3cf31cfcfc05847c4f84640bc7b5fb376",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/a1e62d9ba71d65e97f8508ed5f528ee3cf31cfcfc05847c4f84640bc7b5fb376",
+        "wandb_matches_s3": true
+      }
+    ],
+    "wandb_run_urls": [
+      "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/ak6chjxo"
+    ]
+  },
+  "solver_recovery_attempts": [
+    {
+      "attempt": 1,
+      "data_backup": {
+        "progress_sha256": "81e887ff413cf30dcb63d7930304eeeebc9afa654fbe9f9bd6c94c1c9f4dfb73",
+        "recovered_cells": 0,
+        "s3_checkpoint": {
+          "bytes": 7060,
+          "sha256": "1fd560b0d9015d606a6b61f336a0784c8e378823017e89798ef75000e6a50b6b",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery/checkpoints/1fd560b0d9015d606a6b61f336a0784c8e378823017e89798ef75000e6a50b6b.json"
+        },
+        "status": "verified",
+        "verified_at": "2026-11-06T00:06:19.342673+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-seed-101-frozen-dossier-recovery-data:v2"
+      },
+      "last_verified_at": "2026-11-06T03:06:57.046445+00:00",
+      "local_record": "runs/storage-migration-20261105/remote-validation/solver-recovery-attempt1.json",
+      "local_record_sha256": "e6f5be60b9da84e8908ca2d816091794f9f7caff7938578aeb2fb2b258d2adb4",
+      "manifest_sha256": "e1dc7b1f75da70e18d4d87a75ac2a852b59ad05851e73fc9a8ed3993c5e4437b",
+      "provenance": {
+        "bytes": 10310,
+        "sha256": "1b76336e334bcc4a5fb7d78f6e91f361777eb60d49e4f3c1d9745e195ee7c103",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/diagnostics/recovery/1b76336e334bcc4a5fb7d78f6e91f361777eb60d49e4f3c1d9745e195ee7c103.json"
+      },
+      "reason": "Manually stopped: cold-presolve dual KKT residual exceeded 1e-7, and outer retries could bypass the check; no cell from this attempt is accepted",
+      "remote_root": "/home/ubuntu/yggdrisil-vecoli-20261105/runs/seed-101-frozen-dossier-recovery",
+      "status": "rejected",
+      "updated_at": "2026-11-06T00:12:53.481211+00:00",
+      "wandb_run_urls": [
+        "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/b2vha467"
+      ]
+    },
+    {
+      "accepted_recovered_generations": 14,
+      "active_generation": null,
+      "attempt": 2,
+      "data_backup": {
+        "progress_sha256": "8f6c8da94d38b9b689583c37191213f4f1d48ddfd7154dc9a16429fa90401228",
+        "recovered_cells": 14,
+        "s3_checkpoint": {
+          "bytes": 123069,
+          "sha256": "9c39279e1345434c54a87a9b82aea8b5b666bfbdcbf425c16899a23021eaddf2",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/checkpoints/9c39279e1345434c54a87a9b82aea8b5b666bfbdcbf425c16899a23021eaddf2.json"
+        },
+        "status": "verified",
+        "verified_at": "2026-11-06T03:26:41.873814+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-seed-101-frozen-dossier-recovery-v2-data:v17"
+      },
+      "generations_completed": 20,
+      "last_verified_at": "2026-11-06T03:33:40.002974+00:00",
+      "latest_verification_record": {
+        "path": "runs/storage-migration-20261105/remote-validation/recovery-verification-final.json",
+        "s3": {
+          "bytes": 35247,
+          "sha256": "033852a51dacfe27687a1618da706395bb190e0ab0168ec3a4b04a876846fe08",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/diagnostics/recovery/033852a51dacfe27687a1618da706395bb190e0ab0168ec3a4b04a876846fe08.json"
+        },
+        "sha256": "3bb6366bc217fd4038d1cec4fe7264a4b637385a656a36d28b033b0e222e5e1e"
+      },
+      "local_record": "runs/storage-migration-20261105/remote-validation/solver-recovery-attempt2.json",
+      "local_record_sha256": "2ec004c0a6deaf05dee906e63ba0cf7df39d341ec980473c98a83d202bd229ea",
+      "manifest_sha256": "084a90bbf8c9ddf37b50ec56b87d19fac5f1d83ab02165f1a6fdf60f0e4f835d",
+      "original_failure_point_recovered": true,
+      "provenance": {
+        "bytes": 13084,
+        "sha256": "6d62851beb5d2e7e8f7cbb6dc31a9bb2c7a3fc4d0f98441f0ddd2617facd39c8",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/diagnostics/recovery/6d62851beb5d2e7e8f7cbb6dc31a9bb2c7a3fc4d0f98441f0ddd2617facd39c8.json"
+      },
+      "reason": "Authorized separate numerical recovery reached generation20; original six divisions and original failure retained. Three unchanged-LP/GLP_OPT/strict-KKT fallbacks accepted at generations7,11,15.",
+      "recovered_generations": [
+        {
+          "daughter_sha256": "f8a33cbf88f013907cad4defda41a75b7ce91124e08cc2489db3a0a12963b6d6",
+          "division_global_time_s": 17420.0,
+          "final_cell_mass_fg": 2681.9268005777626,
+          "final_dry_mass_fg": 805.0981597839445,
+          "final_dry_mass_fold_change": 2.0392604138874875,
+          "finite_history_check": "passed",
+          "generation": 7,
+          "generation_duration_s": 2544.0,
+          "solver_recoveries": 1,
+          "transcript_check": "passed",
+          "wall_time_s": 435.4167628720006
+        },
+        {
+          "daughter_sha256": "a74dc6a465b16c1d6267b3cb30be76188fd7964b8a8d345e1e17bda1f29a52ff",
+          "division_global_time_s": 19800.0,
+          "final_cell_mass_fg": 2570.956300620373,
+          "final_dry_mass_fg": 771.8388917473444,
+          "final_dry_mass_fold_change": 1.918133455847902,
+          "finite_history_check": "passed",
+          "generation": 8,
+          "generation_duration_s": 2380.0,
+          "solver_recoveries": 0,
+          "transcript_check": "passed",
+          "wall_time_s": 365.2373369529996
+        },
+        {
+          "daughter_sha256": "cfab1fa26e17bd972b9062166a1dba5729364e64031a50ad16e620ad40ce065b",
+          "division_global_time_s": 22465.0,
+          "final_cell_mass_fg": 2880.722225753158,
+          "final_dry_mass_fg": 864.7931032727079,
+          "final_dry_mass_fold_change": 2.2485155447896923,
+          "finite_history_check": "passed",
+          "generation": 9,
+          "generation_duration_s": 2665.0,
+          "solver_recoveries": 0,
+          "transcript_check": "passed",
+          "wall_time_s": 430.23001075200045
+        },
+        {
+          "daughter_sha256": "554bafa055979de0842d059cc063391f86a746d61f3a1a6677e9afed877c208d",
+          "division_global_time_s": 24747.0,
+          "final_cell_mass_fg": 2678.74546628038,
+          "final_dry_mass_fg": 804.1061965836182,
+          "final_dry_mass_fold_change": 1.8576204242004912,
+          "finite_history_check": "passed",
+          "generation": 10,
+          "generation_duration_s": 2282.0,
+          "solver_recoveries": 0,
+          "transcript_check": "passed",
+          "wall_time_s": 360.21380330800093
+        },
+        {
+          "daughter_sha256": "89edfea7dc302dcc05bbc735bf6de1ade29adfdedc84797c80cfc37586925bb1",
+          "division_global_time_s": 27170.0,
+          "final_cell_mass_fg": 2403.115539817281,
+          "final_dry_mass_fg": 721.3206031802054,
+          "final_dry_mass_fold_change": 1.790808639348349,
+          "finite_history_check": "passed",
+          "generation": 11,
+          "generation_duration_s": 2423.0,
+          "solver_recoveries": 1,
+          "transcript_check": "passed",
+          "wall_time_s": 350.19765473400184
+        },
+        {
+          "daughter_sha256": "db7df8cd85a122b3b3ba2b2c361ba12000d914d0163b1a86b90890b65436b044",
+          "division_global_time_s": 29905.0,
+          "final_cell_mass_fg": 2413.091095586229,
+          "final_dry_mass_fg": 724.3422352708069,
+          "final_dry_mass_fold_change": 2.0106937699451626,
+          "finite_history_check": "passed",
+          "generation": 12,
+          "generation_duration_s": 2735.0,
+          "solver_recoveries": 0,
+          "transcript_check": "passed",
+          "wall_time_s": 390.19884767999974
+        },
+        {
+          "daughter_sha256": "b305867b87aec93ad830388a6556332de30113f4f13c22501b54d3cddb919048",
+          "division_global_time_s": 32679.0,
+          "final_cell_mass_fg": 2469.7732883401636,
+          "final_dry_mass_fg": 741.3759202663143,
+          "final_dry_mass_fold_change": 2.0570460264901973,
+          "finite_history_check": "passed",
+          "generation": 13,
+          "generation_duration_s": 2774.0,
+          "solver_recoveries": 0,
+          "transcript_check": "passed",
+          "wall_time_s": 395.20388928100147
+        },
+        {
+          "daughter_sha256": "e3a11cf900ecf974633cab4f743ed4222451b0beb78faf5a9862c036883862d0",
+          "division_global_time_s": 35352.0,
+          "final_cell_mass_fg": 2552.530533922995,
+          "final_dry_mass_fg": 766.2405381041658,
+          "final_dry_mass_fold_change": 2.0682518879225125,
+          "finite_history_check": "passed",
+          "generation": 14,
+          "generation_duration_s": 2673.0,
+          "solver_recoveries": 0,
+          "transcript_check": "passed",
+          "wall_time_s": 395.21263211599944
+        },
+        {
+          "daughter_sha256": "40eea0aac95fa4bd9677baca35141971edf0a42408b69b0c91db0e7222f4cfc6",
+          "division_global_time_s": 37957.0,
+          "final_cell_mass_fg": 2384.939719876226,
+          "final_dry_mass_fg": 715.8748159173219,
+          "final_dry_mass_fold_change": 1.867711581848744,
+          "finite_history_check": "passed",
+          "generation": 15,
+          "generation_duration_s": 2605.0,
+          "solver_recoveries": 1,
+          "transcript_check": "passed",
+          "wall_time_s": 365.25740045800194
+        },
+        {
+          "daughter_sha256": "8271df0b4b3da8e45db4ce88bd137d7b052d0887ec2ce73c9ca5422bbe8ede44",
+          "division_global_time_s": 40696.0,
+          "final_cell_mass_fg": 2220.7921305277873,
+          "final_dry_mass_fg": 666.6011022846264,
+          "final_dry_mass_fold_change": 1.8638101496018027,
+          "finite_history_check": "passed",
+          "generation": 16,
+          "generation_duration_s": 2739.0,
+          "solver_recoveries": 0,
+          "transcript_check": "passed",
+          "wall_time_s": 375.1882340480006
+        },
+        {
+          "daughter_sha256": "2bd8c91d3fd5c61ad75a22c40f450bba8508c7fd120152d0170955d3e0ed95ee",
+          "division_global_time_s": 43726.0,
+          "final_cell_mass_fg": 2161.580441482987,
+          "final_dry_mass_fg": 648.812143880458,
+          "final_dry_mass_fold_change": 1.9490158530535093,
+          "finite_history_check": "passed",
+          "generation": 17,
+          "generation_duration_s": 3030.0,
+          "solver_recoveries": 0,
+          "transcript_check": "passed",
+          "wall_time_s": 400.1848617270007
+        },
+        {
+          "daughter_sha256": "1da9c021c25f5804060e61bdd12a948f0eed66c34d629cb111312d848bc758cd",
+          "division_global_time_s": 46869.0,
+          "final_cell_mass_fg": 2154.3265065530577,
+          "final_dry_mass_fg": 646.596404750605,
+          "final_dry_mass_fold_change": 1.991853262620791,
+          "finite_history_check": "passed",
+          "generation": 18,
+          "generation_duration_s": 3143.0,
+          "solver_recoveries": 0,
+          "transcript_check": "passed",
+          "wall_time_s": 410.1939531740027
+        },
+        {
+          "daughter_sha256": "88fa9fc62bfda4be493db26558be10e086cea7bfec18624633b478562e14bed5",
+          "division_global_time_s": 49952.0,
+          "final_cell_mass_fg": 1972.257286287867,
+          "final_dry_mass_fg": 591.9481043345127,
+          "final_dry_mass_fold_change": 1.8302394013717014,
+          "finite_history_check": "passed",
+          "generation": 19,
+          "generation_duration_s": 3083.0,
+          "solver_recoveries": 0,
+          "transcript_check": "passed",
+          "wall_time_s": 400.1810886789972
+        },
+        {
+          "daughter_sha256": "a1e62d9ba71d65e97f8508ed5f528ee3cf31cfcfc05847c4f84640bc7b5fb376",
+          "division_global_time_s": 53499.0,
+          "final_cell_mass_fg": 1842.6684247010376,
+          "final_dry_mass_fg": 553.060299801255,
+          "final_dry_mass_fold_change": 1.8691551359744547,
+          "finite_history_check": "passed",
+          "generation": 20,
+          "generation_duration_s": 3547.0,
+          "solver_recoveries": 0,
+          "transcript_check": "passed",
+          "wall_time_s": 440.17921401199783
+        }
+      ],
+      "remote_root": "/home/ubuntu/yggdrisil-vecoli-20261105/runs/seed-101-frozen-dossier-recovery-v2",
+      "solver_reports": {
+        "cells/generation-11/solver-diagnostics/1793931745223971212.json": {
+          "kkt": {
+            "1": {
+              "absolute_error": 2.1316282072803006e-14,
+              "relative_error": 3.0928834502585003e-16
+            },
+            "2": {
+              "absolute_error": 5.551115123125783e-17,
+              "relative_error": 5.551115123125783e-17
+            },
+            "3": {
+              "absolute_error": 2.2737367544323206e-13,
+              "relative_error": 4.877837584516945e-16
+            },
+            "4": {
+              "absolute_error": 7.926761003956687e-08,
+              "relative_error": 7.926761003956687e-08
+            }
+          },
+          "model_unchanged": true,
+          "original_lp_sha256": "96cc5b012d138616d0d90f92748cef8cdb81ded5a833c402d51bf7d022e632c3",
+          "return_code": 0,
+          "status": "GLP_OPT: optimal",
+          "tolerance_bound": 1e-07,
+          "tolerance_dual": 1e-07
+        },
+        "cells/generation-15/solver-diagnostics/1793933186905500174.json": {
+          "kkt": {
+            "1": {
+              "absolute_error": 2.1827872842550278e-11,
+              "relative_error": 3.099976766805245e-16
+            },
+            "2": {
+              "absolute_error": 8.218252467440124e-17,
+              "relative_error": 8.218252467440124e-17
+            },
+            "3": {
+              "absolute_error": 5.684341886080802e-14,
+              "relative_error": 1.4514441560484074e-15
+            },
+            "4": {
+              "absolute_error": 8.103692064515179e-08,
+              "relative_error": 8.103692064515179e-08
+            }
+          },
+          "model_unchanged": true,
+          "original_lp_sha256": "b976056b203ff46522d4cafe93f307565e5f6d9355b91a9bb4025f723ac6c718",
+          "return_code": 0,
+          "status": "GLP_OPT: optimal",
+          "tolerance_bound": 1e-07,
+          "tolerance_dual": 1e-07
+        },
+        "cells/generation-7/solver-diagnostics/1793924167092101972.json": {
+          "kkt": {
+            "1": {
+              "absolute_error": 3.637978807091713e-11,
+              "relative_error": 8.511709855459541e-16
+            },
+            "2": {
+              "absolute_error": 1.457167719820518e-16,
+              "relative_error": 1.457167719820518e-16
+            },
+            "3": {
+              "absolute_error": 7.105427357601002e-15,
+              "relative_error": 4.9405526034556e-16
+            },
+            "4": {
+              "absolute_error": 8.805040157481691e-08,
+              "relative_error": 8.805040157481691e-08
+            }
+          },
+          "model_unchanged": true,
+          "original_lp_sha256": "4285d638fd5e7530546d8d8b043089ff3232e3af6315ad2b84928b814e29faad",
+          "return_code": 0,
+          "status": "GLP_OPT: optimal",
+          "tolerance_bound": 1e-07,
+          "tolerance_dual": 1e-07
+        }
+      },
+      "status": "completed",
+      "trajectory_comparison": {
+        "last_original_global_time": 15524.0,
+        "max_abs_difference_before_original_failure": {
+          "listeners__mass__cell_mass": 0.0,
+          "listeners__mass__dry_mass": 0.0,
+          "listeners__mass__dry_mass_fold_change": 0.0
+        },
+        "original_failed_samples": 648,
+        "replay_last_global_time": 17419.0,
+        "replay_samples": 2543
+      },
+      "updated_at": "2026-11-06T03:33:40.002974+00:00",
+      "verified_closed_output": {
+        "bytes": 6576943,
+        "generation": 20,
+        "member": "daughters/generation-20/daughter_state_0.json",
+        "sha256": "a1e62d9ba71d65e97f8508ed5f528ee3cf31cfcfc05847c4f84640bc7b5fb376",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/a1e62d9ba71d65e97f8508ed5f528ee3cf31cfcfc05847c4f84640bc7b5fb376",
+        "wandb_matches_s3": true
+      },
+      "verified_closed_outputs": [
+        {
+          "bytes": 8478947,
+          "generation": 7,
+          "member": "daughters/generation-7/daughter_state_0.json",
+          "sha256": "f8a33cbf88f013907cad4defda41a75b7ce91124e08cc2489db3a0a12963b6d6",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/f8a33cbf88f013907cad4defda41a75b7ce91124e08cc2489db3a0a12963b6d6",
+          "wandb_matches_s3": true
+        },
+        {
+          "bytes": 8310598,
+          "generation": 8,
+          "member": "daughters/generation-8/daughter_state_0.json",
+          "sha256": "a74dc6a465b16c1d6267b3cb30be76188fd7964b8a8d345e1e17bda1f29a52ff",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/a74dc6a465b16c1d6267b3cb30be76188fd7964b8a8d345e1e17bda1f29a52ff",
+          "wandb_matches_s3": true
+        },
+        {
+          "bytes": 8897297,
+          "generation": 9,
+          "member": "daughters/generation-9/daughter_state_0.json",
+          "sha256": "cfab1fa26e17bd972b9062166a1dba5729364e64031a50ad16e620ad40ce065b",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/cfab1fa26e17bd972b9062166a1dba5729364e64031a50ad16e620ad40ce065b",
+          "wandb_matches_s3": true
+        },
+        {
+          "bytes": 8568300,
+          "generation": 10,
+          "member": "daughters/generation-10/daughter_state_0.json",
+          "sha256": "554bafa055979de0842d059cc063391f86a746d61f3a1a6677e9afed877c208d",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/554bafa055979de0842d059cc063391f86a746d61f3a1a6677e9afed877c208d",
+          "wandb_matches_s3": true
+        },
+        {
+          "bytes": 7803193,
+          "generation": 11,
+          "member": "daughters/generation-11/daughter_state_0.json",
+          "sha256": "89edfea7dc302dcc05bbc735bf6de1ade29adfdedc84797c80cfc37586925bb1",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/89edfea7dc302dcc05bbc735bf6de1ade29adfdedc84797c80cfc37586925bb1",
+          "wandb_matches_s3": true
+        },
+        {
+          "bytes": 7749475,
+          "generation": 12,
+          "member": "daughters/generation-12/daughter_state_0.json",
+          "sha256": "db7df8cd85a122b3b3ba2b2c361ba12000d914d0163b1a86b90890b65436b044",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/db7df8cd85a122b3b3ba2b2c361ba12000d914d0163b1a86b90890b65436b044",
+          "wandb_matches_s3": true
+        },
+        {
+          "bytes": 8122446,
+          "generation": 13,
+          "member": "daughters/generation-13/daughter_state_0.json",
+          "sha256": "b305867b87aec93ad830388a6556332de30113f4f13c22501b54d3cddb919048",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/b305867b87aec93ad830388a6556332de30113f4f13c22501b54d3cddb919048",
+          "wandb_matches_s3": true
+        },
+        {
+          "bytes": 8320137,
+          "generation": 14,
+          "member": "daughters/generation-14/daughter_state_0.json",
+          "sha256": "e3a11cf900ecf974633cab4f743ed4222451b0beb78faf5a9862c036883862d0",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/e3a11cf900ecf974633cab4f743ed4222451b0beb78faf5a9862c036883862d0",
+          "wandb_matches_s3": true
+        },
+        {
+          "bytes": 7868838,
+          "generation": 15,
+          "member": "daughters/generation-15/daughter_state_0.json",
+          "sha256": "40eea0aac95fa4bd9677baca35141971edf0a42408b69b0c91db0e7222f4cfc6",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/40eea0aac95fa4bd9677baca35141971edf0a42408b69b0c91db0e7222f4cfc6",
+          "wandb_matches_s3": true
+        },
+        {
+          "bytes": 7263256,
+          "generation": 16,
+          "member": "daughters/generation-16/daughter_state_0.json",
+          "sha256": "8271df0b4b3da8e45db4ce88bd137d7b052d0887ec2ce73c9ca5422bbe8ede44",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/8271df0b4b3da8e45db4ce88bd137d7b052d0887ec2ce73c9ca5422bbe8ede44",
+          "wandb_matches_s3": true
+        },
+        {
+          "bytes": 7186251,
+          "generation": 17,
+          "member": "daughters/generation-17/daughter_state_0.json",
+          "sha256": "2bd8c91d3fd5c61ad75a22c40f450bba8508c7fd120152d0170955d3e0ed95ee",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/2bd8c91d3fd5c61ad75a22c40f450bba8508c7fd120152d0170955d3e0ed95ee",
+          "wandb_matches_s3": true
+        },
+        {
+          "bytes": 7328218,
+          "generation": 18,
+          "member": "daughters/generation-18/daughter_state_0.json",
+          "sha256": "1da9c021c25f5804060e61bdd12a948f0eed66c34d629cb111312d848bc758cd",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/1da9c021c25f5804060e61bdd12a948f0eed66c34d629cb111312d848bc758cd",
+          "wandb_matches_s3": true
+        },
+        {
+          "bytes": 6708820,
+          "generation": 19,
+          "member": "daughters/generation-19/daughter_state_0.json",
+          "sha256": "88fa9fc62bfda4be493db26558be10e086cea7bfec18624633b478562e14bed5",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/88fa9fc62bfda4be493db26558be10e086cea7bfec18624633b478562e14bed5",
+          "wandb_matches_s3": true
+        },
+        {
+          "bytes": 6576943,
+          "generation": 20,
+          "member": "daughters/generation-20/daughter_state_0.json",
+          "sha256": "a1e62d9ba71d65e97f8508ed5f528ee3cf31cfcfc05847c4f84640bc7b5fb376",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/seed-101-frozen-dossier-recovery-v2/objects/a1e62d9ba71d65e97f8508ed5f528ee3cf31cfcfc05847c4f84640bc7b5fb376",
+          "wandb_matches_s3": true
+        }
+      ],
+      "wandb_run_urls": [
+        "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/ak6chjxo"
+      ]
+    }
+  ],
+  "source_snapshot_sha256": "81acc7edf5ac3391dc0bbb974ff85d816c96abfad74be70d9adc1dc609680b1b",
+  "status": "completed_with_exceptions_verified",
+  "target_generations": 20,
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/22634b46f102",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/9d06ecdc0885",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/ef4474e85cc5",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/0283267d00b4",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/b2vha467",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/ak6chjxo",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/v20final20261106"
+  ]
+}

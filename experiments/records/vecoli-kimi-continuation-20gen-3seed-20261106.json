@@ -1,0 +1,1680 @@
+{
+  "authorization": {
+    "approved_at": "2026-11-06T07:49:49.128046+00:00",
+    "budget_approved": true,
+    "credential_transfer_approved": true,
+    "incremental_cap_usd": 50,
+    "paid_launch": true,
+    "preparation": true,
+    "scope": "All three checkpoint continuations and subsequent remote vEcoli validation; scoped run keys and W&B tracking key as described in the approval request.",
+    "user_message": "you have permission to spend up t o50$ more"
+  },
+  "aws_region": "us-east-1",
+  "budget_proposal": {
+    "combined_model_cap": 36,
+    "compute_storage_transfer_allowance": 14,
+    "cost_caveat": "Hard $12 model-key caps per arm and 12-hour worker limit; total additional authorization $50. Frozen plan prose retains a prior 24-hour typo; numeric settings and installed deadlines are 12 hours.",
+    "currency": "USD",
+    "incremental_total_cap": 50,
+    "maximum_vm_cost": 9.6768,
+    "model_per_arm_cap": 12,
+    "price_check": {
+      "checked_at": "2026-11-06T07:35:48.584842+00:00",
+      "model": {
+        "context_length": 1048576,
+        "id": "moonshotai/kimi-k3.1-pro",
+        "pricing": {
+          "completion": "0.00001",
+          "input_cache_read": "0.0000002",
+          "prompt": "0.000002"
+        },
+        "supported_parameters": [
+          "frequency_penalty",
+          "include_reasoning",
+          "logit_bias",
+          "logprobs",
+          "max_tokens",
+          "min_p",
+          "presence_penalty",
+          "reasoning",
+          "reasoning_effort",
+          "repetition_penalty",
+          "response_format",
+          "seed",
+          "stop",
+          "structured_outputs",
+          "temperature",
+          "tool_choice",
+          "tools",
+          "top_k",
+          "top_logprobs",
+          "top_p"
+        ]
+      },
+      "worker": {
+        "instance_type": "m7i.4xlarge",
+        "prices": [
+          {
+            "description": "$0.8064 per On Demand Linux m7i.4xlarge Instance Hour",
+            "effective_date": "2026-11-01T00:00:00Z",
+            "usd_per_hour": "0.8064000000"
+          }
+        ],
+        "region": "us-east-1",
+        "source": "AWS Pricing GetProducts"
+      }
+    },
+    "provider_keys": "Create three fresh non-resetting $12 keys; retain $1.25 turn headroom, disable only these keys after jobs stop and reconcile settled charges. Old keys stay disabled.",
+    "remaining_noncompute_allowance": 4.3232,
+    "worker_hourly_price": 0.8064
+  },
+  "budget_source": "literature-ablation-kimi-continuation-20261106",
+  "calibration": {
+    "divisions": 2,
+    "peak_rss_bytes": 1375481856,
+    "status": "passed"
+  },
+  "calibration_cell_simulations": 2,
+  "candidate_count": 3,
+  "candidate_states": "Selected and frozen only after all three search arms stop; no current candidate substitution.",
+  "completed_at": "2026-11-06T14:50:57Z",
+  "completed_full_cell_cycles": 294,
+  "created_at": "2026-11-06T07:45:32.800873+00:00",
+  "data_backup": {
+    "completion_records": {
+      "archival-restart.json": {
+        "bytes": 320,
+        "sha256": "9a352f282c776b20dbc4b63a76318f4e4fe0e4e15075ea1a5dc95e9e8eeab75f",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/9a352f282c776b20dbc4b63a76318f4e4fe0e4e15075ea1a5dc95e9e8eeab75f.json"
+      },
+      "final-analysis.json": {
+        "bytes": 335097,
+        "sha256": "f7d0f0949eb9059bf25beb5e0ed62655467b7ec9f7f710216684ee64ff4c0abe",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/f7d0f0949eb9059bf25beb5e0ed62655467b7ec9f7f710216684ee64ff4c0abe.json"
+      },
+      "final-backup-verification.json": {
+        "bytes": 12214,
+        "sha256": "307bf345f2dc476ff075c80c8a96e5e4568dc6e426bc2ebd1606a6e008d9c5f3",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/307bf345f2dc476ff075c80c8a96e5e4568dc6e426bc2ebd1606a6e008d9c5f3.json"
+      },
+      "final-backup.json": {
+        "bytes": 608,
+        "sha256": "cb3f5796bdaac8d4633512eed40fcf31e3e00db827d8e59624372680f8a0bb9b",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/cb3f5796bdaac8d4633512eed40fcf31e3e00db827d8e59624372680f8a0bb9b.json"
+      },
+      "monitoring-final-progress.json": {
+        "bytes": 26999,
+        "sha256": "339d96cc435ffc7083e2f17b1d25a5975eab41b9e04dc28f86cc7b8e5fc0d685",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/339d96cc435ffc7083e2f17b1d25a5975eab41b9e04dc28f86cc7b8e5fc0d685.json"
+      },
+      "operational-final-record.json": {
+        "bytes": 47967,
+        "sha256": "69b7f816d55db3fd437abd10a10c7709f76c3c0b5cf6cd0e7e4e153e5860fc4f",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/69b7f816d55db3fd437abd10a10c7709f76c3c0b5cf6cd0e7e4e153e5860fc4f.json"
+      },
+      "provider-accounting.json": {
+        "bytes": 1000,
+        "sha256": "221a5a151ca6d51c5d62277a2e811b0ef2a559a9798444d78865f693bd7534dc",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/221a5a151ca6d51c5d62277a2e811b0ef2a559a9798444d78865f693bd7534dc.json"
+      },
+      "solver-monitoring.json": {
+        "bytes": 16172,
+        "sha256": "bb4fc7fdb0f5321a33dc3d74efa53f58b0ca9a97c578923cd3f3f11be25cc739",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/bb4fc7fdb0f5321a33dc3d74efa53f58b0ca9a97c578923cd3f3f11be25cc739.json"
+      }
+    },
+    "final_archive": {
+      "bytes": 1326410801,
+      "file_count": 6033,
+      "index_sha256": "5fc408489e042266150b7bc5ea3dc421d74a18051d37f31be1205d95d5199edb",
+      "index_uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/final/5fc408489e042266150b7bc5ea3dc421d74a18051d37f31be1205d95d5199edb.json",
+      "sha256": "1843b3a14185058d2b64497c7d913b831a00ef97223e8198414cdacbe5300556",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/final/1843b3a14185058d2b64497c7d913b831a00ef97223e8198414cdacbe5300556.tar.gz"
+    },
+    "final_index": {
+      "bytes": 1931449,
+      "sha256": "5fc408489e042266150b7bc5ea3dc421d74a18051d37f31be1205d95d5199edb",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/final/5fc408489e042266150b7bc5ea3dc421d74a18051d37f31be1205d95d5199edb.json"
+    },
+    "final_wandb_artifacts": {
+      "calibration": {
+        "all_s3_objects_full_get_verified": true,
+        "artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-calibration-data:v3",
+        "bytes": 95055691,
+        "checkpoint": {
+          "bytes": 19534,
+          "sha256": "bba7d8d20dc1b5f4738455531037fad6dfb938be6cbd854d96d7b6fb487cfa77",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/calibration/checkpoints/bba7d8d20dc1b5f4738455531037fad6dfb938be6cbd854d96d7b6fb487cfa77.json"
+        },
+        "files_downloaded_and_sha256_verified": 47,
+        "progress_sha256": "a49f3b0f572b8349be8edd8d174253e6d5ad7521d6117ab9f803d3d0723c5f04",
+        "state": "COMMITTED"
+      },
+      "seed-101": {
+        "all_s3_objects_full_get_verified": true,
+        "artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-seed-101-data:v95",
+        "bytes": 467466310,
+        "checkpoint": {
+          "bytes": 726205,
+          "sha256": "47f1201d21b7593a85bb08589d5ff98754aee7cbeea41d17ab13ccb730495249",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-101/checkpoints/47f1201d21b7593a85bb08589d5ff98754aee7cbeea41d17ab13ccb730495249.json"
+        },
+        "files_downloaded_and_sha256_verified": 1613,
+        "progress_sha256": "b847e2f9e9f189cfbf3d48bf56f404e781caadcfdbf1d212d492e055efb8873e",
+        "state": "COMMITTED"
+      },
+      "seed-211": {
+        "all_s3_objects_full_get_verified": true,
+        "artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-seed-211-data:v97",
+        "bytes": 468746152,
+        "checkpoint": {
+          "bytes": 711660,
+          "sha256": "4a7e6ff9ae6c4ee2fbef1a475c0bbcbe1f57fa51b4a9dcc7a8723ef71b90da20",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-211/checkpoints/4a7e6ff9ae6c4ee2fbef1a475c0bbcbe1f57fa51b4a9dcc7a8723ef71b90da20.json"
+        },
+        "files_downloaded_and_sha256_verified": 1582,
+        "progress_sha256": "fe8548a28b775a1943a3367436e17cdbc968bc8b1dfea35fd5b42b9240bbfdcb",
+        "state": "COMMITTED"
+      },
+      "seed-307": {
+        "all_s3_objects_full_get_verified": true,
+        "artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-seed-307-data:v92",
+        "bytes": 450890304,
+        "checkpoint": {
+          "bytes": 676757,
+          "sha256": "2d4ba664315e6d45e104206af9223040631dd1b0e65472c12f5eb28df53a18a5",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-307/checkpoints/2d4ba664315e6d45e104206af9223040631dd1b0e65472c12f5eb28df53a18a5.json"
+        },
+        "files_downloaded_and_sha256_verified": 1506,
+        "progress_sha256": "30e81943ceaceb87006ba216e74fabd4119dec79efa09c9aa7347510411aff0b",
+        "state": "COMMITTED"
+      }
+    },
+    "independent_verification": {
+      "bytes": 12214,
+      "sha256": "307bf345f2dc476ff075c80c8a96e5e4568dc6e426bc2ebd1606a6e008d9c5f3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/307bf345f2dc476ff075c80c8a96e5e4568dc6e426bc2ebd1606a6e008d9c5f3.json"
+    },
+    "member_audit": {
+      "full_get_sha256": "1843b3a14185058d2b64497c7d913b831a00ef97223e8198414cdacbe5300556",
+      "member_bytes": 6984603738,
+      "members": 6033,
+      "metadata_differences": [
+        {
+          "archive_sha256": "6753870ba09d6cac241117725040df1f547fbc8d7bf5523e84c43e0c61781b56",
+          "current_json": {
+            "calibration": {
+              "divisions": 2,
+              "peak_rss_bytes": 1375481856,
+              "status": "passed"
+            },
+            "experiment_id": "vecoli-kimi-continuation-20gen-3seed-20261106",
+            "final_backup": {
+              "bytes": 1326410801,
+              "file_count": 6033,
+              "index_sha256": "5fc408489e042266150b7bc5ea3dc421d74a18051d37f31be1205d95d5199edb",
+              "index_uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/final/5fc408489e042266150b7bc5ea3dc421d74a18051d37f31be1205d95d5199edb.json",
+              "sha256": "1843b3a14185058d2b64497c7d913b831a00ef97223e8198414cdacbe5300556",
+              "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/final/1843b3a14185058d2b64497c7d913b831a00ef97223e8198414cdacbe5300556.tar.gz"
+            },
+            "jobs": {
+              "calibration": {
+                "data_backup": {
+                  "completed_cell_cycles": 2,
+                  "parent_artifact": "mcclain/yggdrisil/literature-ablation-kimi-continuation-20261106-checkpoint:v24",
+                  "progress_sha256": "a49f3b0f572b8349be8edd8d174253e6d5ad7521d6117ab9f803d3d0723c5f04",
+                  "s3_checkpoint": {
+                    "bytes": 19534,
+                    "sha256": "bba7d8d20dc1b5f4738455531037fad6dfb938be6cbd854d96d7b6fb487cfa77",
+                    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/calibration/checkpoints/bba7d8d20dc1b5f4738455531037fad6dfb938be6cbd854d96d7b6fb487cfa77.json"
+                  },
+                  "scope": "Closed cell outputs; running cells are backed up after completion.",
+                  "status": "verified",
+                  "verified_at": "2026-11-06T09:46:46.041768+00:00",
+                  "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-calibration-data:v3"
+                },
+                "exit_code": 0,
+                "manifest": "/home/ubuntu/yggdrisil-continuation-20261106/validation/runs/calibration/manifest.json",
+                "pid": 1829,
+                "status": "completed",
+                "wandb_run_urls": [
+                  "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/a5d41af772be"
+                ]
+              },
+              "seed-101": {
+                "data_backup": {
+                  "completed_cell_cycles": 100,
+                  "parent_artifact": "mcclain/yggdrisil/literature-ablation-kimi-continuation-20261106-checkpoint:v24",
+                  "progress_sha256": "b847e2f9e9f189cfbf3d48bf56f404e781caadcfdbf1d212d492e055efb8873e",
+                  "s3_checkpoint": {
+                    "bytes": 726205,
+                    "sha256": "47f1201d21b7593a85bb08589d5ff98754aee7cbeea41d17ab13ccb730495249",
+                    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-101/checkpoints/47f1201d21b7593a85bb08589d5ff98754aee7cbeea41d17ab13ccb730495249.json"
+                  },
+                  "scope": "Closed cell outputs; running cells are backed up after completion.",
+                  "status": "verified",
+                  "verified_at": "2026-11-06T14:50:53.446950+00:00",
+                  "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-seed-101-data:v95"
+                },
+                "exit_code": 0,
+                "manifest": "/home/ubuntu/yggdrisil-continuation-20261106/validation/runs/seed-101/manifest.json",
+                "pid": 11463,
+                "status": "completed",
+                "wandb_run_urls": [
+                  "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/cb5d2991d911"
+                ]
+              },
+              "seed-211": {
+                "data_backup": {
+                  "completed_cell_cycles": 100,
+                  "parent_artifact": "mcclain/yggdrisil/literature-ablation-kimi-continuation-20261106-checkpoint:v24",
+                  "progress_sha256": "fe8548a28b775a1943a3367436e17cdbc968bc8b1dfea35fd5b42b9240bbfdcb",
+                  "s3_checkpoint": {
+                    "bytes": 711660,
+                    "sha256": "4a7e6ff9ae6c4ee2fbef1a475c0bbcbe1f57fa51b4a9dcc7a8723ef71b90da20",
+                    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-211/checkpoints/4a7e6ff9ae6c4ee2fbef1a475c0bbcbe1f57fa51b4a9dcc7a8723ef71b90da20.json"
+                  },
+                  "scope": "Closed cell outputs; running cells are backed up after completion.",
+                  "status": "verified",
+                  "verified_at": "2026-11-06T14:38:55.012464+00:00",
+                  "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-seed-211-data:v97"
+                },
+                "exit_code": 0,
+                "manifest": "/home/ubuntu/yggdrisil-continuation-20261106/validation/runs/seed-211/manifest.json",
+                "pid": 11464,
+                "status": "completed",
+                "wandb_run_urls": [
+                  "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/03ee68cb7eb8"
+                ]
+              },
+              "seed-307": {
+                "data_backup": {
+                  "completed_cell_cycles": 94,
+                  "parent_artifact": "mcclain/yggdrisil/literature-ablation-kimi-continuation-20261106-checkpoint:v24",
+                  "progress_sha256": "30e81943ceaceb87006ba216e74fabd4119dec79efa09c9aa7347510411aff0b",
+                  "s3_checkpoint": {
+                    "bytes": 676757,
+                    "sha256": "2d4ba664315e6d45e104206af9223040631dd1b0e65472c12f5eb28df53a18a5",
+                    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-307/checkpoints/2d4ba664315e6d45e104206af9223040631dd1b0e65472c12f5eb28df53a18a5.json"
+                  },
+                  "scope": "Closed cell outputs; running cells are backed up after completion.",
+                  "status": "verified",
+                  "verified_at": "2026-11-06T14:27:50.126108+00:00",
+                  "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-seed-307-data:v92"
+                },
+                "exit_code": 1,
+                "manifest": "/home/ubuntu/yggdrisil-continuation-20261106/validation/runs/seed-307/manifest.json",
+                "pid": 11465,
+                "status": "failed",
+                "wandb_run_urls": [
+                  "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/fbb5bbf2a64b"
+                ]
+              }
+            },
+            "started_at": "2026-11-06T09:34:02.268898+00:00",
+            "status": "completed_with_exceptions",
+            "updated_at": "2026-11-06T15:10:23.427003+00:00"
+          },
+          "path": "batch-progress.json",
+          "reason": "Final backup reference added after archive creation",
+          "worker_sha256": "315e04fa63f408816d1c8e2ef2c8c11e925af0465059a83cb039ee5417ea3c55"
+        },
+        {
+          "appended_text": "Shutdown scheduled for Fri 2026-11-06 15:12:23 UTC, use 'shutdown -c' to cancel.\n",
+          "archive_sha256": "0ea546a401d0662e64a0929457a6cbb7fb655534e62151dd5e0056aefa471dbd",
+          "current_bytes": 143,
+          "path": "supervisor.log",
+          "reason": "Completion shutdown appended after final archive creation; original prefix SHA256 matches exactly",
+          "worker_sha256": "b655e2fa53987a21cd7fe1bff531b96fdd8c884a797aae909077ee3346c8926d"
+        }
+      ],
+      "status": "verified",
+      "worker_comparison": "All members match; explicitly recorded final-batch metadata update only"
+    },
+    "status": "verified"
+  },
+  "deadlines": {
+    "instance_id": "i-0512356f473be8f8d",
+    "launch_time": "2026-11-06T07:49:57+00:00",
+    "science_deadline": "2026-11-06T18:19:57+00:00",
+    "science_unix": 1793989197.0,
+    "stop_deadline": "2026-11-06T19:49:57+00:00",
+    "stop_unix": 1793994597.0
+  },
+  "deletion_comparability": {
+    "analyzed_at": "2026-11-06T14:23:27.323351+00:00",
+    "candidates": [
+      {
+        "current_functional_set": {
+          "deleted": 0,
+          "denominator": 1915,
+          "percent": 0.0,
+          "retained": 1915
+        },
+        "deletion_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "full_registry": {
+          "deleted": 0,
+          "denominator": 4290,
+          "percent": 0.0,
+          "retained": 4290
+        },
+        "name": "mg1655-control",
+        "shared_functional_set": {
+          "deleted": 0,
+          "denominator": 1197,
+          "percent": 0.0,
+          "retained": 1197
+        },
+        "state_id": "e1c094af1688db37bd6af27237d63462b79d769e3dc494d3fff0cb030f674004"
+      },
+      {
+        "current_functional_set": {
+          "deleted": 341,
+          "denominator": 1915,
+          "percent": 17.806788511749346,
+          "retained": 1574
+        },
+        "deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52",
+        "full_registry": {
+          "deleted": 1030,
+          "denominator": 4290,
+          "percent": 24.009324009324008,
+          "retained": 3260
+        },
+        "name": "starting-genome-control",
+        "shared_functional_set": {
+          "deleted": 168,
+          "denominator": 1197,
+          "percent": 14.035087719298245,
+          "retained": 1029
+        },
+        "state_id": "11a12418d088502a6d28f143e2a1b98fdb308e592d1be3009748b7eed3480343"
+      },
+      {
+        "current_functional_set": {
+          "deleted": 789,
+          "denominator": 1915,
+          "percent": 41.20104438642298,
+          "retained": 1126
+        },
+        "deletion_set_sha256": "de7acdab1746fcf5f77dbdbe8415fa696546c458e9756af0b86071432869b253",
+        "full_registry": {
+          "deleted": 1919,
+          "denominator": 4290,
+          "percent": 44.73193473193473,
+          "retained": 2371
+        },
+        "name": "no-retrieval",
+        "shared_functional_set": {
+          "deleted": 422,
+          "denominator": 1197,
+          "percent": 35.25480367585631,
+          "retained": 775
+        },
+        "state_id": "81134169f1246cb8d13b75c4afaff2739f594a399e52a761faa204765528f1ee"
+      },
+      {
+        "current_functional_set": {
+          "deleted": 666,
+          "denominator": 1915,
+          "percent": 34.778067885117494,
+          "retained": 1249
+        },
+        "deletion_set_sha256": "b2898afa5d682112d94ea73a61ae1f7c30b374fe6c40484113718b57e046c5f7",
+        "full_registry": {
+          "deleted": 1765,
+          "denominator": 4290,
+          "percent": 41.142191142191145,
+          "retained": 2525
+        },
+        "name": "frozen-dossier",
+        "shared_functional_set": {
+          "deleted": 357,
+          "denominator": 1197,
+          "percent": 29.82456140350877,
+          "retained": 840
+        },
+        "state_id": "4bae4beed61920f371ee2739285a1411296c258fc1008b3c270183bad5331e5d"
+      },
+      {
+        "current_functional_set": {
+          "deleted": 664,
+          "denominator": 1915,
+          "percent": 34.67362924281984,
+          "retained": 1251
+        },
+        "deletion_set_sha256": "cee6a0329125a00f297ea4cc8a9e4dd746d8de3e0daad9a0493ee60ca3b8c28a",
+        "full_registry": {
+          "deleted": 1823,
+          "denominator": 4290,
+          "percent": 42.494172494172496,
+          "retained": 2467
+        },
+        "name": "adaptive-literature",
+        "shared_functional_set": {
+          "deleted": 373,
+          "denominator": 1197,
+          "percent": 31.161236424394318,
+          "retained": 824
+        },
+        "state_id": "6cc663f9b95d6e34493b77c4c825cb19b0ed1162112954b31145e73168c956e5"
+      }
+    ],
+    "current_functional_denominator": 1915,
+    "essentiality_coverage": {
+      "annotation_source_doi": "10.1128/msystems.00896-22",
+      "deleted_annotation_essential_count_per_candidate": 53,
+      "essential_definition": "Author E calls in both LB and M9, validated against ecIPKM threshold by project parser.",
+      "inherited_from_common_start": true,
+      "inside_current_functional_set": 4,
+      "inside_published_functional_set": 2,
+      "interpretation": "The functional coverage gap means simulator survival alone does not resolve the experimental-essentiality discrepancy. This is a coverage audit, not a claim that the 49 genes have no biological function.",
+      "outside_current_functional_set": 49
+    },
+    "functional_definition": "Gherman2025 five-process accounting rule; current fitted vEcoli model has1915 genes; exact intersection with published functional panel has1197 genes.",
+    "interpretation": "Best candidate deletes789/1915=41.20% under current functional definition, but422/1197=35.25% on shared functional genes versus published475/1197=39.68%. No claim of superior reduction on shared genes, laboratory viability, or physical DNA deletion. Validation statuses unchanged.",
+    "mapping": {
+      "bytes": 635940,
+      "sha256": "159d79a9fb2b4b9c23165e14ea7074b58091126b8ef34c7e79f0d25205d941af",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/analysis/159d79a9fb2b4b9c23165e14ea7074b58091126b8ef34c7e79f0d25205d941af.json"
+    },
+    "published_reference": {
+      "name": "Gherman et al. 2025 E. coli EMine737",
+      "own_published_functional_set": {
+        "deleted": 482,
+        "denominator": 1219,
+        "percent": 39.54060705496308,
+        "retained": 737
+      },
+      "registry_mappable_published_panel": {
+        "deleted": 480,
+        "denominator": 1216,
+        "percent": 39.473684210526315,
+        "retained": 736
+      },
+      "shared_functional_set": {
+        "deleted": 475,
+        "denominator": 1197,
+        "percent": 39.682539682539684,
+        "retained": 722
+      }
+    },
+    "report": {
+      "bytes": 13177,
+      "sha256": "f76f8296dbb12c9f2ff79fc1b725ac8bc88ea5ec822d5fe66714d4602953e3e0",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/analysis/f76f8296dbb12c9f2ff79fc1b725ac8bc88ea5ec822d5fe66714d4602953e3e0.json"
+    },
+    "shared_functional_denominator": 1197
+  },
+  "execution_backend": "remote_linux_only",
+  "final_analysis": {
+    "daughter_target_transcript_checks": "passed",
+    "finite_mass_time_checks": "passed",
+    "interpretation": "MG1655 expression-knockout projections in aerobic M9 glucose. Twenty divisions are model evidence, not laboratory viability. The same documented solver patch is applied to every genotype. Assisted cells are explicitly identified; no independent unpatched control is claimed.",
+    "lineages": [
+      {
+        "birth_dry_mass_last_over_first": 0.6080677703701962,
+        "deletion_count": 0,
+        "deletion_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 0.7159653386142675,
+          "duration_cv": 0.21232714737580471,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 57.74166666666667,
+          "mean_dry_mass_fold_change": 1.8351520270514212
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.8323275901601586,
+          "duration_cv": 0.19205676265482072,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 57.29,
+          "mean_dry_mass_fold_change": 1.9338783245380338
+        },
+        "name": "mg1655-control",
+        "seed": 101,
+        "solver_assisted_generations": [],
+        "state_id": "e1c094af1688db37bd6af27237d63462b79d769e3dc494d3fff0cb030f674004",
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.9133759628736866,
+        "deletion_count": 1030,
+        "deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 1.0552170111296895,
+          "duration_cv": 0.05763332241345688,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 44.71666666666667,
+          "mean_dry_mass_fold_change": 1.9892601606223388
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.112885538653719,
+          "duration_cv": 0.060412228006591275,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 45.46333333333334,
+          "mean_dry_mass_fold_change": 2.0137430935611924
+        },
+        "name": "starting-genome-control",
+        "seed": 101,
+        "solver_assisted_generations": [],
+        "state_id": "11a12418d088502a6d28f143e2a1b98fdb308e592d1be3009748b7eed3480343",
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 1.0082322854261614,
+        "deletion_count": 1919,
+        "deletion_set_sha256": "de7acdab1746fcf5f77dbdbe8415fa696546c458e9756af0b86071432869b253",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 1.0735029431996612,
+          "duration_cv": 0.06348253177757814,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 40.59583333333333,
+          "mean_dry_mass_fold_change": 2.004155796645993
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.952095705449938,
+          "duration_cv": 0.06422744439704213,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 40.026666666666664,
+          "mean_dry_mass_fold_change": 1.9585136137088275
+        },
+        "name": "no-retrieval",
+        "seed": 101,
+        "solver_assisted_generations": [
+          5,
+          7
+        ],
+        "state_id": "81134169f1246cb8d13b75c4afaff2739f594a399e52a761faa204765528f1ee",
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.9317698994482932,
+        "deletion_count": 1765,
+        "deletion_set_sha256": "b2898afa5d682112d94ea73a61ae1f7c30b374fe6c40484113718b57e046c5f7",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 1.0938389222913785,
+          "duration_cv": 0.08529801719798132,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 42.05416666666667,
+          "mean_dry_mass_fold_change": 2.043401125906213
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.0273522103898811,
+          "duration_cv": 0.07634272006362615,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 42.2,
+          "mean_dry_mass_fold_change": 2.0089002161889247
+        },
+        "name": "frozen-dossier",
+        "seed": 101,
+        "solver_assisted_generations": [
+          1,
+          2,
+          13,
+          15,
+          16
+        ],
+        "state_id": "4bae4beed61920f371ee2739285a1411296c258fc1008b3c270183bad5331e5d",
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.9298411452426185,
+        "deletion_count": 1823,
+        "deletion_set_sha256": "cee6a0329125a00f297ea4cc8a9e4dd746d8de3e0daad9a0493ee60ca3b8c28a",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 1.0827836742076042,
+          "duration_cv": 0.05371645717452135,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 42.65833333333333,
+          "mean_dry_mass_fold_change": 2.06246177814318
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.0414522976577638,
+          "duration_cv": 0.048416014374986854,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 42.81333333333334,
+          "mean_dry_mass_fold_change": 2.0349372644236876
+        },
+        "name": "adaptive-literature",
+        "seed": 101,
+        "solver_assisted_generations": [],
+        "state_id": "6cc663f9b95d6e34493b77c4c825cb19b0ed1162112954b31145e73168c956e5",
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.8034192675590718,
+        "deletion_count": 0,
+        "deletion_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 1.0063693287743887,
+          "duration_cv": 0.025164226102057374,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 60.291666666666664,
+          "mean_dry_mass_fold_change": 1.9646118040782752
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.9729520470199888,
+          "duration_cv": 0.024945173179701054,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 59.97666666666667,
+          "mean_dry_mass_fold_change": 1.9584283477687474
+        },
+        "name": "mg1655-control",
+        "seed": 211,
+        "solver_assisted_generations": [],
+        "state_id": "e1c094af1688db37bd6af27237d63462b79d769e3dc494d3fff0cb030f674004",
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.9737189522414585,
+        "deletion_count": 1030,
+        "deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 1.1151137782066423,
+          "duration_cv": 0.0741949917704002,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 50.7625,
+          "mean_dry_mass_fold_change": 2.057137530867333
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.1067218873133164,
+          "duration_cv": 0.06999380539838498,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 51.39333333333333,
+          "mean_dry_mass_fold_change": 2.0426243850249977
+        },
+        "name": "starting-genome-control",
+        "seed": 211,
+        "solver_assisted_generations": [],
+        "state_id": "11a12418d088502a6d28f143e2a1b98fdb308e592d1be3009748b7eed3480343",
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 1.1460099025471346,
+        "deletion_count": 1919,
+        "deletion_set_sha256": "de7acdab1746fcf5f77dbdbe8415fa696546c458e9756af0b86071432869b253",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 1.0974619109041333,
+          "duration_cv": 0.058684848450755375,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 44.30416666666667,
+          "mean_dry_mass_fold_change": 2.0092882346814083
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.147658109403684,
+          "duration_cv": 0.05570482947125407,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 44.75333333333333,
+          "mean_dry_mass_fold_change": 2.025838338375721
+        },
+        "name": "no-retrieval",
+        "seed": 211,
+        "solver_assisted_generations": [],
+        "state_id": "81134169f1246cb8d13b75c4afaff2739f594a399e52a761faa204765528f1ee",
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 1.2455919967891929,
+        "deletion_count": 1765,
+        "deletion_set_sha256": "b2898afa5d682112d94ea73a61ae1f7c30b374fe6c40484113718b57e046c5f7",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 1.0725026428408149,
+          "duration_cv": 0.05676362460447882,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 39.204166666666666,
+          "mean_dry_mass_fold_change": 1.9831344085833829
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.30636312298135,
+          "duration_cv": 0.11742701928882947,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 41.42333333333333,
+          "mean_dry_mass_fold_change": 2.074494243935524
+        },
+        "name": "frozen-dossier",
+        "seed": 211,
+        "solver_assisted_generations": [
+          1,
+          2
+        ],
+        "state_id": "4bae4beed61920f371ee2739285a1411296c258fc1008b3c270183bad5331e5d",
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 1.0591216182505132,
+        "deletion_count": 1823,
+        "deletion_set_sha256": "cee6a0329125a00f297ea4cc8a9e4dd746d8de3e0daad9a0493ee60ca3b8c28a",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 0.860018029587885,
+          "duration_cv": 0.07201399278035485,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 41.24166666666667,
+          "mean_dry_mass_fold_change": 1.8963328564777013
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.8471770908882964,
+          "duration_cv": 0.07444162887721341,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 40.526666666666664,
+          "mean_dry_mass_fold_change": 1.9096917575987247
+        },
+        "name": "adaptive-literature",
+        "seed": 211,
+        "solver_assisted_generations": [
+          8,
+          10,
+          18
+        ],
+        "state_id": "6cc663f9b95d6e34493b77c4c825cb19b0ed1162112954b31145e73168c956e5",
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 0.9442647904090695,
+        "deletion_count": 0,
+        "deletion_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 0.853204057781577,
+          "duration_cv": 0.08702423311810087,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 56.15833333333333,
+          "mean_dry_mass_fold_change": 1.9101352807350356
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.8851712148367293,
+          "duration_cv": 0.08557448828669673,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 55.25666666666667,
+          "mean_dry_mass_fold_change": 1.9436267015714448
+        },
+        "name": "mg1655-control",
+        "seed": 307,
+        "solver_assisted_generations": [],
+        "state_id": "e1c094af1688db37bd6af27237d63462b79d769e3dc494d3fff0cb030f674004",
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 1.160692636078034,
+        "deletion_count": 1030,
+        "deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 0.9894512851880477,
+          "duration_cv": 0.040244884521664546,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 47.075,
+          "mean_dry_mass_fold_change": 1.9391944200713722
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 0.9898108257809669,
+          "duration_cv": 0.03630772357359842,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 47.20333333333333,
+          "mean_dry_mass_fold_change": 1.9517064391022583
+        },
+        "name": "starting-genome-control",
+        "seed": 307,
+        "solver_assisted_generations": [],
+        "state_id": "11a12418d088502a6d28f143e2a1b98fdb308e592d1be3009748b7eed3480343",
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 1.3621689604355907,
+        "deletion_count": 1919,
+        "deletion_set_sha256": "de7acdab1746fcf5f77dbdbe8415fa696546c458e9756af0b86071432869b253",
+        "generations_completed": 14,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 0.9805502233038672,
+          "duration_cv": 0.013735254497434573,
+          "generations": [
+            11,
+            12,
+            13,
+            14
+          ],
+          "mean_division_minutes": 39.30416666666667,
+          "mean_dry_mass_fold_change": 2.009109856472834
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.0041636489704835,
+          "duration_cv": 0.013066635733084931,
+          "generations": [
+            10,
+            11,
+            12,
+            13,
+            14
+          ],
+          "mean_division_minutes": 39.39333333333333,
+          "mean_dry_mass_fold_change": 2.01646203313727
+        },
+        "name": "no-retrieval",
+        "seed": 307,
+        "solver_assisted_generations": [
+          2
+        ],
+        "state_id": "81134169f1246cb8d13b75c4afaff2739f594a399e52a761faa204765528f1ee",
+        "terminal_reason": "model_exception"
+      },
+      {
+        "birth_dry_mass_last_over_first": 1.2732211319493643,
+        "deletion_count": 1765,
+        "deletion_set_sha256": "b2898afa5d682112d94ea73a61ae1f7c30b374fe6c40484113718b57e046c5f7",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 0.8479960859711874,
+          "duration_cv": 0.05840617481078661,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 38.4,
+          "mean_dry_mass_fold_change": 1.9565469000017315
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.0261852773267162,
+          "duration_cv": 0.0838566044423151,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 39.730000000000004,
+          "mean_dry_mass_fold_change": 2.0483593056237877
+        },
+        "name": "frozen-dossier",
+        "seed": 307,
+        "solver_assisted_generations": [
+          1,
+          3,
+          5,
+          19,
+          20
+        ],
+        "state_id": "4bae4beed61920f371ee2739285a1411296c258fc1008b3c270183bad5331e5d",
+        "terminal_reason": "reached_max_generations"
+      },
+      {
+        "birth_dry_mass_last_over_first": 1.3303062726707082,
+        "deletion_count": 1823,
+        "deletion_set_sha256": "cee6a0329125a00f297ea4cc8a9e4dd746d8de3e0daad9a0493ee60ca3b8c28a",
+        "generations_completed": 20,
+        "late_last4": {
+          "birth_dry_mass_last_over_first": 1.0539459616409899,
+          "duration_cv": 0.07547279308996739,
+          "generations": [
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 41.454166666666666,
+          "mean_dry_mass_fold_change": 2.0091252943494533
+        },
+        "late_last5": {
+          "birth_dry_mass_last_over_first": 1.089987604895696,
+          "duration_cv": 0.07026861631926137,
+          "generations": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "mean_division_minutes": 41.913333333333334,
+          "mean_dry_mass_fold_change": 2.022306981885369
+        },
+        "name": "adaptive-literature",
+        "seed": 307,
+        "solver_assisted_generations": [],
+        "state_id": "6cc663f9b95d6e34493b77c4c825cb19b0ed1162112954b31145e73168c956e5",
+        "terminal_reason": "reached_max_generations"
+      }
+    ],
+    "numerical_warning_counts": {
+      "/home/ubuntu/yggdrisil-continuation-20261106/native-validated/.venv/lib/python3.12/site-packages/scipy/integrate/_ivp/bdf.py:415: RuntimeWarning: invalid value encountered in subtract": 25,
+      "/home/ubuntu/yggdrisil-continuation-20261106/native-validated/ecoli/processes/polypeptide_elongation.py:1495: RuntimeWarning: divide by zero encountered in divide": 12,
+      "<string>:1: RuntimeWarning: divide by zero encountered in scalar divide": 83,
+      "wholecell.utils.modular_fba.InvalidBoundaryError: Negative molecule levels not allowed": 1
+    },
+    "report": {
+      "bytes": 335097,
+      "sha256": "f7d0f0949eb9059bf25beb5e0ed62655467b7ec9f7f710216684ee64ff4c0abe",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/f7d0f0949eb9059bf25beb5e0ed62655467b7ec9f7f710216684ee64ff4c0abe.json"
+    },
+    "solver_assisted_cells": 18,
+    "wandb": {
+      "all_files_downloaded_sha256_verified": true,
+      "artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-final-analysis:v0",
+      "experiment_id": "vecoli-kimi-continuation-20gen-3seed-20261106",
+      "files": {
+        "archival-restart.json": "9a352f282c776b20dbc4b63a76318f4e4fe0e4e15075ea1a5dc95e9e8eeab75f",
+        "final-analysis.json": "f7d0f0949eb9059bf25beb5e0ed62655467b7ec9f7f710216684ee64ff4c0abe",
+        "final-backup-verification.json": "307bf345f2dc476ff075c80c8a96e5e4568dc6e426bc2ebd1606a6e008d9c5f3",
+        "final-backup.json": "cb3f5796bdaac8d4633512eed40fcf31e3e00db827d8e59624372680f8a0bb9b",
+        "monitoring-final-progress.json": "339d96cc435ffc7083e2f17b1d25a5975eab41b9e04dc28f86cc7b8e5fc0d685",
+        "operational-final-record.json": "69b7f816d55db3fd437abd10a10c7709f76c3c0b5cf6cd0e7e4e153e5860fc4f",
+        "provider-accounting.json": "221a5a151ca6d51c5d62277a2e811b0ef2a559a9798444d78865f693bd7534dc",
+        "solver-monitoring.json": "bb4fc7fdb0f5321a33dc3d74efa53f58b0ca9a97c578923cd3f3f11be25cc739"
+      },
+      "run_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/continuationfinal20261106",
+      "s3_records": {
+        "archival-restart.json": {
+          "bytes": 320,
+          "sha256": "9a352f282c776b20dbc4b63a76318f4e4fe0e4e15075ea1a5dc95e9e8eeab75f",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/9a352f282c776b20dbc4b63a76318f4e4fe0e4e15075ea1a5dc95e9e8eeab75f.json"
+        },
+        "final-analysis.json": {
+          "bytes": 335097,
+          "sha256": "f7d0f0949eb9059bf25beb5e0ed62655467b7ec9f7f710216684ee64ff4c0abe",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/f7d0f0949eb9059bf25beb5e0ed62655467b7ec9f7f710216684ee64ff4c0abe.json"
+        },
+        "final-backup-verification.json": {
+          "bytes": 12214,
+          "sha256": "307bf345f2dc476ff075c80c8a96e5e4568dc6e426bc2ebd1606a6e008d9c5f3",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/307bf345f2dc476ff075c80c8a96e5e4568dc6e426bc2ebd1606a6e008d9c5f3.json"
+        },
+        "final-backup.json": {
+          "bytes": 608,
+          "sha256": "cb3f5796bdaac8d4633512eed40fcf31e3e00db827d8e59624372680f8a0bb9b",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/cb3f5796bdaac8d4633512eed40fcf31e3e00db827d8e59624372680f8a0bb9b.json"
+        },
+        "monitoring-final-progress.json": {
+          "bytes": 26999,
+          "sha256": "339d96cc435ffc7083e2f17b1d25a5975eab41b9e04dc28f86cc7b8e5fc0d685",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/339d96cc435ffc7083e2f17b1d25a5975eab41b9e04dc28f86cc7b8e5fc0d685.json"
+        },
+        "operational-final-record.json": {
+          "bytes": 47967,
+          "sha256": "69b7f816d55db3fd437abd10a10c7709f76c3c0b5cf6cd0e7e4e153e5860fc4f",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/69b7f816d55db3fd437abd10a10c7709f76c3c0b5cf6cd0e7e4e153e5860fc4f.json"
+        },
+        "provider-accounting.json": {
+          "bytes": 1000,
+          "sha256": "221a5a151ca6d51c5d62277a2e811b0ef2a559a9798444d78865f693bd7534dc",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/221a5a151ca6d51c5d62277a2e811b0ef2a559a9798444d78865f693bd7534dc.json"
+        },
+        "solver-monitoring.json": {
+          "bytes": 16172,
+          "sha256": "bb4fc7fdb0f5321a33dc3d74efa53f58b0ca9a97c578923cd3f3f11be25cc739",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/bb4fc7fdb0f5321a33dc3d74efa53f58b0ca9a97c578923cd3f3f11be25cc739.json"
+        }
+      },
+      "state": "COMMITTED",
+      "verified_at": "2026-11-06T15:44:48.711170+00:00"
+    }
+  },
+  "final_worker_state": "terminated",
+  "full_run_started_at": "2026-11-06T09:46:56.920170+00:00",
+  "genotype_count": 5,
+  "id": "vecoli-kimi-continuation-20gen-3seed-20261106",
+  "instance_id": "i-0512356f473be8f8d",
+  "kind": "vecoli_continuation_validation",
+  "last_monitor_record": {
+    "bytes": 26999,
+    "sha256": "339d96cc435ffc7083e2f17b1d25a5975eab41b9e04dc28f86cc7b8e5fc0d685",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/339d96cc435ffc7083e2f17b1d25a5975eab41b9e04dc28f86cc7b8e5fc0d685.json"
+  },
+  "last_verified_at": "2026-11-06T15:41:47.853045+00:00",
+  "launcher": {
+    "alive": false,
+    "instance_id": "i-0512356f473be8f8d",
+    "pid": 1746,
+    "start_ticks": "24628",
+    "started_at": "2026-11-06T09:34:02.147102+00:00",
+    "waiting_for_search_completion": true
+  },
+  "lineages_at_20": 14,
+  "maximum_cell_simulations": 300,
+  "model_exceptions": [
+    {
+      "classification": "model_exception",
+      "completed_generations": 14,
+      "deletion_set_sha256": "de7acdab1746fcf5f77dbdbe8415fa696546c458e9756af0b86071432869b253",
+      "deletions": 1919,
+      "exception": "wholecell.utils.modular_fba.InvalidBoundaryError: Negative molecule levels not allowed",
+      "experiment_id": "vecoli-kimi-continuation-20gen-3seed-20261106",
+      "failed_generation": 15,
+      "fraction_of_4290_genes": 0.4473193473193473,
+      "genotype": "no-retrieval",
+      "interpretation": "The simulator rejected negative molecule levels while setting metabolic FBA inputs. This is not established biological nondivision and is a different exception from GLP_UNBND. No automatic restart or scientific/numerical relaxation is authorized. The 14 other lineages remain eligible to continue.",
+      "late_four_completed_cycles": {
+        "birth_mass_last_over_first": 0.9805502233038672,
+        "duration_cv": 0.013735254497434573,
+        "mean_dry_mass_fold_change": 2.009109856472834,
+        "mean_duration_s": 2358.25,
+        "window_generations": 4
+      },
+      "preceding_warning": "RuntimeWarning: divide by zero encountered in scalar divide",
+      "progress_snapshot_at": "2026-11-06T13:41:09.207048+00:00",
+      "report": {
+        "bytes": 4545,
+        "sha256": "20e8d6d001a4560781cb0229c543bba441b44925748a54c73cfdf61a6f2ba2e7",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/diagnostics/20e8d6d001a4560781cb0229c543bba441b44925748a54c73cfdf61a6f2ba2e7.json"
+      },
+      "s3_checkpoint": {
+        "bytes": 555283,
+        "sha256": "72d9cbe74e663236d6669225281d66bb9b1aa10e02856a4bdad4782319b41c54",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-307/checkpoints/72d9cbe74e663236d6669225281d66bb9b1aa10e02856a4bdad4782319b41c54.json"
+      },
+      "seed": 307,
+      "state_id": "81134169f1246cb8d13b75c4afaff2739f594a399e52a761faa204765528f1ee",
+      "terminal_task": {
+        "exit_code": 1,
+        "generation": 15,
+        "stderr_sha256": "8641c2e418c37426bc0821d8c49fcd7692ee3cba2b7f1a7fc9da336c8077252b",
+        "wall_time_ms": null,
+        "workdir": "/home/ubuntu/yggdrisil-continuation-20261106/validation/runs/seed-307/output/vecoli_kimi_continuation_20gen_3seed_20261106_seed_307/nextflow/nextflow_workdirs/a3/11ee9255cba648cb36b091ea62728b"
+      },
+      "verified_at": "2026-11-06T13:54:20.734401+00:00",
+      "verified_files": {
+        ".command.err": {
+          "artifact_path": "output/nextflow/nextflow_workdirs/a3/11ee9255cba648cb36b091ea62728b/.command.err",
+          "s3": {
+            "bytes": 3437,
+            "sha256": "8641c2e418c37426bc0821d8c49fcd7692ee3cba2b7f1a7fc9da336c8077252b",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-307/objects/8641c2e418c37426bc0821d8c49fcd7692ee3cba2b7f1a7fc9da336c8077252b"
+          },
+          "worker_path": "/home/ubuntu/yggdrisil-continuation-20261106/validation/runs/seed-307/output/vecoli_kimi_continuation_20gen_3seed_20261106_seed_307/nextflow/nextflow_workdirs/a3/11ee9255cba648cb36b091ea62728b/.command.err",
+          "worker_s3_wandb_sha256_match": true
+        },
+        ".command.out": {
+          "artifact_path": "output/nextflow/nextflow_workdirs/a3/11ee9255cba648cb36b091ea62728b/.command.out",
+          "s3": {
+            "bytes": 248,
+            "sha256": "2ffe07f09e4cb422525458a48537e88354e3250b39ff725fedda3de1b5f0e450",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-307/objects/2ffe07f09e4cb422525458a48537e88354e3250b39ff725fedda3de1b5f0e450"
+          },
+          "worker_path": "/home/ubuntu/yggdrisil-continuation-20261106/validation/runs/seed-307/output/vecoli_kimi_continuation_20gen_3seed_20261106_seed_307/nextflow/nextflow_workdirs/a3/11ee9255cba648cb36b091ea62728b/.command.out",
+          "worker_s3_wandb_sha256_match": true
+        },
+        ".exitcode": {
+          "artifact_path": "output/nextflow/nextflow_workdirs/a3/11ee9255cba648cb36b091ea62728b/.exitcode",
+          "s3": {
+            "bytes": 1,
+            "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-307/objects/6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+          },
+          "worker_path": "/home/ubuntu/yggdrisil-continuation-20261106/validation/runs/seed-307/output/vecoli_kimi_continuation_20gen_3seed_20261106_seed_307/nextflow/nextflow_workdirs/a3/11ee9255cba648cb36b091ea62728b/.exitcode",
+          "worker_s3_wandb_sha256_match": true
+        }
+      },
+      "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-seed-307-data:v74",
+      "wandb_artifact_state": "COMMITTED",
+      "wandb_run_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/fbb5bbf2a64b"
+    }
+  ],
+  "monitor_completion": {
+    "automation_id": "monitor-continuation-and-validation",
+    "deleted_at": "2026-11-06T15:48:34.544121+00:00",
+    "reason": "Completed science, all final data independently verified, dedicated worker and volume deleted.",
+    "status": "deleted"
+  },
+  "monitoring_automation": {
+    "approved_at": "2026-11-06T09:08:34.391915+00:00",
+    "authorization": "User explicitly approved scheduled monitoring including experiment IDs, worker location, S3/W&B references and spending limits; no credentials.",
+    "automation_id": "monitor-continuation-and-validation",
+    "deleted_at": "2026-11-06T15:48:34.544121+00:00",
+    "enabled_at": "2026-11-06T09:08:34.391915+00:00",
+    "interval_minutes": 20,
+    "kind": "heartbeat",
+    "prior_review": {
+      "reason": "Automatic approval review rejected storing private experiment and infrastructure metadata in the Codex scheduled monitor without explicit destination approval.",
+      "remote_shutdown_timer_active": true,
+      "running_jobs_affected": false,
+      "status": "awaiting_explicit_user_approval"
+    },
+    "remote_shutdown_timer_active": false,
+    "running_jobs_affected": false,
+    "status": "deleted"
+  },
+  "native_extension_repair": {
+    "budget_deadline_restored": "2026-11-06T19:49:57Z",
+    "build_dependencies": [
+      "setuptools==80.10.2",
+      "wheel==0.46.3",
+      "Cython==3.1.2",
+      "numpy==2.2.6"
+    ],
+    "checked_at": "2026-11-06T09:32:42.167625+00:00",
+    "checks": [
+      "all three Cython modules import",
+      "original frozen simData loads"
+    ],
+    "extension_files": {
+      "wholecell/utils/_build_sequences.cpython-312-x86_64-linux-gnu.so": "f9f389cc027516126eadd6eebae8c55854656b74efc5e538e19162a283ecd802",
+      "wholecell/utils/_fastsums.cpython-312-x86_64-linux-gnu.so": "7f7aac49be900e4b11bcfc892ef41c0d137106dcbc4b1eb8b19a5865a8005213",
+      "wholecell/utils/mc_complexation.cpython-312-x86_64-linux-gnu.so": "0e3a3ff4d1e6808dc72a966fa0589a954a921057647d205c723545e74403f212"
+    },
+    "isolated_offline_build": true,
+    "native_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+    "runtime_dependencies_unchanged": true,
+    "tracked_source_unchanged": true
+  },
+  "operational_final_record": {
+    "bytes": 47967,
+    "sha256": "69b7f816d55db3fd437abd10a10c7709f76c3c0b5cf6cd0e7e4e153e5860fc4f",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/69b7f816d55db3fd437abd10a10c7709f76c3c0b5cf6cd0e7e4e153e5860fc4f.json"
+  },
+  "operational_provenance": {
+    "authorization.json": {
+      "bytes": 428,
+      "sha256": "0cc0035f6208e7e68d30475a21560782bac21af0f0aaa586a043e030f5594aaf",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/0cc0035f6208e7e68d30475a21560782bac21af0f0aaa586a043e030f5594aaf.json"
+    },
+    "client-repair.json": {
+      "bytes": 798,
+      "sha256": "fd667c40c9e48ef15d2a3d1a63dbcca36f5c4788de3a5efc6cbe8d1ed3bc54b3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/fd667c40c9e48ef15d2a3d1a63dbcca36f5c4788de3a5efc6cbe8d1ed3bc54b3.json"
+    },
+    "deadlines.json": {
+      "bytes": 249,
+      "sha256": "653ff27f0620d88bb7cf07cef2b0b4ad3d2909635ec3761ff7078338c5ceafc9",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/653ff27f0620d88bb7cf07cef2b0b4ad3d2909635ec3761ff7078338c5ceafc9.json"
+    },
+    "final-search-summary.json": {
+      "bytes": 5098,
+      "sha256": "85af79b5a8a2d5ac9511ca919d28aef6ae7eba9c70c1c7ca76f8f35c6e6a2a16",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/85af79b5a8a2d5ac9511ca919d28aef6ae7eba9c70c1c7ca76f8f35c6e6a2a16.json"
+    },
+    "model-exception-seed307-no-retrieval.json": {
+      "bytes": 4545,
+      "sha256": "20e8d6d001a4560781cb0229c543bba441b44925748a54c73cfdf61a6f2ba2e7",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/diagnostics/20e8d6d001a4560781cb0229c543bba441b44925748a54c73cfdf61a6f2ba2e7.json"
+    },
+    "monitor-approval.json": {
+      "bytes": 805,
+      "sha256": "0b526ee53909856d5d7057393dad2b505bbe09dde85a675d4549ff71488acd6a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/0b526ee53909856d5d7057393dad2b505bbe09dde85a675d4549ff71488acd6a.json"
+    },
+    "monitoring-summary.json": {
+      "bytes": 28401,
+      "sha256": "53d361cfc034185c7d41a737503bba277eb40bfee7c00843d009c0cbdce5e07c",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/monitoring/53d361cfc034185c7d41a737503bba277eb40bfee7c00843d009c0cbdce5e07c.json"
+    },
+    "native-extension-repair.json": {
+      "bytes": 936,
+      "sha256": "80ba96e66cff8c78e55cd277dd252ca68b6a935ca036a67cd45ce3f23e5808b3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/80ba96e66cff8c78e55cd277dd252ca68b6a935ca036a67cd45ce3f23e5808b3.json"
+    },
+    "preflight.json": {
+      "bytes": 1404,
+      "sha256": "834eb95b370f7bcc89d0eef49d9ba461eac4c005cf7cde0c1911605bfd01c9ff",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/834eb95b370f7bcc89d0eef49d9ba461eac4c005cf7cde0c1911605bfd01c9ff.json"
+    },
+    "preparation-smoke-check.json": {
+      "bytes": 2073,
+      "sha256": "e883a1b6bc4e88caa6229afe230cb3aa6155fa41383945d227496ad5cab74d90",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/e883a1b6bc4e88caa6229afe230cb3aa6155fa41383945d227496ad5cab74d90.json"
+    },
+    "provider-accounting.json": {
+      "bytes": 1000,
+      "sha256": "1ec7dadd3aaef45233ac2a4d7a1d03014612949630231e0460e98ed59204b964",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/1ec7dadd3aaef45233ac2a4d7a1d03014612949630231e0460e98ed59204b964.json"
+    },
+    "snapshot-repair-tests.json": {
+      "bytes": 372,
+      "sha256": "f08a84f13aca2685529c2a9f773df32dc22a13c69a2f7df17095b4da77baed9c",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/f08a84f13aca2685529c2a9f773df32dc22a13c69a2f7df17095b4da77baed9c.json"
+    },
+    "snapshot-repair.json": {
+      "bytes": 1034,
+      "sha256": "08e456cc355b4832932054b13ea297a1144144017d80e93a989946a985e89eec",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/08e456cc355b4832932054b13ea297a1144144017d80e93a989946a985e89eec.json"
+    },
+    "solver-monitoring.json": {
+      "bytes": 16172,
+      "sha256": "6a35a3bb2e65b2c6b5370d44aa521092371b61452aa328266c419b65931bf36a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/monitoring/6a35a3bb2e65b2c6b5370d44aa521092371b61452aa328266c419b65931bf36a.json"
+    },
+    "source-snapshot.json": {
+      "bytes": 822,
+      "sha256": "2580db77d60254193f66d89f76f758fff7713d692e32a3b781e300ace98dee0d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/2580db77d60254193f66d89f76f758fff7713d692e32a3b781e300ace98dee0d.json"
+    },
+    "validation-preparation-failure-2.json": {
+      "bytes": 3787,
+      "sha256": "199037113e4232176a85590507f2c49c1bdb06e6d77d238cb72fcb55753ebc00",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/199037113e4232176a85590507f2c49c1bdb06e6d77d238cb72fcb55753ebc00.json"
+    },
+    "validation-preparation-failure.json": {
+      "bytes": 2672,
+      "sha256": "cfc2e37280b5d1f0242c1a3642f784bab977ec0a6f72ef972f5f6ee94add78da",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/cfc2e37280b5d1f0242c1a3642f784bab977ec0a6f72ef972f5f6ee94add78da.json"
+    },
+    "validation-readiness.json": {
+      "bytes": 6828,
+      "sha256": "1851a2a3162af4b23b13924ec7217d48019fd6b26e2d3fdc8bf1fbe02421309e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/1851a2a3162af4b23b13924ec7217d48019fd6b26e2d3fdc8bf1fbe02421309e.json"
+    }
+  },
+  "operational_repair": {
+    "after_sha256": "4017d46d29b20312760099d27d3e11e2f05ccc0ebc7622a8cc3057c2c8e73768",
+    "before_sha256": "6e518fa0f30510ffd9651e5a7249f7058c97a7b6875fd8813df22841da63b72d",
+    "cause": "SQLite connection context managers left backup handles open; frozen selector correctly rejected WAL/SHM sidecars.",
+    "change": "Explicitly close both handles, checkpoint backup WAL and convert backup to DELETE journal mode before strict frozen selection.",
+    "deadlines_unchanged": true,
+    "failed_attempt": "/home/ubuntu/yggdrisil-continuation-20261106/attempts/sqlite-snapshot-preparation",
+    "offline_regression_checks": [
+      "WAL rows preserved",
+      "immutable backup readable",
+      "zero backup sidecars",
+      "repeat backup all rows"
+    ],
+    "original_final_index_uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/final/9e94d545a43cc64c320c5d58d73582e35295540ccbc2235e773c3516094ab612.json",
+    "repaired_at": "2026-11-06T09:25:42.399322+00:00",
+    "scientific_changes": false
+  },
+  "parent_ids": [
+    "literature-ablation-kimi-continuation-20261106",
+    "vecoli-kimi-20gen-3seed-20261105"
+  ],
+  "preserved_preparation_failures": [
+    {
+      "bytes": 2672,
+      "sha256": "cfc2e37280b5d1f0242c1a3642f784bab977ec0a6f72ef972f5f6ee94add78da",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/cfc2e37280b5d1f0242c1a3642f784bab977ec0a6f72ef972f5f6ee94add78da.json"
+    },
+    {
+      "bytes": 3787,
+      "sha256": "199037113e4232176a85590507f2c49c1bdb06e6d77d238cb72fcb55753ebc00",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/199037113e4232176a85590507f2c49c1bdb06e6d77d238cb72fcb55753ebc00.json"
+    }
+  ],
+  "protocol": "benchmarks/literature_ablation_continuation.json#validation",
+  "protocol_backup": {
+    "bytes": 20404,
+    "sha256": "25b2740cf3d2c764076548e80e5c86b9e334153da4c6ea6c8f3a5eeecd93881d",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/plans/25b2740cf3d2c764076548e80e5c86b9e334153da4c6ea6c8f3a5eeecd93881d.json"
+  },
+  "public_ip": null,
+  "readiness": "All completed outputs independently audited, final S3 and W&B copies verified, dedicated worker and volume removed.",
+  "remote_root": "/home/ubuntu/yggdrisil-continuation-20261106/validation",
+  "reproducibility": {
+    "backup_recheck": {
+      "bytes": 68548,
+      "sha256": "8b6c6659255273002f8a455e94e375df98194a12dec3b2e3f6db54abf98fc111",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/catalogs/20261107/records/8b6c6659255273002f8a455e94e375df98194a12dec3b2e3f6db54abf98fc111.json"
+    },
+    "comparison": {
+      "bytes": 28622,
+      "sha256": "7bbb90b2cfc81f4f849c02e753d24ad8360421372e2f140c3b0278f0764d8c25",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/catalogs/20261107/records/7bbb90b2cfc81f4f849c02e753d24ad8360421372e2f140c3b0278f0764d8c25.json"
+    },
+    "comparison_local_path": "experiments/comparisons/agent-baselines-20261106.json",
+    "methods_index_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/blob/3a748e37da91122df62e0440e3bb3b6ce2f0489b/methods/20261106/README.md",
+    "scientific_status_unchanged": true,
+    "source_commit": "3a748e37da91122df62e0440e3bb3b6ce2f0489b",
+    "source_files": 9,
+    "source_manifest": {
+      "bytes": 95610,
+      "sha256": "931fd4a86f0d790102f4fcd414f23802314ae2d759eefa1a3fc1fd2f014d3a2d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/catalogs/20261107/records/931fd4a86f0d790102f4fcd414f23802314ae2d759eefa1a3fc1fd2f014d3a2d.json"
+    },
+    "source_manifest_path": "methods/20261106/manifest.json",
+    "source_publication_authorized": true,
+    "source_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/tree/3a748e37da91122df62e0440e3bb3b6ce2f0489b/methods/20261106/agent-validation"
+  },
+  "resource_cleanup": {
+    "authorized_budget_usd": 50,
+    "confirmed_at": "2026-11-06T15:47:08.412528+00:00",
+    "cost_note": "Conservative elapsed-time VM estimate includes the brief stopped interval; not a settled bill. Storage, requests and transfers are additional within the approved $50 cap.",
+    "credential_copy_removed_with_deleted_volume": true,
+    "estimated_instance_cost_upper_bound_usd": 6.413436406272,
+    "experiment_id": "vecoli-kimi-continuation-20gen-3seed-20261106",
+    "hourly_instance_price_usd": 0.8064,
+    "initial_launch_time": "2026-11-06T07:49:57+00:00",
+    "instance_id": "i-0512356f473be8f8d",
+    "instance_state": "terminated",
+    "model_plus_compute_upper_bound_usd": 40.658326943272,
+    "preexisting_shared_running_instances": [
+      "i-0cda00ffb3cacfc12"
+    ],
+    "region": "us-east-1",
+    "reported_model_spend_usd": 34.244890537,
+    "requested_at": "2026-11-06T15:46:41.613783+00:00",
+    "shared_instances_unchanged": true,
+    "verification_record": {
+      "bytes": 12214,
+      "sha256": "307bf345f2dc476ff075c80c8a96e5e4568dc6e426bc2ebd1606a6e008d9c5f3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/307bf345f2dc476ff075c80c8a96e5e4568dc6e426bc2ebd1606a6e008d9c5f3.json"
+    },
+    "volume_deleted": true,
+    "volume_id": "vol-0cc9bf3a79eaa3c07",
+    "wall_hours_upper_bound": 7.953170146666666
+  },
+  "s3_prefix": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/",
+  "seeds": [
+    101,
+    211,
+    307
+  ],
+  "solver_patch_sha256": "3a4a50fdc7b4d16277b7ce8d3cb76e2e2fd69132937a4d57cbb232b01a06592a",
+  "solver_policy": "Apply the documented v2 numerical recovery consistently to all five genotypes. Retry GLP_UNBND once with fresh basis, presolve and ordinary simplex refinement, unchanged LP/objective/constraints/tolerances; accept only identical LP hash, GLP_OPT and finite KKT relative residuals <=1e-7. Latch validation failure against outer retries. Log every fallback and distinguish patch-assisted cells from unassisted trajectories. No candidate substitutions or additional repairs after results.",
+  "solver_recovery_verification": {
+    "accepted_fallback_count": 18,
+    "protocol": "Uniform predefined solver patch; unchanged model and tolerances; each accepted fallback passes exact LP and strict KKT checks.",
+    "report": {
+      "bytes": 16172,
+      "sha256": "bb4fc7fdb0f5321a33dc3d74efa53f58b0ca9a97c578923cd3f3f11be25cc739",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/bb4fc7fdb0f5321a33dc3d74efa53f58b0ca9a97c578923cd3f3f11be25cc739.json"
+    }
+  },
+  "status": "completed_with_exceptions_verified",
+  "target_generations": 20,
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/03ee68cb7eb8",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/a5d41af772be",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/cb5d2991d911",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/fbb5bbf2a64b",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/continuationfinal20261106"
+  ],
+  "workflow_checkpoints": {
+    "calibration": {
+      "artifact_verified": true,
+      "data_backup": {
+        "completed_cell_cycles": 2,
+        "parent_artifact": "mcclain/yggdrisil/literature-ablation-kimi-continuation-20261106-checkpoint:v24",
+        "progress_sha256": "a49f3b0f572b8349be8edd8d174253e6d5ad7521d6117ab9f803d3d0723c5f04",
+        "s3_checkpoint": {
+          "bytes": 19534,
+          "sha256": "bba7d8d20dc1b5f4738455531037fad6dfb938be6cbd854d96d7b6fb487cfa77",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/calibration/checkpoints/bba7d8d20dc1b5f4738455531037fad6dfb938be6cbd854d96d7b6fb487cfa77.json"
+        },
+        "scope": "Closed cell outputs; running cells are backed up after completion.",
+        "status": "verified",
+        "verified_at": "2026-11-06T09:46:46.041768+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-calibration-data:v3"
+      },
+      "status": "completed",
+      "verified_progress": [
+        {
+          "generations_completed": 2,
+          "name": "mg1655-control",
+          "terminal_reason": "reached_max_generations"
+        }
+      ]
+    },
+    "seed-101": {
+      "artifact_verified": true,
+      "data_backup": {
+        "completed_cell_cycles": 100,
+        "parent_artifact": "mcclain/yggdrisil/literature-ablation-kimi-continuation-20261106-checkpoint:v24",
+        "progress_sha256": "b847e2f9e9f189cfbf3d48bf56f404e781caadcfdbf1d212d492e055efb8873e",
+        "s3_checkpoint": {
+          "bytes": 726205,
+          "sha256": "47f1201d21b7593a85bb08589d5ff98754aee7cbeea41d17ab13ccb730495249",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-101/checkpoints/47f1201d21b7593a85bb08589d5ff98754aee7cbeea41d17ab13ccb730495249.json"
+        },
+        "scope": "Closed cell outputs; running cells are backed up after completion.",
+        "status": "verified",
+        "verified_at": "2026-11-06T14:50:53.446950+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-seed-101-data:v95"
+      },
+      "status": "completed",
+      "verified_progress": [
+        {
+          "generations_completed": 20,
+          "name": "mg1655-control",
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "name": "starting-genome-control",
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "name": "no-retrieval",
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "name": "frozen-dossier",
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "name": "adaptive-literature",
+          "terminal_reason": "reached_max_generations"
+        }
+      ]
+    },
+    "seed-211": {
+      "artifact_verified": true,
+      "data_backup": {
+        "completed_cell_cycles": 100,
+        "parent_artifact": "mcclain/yggdrisil/literature-ablation-kimi-continuation-20261106-checkpoint:v24",
+        "progress_sha256": "fe8548a28b775a1943a3367436e17cdbc968bc8b1dfea35fd5b42b9240bbfdcb",
+        "s3_checkpoint": {
+          "bytes": 711660,
+          "sha256": "4a7e6ff9ae6c4ee2fbef1a475c0bbcbe1f57fa51b4a9dcc7a8723ef71b90da20",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-211/checkpoints/4a7e6ff9ae6c4ee2fbef1a475c0bbcbe1f57fa51b4a9dcc7a8723ef71b90da20.json"
+        },
+        "scope": "Closed cell outputs; running cells are backed up after completion.",
+        "status": "verified",
+        "verified_at": "2026-11-06T14:38:55.012464+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-seed-211-data:v97"
+      },
+      "status": "completed",
+      "verified_progress": [
+        {
+          "generations_completed": 20,
+          "name": "mg1655-control",
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "name": "starting-genome-control",
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "name": "no-retrieval",
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "name": "frozen-dossier",
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "name": "adaptive-literature",
+          "terminal_reason": "reached_max_generations"
+        }
+      ]
+    },
+    "seed-307": {
+      "artifact_verified": true,
+      "data_backup": {
+        "completed_cell_cycles": 94,
+        "parent_artifact": "mcclain/yggdrisil/literature-ablation-kimi-continuation-20261106-checkpoint:v24",
+        "progress_sha256": "30e81943ceaceb87006ba216e74fabd4119dec79efa09c9aa7347510411aff0b",
+        "s3_checkpoint": {
+          "bytes": 676757,
+          "sha256": "2d4ba664315e6d45e104206af9223040631dd1b0e65472c12f5eb28df53a18a5",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-307/checkpoints/2d4ba664315e6d45e104206af9223040631dd1b0e65472c12f5eb28df53a18a5.json"
+        },
+        "scope": "Closed cell outputs; running cells are backed up after completion.",
+        "status": "verified",
+        "verified_at": "2026-11-06T14:27:50.126108+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-continuation-20gen-3seed-20261106-seed-307-data:v92"
+      },
+      "status": "failed",
+      "verified_progress": [
+        {
+          "generations_completed": 20,
+          "name": "mg1655-control",
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "name": "starting-genome-control",
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 14,
+          "name": "no-retrieval",
+          "terminal_reason": "model_exception"
+        },
+        {
+          "generations_completed": 20,
+          "name": "frozen-dossier",
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "name": "adaptive-literature",
+          "terminal_reason": "reached_max_generations"
+        }
+      ]
+    }
+  }
+}

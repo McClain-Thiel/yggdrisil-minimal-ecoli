@@ -1,0 +1,42 @@
+{
+  "child_runs": [],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "genomic-live-audit-20261026-170516",
+  "kind": "historical_validation_or_pilot",
+  "local_root": "runs/genomic-live-audit-20261026-170516",
+  "records": [
+    "runs/genomic-live-audit-20261026-170516/summary.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/genomic-live-audit-20261026-170516": {
+        "bytes": 1268,
+        "sha256": "bc6017da2776f0ba0f9f35a6f335ff5d2a5ed8147f3b73b1e52270006d8980b6",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-bc6017da2776f0ba0f9f35a6f335ff5d2a5ed8147f3b73b1e52270006d8980b6.json",
+        "verified_at": "2026-11-05T22:51:15.084363+00:00"
+      },
+      "application/runs/genomic-live-audit-20261026-170516": {
+        "bytes": 1263,
+        "sha256": "271bc365aeb0e08180932c17b894d3d01811e9af9a6f868581ed1cd73d65fd49",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-271bc365aeb0e08180932c17b894d3d01811e9af9a6f868581ed1cd73d65fd49.json",
+        "verified_at": "2026-11-05T22:50:45.336517+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "historical_recorded",
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/bby6tesx"
+  ]
+}

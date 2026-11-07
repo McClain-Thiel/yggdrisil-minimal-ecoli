@@ -1,0 +1,964 @@
+{
+  "analysis": "runs/literature-ablation-pilot-20261103/analysis.json",
+  "attempt_history": [
+    {
+      "model_spend_usd": 0,
+      "reason": "LiteLLM OpenRouter code imported missing MCP extra; failed before inference billing.",
+      "remote_controller_logs": "/home/ubuntu/yggdrisil-literature-pilot-20261103/attempts/missing-mcp",
+      "smoke_bundle": "runs/literature-ablation-pilot-20261103-smoke",
+      "status": "infrastructure_failure",
+      "wandb_run_ids": [
+        "72d7a9fa5164",
+        "3a905b8fe597",
+        "975f2163caa0"
+      ]
+    }
+  ],
+  "authorization": {
+    "approved_at": "2026-11-04T09:49:38.560213+00:00",
+    "authorization": "Approve up to $65 total",
+    "existing_instance_id": "i-0cda00ffb3cacfc12",
+    "include_pilot": true,
+    "model_budget_usd": 60,
+    "new_ec2_instances": false,
+    "new_edison_jobs": false,
+    "notify_on_completion_or_failure": true,
+    "stop_later_stages_on_failure": true,
+    "temporary_storage_budget_usd": 5,
+    "total_budget_usd": 65
+  },
+  "budget_request": {
+    "approved": true,
+    "model_usd": 60,
+    "temporary_storage_usd": 5
+  },
+  "bundle_sha256": {
+    "inputs/dossier.json": "efdb6c3d13d8e918e751df435ca69b2c3d64fd7782cd312e76fd566eaac9f2c8",
+    "inputs/starting_genotype.json": "2655c7d17fda35ccf40c2d1fafdea197c3b18e3d35461aed2e64498ae24ab915",
+    "jobs.json": "23d9b0afb9cfbc6cd692fff522e114e0a0092ffca1f931eff3ebe9561d411f4f",
+    "protocol.json": "66752f443911747ec06f0a5fe9ff97d540fb04e105fc24c5bd0a6c3cd5dcc520"
+  },
+  "capacity_assessment": {
+    "additional_worker_option": {
+      "created": false,
+      "instance_only_usd_per_24h": "9.6768",
+      "instance_type": "m7i.2xlarge",
+      "on_demand_usd_per_hour": "0.4032"
+    },
+    "checked_at": "2026-11-03T14:42:23.902342+00:00",
+    "inspection_only": false,
+    "launch_ready": true,
+    "preferred_existing_instance": {
+      "availability_zone": "us-east-1b",
+      "available_memory_gib_approx": 46,
+      "id": "i-0cda00ffb3cacfc12",
+      "load_average_1m": 0.2021484375,
+      "name": "g6-big2",
+      "nvme_free_gib": 4.7,
+      "owned_by_this_experiment": false,
+      "provisioned_memory_gib": 64,
+      "region": "us-east-1",
+      "root_free_gb_approx": 16,
+      "terminate_after_experiment": false,
+      "type": "g6.4xlarge",
+      "vcpus": 16
+    },
+    "pricing_source": "AWS Pricing GetProducts, us-east-1, checked 2026-11-03; excludes snapshots, transfer, extra provisioned storage performance and model APIs.",
+    "recommendation": "Reuse the existing instance after providing dedicated scratch storage; benchmark control runtime, peak memory and output size before scaling workers.",
+    "storage_option": {
+      "approx_usd_per_day_30_day_month": "0.53",
+      "created": false,
+      "size_gb": 200,
+      "type": "gp3",
+      "usd_per_gb_month": "0.08"
+    }
+  },
+  "completed_search_runs": 9,
+  "created_at": "2026-11-03T14:39:48.498369+00:00",
+  "data_backup": {
+    "active_checkpoint": {
+      "archive": "/home/ubuntu/yggdrisil-literature-pilot-20261103/checkpoints/20261104T110002Z.tar.gz",
+      "bytes": 15644084,
+      "created_at": "20261104T110002Z",
+      "files": 156,
+      "final": true,
+      "hash_verified": true,
+      "local_archive": "runs/literature-ablation-deployment-20261103/checkpoints/20261104T110002Z.tar.gz",
+      "local_manifest": "runs/literature-ablation-deployment-20261103/checkpoints/20261104T110002Z.json",
+      "sha256": "9c8b042c5114b406e5ecd13f716b67286c4c4505e738ae7ee6ad03cc57df9b24",
+      "sqlite_backup_method": "sqlite3.Connection.backup; all processes exited before final snapshot",
+      "sqlite_backups": 30
+    },
+    "all_run_summaries_match_final_results": true,
+    "final_artifact_record": "runs/literature-ablation-deployment-20261103/final-artifact.json",
+    "final_checkpoint": {
+      "archive": "/home/ubuntu/yggdrisil-literature-pilot-20261103/checkpoints/20261104T110002Z.tar.gz",
+      "bytes": 15644084,
+      "created_at": "20261104T110002Z",
+      "files": 156,
+      "final": true,
+      "hash_verified": true,
+      "local_archive": "runs/literature-ablation-deployment-20261103/checkpoints/20261104T110002Z.tar.gz",
+      "local_manifest": "runs/literature-ablation-deployment-20261103/checkpoints/20261104T110002Z.json",
+      "sha256": "9c8b042c5114b406e5ecd13f716b67286c4c4505e738ae7ee6ad03cc57df9b24",
+      "sqlite_backup_method": "sqlite3.Connection.backup; all processes exited before final snapshot",
+      "sqlite_backups": 30
+    },
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "pilot_artifact_verification": "runs/literature-ablation-deployment-20261103/pilot-artifacts-verified.json",
+    "s3_prefix": null,
+    "smoke_archive": "runs/literature-ablation-deployment-20261103/smoke-results.tar.gz",
+    "smoke_archive_sha256": "e7d763778852efc4ee8e9dc9e867cb16d397ee782e88d4fd60a68ea6f77de5c4",
+    "smoke_artifact_verification": "runs/literature-ablation-deployment-20261103/smoke-artifacts-verified.json",
+    "smoke_wandb_artifacts": [
+      "mcclain/yggdrisil/literature-ablation-pilot-20261103-smoke-retry1-adaptive-literature-seed-17-data:v0",
+      "mcclain/yggdrisil/literature-ablation-pilot-20261103-smoke-retry1-frozen-dossier-seed-17-data:v0",
+      "mcclain/yggdrisil/literature-ablation-pilot-20261103-smoke-retry1-no-retrieval-seed-17-data:v0"
+    ],
+    "status": "verified",
+    "verified_completed_pilot_artifacts": [
+      "mcclain/yggdrisil/literature-ablation-pilot-20261103-no-retrieval-seed-17-data:v0",
+      "mcclain/yggdrisil/literature-ablation-pilot-20261103-frozen-dossier-seed-17-data:v0",
+      "mcclain/yggdrisil/literature-ablation-pilot-20261103-adaptive-literature-seed-17-data:v0",
+      "mcclain/yggdrisil/literature-ablation-pilot-20261103-frozen-dossier-seed-29-data:v0",
+      "mcclain/yggdrisil/literature-ablation-pilot-20261103-adaptive-literature-seed-29-data:v0",
+      "mcclain/yggdrisil/literature-ablation-pilot-20261103-no-retrieval-seed-29-data:v0",
+      "mcclain/yggdrisil/literature-ablation-pilot-20261103-adaptive-literature-seed-43-data:v0",
+      "mcclain/yggdrisil/literature-ablation-pilot-20261103-no-retrieval-seed-43-data:v0",
+      "mcclain/yggdrisil/literature-ablation-pilot-20261103-frozen-dossier-seed-43-data:v0"
+    ],
+    "wandb_artifact": "mcclain/yggdrisil/literature-ablation-pilot-20261103-final-data:v0"
+  },
+  "deployment": {
+    "controller": {
+      "authorization": "authorization.json",
+      "environment_repair": "environment-repair.json",
+      "existing_instance_id": "i-0cda00ffb3cacfc12",
+      "launcher_sha256": "031d42dae8a6ef2508b7a222092b5a649a6d864b243a7d462d8dca67c0d07e1e",
+      "pid": 1796295,
+      "previous_attempt": "attempts/missing-mcp",
+      "started_at_unix": 1793786205.737191
+    },
+    "dependency_freeze": "runs/literature-ablation-deployment-20261103/requirements-repaired.txt",
+    "environment_repair": "runs/literature-ablation-deployment-20261103/environment-repair.json",
+    "instance_id": "i-0cda00ffb3cacfc12",
+    "key_metadata": "runs/literature-ablation-deployment-20261103/key-metadata.json",
+    "launcher_sha256": "031d42dae8a6ef2508b7a222092b5a649a6d864b243a7d462d8dca67c0d07e1e",
+    "linux_checks_passed": 86,
+    "local_root": "runs/literature-ablation-deployment-20261103",
+    "paid_jobs_started": true,
+    "region": "us-east-1",
+    "remote_logs": [
+      "controller.log",
+      "smoke-{0..2}.log",
+      "pilot-{0..8}.log"
+    ],
+    "remote_root": "/home/ubuntu/yggdrisil-literature-pilot-20261103",
+    "repair_checks_passed": 46,
+    "source_archive_sha256": "c589a6b8f84b108bbb731725401f250013dd3ac0f5dd3c415a71847d92e5b765",
+    "source_uploaded_to_wandb": false
+  },
+  "dossier": "runs/literature-ablation-pilot-20261103/inputs/dossier.json",
+  "execution": {
+    "backend": "aws-ec2",
+    "instance_id": "i-0cda00ffb3cacfc12",
+    "instance_type": "g6.4xlarge",
+    "max_parallel_cells": 2,
+    "price_checked_on": "2026-11-03",
+    "price_source": "AWS Pricing GetProducts, Linux shared tenancy, us-east-1; excludes storage, transfer and model APIs",
+    "region": "us-east-1",
+    "ucl": "deferred",
+    "using_existing_instance": true
+  },
+  "finalists": "runs/literature-ablation-pilot-20261103/finalists.json",
+  "id": "literature-ablation-pilot-20261103",
+  "interpretation_notes": [
+    "No adaptive run invoked fresh literature retrieval; this pilot cannot establish a benefit from live literature search.",
+    "Three seeds per arm and wide run-to-run variation do not establish a robust treatment advantage.",
+    "FBA/RBA screening is not vEcoli validation or evidence of laboratory viability.",
+    "Candidates are coding-gene knockout projections, not reconstructed native reduced chromosomes."
+  ],
+  "jobs": "runs/literature-ablation-pilot-20261103/jobs.json",
+  "kind": "literature_ablation_plan",
+  "last_monitor_check": "2026-11-04T10:59:08.803720+00:00",
+  "latest_search_snapshot": "runs/literature-ablation-deployment-20261103/status-snapshot.json",
+  "launch_ready": true,
+  "local_root": "runs/literature-ablation-pilot-20261103",
+  "manifest": "runs/literature-ablation-pilot-20261103/manifest.json",
+  "monitor": {
+    "automation_id": "monitor-literature-ablation-pilot",
+    "checkpoint_active_runs": true,
+    "completion_verified_at": "2026-11-04T14:37:34.625479+00:00",
+    "deleted_at": "2026-11-04T14:38:25.822063+00:00",
+    "interval_minutes": 20,
+    "last_checkpoint_verified_at": "2026-11-04T10:41:50.504571+00:00",
+    "notify": "completion, failure or actionable stall",
+    "status": "deleted_on_completion"
+  },
+  "parent_experiment_ids": [
+    "published-genome-benchmarks-20261027",
+    "edison-comparison-20261026-173024"
+  ],
+  "partial_search_audit": "runs/literature-ablation-deployment-20261103/partial-search-audit.json",
+  "pending_before_execution": [
+    "Calibrate native Linux vEcoli controls and freeze acceptance thresholds.",
+    "Measure control runtime and memory, then present additional-worker cost and ETA for approval before provisioning."
+  ],
+  "pilot_runs": [
+    {
+      "artifact": {
+        "name": "mcclain/yggdrisil/literature-ablation-pilot-20261103-no-retrieval-seed-17-data:v0"
+      },
+      "elapsed_s": 3677,
+      "final_provider_spend_usd": "3.6720935",
+      "growth_gate_audit": {
+        "growth_gate_passing_new_states": 50,
+        "growth_gate_passing_states": 51,
+        "run_id": "literature-ablation-pilot-20261103-no-retrieval-seed-17",
+        "states": 51,
+        "tool_call_counts": {
+          "analyze_deletion_bundle": 62,
+          "deletion_delta": 1,
+          "get_deleted_genes": 15,
+          "get_state": 1,
+          "inspect_gene_evidence": 95,
+          "list_deletion_candidates": 1,
+          "list_shared_memory": 16,
+          "resolve_gene_ids": 2,
+          "set_model_response": 55
+        }
+      },
+      "index": 0,
+      "process": "exited",
+      "progress": {
+        "provider_spend_usd": "3.384373",
+        "states": 49,
+        "step": 26
+      },
+      "remote_path": "/home/ubuntu/yggdrisil-literature-pilot-20261103/application/runs/literature-ablation-pilot-20261103/search/literature-ablation-pilot-20261103-no-retrieval-seed-17",
+      "result": {
+        "additional_deletions": 38,
+        "elapsed_s": 968.0101659856737,
+        "provider_spend_usd": "3.5075515",
+        "scientific_tool_calls": {
+          "analyze_deletion_bundle": 62,
+          "deletion_delta": 1,
+          "get_deleted_genes": 15,
+          "inspect_gene_evidence": 95,
+          "list_deletion_candidates": 1,
+          "resolve_gene_ids": 2
+        },
+        "states": 51,
+        "status": "completed",
+        "stop_reason": "max_states"
+      },
+      "run_id": "literature-ablation-pilot-20261103-no-retrieval-seed-17",
+      "stage": "pilot",
+      "tracking": {
+        "wandb_id": "0161c7cc0641",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/0161c7cc0641"
+      }
+    },
+    {
+      "artifact": {
+        "name": "mcclain/yggdrisil/literature-ablation-pilot-20261103-frozen-dossier-seed-17-data:v0"
+      },
+      "elapsed_s": 3677,
+      "final_provider_spend_usd": "4.0936875",
+      "growth_gate_audit": {
+        "growth_gate_passing_new_states": 50,
+        "growth_gate_passing_states": 51,
+        "run_id": "literature-ablation-pilot-20261103-frozen-dossier-seed-17",
+        "states": 51,
+        "tool_call_counts": {
+          "analyze_deletion_bundle": 74,
+          "compare_saved_gene_set": 1,
+          "deletion_delta": 2,
+          "get_deleted_genes": 10,
+          "get_state": 1,
+          "inspect_gene_evidence": 95,
+          "list_deletion_candidates": 4,
+          "list_shared_memory": 13,
+          "read_shared_memory": 11,
+          "resolve_gene_ids": 2,
+          "set_model_response": 50
+        }
+      },
+      "index": 1,
+      "process": "exited",
+      "progress": {
+        "provider_spend_usd": "3.71905",
+        "states": 49,
+        "step": 24
+      },
+      "remote_path": "/home/ubuntu/yggdrisil-literature-pilot-20261103/application/runs/literature-ablation-pilot-20261103/search/literature-ablation-pilot-20261103-frozen-dossier-seed-17",
+      "result": {
+        "additional_deletions": 39,
+        "elapsed_s": 953.2067538127303,
+        "provider_spend_usd": "3.884734",
+        "scientific_tool_calls": {
+          "analyze_deletion_bundle": 74,
+          "compare_saved_gene_set": 1,
+          "deletion_delta": 2,
+          "get_deleted_genes": 10,
+          "inspect_gene_evidence": 95,
+          "list_deletion_candidates": 4,
+          "resolve_gene_ids": 2
+        },
+        "states": 51,
+        "status": "completed",
+        "stop_reason": "max_states"
+      },
+      "run_id": "literature-ablation-pilot-20261103-frozen-dossier-seed-17",
+      "stage": "pilot",
+      "tracking": {
+        "wandb_id": "02b34f246799",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/02b34f246799"
+      }
+    },
+    {
+      "artifact": {
+        "name": "mcclain/yggdrisil/literature-ablation-pilot-20261103-adaptive-literature-seed-17-data:v0"
+      },
+      "elapsed_s": 3677,
+      "final_provider_spend_usd": "4.7849875",
+      "growth_gate_audit": {
+        "growth_gate_passing_new_states": 48,
+        "growth_gate_passing_states": 49,
+        "run_id": "literature-ablation-pilot-20261103-adaptive-literature-seed-17",
+        "states": 51,
+        "tool_call_counts": {
+          "analyze_deletion_bundle": 58,
+          "compare_saved_gene_set": 8,
+          "deletion_delta": 3,
+          "get_deleted_genes": 23,
+          "get_state": 1,
+          "inspect_gene_evidence": 162,
+          "list_deletion_candidates": 34,
+          "list_shared_memory": 21,
+          "read_shared_memory": 7,
+          "resolve_gene_ids": 5,
+          "set_model_response": 53
+        }
+      },
+      "index": 2,
+      "process": "exited",
+      "progress": {
+        "provider_spend_usd": "4.4677215",
+        "states": 50,
+        "step": 25
+      },
+      "remote_path": "/home/ubuntu/yggdrisil-literature-pilot-20261103/application/runs/literature-ablation-pilot-20261103/search/literature-ablation-pilot-20261103-adaptive-literature-seed-17",
+      "result": {
+        "additional_deletions": 137,
+        "elapsed_s": 1119.5502020604908,
+        "provider_spend_usd": "4.626517",
+        "scientific_tool_calls": {
+          "analyze_deletion_bundle": 58,
+          "compare_saved_gene_set": 8,
+          "deletion_delta": 3,
+          "get_deleted_genes": 23,
+          "inspect_gene_evidence": 162,
+          "list_deletion_candidates": 34,
+          "resolve_gene_ids": 5
+        },
+        "states": 51,
+        "status": "completed",
+        "stop_reason": "max_states"
+      },
+      "run_id": "literature-ablation-pilot-20261103-adaptive-literature-seed-17",
+      "stage": "pilot",
+      "tracking": {
+        "wandb_id": "78ef7a40b7ca",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/78ef7a40b7ca"
+      }
+    },
+    {
+      "artifact": {
+        "name": "mcclain/yggdrisil/literature-ablation-pilot-20261103-frozen-dossier-seed-29-data:v0"
+      },
+      "elapsed_s": 2542,
+      "final_provider_spend_usd": "4.531435",
+      "growth_gate_audit": {
+        "growth_gate_passing_new_states": 47,
+        "growth_gate_passing_states": 48,
+        "run_id": "literature-ablation-pilot-20261103-frozen-dossier-seed-29",
+        "states": 51,
+        "tool_call_counts": {
+          "analyze_deletion_bundle": 55,
+          "compare_saved_gene_set": 2,
+          "deletion_delta": 3,
+          "get_deleted_genes": 13,
+          "get_state": 1,
+          "inspect_gene_evidence": 117,
+          "inspect_kegg_module": 2,
+          "list_deletion_candidates": 8,
+          "list_shared_memory": 3,
+          "read_shared_memory": 2,
+          "resolve_gene_ids": 1,
+          "set_model_response": 53
+        }
+      },
+      "index": 3,
+      "process": "exited",
+      "progress": {
+        "provider_spend_usd": "4.0686715",
+        "states": 49,
+        "step": 25
+      },
+      "remote_path": "/home/ubuntu/yggdrisil-literature-pilot-20261103/application/runs/literature-ablation-pilot-20261103/search/literature-ablation-pilot-20261103-frozen-dossier-seed-29",
+      "result": {
+        "additional_deletions": 96,
+        "elapsed_s": 1299.7451685033739,
+        "provider_spend_usd": "4.282994",
+        "scientific_tool_calls": {
+          "analyze_deletion_bundle": 55,
+          "compare_saved_gene_set": 2,
+          "deletion_delta": 3,
+          "get_deleted_genes": 13,
+          "inspect_gene_evidence": 117,
+          "inspect_kegg_module": 2,
+          "list_deletion_candidates": 8,
+          "resolve_gene_ids": 1
+        },
+        "states": 51,
+        "status": "completed",
+        "stop_reason": "max_states"
+      },
+      "run_id": "literature-ablation-pilot-20261103-frozen-dossier-seed-29",
+      "stage": "pilot",
+      "tracking": {
+        "wandb_id": "ef14a009b192",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/ef14a009b192"
+      }
+    },
+    {
+      "artifact": {
+        "name": "mcclain/yggdrisil/literature-ablation-pilot-20261103-adaptive-literature-seed-29-data:v0"
+      },
+      "elapsed_s": 2542,
+      "final_provider_spend_usd": "3.983096",
+      "growth_gate_audit": {
+        "growth_gate_passing_new_states": 48,
+        "growth_gate_passing_states": 49,
+        "run_id": "literature-ablation-pilot-20261103-adaptive-literature-seed-29",
+        "states": 51,
+        "tool_call_counts": {
+          "analyze_deletion_bundle": 48,
+          "compare_saved_gene_set": 3,
+          "get_deleted_genes": 5,
+          "get_state": 1,
+          "inspect_gene_evidence": 129,
+          "inspect_kegg_module": 1,
+          "list_deletion_candidates": 1,
+          "list_shared_memory": 5,
+          "read_shared_memory": 4,
+          "resolve_gene_ids": 2,
+          "set_model_response": 53
+        }
+      },
+      "index": 4,
+      "process": "exited",
+      "progress": {
+        "provider_spend_usd": "3.6778185",
+        "states": 49,
+        "step": 25
+      },
+      "remote_path": "/home/ubuntu/yggdrisil-literature-pilot-20261103/application/runs/literature-ablation-pilot-20261103/search/literature-ablation-pilot-20261103-adaptive-literature-seed-29",
+      "result": {
+        "additional_deletions": 44,
+        "elapsed_s": 1074.7201198749244,
+        "provider_spend_usd": "3.852623",
+        "scientific_tool_calls": {
+          "analyze_deletion_bundle": 48,
+          "compare_saved_gene_set": 3,
+          "get_deleted_genes": 5,
+          "inspect_gene_evidence": 129,
+          "inspect_kegg_module": 1,
+          "list_deletion_candidates": 1,
+          "resolve_gene_ids": 2
+        },
+        "states": 51,
+        "status": "completed",
+        "stop_reason": "max_states"
+      },
+      "run_id": "literature-ablation-pilot-20261103-adaptive-literature-seed-29",
+      "stage": "pilot",
+      "tracking": {
+        "wandb_id": "b9d3622d2d99",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/b9d3622d2d99"
+      }
+    },
+    {
+      "artifact": {
+        "name": "mcclain/yggdrisil/literature-ablation-pilot-20261103-no-retrieval-seed-29-data:v0"
+      },
+      "elapsed_s": 2542,
+      "final_provider_spend_usd": "4.635886",
+      "growth_gate_audit": {
+        "growth_gate_passing_new_states": 49,
+        "growth_gate_passing_states": 50,
+        "run_id": "literature-ablation-pilot-20261103-no-retrieval-seed-29",
+        "states": 51,
+        "tool_call_counts": {
+          "analyze_deletion_bundle": 56,
+          "get_deleted_genes": 10,
+          "get_state": 1,
+          "inspect_gene_evidence": 123,
+          "inspect_kegg_module": 5,
+          "list_deletion_candidates": 32,
+          "list_shared_memory": 26,
+          "set_model_response": 52
+        }
+      },
+      "index": 5,
+      "process": "exited",
+      "progress": {
+        "provider_spend_usd": "4.306516",
+        "states": 49,
+        "step": 25
+      },
+      "remote_path": "/home/ubuntu/yggdrisil-literature-pilot-20261103/application/runs/literature-ablation-pilot-20261103/search/literature-ablation-pilot-20261103-no-retrieval-seed-29",
+      "result": {
+        "additional_deletions": 137,
+        "elapsed_s": 1277.361898392439,
+        "provider_spend_usd": "4.429781",
+        "scientific_tool_calls": {
+          "analyze_deletion_bundle": 56,
+          "get_deleted_genes": 10,
+          "inspect_gene_evidence": 123,
+          "inspect_kegg_module": 5,
+          "list_deletion_candidates": 32
+        },
+        "states": 51,
+        "status": "completed",
+        "stop_reason": "max_states"
+      },
+      "run_id": "literature-ablation-pilot-20261103-no-retrieval-seed-29",
+      "stage": "pilot",
+      "tracking": {
+        "wandb_id": "bfd3d7355ccc",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/bfd3d7355ccc"
+      }
+    },
+    {
+      "artifact": {
+        "name": "mcclain/yggdrisil/literature-ablation-pilot-20261103-adaptive-literature-seed-43-data:v0"
+      },
+      "elapsed_s": 1220,
+      "final_provider_spend_usd": "3.9638725",
+      "growth_gate_audit": {
+        "growth_gate_passing_new_states": 45,
+        "growth_gate_passing_states": 46,
+        "run_id": "literature-ablation-pilot-20261103-adaptive-literature-seed-43",
+        "states": 51,
+        "tool_call_counts": {
+          "analyze_deletion_bundle": 55,
+          "compare_saved_gene_set": 1,
+          "deletion_delta": 1,
+          "get_deleted_genes": 17,
+          "get_state": 1,
+          "inspect_gene_evidence": 135,
+          "inspect_kegg_module": 16,
+          "list_deletion_candidates": 11,
+          "list_shared_memory": 7,
+          "read_shared_memory": 7,
+          "resolve_gene_ids": 3,
+          "set_model_response": 50
+        }
+      },
+      "index": 6,
+      "process": "exited",
+      "progress": {
+        "provider_spend_usd": "3.686385",
+        "states": 49,
+        "step": 24
+      },
+      "remote_path": "/home/ubuntu/yggdrisil-literature-pilot-20261103/application/runs/literature-ablation-pilot-20261103/search/literature-ablation-pilot-20261103-adaptive-literature-seed-43",
+      "result": {
+        "additional_deletions": 71,
+        "elapsed_s": 934.6774897612631,
+        "provider_spend_usd": "3.827357",
+        "scientific_tool_calls": {
+          "analyze_deletion_bundle": 55,
+          "compare_saved_gene_set": 1,
+          "deletion_delta": 1,
+          "get_deleted_genes": 17,
+          "inspect_gene_evidence": 135,
+          "inspect_kegg_module": 16,
+          "list_deletion_candidates": 11,
+          "resolve_gene_ids": 3
+        },
+        "states": 51,
+        "status": "completed",
+        "stop_reason": "max_states"
+      },
+      "run_id": "literature-ablation-pilot-20261103-adaptive-literature-seed-43",
+      "stage": "pilot",
+      "tracking": {
+        "wandb_id": "b49f63e0a2c8",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/b49f63e0a2c8"
+      }
+    },
+    {
+      "artifact": {
+        "name": "mcclain/yggdrisil/literature-ablation-pilot-20261103-no-retrieval-seed-43-data:v0"
+      },
+      "elapsed_s": 1220,
+      "final_provider_spend_usd": "4.402661",
+      "growth_gate_audit": {
+        "growth_gate_passing_new_states": 47,
+        "growth_gate_passing_states": 48,
+        "run_id": "literature-ablation-pilot-20261103-no-retrieval-seed-43",
+        "states": 51,
+        "tool_call_counts": {
+          "analyze_deletion_bundle": 116,
+          "deletion_delta": 3,
+          "get_deleted_genes": 44,
+          "get_state": 1,
+          "inspect_gene_evidence": 91,
+          "list_deletion_candidates": 10,
+          "list_shared_memory": 22,
+          "resolve_gene_ids": 6,
+          "set_model_response": 53
+        }
+      },
+      "index": 7,
+      "process": "exited",
+      "progress": {
+        "provider_spend_usd": "4.042784",
+        "states": 49,
+        "step": 25
+      },
+      "remote_path": "/home/ubuntu/yggdrisil-literature-pilot-20261103/application/runs/literature-ablation-pilot-20261103/search/literature-ablation-pilot-20261103-no-retrieval-seed-43",
+      "result": {
+        "additional_deletions": 49,
+        "elapsed_s": 876.0450651608407,
+        "provider_spend_usd": "4.2026105",
+        "scientific_tool_calls": {
+          "analyze_deletion_bundle": 116,
+          "deletion_delta": 3,
+          "get_deleted_genes": 44,
+          "inspect_gene_evidence": 91,
+          "list_deletion_candidates": 10,
+          "resolve_gene_ids": 6
+        },
+        "states": 51,
+        "status": "completed",
+        "stop_reason": "max_states"
+      },
+      "run_id": "literature-ablation-pilot-20261103-no-retrieval-seed-43",
+      "stage": "pilot",
+      "tracking": {
+        "wandb_id": "cd292982ceba",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/cd292982ceba"
+      }
+    },
+    {
+      "artifact": {
+        "name": "mcclain/yggdrisil/literature-ablation-pilot-20261103-frozen-dossier-seed-43-data:v0"
+      },
+      "elapsed_s": 1220,
+      "final_provider_spend_usd": "4.085062",
+      "growth_gate_audit": {
+        "growth_gate_passing_new_states": 47,
+        "growth_gate_passing_states": 48,
+        "run_id": "literature-ablation-pilot-20261103-frozen-dossier-seed-43",
+        "states": 51,
+        "tool_call_counts": {
+          "analyze_deletion_bundle": 62,
+          "compare_saved_gene_set": 8,
+          "deletion_delta": 1,
+          "get_deleted_genes": 26,
+          "get_state": 1,
+          "inspect_gene_evidence": 95,
+          "inspect_kegg_module": 1,
+          "list_deletion_candidates": 14,
+          "list_shared_memory": 24,
+          "read_shared_memory": 10,
+          "resolve_gene_ids": 5,
+          "set_model_response": 53
+        }
+      },
+      "index": 8,
+      "process": "exited",
+      "progress": {
+        "provider_spend_usd": "3.7317295",
+        "states": 50,
+        "step": 25
+      },
+      "remote_path": "/home/ubuntu/yggdrisil-literature-pilot-20261103/application/runs/literature-ablation-pilot-20261103/search/literature-ablation-pilot-20261103-frozen-dossier-seed-43",
+      "result": {
+        "additional_deletions": 61,
+        "elapsed_s": 913.7762690335512,
+        "provider_spend_usd": "3.9222495",
+        "scientific_tool_calls": {
+          "analyze_deletion_bundle": 62,
+          "compare_saved_gene_set": 8,
+          "deletion_delta": 1,
+          "get_deleted_genes": 26,
+          "inspect_gene_evidence": 95,
+          "inspect_kegg_module": 1,
+          "list_deletion_candidates": 14,
+          "resolve_gene_ids": 5
+        },
+        "states": 51,
+        "status": "completed",
+        "stop_reason": "max_states"
+      },
+      "run_id": "literature-ablation-pilot-20261103-frozen-dossier-seed-43",
+      "stage": "pilot",
+      "tracking": {
+        "wandb_id": "01e02b83a6dd",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/01e02b83a6dd"
+      }
+    }
+  ],
+  "protocol": "runs/literature-ablation-pilot-20261103/protocol.json",
+  "protocol_notes": "benchmarks/literature_ablation.md",
+  "protocol_source": "benchmarks/literature_ablation.json",
+  "purpose": "Prepare a three-arm computational methods pilot: no retrieval, a frozen Edison dossier, and the same dossier plus adaptive literature search; all searches start from the same MS56 coding-gene projection.",
+  "result_summary": {
+    "arm_summary": {
+      "adaptive_literature": {
+        "additional_deletions": [
+          137,
+          44,
+          71
+        ],
+        "fresh_literature_tool_calls": 0,
+        "growth_gate_passing_new_states": 141,
+        "max_additional_deletions": 137,
+        "mean_additional_deletions": 84,
+        "median_additional_deletions": 71,
+        "min_additional_deletions": 44,
+        "model_usd": "12.7319560",
+        "seeds": [
+          17,
+          29,
+          43
+        ]
+      },
+      "frozen_dossier": {
+        "additional_deletions": [
+          39,
+          96,
+          61
+        ],
+        "fresh_literature_tool_calls": 0,
+        "growth_gate_passing_new_states": 144,
+        "max_additional_deletions": 96,
+        "mean_additional_deletions": 65.33333333333333,
+        "median_additional_deletions": 61,
+        "min_additional_deletions": 39,
+        "model_usd": "12.7101845",
+        "seeds": [
+          17,
+          29,
+          43
+        ]
+      },
+      "no_retrieval": {
+        "additional_deletions": [
+          38,
+          137,
+          49
+        ],
+        "fresh_literature_tool_calls": 0,
+        "growth_gate_passing_new_states": 146,
+        "max_additional_deletions": 137,
+        "mean_additional_deletions": 74.66666666666667,
+        "median_additional_deletions": 49,
+        "min_additional_deletions": 38,
+        "model_usd": "12.7106405",
+        "seeds": [
+          17,
+          29,
+          43
+        ]
+      }
+    },
+    "distinct_new_genotypes_across_runs": 450,
+    "growth_gate_passing_new_states_summed_across_runs": 431,
+    "new_states_summed_across_runs": 450,
+    "search_runs": 9,
+    "starting_deleted_genes": 893,
+    "unique_finalists": 9
+  },
+  "review": {
+    "application_tests_passed": 236,
+    "fixes": [
+      "Removed mandatory initial research call and unused research-started state.",
+      "Separated immutable dossier input from writable notes and verified it on resume.",
+      "Aligned finalist tie-break with the protocol.",
+      "Refused bounded ADK resume when prior provider costs are missing.",
+      "Required dedicated provider key caps; recorded provider usage and reserved turn headroom."
+    ],
+    "framework_tests_passed": 124,
+    "no_commit_created": true
+  },
+  "review_report": "runs/literature-ablation-deployment-20261103/review.json",
+  "runner": "scripts/run_literature_ablation.py",
+  "s3_migration": {
+    "group_indexes": {
+      "application/runs/literature-ablation-deployment-20261103": {
+        "bytes": 2131,
+        "sha256": "c0ed5afaa6f5f342ba49d4ef3fa0710a43ddeef8c275fe30ee65ccacf5f45ef1",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-c0ed5afaa6f5f342ba49d4ef3fa0710a43ddeef8c275fe30ee65ccacf5f45ef1.json",
+        "verified_at": "2026-11-05T22:50:53.575106+00:00"
+      },
+      "application/runs/literature-ablation-pilot-20261103": {
+        "bytes": 1269,
+        "sha256": "6e209279705c42a47d70fbb47d8e7fa7e8aa685a65b19a093aab632b08c61054",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-6e209279705c42a47d70fbb47d8e7fa7e8aa685a65b19a093aab632b08c61054.json",
+        "verified_at": "2026-11-05T22:51:02.138012+00:00"
+      },
+      "application/runs/literature-ablation-pilot-20261103-smoke-retry1": {
+        "bytes": 1304,
+        "sha256": "def84fb16b44c833e22145c5512a515f9044d41d53a004cf9604a282b2ecfdb5",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-def84fb16b44c833e22145c5512a515f9044d41d53a004cf9604a282b2ecfdb5.json",
+        "verified_at": "2026-11-05T22:51:02.886078+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "scientific_caveat": "All candidates pass selected FBA/RBA screens only; no finalist vEcoli or laboratory validation has been performed. No adaptive arm invoked new literature retrieval.",
+  "smoke_bundle": "runs/literature-ablation-pilot-20261103-smoke-retry1",
+  "smoke_results": [
+    {
+      "artifact": {
+        "name": "mcclain/yggdrisil/literature-ablation-pilot-20261103-smoke-retry1-adaptive-literature-seed-17-data:v0"
+      },
+      "remote_path": "/home/ubuntu/yggdrisil-literature-pilot-20261103/application/runs/literature-ablation-pilot-20261103-smoke-retry1/search/literature-ablation-pilot-20261103-smoke-retry1-adaptive-literature-seed-17",
+      "result": {
+        "additional_deletions": 10,
+        "growth_rate": 0.8729507601720569,
+        "provider_spend_usd": "0.0257735",
+        "rba_feasible": true,
+        "scientific_tool_calls": {
+          "analyze_deletion_bundle": 2,
+          "compare_saved_gene_set": 1,
+          "get_deleted_genes": 1
+        },
+        "states": 3,
+        "stop_reason": "max_states"
+      },
+      "run_id": "literature-ablation-pilot-20261103-smoke-retry1-adaptive-literature-seed-17",
+      "tracking": {
+        "wandb_id": "57ce3ee89907",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/57ce3ee89907"
+      }
+    },
+    {
+      "artifact": {
+        "name": "mcclain/yggdrisil/literature-ablation-pilot-20261103-smoke-retry1-frozen-dossier-seed-17-data:v0"
+      },
+      "remote_path": "/home/ubuntu/yggdrisil-literature-pilot-20261103/application/runs/literature-ablation-pilot-20261103-smoke-retry1/search/literature-ablation-pilot-20261103-smoke-retry1-frozen-dossier-seed-17",
+      "result": {
+        "additional_deletions": 5,
+        "growth_rate": 0.8729507601720672,
+        "provider_spend_usd": "0.011115",
+        "rba_feasible": true,
+        "scientific_tool_calls": {
+          "analyze_deletion_bundle": 2,
+          "compare_saved_gene_set": 1,
+          "get_deleted_genes": 10,
+          "resolve_gene_ids": 1
+        },
+        "states": 3,
+        "stop_reason": "max_states"
+      },
+      "run_id": "literature-ablation-pilot-20261103-smoke-retry1-frozen-dossier-seed-17",
+      "tracking": {
+        "wandb_id": "e9c9d0b876b5",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/e9c9d0b876b5"
+      }
+    },
+    {
+      "artifact": {
+        "name": "mcclain/yggdrisil/literature-ablation-pilot-20261103-smoke-retry1-no-retrieval-seed-17-data:v0"
+      },
+      "remote_path": "/home/ubuntu/yggdrisil-literature-pilot-20261103/application/runs/literature-ablation-pilot-20261103-smoke-retry1/search/literature-ablation-pilot-20261103-smoke-retry1-no-retrieval-seed-17",
+      "result": {
+        "additional_deletions": 8,
+        "growth_rate": 0.8729507601720569,
+        "provider_spend_usd": "0.0387855",
+        "rba_feasible": true,
+        "scientific_tool_calls": {
+          "analyze_deletion_bundle": 2,
+          "inspect_gene_evidence": 39
+        },
+        "states": 3,
+        "stop_reason": "max_states"
+      },
+      "run_id": "literature-ablation-pilot-20261103-smoke-retry1-no-retrieval-seed-17",
+      "tracking": {
+        "wandb_id": "7a4dfb4fd5ba",
+        "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/7a4dfb4fd5ba"
+      }
+    }
+  ],
+  "smoke_wandb_runs": {
+    "adaptive_literature": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/57ce3ee89907",
+    "frozen_dossier": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/e9c9d0b876b5",
+    "no_retrieval": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/7a4dfb4fd5ba"
+  },
+  "spending": {
+    "all_experiment_keys_disabled": true,
+    "approved_compute_usd": null,
+    "approved_model_usd": 60,
+    "approved_temporary_storage_usd": 5,
+    "approved_total_usd": 65,
+    "billing_note": "Provider usage at process exit lagged final billing. Original result files are preserved; final costs come from management-key usage after all jobs exited.",
+    "compute_usd_this_preparation": 0,
+    "final_accounting": "runs/literature-ablation-deployment-20261103/final-key-accounting.json",
+    "model_usd_final": "38.5558610",
+    "model_usd_this_preparation": 0,
+    "new_edison_jobs": 0,
+    "new_storage_usd": 0,
+    "pilot_model_usd_final": "38.1527810",
+    "smoke_model_usd_final": "0.4030800",
+    "smoke_model_usd_reported": 0.075674
+  },
+  "starting_genotype": "runs/literature-ablation-pilot-20261103/inputs/starting_genotype.json",
+  "status": "search_complete_validation_pending",
+  "summary": {
+    "maximum_new_states": 450,
+    "maximum_validation_cell_cycles": 396,
+    "maximum_validation_lineages": 33,
+    "search_runs": 9
+  },
+  "summary_wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/1588db3fc9ad",
+  "validation_compute_plan": {
+    "cleanup": "Automatically shut down only ephemeral workers created for this validation after verified data preservation; retain the shared g6-big2 instance.",
+    "existing_approval_scope": "The $65 approval covers $60 model calls and up to $5 temporary storage on the existing worker; no additional EC2 budget has been agreed.",
+    "parallel_unit": "Independent genotype and random-seed lineage; generations within a lineage remain sequential.",
+    "pre_launch_requirements": [
+      "Calibrate controls and freeze acceptance thresholds before finalist evaluation.",
+      "Present added instance/storage cost and expected completion time, then obtain cost approval before provisioning."
+    ],
+    "requested_at": "2026-11-04T10:14:47.881137+00:00",
+    "sizing_basis": "Measure native Linux control runtime, peak memory and output size before choosing worker count.",
+    "status": "parallel_capacity_requested_cost_estimate_pending",
+    "ucl": "deferred",
+    "user_request": "Consider additional AWS instances to parallelize the upcoming vEcoli validation."
+  },
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/0161c7cc0641",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/02b34f246799",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/78ef7a40b7ca",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/ef14a009b192",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/b9d3622d2d99",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/bfd3d7355ccc",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/b49f63e0a2c8",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/cd292982ceba",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/01e02b83a6dd"
+  ]
+}

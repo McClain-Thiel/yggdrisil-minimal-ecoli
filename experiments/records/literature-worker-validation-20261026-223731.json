@@ -1,0 +1,61 @@
+{
+  "child_runs": [
+    {
+      "id": "edison-seed-17",
+      "local_root": "runs/literature-worker-validation-20261026-223731/edison-seed-17",
+      "records": {
+        "config": "runs/literature-worker-validation-20261026-223731/edison-seed-17/config.json",
+        "graph": "runs/literature-worker-validation-20261026-223731/edison-seed-17/graph.sqlite",
+        "summary": "runs/literature-worker-validation-20261026-223731/edison-seed-17/summary.json"
+      }
+    },
+    {
+      "id": "ordinary-seed-17",
+      "local_root": "runs/literature-worker-validation-20261026-223731/ordinary-seed-17",
+      "records": {
+        "config": "runs/literature-worker-validation-20261026-223731/ordinary-seed-17/config.json",
+        "graph": "runs/literature-worker-validation-20261026-223731/ordinary-seed-17/graph.sqlite",
+        "summary": "runs/literature-worker-validation-20261026-223731/ordinary-seed-17/summary.json"
+      }
+    }
+  ],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "literature-worker-validation-20261026-223731",
+  "kind": "historical_validation_or_pilot",
+  "local_root": "runs/literature-worker-validation-20261026-223731",
+  "records": [
+    "runs/literature-worker-validation-20261026-223731/summary.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/literature-worker-validation-20261026-223731": {
+        "bytes": 1294,
+        "sha256": "724c05d177bc038f77ff28d1536f3e7d6c72a26e0e99c7e4714ca5e3cf098aae",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-724c05d177bc038f77ff28d1536f3e7d6c72a26e0e99c7e4714ca5e3cf098aae.json",
+        "verified_at": "2026-11-05T22:51:16.918623+00:00"
+      },
+      "application/runs/literature-worker-validation-20261026-223731": {
+        "bytes": 1294,
+        "sha256": "6425100a9bc0658493891b4881bf744af10a228e0df432183d142e2eaa1c1eac",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-6425100a9bc0658493891b4881bf744af10a228e0df432183d142e2eaa1c1eac.json",
+        "verified_at": "2026-11-05T22:51:04.352519+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "historical_recorded",
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/0f5x0tcu"
+  ]
+}

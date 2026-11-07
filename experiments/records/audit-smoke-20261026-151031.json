@@ -1,0 +1,59 @@
+{
+  "child_runs": [
+    {
+      "id": "ecoli-heuristic",
+      "local_root": "runs/audit-smoke-20261026-151031/ecoli-heuristic",
+      "records": {
+        "config": "runs/audit-smoke-20261026-151031/ecoli-heuristic/config.json",
+        "graph": "runs/audit-smoke-20261026-151031/ecoli-heuristic/graph.sqlite",
+        "summary": "runs/audit-smoke-20261026-151031/ecoli-heuristic/summary.json"
+      }
+    },
+    {
+      "id": "ecoli-random",
+      "local_root": "runs/audit-smoke-20261026-151031/ecoli-random",
+      "records": {
+        "config": "runs/audit-smoke-20261026-151031/ecoli-random/config.json",
+        "graph": "runs/audit-smoke-20261026-151031/ecoli-random/graph.sqlite",
+        "summary": "runs/audit-smoke-20261026-151031/ecoli-random/summary.json"
+      }
+    }
+  ],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "audit-smoke-20261026-151031",
+  "kind": "historical_validation_or_pilot",
+  "local_root": "runs/audit-smoke-20261026-151031",
+  "records": [
+    "runs/audit-smoke-20261026-151031/results.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/audit-smoke-20261026-151031": {
+        "bytes": 1239,
+        "sha256": "737a4f6cff6a7effe8927ed0862edd51d28942752c434919afbff2a89f80503e",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-737a4f6cff6a7effe8927ed0862edd51d28942752c434919afbff2a89f80503e.json",
+        "verified_at": "2026-11-05T22:51:13.265135+00:00"
+      },
+      "application/runs/audit-smoke-20261026-151031": {
+        "bytes": 1244,
+        "sha256": "bd7bfac8c167cb069e7da29933d411fe1e2e819038ba1a2b57439d25219f3381",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-bd7bfac8c167cb069e7da29933d411fe1e2e819038ba1a2b57439d25219f3381.json",
+        "verified_at": "2026-11-05T22:50:42.426361+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "historical_recorded",
+  "wandb_run_urls": []
+}

@@ -1,0 +1,89 @@
+{
+  "authorization": null,
+  "budget_request": "runs/literature-ablation-long-preparation-20261104/budget-request.json",
+  "bundle": "runs/literature-ablation-long-20261104",
+  "created_at": "2026-11-04T15:07:36.379335+00:00",
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "status": "verified"
+  },
+  "id": "literature-ablation-long-20261104",
+  "limits": {
+    "finalists_per_run": 1,
+    "max_steps": 750,
+    "max_wall_time_s": 21600,
+    "require_initial_research": true,
+    "selection": "positive FBA and feasible RBA; additional deletions descending, FBA growth descending, state_id ascending",
+    "unique_new_states": 500
+  },
+  "literature_health_check": "runs/literature-ablation-long-preparation-20261104/literature-health-check.json",
+  "max_genes_per_action": 100,
+  "preparation": "runs/literature-ablation-long-preparation-20261104/preparation.json",
+  "preservation": "W&B data artifacts plus verified off-instance SQLite backups during execution; freeze all starting inputs and preserve every attempt.",
+  "protocol": "benchmarks/literature_continuation.json",
+  "purpose": "Long exploratory continuation with larger deletion batches and mandatory initial adaptive retrieval.",
+  "s3_migration": {
+    "group_indexes": {
+      "application/runs/literature-ablation-long-20261104": {
+        "bytes": 1256,
+        "sha256": "bb65e3d24cbf2a4c4744a3e88fe36bc5d7ca295d8ce04f9782947956031e1201",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-bb65e3d24cbf2a4c4744a3e88fe36bc5d7ca295d8ce04f9782947956031e1201.json",
+        "verified_at": "2026-11-05T22:51:01.057739+00:00"
+      },
+      "application/runs/literature-ablation-long-20261104-smoke": {
+        "bytes": 1274,
+        "sha256": "9af032efcf04ccd38312f1bedfda27ea08a2fc33663ca01dd1e20e575f87b7e1",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-9af032efcf04ccd38312f1bedfda27ea08a2fc33663ca01dd1e20e575f87b7e1.json",
+        "verified_at": "2026-11-05T22:51:01.414859+00:00"
+      },
+      "application/runs/literature-ablation-long-preparation-20261104": {
+        "bytes": 1297,
+        "sha256": "562f7ab92ff1168ad7118d37194e2d5e28af64173f661b469baaf4475e1311b4",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-562f7ab92ff1168ad7118d37194e2d5e28af64173f661b469baaf4475e1311b4.json",
+        "verified_at": "2026-11-05T22:51:01.780169+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "search_runs": 3,
+  "search_seeds": [
+    59
+  ],
+  "smoke_bundle": "runs/literature-ablation-long-20261104-smoke",
+  "source_archive": "runs/literature-ablation-long-preparation-20261104/source-and-bundles-v2.tar.gz",
+  "source_archive_sha256": "97bb777a1d53afc2275d6de60f9f0cde8324e68611134e042c922fe2ede8759e",
+  "spending": {
+    "model_usd": 0,
+    "new_edison_jobs": 0,
+    "new_instances": 0
+  },
+  "starting_genotype": {
+    "deleted_coding_genes": 1030,
+    "interpretation": "Selected computational pilot finalist, not a lab-validated strain.",
+    "percent_of_4290_registry_genes": 24.009324009324008,
+    "source_run_id": "literature-ablation-pilot-20261103-no-retrieval-seed-29",
+    "source_state_id": "11a12418d088502a6d28f143e2a1b98fdb308e592d1be3009748b7eed3480343"
+  },
+  "status": "superseded_before_launch",
+  "superseded_by": "literature-ablation-qwen-long-20261104",
+  "tracking": {
+    "entity": "mcclain",
+    "project": "yggdrisil",
+    "status": "not_launched"
+  },
+  "verification": {
+    "after_type_narrowing": "22 passed",
+    "application": "239 passed",
+    "git_diff_check": "passed",
+    "mypy": "37 source files passed; cache moved to /private/tmp after iCloud-local cache SQLite I/O failure",
+    "ruff": "passed",
+    "targeted": "48 passed"
+  }
+}

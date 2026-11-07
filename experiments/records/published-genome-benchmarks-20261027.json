@@ -1,0 +1,82 @@
+{
+  "catalog": "runs/published-genome-benchmarks-20261027/catalog.json",
+  "conclusions": "runs/published-genome-benchmarks-20261027/conclusions.json",
+  "created_at": "2026-10-27T15:35:36.229343+00:00",
+  "data_backup": {
+    "scope": "Catalog, reachability, evaluations, pinned source manifest and archive of all seven required scientific source files. Local source-code snapshots and transient discovery HTML are not uploaded.",
+    "source_archive_download_verified": true,
+    "source_archive_sha256": "cd09e46400fd7b927c6fb6ca575b1729f8048213af8d6223220a3096da2c694c",
+    "status": "verified",
+    "verified_at": "2026-10-27T15:40:19.235894+00:00",
+    "verified_source_files": [
+      "MG1655.gbff.gz",
+      "MS56_Park_2014_supplement.pdf",
+      "W3110.embl",
+      "DGF298.embl",
+      "D33a.embl",
+      "D37c16.embl",
+      "D41c.embl"
+    ],
+    "wandb_artifact": "mcclain/yggdrisil/published-genome-benchmarks-20261027-data:v1"
+  },
+  "finished_at": "2026-10-27T15:36:06.810779+00:00",
+  "id": "published-genome-benchmarks-20261027",
+  "kind": "published_genome_benchmark_calibration",
+  "local_root": "runs/published-genome-benchmarks-20261027",
+  "manifest": "benchmarks/published_genomes.json",
+  "model_budget_usd": 0,
+  "native_strain_calibration_ready": false,
+  "new_edison_jobs": 0,
+  "purpose": "Prepare frozen published genome records, deletion projections, monotonic reachability and existing-model diagnostics before designing new searches",
+  "quality_checks": "runs/published-genome-benchmarks-20261027/quality-checks.json",
+  "reachability": "runs/published-genome-benchmarks-20261027/reachability.json",
+  "results": "runs/published-genome-benchmarks-20261027/evaluations.json",
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/published-genome-benchmarks-20261027": {
+        "bytes": 1267,
+        "sha256": "aa57feda5deff8a117720dcae08367c258d724da8a8686f77d044109c327cf87",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-aa57feda5deff8a117720dcae08367c258d724da8a8686f77d044109c327cf87.json",
+        "verified_at": "2026-11-05T22:51:19.814953+00:00"
+      },
+      "application/runs/published-genome-benchmarks-20261027": {
+        "bytes": 1274,
+        "sha256": "e83b91af9dab8236766552cb3ceca3220b06dbb0ca1e487f0af3186b7aa02d7b",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-e83b91af9dab8236766552cb3ceca3220b06dbb0ca1e487f0af3186b7aa02d7b.json",
+        "verified_at": "2026-11-05T22:51:07.316450+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "sources": "runs/published-genome-benchmarks-20261027/sources",
+  "started_at": "2026-10-27T15:35:36.229343+00:00",
+  "status": "completed_with_model_disagreements",
+  "summary": {
+    "benchmark_entries": 7,
+    "failing_growth_gate_projections": [
+      "D33a",
+      "D37c16",
+      "D41c",
+      "DGF298"
+    ],
+    "ms56_definite_restorations_to_d41c": 130,
+    "ms56_definite_restorations_to_dgf298": 149,
+    "native_strain_calibration_ready": false,
+    "passing_growth_gate_projections": [
+      "MG1655",
+      "MS56",
+      "W3110"
+    ]
+  },
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/18sijifa"
+  ],
+  "workflow_log": "runs/published-genome-benchmarks-20261027/run.log"
+}
