@@ -435,19 +435,19 @@
       "status": "completed_verified"
     },
     {
-      "bytes": 179980,
+      "bytes": 182580,
       "id": "search-replication-20261109",
       "path": "records/search-replication-20261109.json",
-      "sha256": "7ba0cb077b3c05c3bce5f7b2fb7b1a3b569f59b37e6b40e1c23b41a5ec15c2f0",
-      "status": "completed_with_exceptions_preserved_cleanup_pending"
+      "sha256": "da2471eb103f97b098f2277f13d9a6bc09cfd5baa783715cdc8b85de10b2ba74",
+      "status": "completed_with_exceptions_verified"
     }
   ],
   "export_schema_version": 1,
   "full_ledger": {
-    "bytes": 853216,
+    "bytes": 856012,
     "full_get_verified": true,
-    "sha256": "c9ea82b0f4e3e9fb67eab86614e82798fcc417a35848cef38ce1cbe62bcd8e8e",
-    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/c9ea82b0f4e3e9fb67eab86614e82798fcc417a35848cef38ce1cbe62bcd8e8e.json"
+    "sha256": "ddca4e84177c26e0627a1e6ae63bff859827e9e89ee3d245e1f0e316c9e534d2",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/ddca4e84177c26e0627a1e6ae63bff859827e9e89ee3d245e1f0e316c9e534d2.json"
   },
   "ledger_metadata": {
     "catalog_corrections": [
@@ -647,6 +647,6 @@
       "progress": "Active experiment controllers run remotely; record remote progress/events and verified S3 checkpoints here.",
       "registry": "This compact catalog stays in Git. Historical local data paths are restore paths after migration; bulk data and complete inventories are in private S3."
     },
-    "updated_at": "2026-11-10T19:37:30.781468+00:00"
+    "updated_at": "2026-11-10T19:42:17.962088+00:00"
   }
 }

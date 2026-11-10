@@ -23,6 +23,12 @@
     "pricing_status": "verified_before_launch",
     "proposed_cap_usd": 550
   },
+  "cleanup": {
+    "bytes": 1315,
+    "full_get_verified": true,
+    "sha256": "82183bbc432645ddbda9c18a8255f44b91c1f14986e8495483ee03183331d806",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/82183bbc432645ddbda9c18a8255f44b91c1f14986e8495483ee03183331d806.json"
+  },
   "created_on": "2026-11-09",
   "current_operational_recovery": {
     "bytes": 118869,
@@ -31,10 +37,10 @@
   },
   "current_results": {
     "data_index": {
-      "bytes": 58107,
+      "bytes": 59210,
       "full_get_verified": true,
-      "sha256": "e8493775798b72efe9f062935192c43bfa23252c0dbdff01e825c397227a2280",
-      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/e8493775798b72efe9f062935192c43bfa23252c0dbdff01e825c397227a2280.json"
+      "sha256": "80e353967e811262e317268b17be467d9c80aa24762863ba02d8fcd298392dad",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/80e353967e811262e317268b17be467d9c80aa24762863ba02d8fcd298392dad.json"
     },
     "final_summary": {
       "bytes": 123816,
@@ -53,7 +59,7 @@
       "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/operational-recovery/3945f100469bc7ec3cf759ac1973c8c6b3a7522da04bee4b64204442cadd34a1.json"
     }
   },
-  "current_status": "completed_with_exceptions_preserved_cleanup_pending",
+  "current_status": "completed_with_exceptions_verified",
   "current_status_verification": {
     "bytes": 37886,
     "sha256": "61a4f54501121707ae2b03263e44cb6a812ef435800f0c9fc9d6d700607f7563",
@@ -188,6 +194,14 @@
       "sha256": "7ae7084ffcbbcfbf45937d25892f440711976bcc5a0b3bb6365689fc313c8e54",
       "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/planned-recovery/7ae7084ffcbbcfbf45937d25892f440711976bcc5a0b3bb6365689fc313c8e54.json"
     }
+  },
+  "github_publication": {
+    "branch": "codex/literature-ablation-pilot",
+    "methods_and_results_commit": "d9efbd8315612bb104e06c94dfc8ccbf11271beb",
+    "pull_request": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/pull/9",
+    "repository": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli",
+    "scope": "Screened methods and compact results; full data private in S3/W&B.",
+    "visibility": "public"
   },
   "graph_export_command": "python -m scripts.collect_search_replication --bundle <bundle> --graph <closed-graph.sqlite> --job-index <index> --terminal <terminal-status.json> --output <run-report.json>",
   "id": "search-replication-20261109",

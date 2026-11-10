@@ -361,6 +361,7 @@
     "additional_compute_allocated_usd": 100,
     "additional_compute_reserve_authorized_usd": 100,
     "additional_compute_scope": "Two additional seed-sharded vEcoli workers within the approved $100 reserve; $77.4144 maximum additional VM cost, $22.5856 reserved for storage and transfers. No model budget increase.",
+    "billing_note": "Reported model use is not a reconciled invoice. Dedicated workers stopped before19:30UTC10November; no budget or deadline extension. Including stopped intervals, original worker <=29.839hours plus two added workers <=18.747hours each gives <=54.30USD VM cost at0.8064USD/hour. Storage/transfers remain separate within the original infrastructure reserve.",
     "combined_authorized_cap_usd": 650,
     "dedicated_keys": 15,
     "infrastructure_reserve_usd": 100,
@@ -375,6 +376,7 @@
       "sha256": "ced2033808e734bf88d477dbe2fde6ca31671a2ef5875fc928eabd2c3365dab7",
       "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/ced2033808e734bf88d477dbe2fde6ca31671a2ef5875fc928eabd2c3365dab7.json"
     },
+    "reported_final_model_spend_usd": 237.31871188000002,
     "total_cap_usd": 550,
     "worker_hourly_usd": 0.8064
   },
@@ -394,6 +396,32 @@
     "source_and_scientific_input_hashes": "verified"
   },
   "claim_limits": "Exploratory independent search n=5 per method. Twenty model generations are not laboratory viability or proof of global minimality.",
+  "cleanup": {
+    "dedicated_instances_terminated": [
+      "i-034bf3f60559b41a8",
+      "i-04d4e7538fba19284",
+      "i-0a5eb398d6a7068a7"
+    ],
+    "dedicated_volumes_deleted": [
+      "vol-0eaa093c7b8a10d58",
+      "vol-0ebf04f7f4ed1e818",
+      "vol-087114bed2fab0a2b"
+    ],
+    "journal": {
+      "bytes": 1564,
+      "full_get_verified": true,
+      "sha256": "7d3620b905ab3fbbfa8e1e79ff8484a3a98cbfcc3b361c3642c89a01a2a263ee",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/7d3620b905ab3fbbfa8e1e79ff8484a3a98cbfcc3b361c3642c89a01a2a263ee.jsonl"
+    },
+    "receipt": {
+      "bytes": 1315,
+      "full_get_verified": true,
+      "sha256": "82183bbc432645ddbda9c18a8255f44b91c1f14986e8495483ee03183331d806",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/82183bbc432645ddbda9c18a8255f44b91c1f14986e8495483ee03183331d806.json"
+    },
+    "shared_compute_unchanged": true,
+    "status": "completed_verified"
+  },
   "cleanup_policy": "The dedicated worker stops on completion/failure or the original absolute timer. Encrypted disk is retained until independent final backup/analysis verification; only then terminate and remove its volume. Shared worker remains running.",
   "created_at": "2026-11-09T13:39:41.836483+00:00",
   "current_progress": {
@@ -1673,13 +1701,18 @@
       "sha256": "94bd4b5b8f77faff9392bd70aac8f64e0b348d1038bbffc4da6d56f8f3847642",
       "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/94bd4b5b8f77faff9392bd70aac8f64e0b348d1038bbffc4da6d56f8f3847642.json"
     },
-    "cleanup": "All three dedicated workers stopped with retained disks pending guarded removal; shared worker untouched.",
+    "cleanup": {
+      "bytes": 1315,
+      "full_get_verified": true,
+      "sha256": "82183bbc432645ddbda9c18a8255f44b91c1f14986e8495483ee03183331d806",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/82183bbc432645ddbda9c18a8255f44b91c1f14986e8495483ee03183331d806.json"
+    },
     "counts_include_overlapping_aggregate_members": true,
     "data_index": {
-      "bytes": 58107,
+      "bytes": 59210,
       "full_get_verified": true,
-      "sha256": "e8493775798b72efe9f062935192c43bfa23252c0dbdff01e825c397227a2280",
-      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/e8493775798b72efe9f062935192c43bfa23252c0dbdff01e825c397227a2280.json"
+      "sha256": "80e353967e811262e317268b17be467d9c80aa24762863ba02d8fcd298392dad",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/80e353967e811262e317268b17be467d9c80aa24762863ba02d8fcd298392dad.json"
     },
     "full_s3_and_uncached_committed_wandb_verified": true,
     "indexed_member_occurrences_verified": 23177,
@@ -1833,6 +1866,7 @@
     "cleanup_policy": "Stop retains encrypted disk. Terminate/delete only after independent full final S3/W&B verification.",
     "delete_on_termination": false,
     "encrypted": true,
+    "final_state": "dedicated_workers_terminated_after_verified_preservation",
     "hourly_usd": 0.8064,
     "instance_id": "i-04d4e7538fba19284",
     "instance_type": "m7i.4xlarge",
@@ -1928,10 +1962,10 @@
     ],
     "controls_passing_all_seeds": 2,
     "data_index": {
-      "bytes": 58107,
+      "bytes": 59210,
       "full_get_verified": true,
-      "sha256": "e8493775798b72efe9f062935192c43bfa23252c0dbdff01e825c397227a2280",
-      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/e8493775798b72efe9f062935192c43bfa23252c0dbdff01e825c397227a2280.json"
+      "sha256": "80e353967e811262e317268b17be467d9c80aa24762863ba02d8fcd298392dad",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/80e353967e811262e317268b17be467d9c80aa24762863ba02d8fcd298392dad.json"
     },
     "division_count": 927,
     "figure": {
@@ -1956,6 +1990,14 @@
       "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/f70b6a2dc78416bc2c2bd49503470c17a9c24c999402dbd81c6e69bbe3458da2.json"
     },
     "unique_candidate_genotypes_passing_all_seeds": 11
+  },
+  "github_publication": {
+    "branch": "codex/literature-ablation-pilot",
+    "methods_and_results_commit": "d9efbd8315612bb104e06c94dfc8ccbf11271beb",
+    "pull_request": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/pull/9",
+    "repository": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli",
+    "scope": "Screened methods and compact results; full data private in S3/W&B.",
+    "visibility": "public"
   },
   "id": "search-replication-20261109",
   "literature": {
@@ -2029,6 +2071,12 @@
       "checkpoint freshness",
       "validation supervisor identity"
     ],
+    "completion_record": {
+      "bytes": 166,
+      "full_get_verified": true,
+      "sha256": "6a659a31500758abbecea919b64603ac020bf56a8b4f58ac15eb314e40815d45",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/6a659a31500758abbecea919b64603ac020bf56a8b4f58ac15eb314e40815d45.json"
+    },
     "cron_schedule": "0,30 * * * *",
     "cron_verification": {
       "bytes": 1213,
@@ -2040,7 +2088,7 @@
       "sha256": "17dd9c130faeef52b008fd37ea932dd655756bb82062b9da745fa86c08efcd6e",
       "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/operational-recovery/17dd9c130faeef52b008fd37ea932dd655756bb82062b9da745fa86c08efcd6e.json"
     },
-    "current_phase": "preservation_verified_cleanup_pending",
+    "current_phase": "completed_verified",
     "current_runtime": {
       "bytes": 24611,
       "sha256": "a38282ff0d28cb29af5c004538babe90b9066758b1379e378c978dfdc6d29aec",
@@ -2058,6 +2106,7 @@
     },
     "health_status": "healthy",
     "hourly_report_automation_id": "hourly-vecoli-health-report",
+    "hourly_report_automation_status": "deleted",
     "implementation": "Remote cron at :00 and :30 UTC invoking the existing verified systemd healthcheck service",
     "instructions": {
       "bytes": 26422,
@@ -2530,10 +2579,10 @@
       "status": "explicitly_approved_transferred_and_verified"
     },
     "current_data_index": {
-      "bytes": 58107,
+      "bytes": 59210,
       "full_get_verified": true,
-      "sha256": "e8493775798b72efe9f062935192c43bfa23252c0dbdff01e825c397227a2280",
-      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/e8493775798b72efe9f062935192c43bfa23252c0dbdff01e825c397227a2280.json"
+      "sha256": "80e353967e811262e317268b17be467d9c80aa24762863ba02d8fcd298392dad",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/80e353967e811262e317268b17be467d9c80aa24762863ba02d8fcd298392dad.json"
     },
     "data_prefix": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/wandb-repair2/metadata-resume3/",
     "distinct_finalists": 20,
@@ -3077,8 +3126,8 @@
     "reference": "NC_000913.3",
     "registry_genes": 4290
   },
-  "status": "completed_with_exceptions_preserved_cleanup_pending",
-  "updated_at": "2026-11-10T19:37:30.781468+00:00",
+  "status": "completed_with_exceptions_verified",
+  "updated_at": "2026-11-10T19:42:17.962088+00:00",
   "validation": {
     "calibration": "Separate two-generation MG1655 calibration per worker; technical controls, not additional independent biological replicates.",
     "calibration_snapshots": {

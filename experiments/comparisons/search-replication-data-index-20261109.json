@@ -1,5 +1,11 @@
 {
   "bulk_data_copied_to_mac": false,
+  "cleanup": {
+    "bytes": 1315,
+    "full_get_verified": true,
+    "sha256": "82183bbc432645ddbda9c18a8255f44b91c1f14986e8495483ee03183331d806",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/82183bbc432645ddbda9c18a8255f44b91c1f14986e8495483ee03183331d806.json"
+  },
   "experiment_id": "search-replication-20261109",
   "failure_audit": {
     "baseline_coarse_block_candidates": 998,
@@ -251,6 +257,14 @@
       }
     }
   },
+  "github": {
+    "branch": "codex/literature-ablation-pilot",
+    "methods_and_results_commit": "d9efbd8315612bb104e06c94dfc8ccbf11271beb",
+    "pull_request": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/pull/9",
+    "repository": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli",
+    "scope": "Screened methods and compact results; full data private in S3/W&B.",
+    "visibility": "public"
+  },
   "methods": {
     "branch": "codex/literature-ablation-pilot",
     "github_repository": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli",
@@ -261,6 +275,12 @@
       "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/e240de2cc6c88d1ce74b36f35b6fdbf7d60e8b3dbac80fad4cc692d406d801e6.json"
     },
     "manifest_path": "methods/20261109/manifest.json"
+  },
+  "monitor_completion": {
+    "bytes": 166,
+    "full_get_verified": true,
+    "sha256": "6a659a31500758abbecea919b64603ac020bf56a8b4f58ac15eb314e40815d45",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/6a659a31500758abbecea919b64603ac020bf56a8b4f58ac15eb314e40815d45.json"
   },
   "restoration": "Use receipt.index to enumerate exact relative member paths, sizes and SHA256. Download receipt.archive, verify its full SHA256 and every member before restoring. Separate worker archives map to simulation seeds; search archive and per-run checkpoints contain graph.sqlite and agents.sqlite where applicable.",
   "search_runs": [
@@ -1097,5 +1117,5 @@
     "sha256": "f70b6a2dc78416bc2c2bd49503470c17a9c24c999402dbd81c6e69bbe3458da2",
     "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/f70b6a2dc78416bc2c2bd49503470c17a9c24c999402dbd81c6e69bbe3458da2.json"
   },
-  "updated_at": "2026-11-10T19:37:30.781468+00:00"
+  "updated_at": "2026-11-10T19:42:17.962088+00:00"
 }
