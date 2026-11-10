@@ -1,0 +1,119 @@
+{
+  "experiment_id": "search-replication-20261109",
+  "files": {
+    "analysis/audit-baseline-policy.py": {
+      "bytes": 3435,
+      "sha256": "9088a04f75ca61845b252d6ebdbae6e71e8aff2f0107355ebeabdbd7881c9eea"
+    },
+    "analysis/audit-failure-evidence.py": {
+      "bytes": 6519,
+      "sha256": "f7e2fb1f33e0bce0f65fe26e533351c48bab2f3a92a70412584fd352862c461c"
+    },
+    "analysis/audit-final-stream-8d5a30a6de34.py": {
+      "bytes": 9764,
+      "sha256": "8d5a30a6de34d34f6864d1d0517e048fabac802adbc3ea98a8143837b66dd9c7"
+    },
+    "analysis/audit-final-stream-workers.py": {
+      "bytes": 9628,
+      "sha256": "94ccf50e909b6f4a476026354490b6248f56c32b7fe649e1a1cb7db4a526362e"
+    },
+    "analysis/audit-final-stream.py": {
+      "bytes": 9749,
+      "sha256": "a8ea88fbec82b0f96d098f7f35e14d28771cbb94c3880e86ed5403a132afc056"
+    },
+    "analysis/build-summary.py": {
+      "bytes": 9247,
+      "sha256": "4e73ad67847045e03f4f760ac152d543e4cc8b366d196ad5afa95ec45c4ff2d5"
+    },
+    "analysis/check-initial-clocks.py": {
+      "bytes": 3554,
+      "sha256": "53fd2234f032bb22c4b32ddd67748fe6a17d053288b4bf42b356017df784f812"
+    },
+    "analysis/plot-final.py": {
+      "bytes": 3454,
+      "sha256": "33d1fa27f48abd483ab54f7caf9a7714e1e603493337a14fb2f53d694d5422f8"
+    },
+    "baseline-depth-extension-draft.json": {
+      "bytes": 18551,
+      "sha256": "a806c6395ee90fe8d2a35d5b662ccf95d5653e2b114d73e4b446e6b2a7fd707d"
+    },
+    "protocol.json": {
+      "bytes": 13181,
+      "sha256": "c71743f23fb6fd56f0caada37ace6304b9bc1540b8a73fd5318c377da9395bb5"
+    },
+    "runtime-manifest.json": {
+      "bytes": 24611,
+      "sha256": "a38282ff0d28cb29af5c004538babe90b9066758b1379e378c978dfdc6d29aec"
+    },
+    "runtime/operations/recover-validation-handoff5.py": {
+      "bytes": 6472,
+      "sha256": "0a56ee70a7556ca43b146763d11b7ccad679693b73d002157f8cba1d7d9e2a10"
+    },
+    "runtime/operations/worker-resume3.py": {
+      "bytes": 15517,
+      "sha256": "bc6aef705652fa01943526ddd4cced33f89b65e6373689b41c926c6f925f56d5"
+    },
+    "runtime/scripts/collect_search_replication.py": {
+      "bytes": 18621,
+      "sha256": "63050d6d59b96baf2579f4f3f823ff219525000c547c0531257b427b35c00ea7"
+    },
+    "runtime/scripts/parallel_replication_validation.py": {
+      "bytes": 27565,
+      "sha256": "5c9fa1527a1ed649fa49fc6bbda03c1126a91dbba3656f89963f30e3b88308d1"
+    },
+    "runtime/scripts/plan_search_replication.py": {
+      "bytes": 15292,
+      "sha256": "eaee51cb84aa191498e44a5e56f448a9f40b5ce05c6ce0cdf17288334f03dcdf"
+    },
+    "runtime/scripts/prepare_replication_validation.py": {
+      "bytes": 13885,
+      "sha256": "e14fe4c492d27e091c1eb9205d797490e083b189df344bff681ef2cbf5e65bc9"
+    },
+    "runtime/scripts/run_replication_validation_shard.py": {
+      "bytes": 15517,
+      "sha256": "bc6aef705652fa01943526ddd4cced33f89b65e6373689b41c926c6f925f56d5"
+    },
+    "runtime/scripts/run_search_replication.py": {
+      "bytes": 28419,
+      "sha256": "536d2a5add7d65331ddaa8976e13b9e00e524044c9efcd04e9afd2bf7694b012"
+    },
+    "runtime/scripts/supervise_search_replication.py": {
+      "bytes": 25178,
+      "sha256": "27c97b22e88999936dfacae537588b39b7e4ff91982e6b9560dac154bc76852f"
+    },
+    "runtime/scripts/track_vecoli_experiment.py": {
+      "bytes": 33311,
+      "sha256": "070453b8aba72197f642aa28598313a8afd4e047eb537d89028c4da883fc5b86"
+    },
+    "runtime/src/yggdrisil_ecoli/agent_policy.py": {
+      "bytes": 26126,
+      "sha256": "8ceb1fa2e7b0047f3516ff4f2cd1a8fcc8c28cdafe7eec4749a44abeceea4231"
+    },
+    "runtime/src/yggdrisil_ecoli/baseline_storage.py": {
+      "bytes": 9398,
+      "sha256": "3742bf68a5c21cf6d43c24428979135746be6a4e14ad81d274a53ab1da8592fb"
+    },
+    "runtime/src/yggdrisil_ecoli/policies.py": {
+      "bytes": 9319,
+      "sha256": "6e3244a27fc70676a7cda46a6d4583141868f2b90d5700a04581decaaaa7a0d2"
+    },
+    "runtime/src/yggdrisil_ecoli/tools/literature.py": {
+      "bytes": 6363,
+      "sha256": "f612fedc07ea8342444e63bec1c9f052120d3ee199687930dac11299b9f28d5f"
+    }
+  },
+  "framework_identity": "See runtime-manifest.json for every framework file hash and the study ledger for framework provenance.",
+  "native_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+  "notes": [
+    "Scientific inputs and failed attempts are private S3 data referenced by the experiment record.",
+    "The runtime manifest also contains historical and unused entry points; the current validation controller is validation/application/scripts/track_vecoli_experiment.py.",
+    "Direct source files are public Git content; credential values and source-code tarballs are excluded from S3 scientific data."
+  ],
+  "protocol": {
+    "bytes": 13181,
+    "sha256": "c71743f23fb6fd56f0caada37ace6304b9bc1540b8a73fd5318c377da9395bb5"
+  },
+  "snapshot_role": "Exact search/runtime sources used by the study; preserved separately from later maintenance of reusable entry points. Never execute historical workflows locally.",
+  "source_archives_uploaded_as_data": false,
+  "strict_solver_patch": "../20261106/baseline-validation/solver-recovery-v2.patch"
+}

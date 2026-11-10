@@ -122,11 +122,28 @@ class BaselineArchive:
                 target = members / name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes((bundle / name).read_bytes())
-            for name in ("config.json", "launch.json", "tracking.json", "progress.json", "result.json", "failure.json", "failures.jsonl", "curves.json", "process.json", "environment.json", "checkpoints.jsonl"):
+            for name in ("config.json", "launch.json", "tracking.json", "progress.json", "result.json", "failure.json", "failures.jsonl", "curves.json", "process.json", "environment.json", "checkpoints.jsonl", "run-report.json", "terminal.json", "model-usage.json", "provider-usage.jsonl", "proposal-accounting.json"):
                 if (folder / name).exists():
                     (members / name).write_bytes((folder / name).read_bytes())
+            if (folder / "transport-events.jsonl").exists():
+                (members / "transport-events.jsonl").write_bytes((folder / "transport-events.jsonl").read_bytes())
             if (folder / "graph.sqlite").exists():
                 sqlite_snapshot(folder / "graph.sqlite", members / "graph.sqlite")
+            if (folder / "agents.sqlite").exists():
+                sqlite_snapshot(folder / "agents.sqlite", members / "agents.sqlite")
+            for name in ("inputs/dossier.json", "approval.json", "runtime-manifest.json", "input-verification.json"):
+                if (bundle / name).exists():
+                    target = members / name
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes((bundle / name).read_bytes())
+            literature = folder / "literature"
+            if literature.exists():
+                for path in sorted(literature.iterdir()):
+                    if not path.is_file() or path.is_symlink() or (path.suffix != ".response" and path.name != "requests.jsonl"):
+                        raise RuntimeError("Unexpected content in literature response archive")
+                    target = members / "literature" / path.name
+                    target.parent.mkdir(exist_ok=True)
+                    target.write_bytes(path.read_bytes())
             files = []
             for path in sorted(members.rglob("*")):
                 if path.is_file():

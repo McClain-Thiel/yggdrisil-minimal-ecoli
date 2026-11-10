@@ -1,0 +1,362 @@
+{
+  "analysis_label": "Exploratory follow-up designed after inspecting replication results; keep separate from the original equal-budget comparison.",
+  "execution": {
+    "continuations_use_new_run_ids_and_storage_prefixes": true,
+    "fixed_deadlines_required_at_authorization": true,
+    "new_compute_or_budget_authorized": false,
+    "preserve_original_sources_and_graphs": true,
+    "remote_linux_only": true,
+    "shared_workers_untouched": true,
+    "verify_S3_and_WandB_before_resume": true
+  },
+  "experiment_id": "baseline-depth-extension-20261110-draft",
+  "extension": {
+    "additional_candidate_slots_per_run": 1900,
+    "checkpoint_total_candidate_counts": [
+      250,
+      500,
+      1000,
+      2000
+    ],
+    "growth_gates": {
+      "fba_growth_strictly_positive": true,
+      "rba_growth_floor_per_hour": 0.1
+    },
+    "max_new_wall_time_seconds_per_run": 21600,
+    "maximum_genes_per_action": 100,
+    "methods": [
+      "greedy_block",
+      "randomized_block"
+    ],
+    "no_budget_extension_if_depth_not_reached": true,
+    "no_model_calls": true,
+    "no_whole_cell_feedback": true,
+    "policy": "Unchanged frozen block-v1 policy and evaluator identities; continue deterministic graph-dependent proposal order from verified copies of each original 100-candidate graph.",
+    "retain_original_costs_and_candidate_counts": true,
+    "seeds": [
+      103,
+      227,
+      349,
+      461,
+      587
+    ],
+    "total_new_candidate_budget_including_original": 2000
+  },
+  "interpretation": "Try to make the baselines competitive. Survival at matched deletion depth, failure, and inability to reach the depth under budget are all informative results.",
+  "launch_requirements": [
+    "Implement and test isolated graph-copy continuation with cumulative candidate accounting and preserved original run identity.",
+    "Freeze new configuration, source identities, selection rules, dates and exact cost estimate before approval.",
+    "Obtain approval for the new search/validation scope; existing $650 study cap is not an implicit extension.",
+    "Verify the restored parent graph and current scientific inputs on remote Linux; never copy a live SQLite database directly.",
+    "Test backup failure, stop/resume and deterministic next-proposal identity with lightweight fixtures."
+  ],
+  "original_protocol_sha256": "c71743f23fb6fd56f0caada37ace6304b9bc1540b8a73fd5318c377da9395bb5",
+  "original_study": "search-replication-20261109",
+  "paid_launch": false,
+  "parents": [
+    {
+      "checkpoint": {
+        "archive": {
+          "bytes": 1594106,
+          "sha256": "f7c8e273d27a267cf8ee346ea32f57f40c41c3c4e267458b0cacb37af4a6d8ed",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-103/archives/f7c8e273d27a267cf8ee346ea32f57f40c41c3c4e267458b0cacb37af4a6d8ed.tar.gz"
+        },
+        "full_get_verified": true,
+        "index": {
+          "bytes": 3476,
+          "sha256": "8d420200e0fcea9997da0afa4ffc4d423e04d8dda3560db6306e899973857116",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-103/indexes/8d420200e0fcea9997da0afa4ffc4d423e04d8dda3560db6306e899973857116.json"
+        },
+        "member_count": 20,
+        "status": "verified",
+        "verified_at": "2026-11-09T14:03:37.236998+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-greedy-block-seed-103-data:v7",
+        "wandb_download_verified": true
+      },
+      "method": "greedy_block",
+      "previous_candidate_budget": 100,
+      "report_sha256": "93db95b88e41c62697b937e9a403eae511ecbe59fcce5579157d586cdf7ab881",
+      "run_id": "search-replication-20261109-greedy-block-seed-103",
+      "seed": 103
+    },
+    {
+      "checkpoint": {
+        "archive": {
+          "bytes": 1620477,
+          "sha256": "38e3b36b6029170e089a98c7cee7c525b818381adaf85d1951780a3412ab8666",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-103/archives/38e3b36b6029170e089a98c7cee7c525b818381adaf85d1951780a3412ab8666.tar.gz"
+        },
+        "full_get_verified": true,
+        "index": {
+          "bytes": 3484,
+          "sha256": "4bd7105099119b89e1039c01233d9daa164c2538f944c1ddb8e4aefca1044edd",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-103/indexes/4bd7105099119b89e1039c01233d9daa164c2538f944c1ddb8e4aefca1044edd.json"
+        },
+        "member_count": 20,
+        "status": "verified",
+        "verified_at": "2026-11-09T14:04:17.299182+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-randomized-block-seed-103-data:v11",
+        "wandb_download_verified": true
+      },
+      "method": "randomized_block",
+      "previous_candidate_budget": 100,
+      "report_sha256": "b75fb13102024209253d996127d3650cd2cf017705a299bcc389d524f98367b9",
+      "run_id": "search-replication-20261109-randomized-block-seed-103",
+      "seed": 103
+    },
+    {
+      "checkpoint": {
+        "archive": {
+          "bytes": 1592349,
+          "sha256": "a2a6768e43a48cb14dbd77cb4f99b525611d097972577357eb6c77eb58e23885",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-227/archives/a2a6768e43a48cb14dbd77cb4f99b525611d097972577357eb6c77eb58e23885.tar.gz"
+        },
+        "full_get_verified": true,
+        "index": {
+          "bytes": 3476,
+          "sha256": "2331aa867fae3d59a5b855495b6ec96f00767ba8110bf4217544739e34d0cb25",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-227/indexes/2331aa867fae3d59a5b855495b6ec96f00767ba8110bf4217544739e34d0cb25.json"
+        },
+        "member_count": 20,
+        "status": "verified",
+        "verified_at": "2026-11-09T14:05:02.555743+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-greedy-block-seed-227-data:v7",
+        "wandb_download_verified": true
+      },
+      "method": "greedy_block",
+      "previous_candidate_budget": 100,
+      "report_sha256": "430b433afd95ccd1e7956d37380d484adfcb0884c48a11b9e231de64cbd09e7d",
+      "run_id": "search-replication-20261109-greedy-block-seed-227",
+      "seed": 227
+    },
+    {
+      "checkpoint": {
+        "archive": {
+          "bytes": 1603283,
+          "sha256": "40f9161571b1d7eabed08fd6eda1fd1c6ce1c70d275f526f78836d6224cb1d7b",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-227/archives/40f9161571b1d7eabed08fd6eda1fd1c6ce1c70d275f526f78836d6224cb1d7b.tar.gz"
+        },
+        "full_get_verified": true,
+        "index": {
+          "bytes": 3484,
+          "sha256": "d6ffc1a4d878c4f4765275535ff9ec298989e215156ef9dc38bcf4a5395d1e5c",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-227/indexes/d6ffc1a4d878c4f4765275535ff9ec298989e215156ef9dc38bcf4a5395d1e5c.json"
+        },
+        "member_count": 20,
+        "status": "verified",
+        "verified_at": "2026-11-09T14:05:40.148522+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-randomized-block-seed-227-data:v11",
+        "wandb_download_verified": true
+      },
+      "method": "randomized_block",
+      "previous_candidate_budget": 100,
+      "report_sha256": "5e4d9cb07986d8844dc8201a8d0c774b85655612b69a6c5d7003ac12bad3bafe",
+      "run_id": "search-replication-20261109-randomized-block-seed-227",
+      "seed": 227
+    },
+    {
+      "checkpoint": {
+        "archive": {
+          "bytes": 1576516,
+          "sha256": "e676ddcd5d67d24f5f686b6a79c1a1096c97a845515bfba906a2b7a3514fb21c",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-349/archives/e676ddcd5d67d24f5f686b6a79c1a1096c97a845515bfba906a2b7a3514fb21c.tar.gz"
+        },
+        "full_get_verified": true,
+        "index": {
+          "bytes": 3484,
+          "sha256": "eb48753ad792658ec545b5479383b865127d9e261e09b1fd092662d232d94129",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-349/indexes/eb48753ad792658ec545b5479383b865127d9e261e09b1fd092662d232d94129.json"
+        },
+        "member_count": 20,
+        "status": "verified",
+        "verified_at": "2026-11-09T14:06:35.273725+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-randomized-block-seed-349-data:v11",
+        "wandb_download_verified": true
+      },
+      "method": "randomized_block",
+      "previous_candidate_budget": 100,
+      "report_sha256": "f80ab187a22384f7050fc70dd056ddcec6a5363cc83d5354f09f61d7c021aef6",
+      "run_id": "search-replication-20261109-randomized-block-seed-349",
+      "seed": 349
+    },
+    {
+      "checkpoint": {
+        "archive": {
+          "bytes": 1571045,
+          "sha256": "5ad882942d307c31ded179048fd728a42a6f7f97026790181686c2fa7cd2d8b8",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-349/archives/5ad882942d307c31ded179048fd728a42a6f7f97026790181686c2fa7cd2d8b8.tar.gz"
+        },
+        "full_get_verified": true,
+        "index": {
+          "bytes": 3476,
+          "sha256": "76e6b1d8597d50a435f1682b20de01ddd2bfc48e8dda732dd8a5dae2603d763d",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-349/indexes/76e6b1d8597d50a435f1682b20de01ddd2bfc48e8dda732dd8a5dae2603d763d.json"
+        },
+        "member_count": 20,
+        "status": "verified",
+        "verified_at": "2026-11-09T14:06:06.479115+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-greedy-block-seed-349-data:v7",
+        "wandb_download_verified": true
+      },
+      "method": "greedy_block",
+      "previous_candidate_budget": 100,
+      "report_sha256": "6a63c8221288bff7b4f5efbc8d2eef2271ede20d7ddd691fcbd5c6a4a1070cf4",
+      "run_id": "search-replication-20261109-greedy-block-seed-349",
+      "seed": 349
+    },
+    {
+      "checkpoint": {
+        "archive": {
+          "bytes": 1590430,
+          "sha256": "6ff2e877e0a46d375b8b98f16dc314495f2e02c7af5512bd7cb03183a42a6f65",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-461/archives/6ff2e877e0a46d375b8b98f16dc314495f2e02c7af5512bd7cb03183a42a6f65.tar.gz"
+        },
+        "full_get_verified": true,
+        "index": {
+          "bytes": 3476,
+          "sha256": "102b007699aa5e77935946a611e2db5b0538ab0b8076f2fcb01e396a3f2e5cef",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-461/indexes/102b007699aa5e77935946a611e2db5b0538ab0b8076f2fcb01e396a3f2e5cef.json"
+        },
+        "member_count": 20,
+        "status": "verified",
+        "verified_at": "2026-11-09T14:07:53.502197+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-greedy-block-seed-461-data:v7",
+        "wandb_download_verified": true
+      },
+      "method": "greedy_block",
+      "previous_candidate_budget": 100,
+      "report_sha256": "e9d8f051da884e85149e6d9870cc921b3ecb676024a239ebc963c05aac6521ea",
+      "run_id": "search-replication-20261109-greedy-block-seed-461",
+      "seed": 461
+    },
+    {
+      "checkpoint": {
+        "archive": {
+          "bytes": 1600742,
+          "sha256": "9de4d0e3562b6a671b9fd8d5d752acd3dec605704b1052505c2ea52aeb33f7ae",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-461/archives/9de4d0e3562b6a671b9fd8d5d752acd3dec605704b1052505c2ea52aeb33f7ae.tar.gz"
+        },
+        "full_get_verified": true,
+        "index": {
+          "bytes": 3484,
+          "sha256": "0c529db225d9c4630ca1fc25fbbdb2134837fd4aa8b2ada688b40928471ca1f8",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-461/indexes/0c529db225d9c4630ca1fc25fbbdb2134837fd4aa8b2ada688b40928471ca1f8.json"
+        },
+        "member_count": 20,
+        "status": "verified",
+        "verified_at": "2026-11-09T14:09:05.052084+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-randomized-block-seed-461-data:v11",
+        "wandb_download_verified": true
+      },
+      "method": "randomized_block",
+      "previous_candidate_budget": 100,
+      "report_sha256": "e808e92d3e169b6411d475ffe7ea8583b83f34813b1cfccb70927997206914ef",
+      "run_id": "search-replication-20261109-randomized-block-seed-461",
+      "seed": 461
+    },
+    {
+      "checkpoint": {
+        "archive": {
+          "bytes": 1571536,
+          "sha256": "e5adea7b54df32d09e7fb0d4e925adbe901db55c2c4e4eba6c902af3a5fdba7e",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-587/archives/e5adea7b54df32d09e7fb0d4e925adbe901db55c2c4e4eba6c902af3a5fdba7e.tar.gz"
+        },
+        "full_get_verified": true,
+        "index": {
+          "bytes": 3476,
+          "sha256": "39a5176d5a16df40d686d5ebe147302ecd35b89dead3d59c31fb5b11b571ba8f",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-587/indexes/39a5176d5a16df40d686d5ebe147302ecd35b89dead3d59c31fb5b11b571ba8f.json"
+        },
+        "member_count": 20,
+        "status": "verified",
+        "verified_at": "2026-11-09T14:09:02.910806+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-greedy-block-seed-587-data:v7",
+        "wandb_download_verified": true
+      },
+      "method": "greedy_block",
+      "previous_candidate_budget": 100,
+      "report_sha256": "64ef3621dd71c2a43e3d7d23abd725acafb38f7730351de42e011ee3aaf4b055",
+      "run_id": "search-replication-20261109-greedy-block-seed-587",
+      "seed": 587
+    },
+    {
+      "checkpoint": {
+        "archive": {
+          "bytes": 1580081,
+          "sha256": "b6a119c598b4e7dbee94c709f888825f113aa95bd3e66c81892a4e6edb1d8675",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-587/archives/b6a119c598b4e7dbee94c709f888825f113aa95bd3e66c81892a4e6edb1d8675.tar.gz"
+        },
+        "full_get_verified": true,
+        "index": {
+          "bytes": 3484,
+          "sha256": "bf3ece2cd9173b10f905dbdcf87ff1d20bb0611fe42748c1130acc317091270d",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-587/indexes/bf3ece2cd9173b10f905dbdcf87ff1d20bb0611fe42748c1130acc317091270d.json"
+        },
+        "member_count": 20,
+        "status": "verified",
+        "verified_at": "2026-11-10T04:25:16.514970+00:00",
+        "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-randomized-block-seed-587-data:v11",
+        "wandb_download_verified": true
+      },
+      "method": "randomized_block",
+      "previous_candidate_budget": 100,
+      "report_sha256": "c57235ee7292382def951890d401033734a16051f74cab370057b9b90f79d43c",
+      "run_id": "search-replication-20261109-randomized-block-seed-587",
+      "seed": 587
+    }
+  ],
+  "purpose": "Test whether the original shallow baseline endpoints are a budget/resolution limitation, and obtain honestly selected baseline designs at deletion depths comparable with the agents.",
+  "schema_version": 1,
+  "selection": {
+    "deduplicate_identical_genotypes": true,
+    "deletion_count_thresholds": [
+      1500,
+      1750,
+      2000,
+      2250
+    ],
+    "final_incumbent": "Also retain the deepest fully evaluated feasible design at the fixed final budget, irrespective of future whole-cell outcome.",
+    "freeze_before_validation": true,
+    "never_select_for_failure_or_replace_after_validation": true,
+    "rule": "At each checkpoint and threshold, nominate the fully evaluated growth-gate-passing design at or above the threshold with the fewest total deletions; break ties by higher FBA growth and then ascending state_id. Report its actual count and overshoot. If none exists, record not_reached.",
+    "unit": "Total deleted registry genes, including the common 1030 deletions; these are not model-gene percentages."
+  },
+  "starting_genotype": {
+    "deletion_count": 1030,
+    "deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52",
+    "local_reference": {
+      "path": "runs/deletion-baselines-20261106/inputs/starting-genotype.json",
+      "sha256": "9cbb7c3b1073697196a41940b3a8e50a2c0794daa6f2965a0828851f27189632"
+    },
+    "name": "common-1030-deletion-root",
+    "reference": "NC_000913.3",
+    "registry_genes": 4290
+  },
+  "status": "draft_not_authorized",
+  "validation": {
+    "controls": [
+      "MG1655",
+      "common-1030-deletion-root"
+    ],
+    "failure_categories": [
+      "nondivision_at_time_cap",
+      "software_error_path",
+      "unresolved_model_or_numerical_failure",
+      "infrastructure_failure",
+      "deadline"
+    ],
+    "followed_daughters": 1,
+    "generations": 20,
+    "max_cell_time_s": 10800,
+    "medium": "aerobic M9 glucose at 37 C",
+    "model_errors_are_not_biological_death": true,
+    "no_scientific_repairs_in_original_results": true,
+    "seeds": [
+      101,
+      211,
+      307
+    ],
+    "selection_scope": "Review the distinct frozen threshold nominees and final incumbents, then approve the exact validation count and compute cap. Up to 50 nominations before deduplication, plus controls; no implicit authorization.",
+    "status": "scope_and_cost_approval_required_before_launch"
+  }
+}

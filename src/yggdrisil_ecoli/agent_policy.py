@@ -61,6 +61,9 @@ class AgentSearchConfig(BaseModel):
         Literal["none", "minimal", "low", "medium", "high", "xhigh", "max"] | None
     ) = None
     temperature: float | None = Field(default=0.0, ge=0, le=2)
+    provider_route: str | None = None
+    provider_fallback_allowed: bool = True
+    provider_max_price: dict[str, float] | None = None
     bundle_size: int = Field(default=1, gt=0, le=100)
     max_actions: int = Field(default=2, gt=0)
     open_set: OpenSetConfig = OpenSetConfig()
@@ -124,6 +127,14 @@ class AgentSearchConfig(BaseModel):
         }
         if self.send_model_seed:
             settings["seed"] = self.seed
+        if self.provider_route is not None:
+            settings["extra_body"]["provider"].update({
+                "only": [self.provider_route],
+                "order": [self.provider_route],
+                "allow_fallbacks": self.provider_fallback_allowed,
+            })
+        if self.provider_max_price is not None:
+            settings["extra_body"]["provider"]["max_price"] = self.provider_max_price
         if self.reasoning_effort is not None:
             settings["extra_body"]["reasoning"] = {"effort": self.reasoning_effort}
         if self.temperature is not None:

@@ -1,8 +1,30 @@
 # Experiment ledger
 
-Start with the [agent versus baseline comparison](comparisons/agent-baselines-20261106.json), the [methods index](../methods/20261106/README.md), and the [complete ledger index](index.json). The index links each experiment to its configuration, exact scientific inputs, final results, W&B runs/artifacts, private S3 objects, checksums, failed attempts, and cleanup evidence.
+Start with the [9 November replication results](comparisons/search-replication-20261109.json), [frozen methods](../methods/20261109/README.md), and [study record](records/search-replication-20261109.json). The [complete ledger index](index.json) links every study to exact inputs, results, W&B artifacts, private S3 objects, SHA256 checksums, failed attempts, and cleanup evidence.
 
-## Verified comparison
+## Search replication: 9–10 November 2026
+
+Five methods × five fresh searches started from the same 1,030-deletion genome. Each had a 100-candidate ceiling and one nominee frozen before whole-cell validation. Identical nominees were deduplicated: 20 candidate genomes plus two controls, each simulated for up to 20 generations using three fixed seeds. All science ran on remote Linux.
+
+| Method | Nominees reaching 20 generations in all 3 seeds | Total registry deletions in successful nominees | Searches using all 100 evaluations |
+| --- | ---: | --- | ---: |
+| Adaptive literature | 4/5 | 1,053; 1,281; 1,622; 1,898 | 1/5 |
+| Frozen dossier | 2/5 | 1,699; 1,745 | 5/5 |
+| No retrieval | 2/5 | 1,933; 2,318 | 5/5 |
+| Greedy block | 3/5 | 1,040; 1,040; 1,080 | 5/5 |
+| Randomized block | 3/5 | 1,040; 1,040; 1,080 | 5/5 |
+
+![Final deletion depth and persistence](figures/search-replication-20261109.png)
+
+There were **927 divisions; 41/66 lineages reached 20 generations**. Eleven stopped without division at the fixed 10,800-second cell cap; 14 stopped with model/software exceptions. Three exceptions exposed a Python error-handling path in the equilibrium solver; 11 remain unresolved model/numerical failures. These categories do not establish genotype-caused death. Both controls passed in all three seeds.
+
+The two baseline methods selected the same five genotypes. Their shared trajectories are not independent validation evidence. Four adaptive searches ended early (three errors, one model-budget stop), so the arms had equal assigned ceilings but unequal realized evaluation budgets. The summary retains every assigned search and provides registry, current-functional, and shared-functional deletion percentages using the frozen mapping. Simulation seeds are repeated trajectories, not independent searches. Five searches per method support an exploratory comparison; these data do not establish a retrieval benefit or a universal agent survival advantage.
+
+The baseline audit found 998/1,000 evaluations used the coarse 100- or 50-gene block settings, with 12 growth-gate-passing proposals. A [separate deeper-baseline draft](../methods/20261109/baseline-depth-extension-draft.json) proposes continuing the saved graphs to a fixed 2,000-evaluation ceiling and freezing nominees at predefined deletion thresholds. It is **not authorized or launched**. Survival, failure, and inability to reach a threshold are all informative; nominees must never be chosen for anticipated failure.
+
+Use the [study record](records/search-replication-20261109.json) → `final_results` and `data_preservation` for the compact analysis, three worker archives, aggregate archive, catalog, independent member audits, and exact W&B versions. Full graphs, histories, daughter states, failed attempts, and source input identities remain in private S3. Git contains screened source and compact results only. The old operational `coordinator/status.json` ended with a stale running label; the closed final catalog is authoritative.
+
+## Historical comparison: 6 November 2026
 
 | Search condition | Independent genomes | Registry genes deleted | Current functional genes deleted | 20-generation lineages |
 | --- | ---: | ---: | ---: | ---: |

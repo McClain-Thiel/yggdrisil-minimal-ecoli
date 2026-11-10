@@ -11,10 +11,12 @@ import hashlib
 import json
 import math
 import os
+import re
 import shutil
 import signal
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -24,6 +26,7 @@ from urllib.parse import urlparse
 
 import pyarrow.parquet as pq
 
+from yggdrisil_ecoli.baseline_storage import configured_secrets, screen
 from yggdrisil_ecoli.data.io import atomic_json, file_sha256
 from yggdrisil_ecoli.vecoli import VECOLI_NEXTFLOW_VERSION
 from yggdrisil_ecoli.vecoli_results import (
@@ -35,6 +38,101 @@ from yggdrisil_ecoli.vecoli_results import (
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+class BackupIntegrityError(RuntimeError):
+    """A backup differs from its pinned scientific snapshot."""
+
+
+def snapshot_file(source: Path, directory: Path) -> Path:
+    """Pin bytes once so S3 and W&B receive the same closed-file snapshot."""
+    directory.mkdir(parents=True, exist_ok=True)
+    before = source.stat()
+    with tempfile.NamedTemporaryFile(dir=directory, delete=False) as stream:
+        temporary = Path(stream.name)
+        with source.open("rb") as incoming:
+            shutil.copyfileobj(incoming, stream)
+    after = source.stat()
+    if (before.st_size, before.st_mtime_ns, before.st_ino) != (after.st_size, after.st_mtime_ns, after.st_ino):
+        temporary.unlink()
+        raise BackupIntegrityError("File changed during backup snapshot: " + str(source))
+    if temporary.stat().st_size != before.st_size:
+        raise BackupIntegrityError("Short backup snapshot: " + str(source))
+    target = directory / file_sha256(temporary)
+    if target.exists():
+        if file_sha256(target) != target.name:
+            raise BackupIntegrityError("Corrupt immutable backup snapshot: " + str(target))
+        temporary.unlink()
+    else:
+        temporary.replace(target)
+    return target
+
+
+def restore_checkpoint_files(client: Any, checkpoint: dict[str, Any], directory: Path) -> dict[str, Path]:
+    """Restore and verify the exact pinned checkpoint, without touching originals."""
+    files = {}
+    directory.mkdir(parents=True, exist_ok=True)
+    for name, ref in checkpoint.get("files", {}).items():
+        target = directory / ref["sha256"]
+        location = urlparse(ref["uri"])
+        response = client.get_object(Bucket=location.netloc, Key=location.path.lstrip("/"))["Body"]
+        temporary = target.with_suffix(".download")
+        try:
+            with temporary.open("wb") as stream:
+                for block in response.iter_chunks(chunk_size=1024**2):
+                    stream.write(block)
+        finally:
+            response.close()
+        if temporary.stat().st_size != ref["bytes"] or file_sha256(temporary) != ref["sha256"]:
+            raise BackupIntegrityError("Restored S3 checkpoint mismatch: " + name)
+        temporary.replace(target)
+        files[name] = target
+    return files
+
+
+def publish_wandb_checkpoint(run: Any, name: str, files: dict[str, Path], expected: dict[str, str],
+                             directory: Path, event: Any, aliases: list[str]) -> Any:
+    """Retry transport errors with a fresh artifact and fresh download URLs."""
+    import requests
+    import wandb
+
+    for attempt in range(1, 4):
+        for logical, path in files.items():
+            if file_sha256(path) != path.name:
+                raise BackupIntegrityError("Immutable snapshot changed: " + logical)
+        try:
+            artifact = wandb.Artifact(name, type="experiment-data")
+            for logical, path in files.items():
+                artifact.add_file(str(path), name=logical, policy="immutable")
+            logged = run.log_artifact(artifact, aliases=aliases)
+            logged.wait(timeout=180)
+            # Fresh directories and skip_cache force independent network reads.
+            with tempfile.TemporaryDirectory(dir=directory) as temporary:
+                remote = wandb.Api(timeout=120).artifact(logged.qualified_name)
+                if remote.state != "COMMITTED":
+                    raise RuntimeError("W&B checkpoint is not committed")
+                if set(remote.manifest.entries) != set(files):
+                    raise BackupIntegrityError("W&B checkpoint member set differs")
+                for logical, digest in expected.items():
+                    fetched = Path(remote.get_entry(logical).download(root=temporary, skip_cache=True))
+                    if file_sha256(fetched) != digest:
+                        raise BackupIntegrityError("W&B data round-trip mismatch: " + logical)
+            event("wandb_transport_verified", artifact=logged.qualified_name,
+                  attempt=attempt, uncached_downloads=len(expected))
+            return logged
+        except BackupIntegrityError:
+            raise
+        except (wandb.Error, requests.RequestException, TimeoutError, ValueError) as error:
+            # SDK upload failures are ValueError; integrity/provenance errors never retry.
+            if isinstance(error, ValueError) and "upload" not in str(error).lower():
+                raise
+            event("wandb_transport_retry", attempt=attempt, error_type=type(error).__name__,
+                  error=re.sub(r"https?://\S+", "[transfer URL redacted]", str(error)))
+            if attempt == 3:
+                raise RuntimeError("W&B backup failed after three verified transfer attempts") from error
+            time.sleep(10 * attempt)
+    raise AssertionError("Unreachable backup retry state")
+
 
 
 def update_catalog(path: Path, experiment_id: str, **changes: Any) -> None:
@@ -131,7 +229,27 @@ def cell_files(experiment: Path, task: Any, seed: int) -> list[Path]:
         / f"generation={task.generation}"
     )
     files.extend(folder.rglob("*.json"))
+    files.extend(p for p in (task.workdir / "solver-diagnostics").glob("*")
+                 if p.suffix in {".json", ".glp"})
     return files
+
+
+def solver_diagnostics(workdir):
+    records = []
+    for path in sorted((workdir / "solver-diagnostics").glob("*.json")):
+        check = json.loads(path.read_text())
+        before, after = path.with_suffix(".before.glp"), path.with_suffix(".after.glp")
+        if (not check["model_unchanged"] or check["return_code"] != 0
+                or not check["status"].startswith("GLP_OPT")
+                or len(check["kkt"]) != 4
+                or any(not math.isfinite(v["relative_error"]) or v["relative_error"] > 1e-7
+                       for v in check["kkt"].values())
+                or file_sha256(before) != check["original_lp_sha256"]
+                or file_sha256(after) != check["original_lp_sha256"]):
+            raise RuntimeError("Rejected solver diagnostic in completed cell: " + str(path))
+        records.append({"path": str(path), "sha256": file_sha256(path),
+                        "max_kkt_relative_error": max(v["relative_error"] for v in check["kkt"].values())})
+    return records
 
 
 def simulation_environment(
@@ -155,6 +273,7 @@ def simulation_environment(
             ),
             "VIRTUAL_ENV": str(python.parent.parent),
             "NXF_VER": VECOLI_NEXTFLOW_VERSION,
+            "YGGDRISIL_SOLVER_DIAGNOSTICS": "solver-diagnostics",
             "PYTHONPATH": str(checkout),
             "PYTHONUNBUFFERED": "1",
             "OMP_NUM_THREADS": "1",
@@ -222,7 +341,7 @@ def save_s3_checkpoint(
     return index
 
 
-def run_experiment(manifest_path: Path, catalog_path: Path, *, resume: bool) -> int:
+def run_experiment(manifest_path: Path, catalog_path: Path, *, resume: bool, backup_only: bool = False) -> int:
     import wandb
 
     manifest = json.loads(manifest_path.read_text())
@@ -301,19 +420,20 @@ def run_experiment(manifest_path: Path, catalog_path: Path, *, resume: bool) -> 
             os.fsync(handle.fileno())
 
     catalog = json.loads(catalog_path.read_text())
-    entry = next(e for e in catalog["experiments"] if e["id"] == experiment_id)
-    backup = entry["data_backup"]
-    artifact = (
-        wandb.Api().artifact(backup["wandb_artifact"]).new_draft()
-        if resume and "wandb_artifact" in backup
-        else wandb.Artifact(tracking["artifact_name"], type="experiment-data")
-    )
-    uploaded = set(artifact.manifest.entries)
+    next(e for e in catalog["experiments"] if e["id"] == experiment_id)["data_backup"]
+    snapshot_directory = folder / "backup-cache" / "immutable"
+    wandb_files = restore_checkpoint_files(s3, cloud_checkpoint, snapshot_directory) if resume else {}
+    uploaded = set(wandb_files)
     checked: set[tuple[int, int]] = set()
     seen: set[tuple[int, int]] = set()
     previous: dict[str, Any] | None = None
     process: subprocess.Popen[bytes] | None = None
-    secret = os.environ.get("WANDB_API_KEY", "").encode()
+    secrets = configured_secrets(Path(manifest["execution"]["application_root"]),
+                                 Path(manifest["execution"]["credential_directory"]))
+    if not os.environ.get("WANDB_API_KEY") or not secrets:
+        raise RuntimeError("Configured tracking credentials required for backup screening")
+    pending_wandb: dict[str, str] = {name: file_sha256(path) for name, path in wandb_files.items()}
+    phase = "setup"
     exit_code = 1
 
     def add_data(path: Path, name: str, *, replace: bool = False) -> None:
@@ -325,8 +445,7 @@ def run_experiment(manifest_path: Path, catalog_path: Path, *, resume: bool) -> 
             raise ValueError(
                 f"Source or credential file is not experiment data: {path}"
             )
-        if secret and secret in path.read_bytes():
-            raise RuntimeError(f"Credential found in data backup: {path}")
+        screen(path, secrets)
         source = path
         if path.suffix in {".json", ".cPickle"} and path.stat().st_size > 1_000_000:
             source = folder / "backup-cache" / (name + ".gz")
@@ -334,12 +453,15 @@ def run_experiment(manifest_path: Path, catalog_path: Path, *, resume: bool) -> 
             with path.open("rb") as src, gzip.open(source, "wb") as dst:
                 shutil.copyfileobj(src, dst)
             name += ".gz"
-        artifact.add_file(str(source), name=name, overwrite=replace)
+        source = snapshot_file(source, snapshot_directory)
+        wandb_files[name] = source
+        pending_wandb[name] = file_sha256(source)
         cloud_files[name] = source
         uploaded.add(name)
 
     def checkpoint(result: dict[str, Any], tasks: dict[Any, Any]) -> None:
-        nonlocal artifact, cloud_checkpoint
+        nonlocal cloud_checkpoint, phase
+        phase = "validation"
         result["experiment_id"] = experiment_id
         for item in result["finalists"]:
             spec = next(
@@ -349,6 +471,8 @@ def run_experiment(manifest_path: Path, catalog_path: Path, *, resume: bool) -> 
             item["late_cycle_metrics"] = stability_metrics(item["generations"])
             for generation in item["generations"]:
                 key = (item["variant_index"], generation["generation"])
+                generation["solver_fallbacks"] = solver_diagnostics(tasks[key].workdir)
+                generation["solver_fallback_assisted"] = bool(generation["solver_fallbacks"])
                 if key in checked:
                     continue
                 daughters = (
@@ -388,6 +512,7 @@ def run_experiment(manifest_path: Path, catalog_path: Path, *, resume: bool) -> 
                 "late_cycle_metrics"
             ]
         result["updated_at"] = utc_now()
+        phase = "backup"
         atomic_json(folder / "progress.json", result)
         atomic_json(folder / "results.json", result)
         for path, name in [
@@ -427,6 +552,10 @@ def run_experiment(manifest_path: Path, catalog_path: Path, *, resume: bool) -> 
                 path = marker.with_name(name)
                 if path.is_file():
                     add_data(path, "output/" + str(path.relative_to(experiment)))
+        for marker in (experiment / "nextflow/nextflow_workdirs").rglob(".exitcode"):
+            for diagnostic in (marker.parent / "solver-diagnostics").glob("*"):
+                if diagnostic.suffix in {".json", ".glp"}:
+                    add_data(diagnostic, "output/" + str(diagnostic.relative_to(experiment)))
         if tasks:
             for path in (experiment / "variant_sim_data").glob("*"):
                 if path.suffix in {".json", ".cPickle"}:
@@ -439,13 +568,10 @@ def run_experiment(manifest_path: Path, catalog_path: Path, *, resume: bool) -> 
             cloud_files.clear()
             event("s3_checkpoint_verified", **cloud_checkpoint["manifest"])
             run.summary["latest_s3_checkpoint"] = cloud_checkpoint["manifest"]["uri"]
-        logged = run.log_artifact(artifact, aliases=["latest", "checkpoint"])
-        logged.wait()
-        downloaded = logged.get_path("progress.json").download(
-            root=str(folder / "backup-verification")
-        )
-        if file_sha256(downloaded) != file_sha256(folder / "progress.json"):
-            raise RuntimeError("Downloaded checkpoint does not match local progress")
+        logged = publish_wandb_checkpoint(run, tracking["artifact_name"], wandb_files,
+            pending_wandb, folder, event, ["latest", "checkpoint"])
+        pending_wandb.clear()
+        progress_digest = file_sha256(wandb_files["progress.json"])
         update_catalog(
             catalog_path,
             experiment_id,
@@ -454,25 +580,29 @@ def run_experiment(manifest_path: Path, catalog_path: Path, *, resume: bool) -> 
                 "wandb_artifact": logged.qualified_name,
                 "parent_artifact": manifest["parent_data_artifact"],
                 "verified_at": utc_now(),
-                "progress_sha256": file_sha256(downloaded),
+                "progress_sha256": progress_digest,
                 "completed_cell_cycles": sum(
                     item["generations_completed"] for item in result["finalists"]
                 ),
                 "scope": "Closed cell outputs; running cells are backed up after completion.",
+                "all_changed_wandb_files_download_verified": True,
                 "s3_checkpoint": cloud_checkpoint.get("manifest"),
             },
         )
         event("checkpoint_verified", artifact=logged.qualified_name)
         run.summary["latest_data_artifact"] = logged.qualified_name
-        artifact = logged.new_draft()
+        phase = "execution"
 
     try:
         if s3 is not None:
+            phase = "backup"
             initial_inputs = {
                 "manifest.json": manifest_path,
                 "workflow.json": Path(workflow["config_path"]),
                 "inputs/genes.parquet": Path(manifest["registry"]["path"]),
             }
+            for index, graph in enumerate(manifest.get("source_graphs", [])):
+                initial_inputs[f"inputs/graph-{index}.sqlite"] = Path(graph["backup"]["frozen_path"])
             audit_path = manifest["vecoli"].get("variant_knockout_audit_path")
             if audit_path:
                 initial_inputs["variant-knockout-audit.json"] = Path(audit_path)
@@ -484,6 +614,28 @@ def run_experiment(manifest_path: Path, catalog_path: Path, *, resume: bool) -> 
             atomic_json(cloud_checkpoint_path, cloud_checkpoint)
             cloud_files.clear()
             event("s3_inputs_verified", **cloud_checkpoint["manifest"])
+            logged = publish_wandb_checkpoint(run, tracking["artifact_name"], wandb_files,
+                pending_wandb, folder, event, ["latest", "inputs"])
+            pending_wandb.clear()
+            update_catalog(catalog_path, experiment_id, data_backup={
+                "status": "verified", "wandb_artifact": logged.qualified_name,
+                "verified_at": utc_now(), "completed_cell_cycles": 0,
+                "s3_checkpoint": cloud_checkpoint["manifest"],
+                "all_changed_wandb_files_download_verified": True})
+        if resume:
+            workdirs = experiment / "nextflow/nextflow_workdirs"
+            result = summarize_vecoli_lineages(manifest_path, folder / "results.json")
+            checkpoint(result, _simulation_tasks(workdirs))
+            if backup_only or result["all_reached_max_generations"]:
+                if result["all_reached_max_generations"]:
+                    update_catalog(catalog_path, experiment_id, status="completed", failure_phase=None,
+                                   error=None, finished_at=utc_now(), workflow_exit_code=0,
+                                   completed_work_preserved=True)
+                event("saved_checkpoint_verified_before_resume", science_restarted=False,
+                      completed_cell_cycles=sum(x["generations_completed"] for x in result["finalists"]))
+                exit_code = 0
+                return 0
+        phase = "execution"
         command = [
             manifest["execution"]["vecoli_python"],
             str(checkout / "runscripts/workflow.py"),
@@ -507,6 +659,7 @@ def run_experiment(manifest_path: Path, catalog_path: Path, *, resume: bool) -> 
             controller_pid=os.getpid(),
             finished_at=None,
             failed_at=None,
+            failure_phase=None,
             error=None,
             workflow_exit_code=None,
         )
@@ -579,6 +732,7 @@ def run_experiment(manifest_path: Path, catalog_path: Path, *, resume: bool) -> 
             experiment_id,
             status="failed",
             error=repr(exc),
+            failure_phase=phase,
             failed_at=utc_now(),
         )
         raise
@@ -599,7 +753,10 @@ def main() -> None:
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--catalog", type=Path, default=Path("experiments.json"))
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--backup-only", action="store_true")
     args = parser.parse_args()
+    if args.backup_only and not args.resume:
+        parser.error("--backup-only requires --resume")
     if sys.platform == "darwin":
         parser.error("Experiment execution is remote-only. Run this job on Linux compute.")
     # A held lock prevents two controllers from launching the same experiment.
@@ -607,7 +764,7 @@ def main() -> None:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         raise SystemExit(
             run_experiment(
-                args.manifest.resolve(), args.catalog.resolve(), resume=args.resume
+                args.manifest.resolve(), args.catalog.resolve(), resume=args.resume, backup_only=args.backup_only
             )
         )
 
