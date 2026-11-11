@@ -128,11 +128,13 @@ class AgentSearchConfig(BaseModel):
         if self.send_model_seed:
             settings["seed"] = self.seed
         if self.provider_route is not None:
-            settings["extra_body"]["provider"].update({
-                "only": [self.provider_route],
-                "order": [self.provider_route],
-                "allow_fallbacks": self.provider_fallback_allowed,
-            })
+            settings["extra_body"]["provider"].update(
+                {
+                    "only": [self.provider_route],
+                    "order": [self.provider_route],
+                    "allow_fallbacks": self.provider_fallback_allowed,
+                }
+            )
         if self.provider_max_price is not None:
             settings["extra_body"]["provider"]["max_price"] = self.provider_max_price
         if self.reasoning_effort is not None:

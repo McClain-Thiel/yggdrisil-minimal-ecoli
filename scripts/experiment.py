@@ -219,7 +219,9 @@ async def search(
     mo.stop(not start_search.value, mo.md("Choose a policy below, then run."))
     mo.stop(
         sys.platform == "darwin",
-        mo.md("Experiment execution is remote-only. Open this notebook on Linux compute."),
+        mo.md(
+            "Experiment execution is remote-only. Open this notebook on Linux compute."
+        ),
     )
     mo.stop(
         type(state_limit.value) is not int or state_limit.value <= 0,
@@ -315,7 +317,9 @@ def results(graph_path):
         mo.output.append(mo.ui.table(summary["literature_jobs"]))
         if any(job["status"] != "success" for job in summary["literature_jobs"]):
             mo.output.append(
-                mo.md("Edison is still running remotely. Resume this graph later to collect its report.")
+                mo.md(
+                    "Edison is still running remotely. Resume this graph later to collect its report."
+                )
             )
     mo.vstack(
         [

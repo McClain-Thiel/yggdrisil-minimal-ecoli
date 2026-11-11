@@ -24,12 +24,12 @@ dependencies = [
     "pandas>=2.2,<4",
     "lark>=1.2,<2",
     "boolean.py>=5,<6",
-    "yggdrisil @ git+https://github.com/McClain-Thiel/yggdrisil.git@ace52681a9b7897419262fbff1f35152ef036700",
+    "yggdrisil @ git+https://github.com/McClain-Thiel/yggdrisil.git@1c217cc8443d4fa73f0efe1b4d69c02c9b572e92",
 ]
 
 [project.optional-dependencies]
 agents = [
-    "yggdrisil[agents]",
+    "yggdrisil[adk]",
     "python-dotenv>=1.0,<2",
     "httpx>=0.27,<1",
 ]
@@ -44,6 +44,8 @@ data = [
 ]
 notebooks = [
     "marimo>=0.21.1,<1",
+    "matplotlib>=3.9,<4",
+    "polars>=1.20,<2",
 ]
 fba = [
     "cobra==0.32.1",

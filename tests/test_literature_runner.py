@@ -20,7 +20,15 @@ def test_mac_launcher_stops_before_loading_credentials(monkeypatch, capsys):
     monkeypatch.setattr(
         runner.sys,
         "argv",
-        ["runner", "--bundle", "missing", "--job-index", "0", "--model-budget-usd", "8"],
+        [
+            "runner",
+            "--bundle",
+            "missing",
+            "--job-index",
+            "0",
+            "--model-budget-usd",
+            "8",
+        ],
     )
     with pytest.raises(SystemExit) as stopped:
         runner.main()
@@ -153,7 +161,8 @@ async def test_headless_job_enforces_state_budget_saves_finalist_and_resumes(
         output = (
             {"plan": "Propose two candidates", "requests": [{"state_id": root}]}
             if "get_state" in request.tools_dict
-            else {"actions": [{"genes": ["b0003"]}]} if continuing
+            else {"actions": [{"genes": ["b0003"]}]}
+            if continuing
             else {"actions": [{"genes": ["b0002"]}, {"genes": ["b0003"]}]}
         )
         return [types.Part(text=json.dumps(output))]
@@ -284,8 +293,9 @@ async def test_headless_job_enforces_state_budget_saves_finalist_and_resumes(
     assert len(model.requests) == requests
 
     # Fork the closed checkpoint into a new execution with a fresh key and budget.
-    from copy import deepcopy
     import shutil
+    from copy import deepcopy
+
     parent_folder = tmp_path / "parents/test"
     parent_folder.mkdir(parents=True)
     parent_hashes = {}
@@ -297,12 +307,16 @@ async def test_headless_job_enforces_state_budget_saves_finalist_and_resumes(
     root = genome_state_key(GenomeState(frozenset({"b0001", "b0002"})))
     child = deepcopy(job)
     child.update(execution_id="stage-two", graph_path="search/stage-two/graph.sqlite")
-    child["agent_config"].update(session_path="search/stage-two/agents.sqlite",
-                                 edison_cache_path="search/stage-two/disabled.sqlite")
+    child["agent_config"].update(
+        session_path="search/stage-two/agents.sqlite",
+        edison_cache_path="search/stage-two/disabled.sqlite",
+    )
     child["limits"].update(max_states=3, max_steps=report["result"]["step"] + 5)
     child["continuation"] = {
-        "parent_path": "parents/test", "member_sha256": parent_hashes,
-        "parent_states": 2, "parent_step": report["result"]["step"],
+        "parent_path": "parents/test",
+        "member_sha256": parent_hashes,
+        "parent_states": 2,
+        "parent_step": report["result"]["step"],
         "parent_best_deletions": 2,
         "additional_limits": {"max_states": 1, "max_steps": 5},
     }
@@ -323,41 +337,52 @@ async def test_headless_job_enforces_state_budget_saves_finalist_and_resumes(
 
 async def test_continuation_fresh_research_gate_preserves_history(tmp_path):
     from google.adk.events import Event, EventActions
+
     from scripts.run_literature_ablation import continuation_memory
 
-    path = tmp_path / 'memory.sqlite'
-    dossier = {'content': 'Immutable original dossier'}
-    await seed_memory(path, 'parent', dossier)
+    path = tmp_path / "memory.sqlite"
+    dossier = {"content": "Immutable original dossier"}
+    await seed_memory(path, "parent", dossier)
     sessions = SqliteSessionService(str(path))
     try:
         session = await sessions.get_session(
-            app_name='yggdrisil', user_id='parent', session_id='navigator'
+            app_name="yggdrisil", user_id="parent", session_id="navigator"
         )
-        await sessions.append_event(session=session, event=Event(
-            author='navigator', invocation_id='old-search',
-            actions=EventActions(state_delta={
-                'user:literature_search_count': 21,
-                'user:plan': {'plan': 'Keep the known promising branch'},
-                'user:documents': {'note': {'content': 'Prior evidence'}},
-            }),
-        ))
+        await sessions.append_event(
+            session=session,
+            event=Event(
+                author="navigator",
+                invocation_id="old-search",
+                actions=EventActions(
+                    state_delta={
+                        "user:literature_search_count": 21,
+                        "user:plan": {"plan": "Keep the known promising branch"},
+                        "user:documents": {"note": {"content": "Prior evidence"}},
+                    }
+                ),
+            ),
+        )
     finally:
         await sessions.close()
-    assert await continuation_memory(path, 'parent', 'stage-two') == 0
+    assert await continuation_memory(path, "parent", "stage-two") == 0
     sessions = SqliteSessionService(str(path))
     try:
         session = await sessions.get_session(
-            app_name='yggdrisil', user_id='parent', session_id='navigator'
+            app_name="yggdrisil", user_id="parent", session_id="navigator"
         )
-        assert session.state['user:initial_dossier'] == dossier
-        assert session.state['user:continuation_parent_literature_search_count'] == 21
-        assert session.state['user:plan']['plan'] == 'Keep the known promising branch'
-        assert session.state['user:documents']['note']['content'] == 'Prior evidence'
+        assert session.state["user:initial_dossier"] == dossier
+        assert session.state["user:continuation_parent_literature_search_count"] == 21
+        assert session.state["user:plan"]["plan"] == "Keep the known promising branch"
+        assert session.state["user:documents"]["note"]["content"] == "Prior evidence"
         assert len(session.events) == 2
-        await sessions.append_event(session=session, event=Event(
-            author='research', invocation_id='new-search',
-            actions=EventActions(state_delta={'user:literature_search_count': 1}),
-        ))
+        await sessions.append_event(
+            session=session,
+            event=Event(
+                author="research",
+                invocation_id="new-search",
+                actions=EventActions(state_delta={"user:literature_search_count": 1}),
+            ),
+        )
     finally:
         await sessions.close()
-    assert await continuation_memory(path, 'parent', 'stage-two') == 1
+    assert await continuation_memory(path, "parent", "stage-two") == 1

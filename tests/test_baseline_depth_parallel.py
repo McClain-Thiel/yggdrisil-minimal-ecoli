@@ -111,7 +111,7 @@ class ParallelSafetyTests(unittest.TestCase):
             unpack_verified(p, index, r / "valid")
             self.assertEqual((r / "valid" / name).read_bytes(), raw)
             index["files"][0]["sha256"] = "0" * 64
-            with self.assertRaisesRegex(ValueError, "checksum"):
+            with self.assertRaisesRegex(RuntimeError, "member mismatch"):
                 unpack_verified(p, index, r / "corrupt")
 
     def test_path_traversal_rejected(self):
@@ -134,3 +134,35 @@ class ParallelSafetyTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "Unsafe"):
                 unpack_verified(p, index, r / "target")
             self.assertFalse((r / "escape").exists())
+
+
+def test_restore_rejects_parent_symlink_and_validates_before_writing(tmp_path):
+    import pytest
+
+    archive = tmp_path / "data.tar.gz"
+    files = {"first.json": b"first", "nested/second.json": b"second"}
+    index = {
+        "files": [
+            {"path": name, "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+            for name, raw in files.items()
+        ]
+    }
+    with tarfile.open(archive, "w:gz") as tar:
+        for name, raw in files.items():
+            member = tarfile.TarInfo(name)
+            member.size = len(raw)
+            tar.addfile(member, io.BytesIO(raw))
+    destination = tmp_path / "restore"
+    destination.mkdir()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (destination / "nested").symlink_to(outside, target_is_directory=True)
+    with pytest.raises(ValueError, match="Unsafe archive destination"):
+        unpack_verified(archive, index, destination)
+    assert not (outside / "second.json").exists()
+    assert not (destination / "first.json").exists()
+
+    index["files"][1]["sha256"] = "0" * 64
+    with pytest.raises(RuntimeError, match="member mismatch"):
+        unpack_verified(archive, index, tmp_path / "corrupt")
+    assert not (tmp_path / "corrupt").exists()

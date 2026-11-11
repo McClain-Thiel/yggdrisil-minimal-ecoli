@@ -12,7 +12,6 @@ import os
 import signal
 import subprocess
 import sys
-import tarfile
 import tempfile
 import time
 from pathlib import Path
@@ -21,6 +20,7 @@ from urllib.parse import urlparse
 
 from scripts.run_search_replication import save, validate_launch, worker_identity
 from scripts.supervise_search_replication import publish, search_files
+from yggdrisil_ecoli.baseline_storage import verify_wandb_files
 
 
 def digest(path: Path) -> str:
@@ -93,38 +93,20 @@ def closed_result(folder: Path, run_id: str) -> dict[str, Any]:
 
 
 def unpack_verified(archive: Path, index: dict[str, Any], destination: Path) -> None:
-    expected = {x["path"]: x for x in index["files"]}
-    if len(expected) != len(index["files"]):
-        raise ValueError("Duplicate indexed member")
-    seen = set()
-    with tarfile.open(archive, "r:gz") as tar:
-        for member in tar:
-            path = Path(member.name)
-            if (
-                not member.isfile()
-                or member.name in seen
-                or member.name not in expected
-                or path.is_absolute()
-                or ".." in path.parts
-            ):
-                raise ValueError("Unsafe or unexpected archived member")
-            target = destination / path
-            target.parent.mkdir(parents=True, exist_ok=True)
-            body = tar.extractfile(member)
-            if body is None:
-                raise ValueError("Missing archive body")
-            h, count = hashlib.sha256(), 0
-            with body, target.open("xb") as out:
-                while chunk := body.read(1024 * 1024):
-                    out.write(chunk)
-                    h.update(chunk)
-                    count += len(chunk)
-            ref = expected[member.name]
-            if h.hexdigest() != ref["sha256"] or count != ref["bytes"]:
-                raise ValueError("Archive member checksum mismatch")
-            seen.add(member.name)
-    if seen != set(expected):
-        raise ValueError("Missing indexed members")
+    from scripts.parallel_replication_validation import inspect_members
+
+    # Check every member and destination before writing any restored data.
+    inspect_members(archive, index)
+    for entry in index["files"]:
+        target = destination / entry["path"]
+        if (
+            not target.resolve().is_relative_to(destination.resolve())
+            or target.is_symlink()
+        ):
+            raise ValueError("Unsafe archive destination")
+        if target.exists():
+            raise FileExistsError(f"Refusing to replace existing data: {target}")
+    inspect_members(archive, index, destination)
 
 
 def verified_download(store: Any, ref: dict[str, Any], target: Path) -> None:
@@ -170,19 +152,11 @@ def merge_secondary(
         if index["archive"] != ref["archive"]:
             raise RuntimeError("Secondary index/archive mismatch")
         remote = wandb.Api(timeout=120).artifact(ref["wandb_artifact"])
-        if remote.state != "COMMITTED":
-            raise RuntimeError("Secondary W&B artifact is not committed")
-        for name, kind in [("data.tar.gz", "archive"), ("index.json", "index")]:
-            p = Path(
-                remote.get_entry(name).download(
-                    root=str(temp / "wandb"), skip_cache=True
-                )
-            )
-            if (
-                digest(p) != ref[kind]["sha256"]
-                or p.stat().st_size != ref[kind]["bytes"]
-            ):
-                raise RuntimeError("Secondary W&B content mismatch")
+        verify_wandb_files(
+            remote,
+            {"data.tar.gz": ref["archive"], "index.json": ref["index"]},
+            temp / "wandb",
+        )
         unpack_verified(temp / "archive", index, temp / "members")
         for i in assignment["workers"]["secondary"]["job_indices"]:
             job = jobs[i]

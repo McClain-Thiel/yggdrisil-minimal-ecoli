@@ -76,17 +76,28 @@ def main() -> None:
         nomination_path = bundle / "matched-nominations.json"
         verification_path = bundle / "matched-nominations-verification.json"
         frozen = read(nomination_path)
-        if frozen != select(
-            bundle, read(root / "selection-amendment.json"),
-            root / "reference-nominations.json",
-        ) or read(verification_path)["status"] != "verified":
+        if (
+            frozen
+            != select(
+                bundle,
+                read(root / "selection-amendment.json"),
+                root / "reference-nominations.json",
+            )
+            or read(verification_path)["status"] != "verified"
+        ):
             raise RuntimeError("Matched nominations must be reproducible and backed up")
         validation_id = approval["experiment_id"]
         seed_labels = [None, *plan["worker_allocation"][args.worker_role]["seeds"]]
         calibration_label = "calibration-" + args.worker_role
-        maximum_cells = plan["worker_allocation"][args.worker_role]["maximum_cells_per_workflow"]
+        maximum_cells = plan["worker_allocation"][args.worker_role][
+            "maximum_cells_per_workflow"
+        ]
         selection_algorithm = frozen["selection"]
-        tracking_prefix = "s3://phd-research-storage-1758274488/yggdrisil/experiments/" + validation_id + "/"
+        tracking_prefix = (
+            "s3://phd-research-storage-1758274488/yggdrisil/experiments/"
+            + validation_id
+            + "/"
+        )
     elif args.worker_role is not None:
         raise ValueError("Worker role requires depth-matched validation")
     if (valid / "prepared.json").exists() or (valid / "batch-progress.json").exists():
@@ -271,13 +282,15 @@ def main() -> None:
         )
         manifest.pop("application", None)
         manifest["parent_experiment_ids"] = [spec["experiment_id"]]
-        manifest["parent_data_artifact"] = read(
-            verification_path
-        )["wandb_artifact"]
+        manifest["parent_data_artifact"] = read(verification_path)["wandb_artifact"]
         manifest["frozen_nominations_sha256"] = file_sha256(nomination_path)
         if args.depth_matched:
-            manifest["selection_amendment_sha256"] = frozen["selection_amendment_sha256"]
-            manifest["purpose"] = "Exploratory depth-matched baseline validation; all earlier endpoints retained"
+            manifest["selection_amendment_sha256"] = frozen[
+                "selection_amendment_sha256"
+            ]
+            manifest["purpose"] = (
+                "Exploratory depth-matched baseline validation; all earlier endpoints retained"
+            )
         manifest["lineage"].update(seed=seed, max_generations=config["generations"])
         manifest["validation"].update(require_generations=config["generations"])
         manifest["controller_source"] = {
@@ -339,7 +352,9 @@ def main() -> None:
         "calibration_label": calibration_label,
         "tracking": {
             "s3_bucket": "phd-research-storage-1758274488",
-            "s3_prefix": tracking_prefix.removeprefix("s3://phd-research-storage-1758274488/"),
+            "s3_prefix": tracking_prefix.removeprefix(
+                "s3://phd-research-storage-1758274488/"
+            ),
         },
     }
     atomic_json(valid / "protocol.json", validation_spec)

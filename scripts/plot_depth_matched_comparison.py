@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections import Counter
 from pathlib import Path
+from typing import Any
 
 import matplotlib
 
@@ -14,10 +16,44 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
 
+def draw_outcome(ax: Any, center: float, y: float, outcome: dict[str, Any]) -> None:
+    reason, count = outcome["terminal_reason"], outcome["generations_completed"]
+    suffixes = {
+        "model_exception": " E",
+        "nondivision_max_duration": " N",
+        "reached_max_generations": "",
+    }
+    if reason not in suffixes or not 0 <= count <= 20:
+        raise ValueError("Unexpected terminal outcome")
+    if reason == "reached_max_generations" and count != 20:
+        raise ValueError("Completed lineage has fewer than 20 divisions")
+    error = reason == "model_exception"
+    ax.add_patch(
+        Rectangle(
+            (center - 0.49, y - 0.32),
+            0.98,
+            0.64,
+            facecolor="#fff0dc" if error else plt.cm.Blues(0.08 + 0.76 * count / 20),
+            edgecolor="#c7a06a" if error else "white",
+            linewidth=0.8,
+        )
+    )
+    ax.text(
+        center,
+        y,
+        f"{count}{suffixes[reason]}",
+        ha="center",
+        va="center",
+        color="white" if not error and count >= 14 else "#172033",
+        weight="bold" if count == 20 else "normal",
+    )
+
+
 def plot_comparison(source: Path, output: Path) -> None:
     data = json.loads(source.read_bytes())
     rows = data["comparison_rows"]
     method_summary = data["method_summary"]
+    genotype_counts = Counter(row["state_id"] for row in rows)
     seeds = [101, 211, 307]
     if len(rows) != 25 or any(
         [o["simulation_seed"] for o in row["outcomes"]] != seeds for row in rows
@@ -110,12 +146,7 @@ def plot_comparison(source: Path, output: Path) -> None:
                         else ""
                     )
                     + str(row["search_seed"])
-                    + (
-                        "*"
-                        if method in ["greedy_block", "randomized_block"]
-                        and row["search_seed"] == 349
-                        else ""
-                    )
+                    + ("*" if genotype_counts[row["state_id"]] > 1 else "")
                 )
                 ax.text(0.15, y, label, va="center", fontsize=10)
                 ax.add_patch(
@@ -147,42 +178,7 @@ def plot_comparison(source: Path, output: Path) -> None:
                     fontsize=10,
                 )
                 for center, o in zip([6.3, 7.8, 9.3], row["outcomes"]):
-                    reason = o["terminal_reason"]
-                    n = o["generations_completed"]
-                    error = reason == "model_exception"
-                    if reason not in [
-                        "model_exception",
-                        "nondivision_max_duration",
-                        "reached_max_generations",
-                    ]:
-                        raise ValueError("Unexpected terminal outcome")
-                    fill = "#fff0dc" if error else plt.cm.Blues(0.08 + 0.76 * n / 20)
-                    ax.add_patch(
-                        Rectangle(
-                            (center - 0.49, y - 0.32),
-                            0.98,
-                            0.64,
-                            facecolor=fill,
-                            edgecolor="#c7a06a" if error else "white",
-                            linewidth=0.8,
-                        )
-                    )
-                    text = (
-                        f"{n} E"
-                        if error
-                        else (
-                            f"{n} N" if reason == "nondivision_max_duration" else str(n)
-                        )
-                    )
-                    ax.text(
-                        center,
-                        y,
-                        text,
-                        ha="center",
-                        va="center",
-                        color="white" if not error and n >= 14 else "#172033",
-                        weight="bold" if n == 20 else "normal",
-                    )
+                    draw_outcome(ax, center, y, o)
                 y -= 0.82
             if len(group) > 1:
                 y -= 0.25
@@ -200,24 +196,7 @@ def plot_comparison(source: Path, output: Path) -> None:
         ax.text(0.15, y, label, va="center")
         ax.text(5.65, y, f"{found[0]['deletion_count']:,}", ha="right", va="center")
         for center, line in zip([6.3, 7.8, 9.3], found):
-            ax.add_patch(
-                Rectangle(
-                    (center - 0.49, y - 0.32),
-                    0.98,
-                    0.64,
-                    facecolor=plt.cm.Blues(0.84),
-                    edgecolor="white",
-                )
-            )
-            ax.text(
-                center,
-                y,
-                str(line["generations_completed"]),
-                ha="center",
-                va="center",
-                color="white",
-                weight="bold",
-            )
+            draw_outcome(ax, center, y, line)
         y -= 0.82
     fig.text(
         0.06,

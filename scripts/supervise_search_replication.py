@@ -109,7 +109,11 @@ def publish(
     category: str,
     secrets: list[bytes],
 ) -> dict[str, Any]:
-    from yggdrisil_ecoli.baseline_storage import screen, sqlite_snapshot
+    from yggdrisil_ecoli.baseline_storage import (
+        screen,
+        sqlite_snapshot,
+        verify_wandb_files,
+    )
     from yggdrisil_ecoli.data.io import file_sha256
 
     with tempfile.TemporaryDirectory(prefix="study-backup-") as scratch:
@@ -157,15 +161,9 @@ def publish(
         logged = tracked.log_artifact(artifact)
         logged.wait()
         remote = wandb.Api(timeout=120).artifact(logged.qualified_name)
-        if remote.state != "COMMITTED":
-            raise RuntimeError("Study artifact did not commit")
-        for name, expected in (("data.tar.gz", ref), ("index.json", index_ref)):
-            path = Path(remote.get_entry(name).download(root=str(temp / "verify")))
-            if (
-                file_sha256(path) != expected["sha256"]
-                or path.stat().st_size != expected["bytes"]
-            ):
-                raise RuntimeError("Study artifact failed full download verification")
+        verify_wandb_files(
+            remote, {"data.tar.gz": ref, "index.json": index_ref}, temp / "verify"
+        )
         # Independently inspect the remote tar stream, rather than trusting only
         # the archive digest or the manifest produced during packing.
         location = urlparse(ref["uri"])
@@ -295,7 +293,9 @@ def main() -> None:
     spec, jobs = validate_launch(bundle, repo, approval)
     extension = spec.get("study_kind") == "baseline_depth_continuation_v1"
     if extension and args.resume_operational_repair:
-        raise ValueError("Inspect continuation identities before designing a separate recovery")
+        raise ValueError(
+            "Inspect continuation identities before designing a separate recovery"
+        )
     lock = (root / "batch.lock").open("a+")
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     if (root / "batch-progress.json").exists() and not args.resume_operational_repair:
@@ -544,9 +544,15 @@ def main() -> None:
                 state["validation_launch_authorized"] = False
                 persist()
                 state["final_catalog_backup"] = publish(
-                    {"batch-progress.json": root / "batch-progress.json",
-                     "nominations.json": bundle / "nominations.json"},
-                    archive, tracked, wandb, "final-catalog", secrets,
+                    {
+                        "batch-progress.json": root / "batch-progress.json",
+                        "nominations.json": bundle / "nominations.json",
+                    },
+                    archive,
+                    tracked,
+                    wandb,
+                    "final-catalog",
+                    secrets,
                 )
                 persist()
                 return

@@ -149,3 +149,21 @@ class BackupFailureTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_wandb_verification_checks_size_even_when_hash_matches(tmp_path):
+    import pytest
+
+    from yggdrisil_ecoli.baseline_storage import verify_wandb_files
+
+    tracking = FakeWandb()
+    tracking.files = {"data.tar.gz": b"saved", "index.json": b"{}"}
+    expected = {
+        name: {"bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
+        for name, raw in tracking.files.items()
+    }
+    artifact = tracking.Api().artifact("entity/project/test:v0")
+    verify_wandb_files(artifact, expected, tmp_path)
+    expected["index.json"]["bytes"] += 1
+    with pytest.raises(RuntimeError, match="checksum mismatch: index.json"):
+        verify_wandb_files(artifact, expected, tmp_path)

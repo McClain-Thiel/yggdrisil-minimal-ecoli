@@ -98,13 +98,17 @@ async def continuation_memory(path: Path, run_id: str, execution_id: str) -> int
             await sessions.append_event(
                 session=session,
                 event=Event(
-                    author="user", invocation_id="continuation-" + execution_id,
-                    actions=EventActions(state_delta={
-                        "user:continuation_execution_id": execution_id,
-                        "user:continuation_parent_literature_search_count":
-                            session.state.get("user:literature_search_count", 0),
-                        "user:literature_search_count": 0,
-                    }),
+                    author="user",
+                    invocation_id="continuation-" + execution_id,
+                    actions=EventActions(
+                        state_delta={
+                            "user:continuation_execution_id": execution_id,
+                            "user:continuation_parent_literature_search_count": session.state.get(
+                                "user:literature_search_count", 0
+                            ),
+                            "user:literature_search_count": 0,
+                        }
+                    ),
                 ),
             )
             session = await sessions.get_session(
@@ -134,8 +138,15 @@ def initialize_continuation(
         if original["sources"][key] != metadata["sources"][key]:
             raise ValueError("Continuation changed scientific source: " + key)
     old_job = original["job"]
-    for key in ("run_id", "arm", "seed", "starting_genotype",
-                "starting_gene_set_sha256", "dossier", "live_literature"):
+    for key in (
+        "run_id",
+        "arm",
+        "seed",
+        "starting_genotype",
+        "starting_gene_set_sha256",
+        "dossier",
+        "live_literature",
+    ):
         if old_job[key] != job[key]:
             raise ValueError("Continuation changed treatment: " + key)
     paths = {"session_path", "edison_cache_path"}
@@ -146,7 +157,10 @@ def initialize_continuation(
     if job["execution_id"] == job["run_id"]:
         raise ValueError("Continuation needs a separate execution identity")
     for limit, prior in (("max_states", "unique_states"), ("max_steps", "step")):
-        if job["limits"][limit] != result["result"][prior] + stage["additional_limits"][limit]:
+        if (
+            job["limits"][limit]
+            != result["result"][prior] + stage["additional_limits"][limit]
+        ):
             raise ValueError("Continuation limits must be relative to the parent")
     if original["credential_sha256"] == metadata["credential_sha256"]:
         raise ValueError("Continuation requires a new dedicated provider key")
@@ -389,8 +403,11 @@ async def run_job(
                     "search_literature", 0
                 )
                 stage_searches = (
-                    await continuation_memory(config.session_path, job["run_id"], execution_id)
-                    if continuation else literature_searches
+                    await continuation_memory(
+                        config.session_path, job["run_id"], execution_id
+                    )
+                    if continuation
+                    else literature_searches
                 )
                 if config.require_initial_research and not stage_searches:
                     raise ValueError(
@@ -424,11 +441,14 @@ async def run_job(
                 if continuation:
                     report["continuation"] = {
                         "parent_run_id": job["run_id"],
-                        "new_states": result.unique_states - continuation["parent_states"],
+                        "new_states": result.unique_states
+                        - continuation["parent_states"],
                         "new_steps": result.step - continuation["parent_step"],
                         "additional_deletions_vs_parent_best": (
-                            candidate["genes_deleted"] - continuation["parent_best_deletions"]
-                            if candidate else 0
+                            candidate["genes_deleted"]
+                            - continuation["parent_best_deletions"]
+                            if candidate
+                            else 0
                         ),
                     }
                 atomic_json(folder / "result.json", report)
@@ -495,7 +515,9 @@ def main() -> None:
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
     if sys.platform == "darwin":
-        parser.error("Experiment execution is remote-only. Run this job on Linux compute.")
+        parser.error(
+            "Experiment execution is remote-only. Run this job on Linux compute."
+        )
     load_dotenv(args.repo_root / ".env", override=False)
     asyncio.run(
         run_job(

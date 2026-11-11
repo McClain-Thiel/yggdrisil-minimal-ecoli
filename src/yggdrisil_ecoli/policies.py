@@ -117,7 +117,8 @@ class BlockDeletionPolicy:
             raise ValueError("seed must be a nonnegative integer")
         sizes = tuple(block_sizes)
         if (
-            not sizes or sizes[-1] != 1
+            not sizes
+            or sizes[-1] != 1
             or any(type(n) is not int or not 1 <= n <= 100 for n in sizes)
             or tuple(sorted(set(sizes), reverse=True)) != sizes
         ):
@@ -139,7 +140,8 @@ class BlockDeletionPolicy:
         self.width = 1 if kind == "randomized_block" else neighborhood_size
 
     def _rank(
-        self, graph: ReadOnlyStateGraph[GenomeState, DeleteGenes],
+        self,
+        graph: ReadOnlyStateGraph[GenomeState, DeleteGenes],
         node: StateNode[GenomeState],
     ) -> tuple[int, float, str] | None:
         if not self.initial.deleted_genes <= node.state.deleted_genes:
@@ -177,11 +179,16 @@ class BlockDeletionPolicy:
         parent = feasible[0][1]
         # Once finer blocks are needed, keep that resolution on descendants;
         # restarting the largest failed scale after every success wastes budget.
-        ceiling = min([
-            self.block_sizes[0],
-            *(edge.metadata["block_size"] for edge in graph.edges()
-              if edge.child_id == parent.state_id),
-        ])
+        ceiling = min(
+            [
+                self.block_sizes[0],
+                *(
+                    edge.metadata["block_size"]
+                    for edge in graph.edges()
+                    if edge.child_id == parent.state_id
+                ),
+            ]
+        )
         available = sorted(
             self.universe - parent.state.deleted_genes,
             key=lambda gene: hashlib.sha256(
@@ -192,7 +199,8 @@ class BlockDeletionPolicy:
         seen: set[str] = set()
         remaining = (
             status.limits.max_states - len(graph)
-            if status.limits.max_states is not None else self.width
+            if status.limits.max_states is not None
+            else self.width
         )
         width = min(self.width, remaining)
         if width <= 0:
@@ -201,33 +209,44 @@ class BlockDeletionPolicy:
             if size > ceiling:
                 continue
             for offset in range(0, len(available), size):
-                action = DeleteGenes(genes=tuple(available[offset:offset + size]))
-                child_id = genome_state_key(GenomeState(
-                    parent.state.deleted_genes.union(action.genes)
-                ))
+                action = DeleteGenes(genes=tuple(available[offset : offset + size]))
+                child_id = genome_state_key(
+                    GenomeState(parent.state.deleted_genes.union(action.genes))
+                )
                 if child_id in seen or graph.has_state(child_id):
                     continue
                 seen.add(child_id)
                 if len(proposals) < width:
-                    proposals.append(Proposal(
-                        parent_id=parent.state_id, action=action,
-                        metadata={"block_size": size, "offset": offset},
-                    ))
+                    proposals.append(
+                        Proposal(
+                            parent_id=parent.state_id,
+                            action=action,
+                            metadata={"block_size": size, "offset": offset},
+                        )
+                    )
                 if len(proposals) >= width:
                     break
             if len(proposals) >= width:
                 break
         if not proposals:
-            return [Decision(
-                role="baseline", output={"reason": "neighborhood_exhausted"},
-                metadata={"kind": self.kind, "seed": self.seed},
-            )]
-        return [Decision(
-            role="baseline", proposals=proposals,
-            selected_state_ids=[parent.state_id],
-            metadata={
-                "kind": self.kind, "seed": self.seed,
-                "block_sizes": list(self.block_sizes), "width": self.width,
-                "selection": "deletions_desc_growth_desc_state_id_asc",
-            },
-        )]
+            return [
+                Decision(
+                    role="baseline",
+                    output={"reason": "neighborhood_exhausted"},
+                    metadata={"kind": self.kind, "seed": self.seed},
+                )
+            ]
+        return [
+            Decision(
+                role="baseline",
+                proposals=proposals,
+                selected_state_ids=[parent.state_id],
+                metadata={
+                    "kind": self.kind,
+                    "seed": self.seed,
+                    "block_sizes": list(self.block_sizes),
+                    "width": self.width,
+                    "selection": "deletions_desc_growth_desc_state_id_asc",
+                },
+            )
+        ]

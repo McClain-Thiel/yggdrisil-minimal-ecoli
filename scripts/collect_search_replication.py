@@ -22,7 +22,14 @@ from scripts.plan_search_replication import (
     verify_bundle,
 )
 
-TERMINAL = {"completed", "model_budget", "deadline", "exhausted", "failed", "user_stopped"}
+TERMINAL = {
+    "completed",
+    "model_budget",
+    "deadline",
+    "exhausted",
+    "failed",
+    "user_stopped",
+}
 
 
 def decode_graph_value(value: Any) -> Any:
@@ -76,14 +83,21 @@ def export_graph_report(
         expected_runs = {job["run_id"]}
         if spec.get("study_kind") == "baseline_depth_continuation_v1":
             expected_runs.add(job["parent"]["run_id"])
-            parent = next((r for r in runs if r["run_id"] == job["parent"]["run_id"]), None)
+            parent = next(
+                (r for r in runs if r["run_id"] == job["parent"]["run_id"]), None
+            )
             if parent is None or parent["status"] != "completed":
                 raise ValueError("Inherited parent run is missing or changed")
             parent_meta = decode_graph_value(json.loads(parent["metadata_json"]))
-            if (parent_meta["evaluators"] != spec["evaluator_ids"]
-                    or parent_meta["protocol_sha256"] != job["parent"]["protocol_sha256"]):
+            if (
+                parent_meta["evaluators"] != spec["evaluator_ids"]
+                or parent_meta["protocol_sha256"] != job["parent"]["protocol_sha256"]
+            ):
                 raise ValueError("Inherited parent provenance changed")
-        if len(runs) != len(expected_runs) or {r["run_id"] for r in runs} != expected_runs:
+        if (
+            len(runs) != len(expected_runs)
+            or {r["run_id"] for r in runs} != expected_runs
+        ):
             raise ValueError("Graph contains a different or inherited run")
         current = next(r for r in runs if r["run_id"] == job["run_id"])
         if current["status"] not in {"completed", "failed"}:
@@ -157,7 +171,8 @@ def export_graph_report(
         if digest(encoded(records[:100])) != prefix:
             raise ValueError("Inherited candidate records changed during continuation")
         report.update(
-            inherited_candidates=100, additional_attempted_candidates=len(records) - 100,
+            inherited_candidates=100,
+            additional_attempted_candidates=len(records) - 100,
             parent_run_id=job["parent"]["run_id"],
         )
     audit_report(spec, job, report, root["deleted_gene_ids"], protocol_hash)
@@ -199,7 +214,9 @@ def audit_report(
         or not report.get("early_stop_authorization_sha256")
         or not report.get("closure_provenance")
     ):
-        raise ValueError("User-stopped searches require authorization and closure provenance")
+        raise ValueError(
+            "User-stopped searches require authorization and closure provenance"
+        )
     spend = nonnegative(report["model_spend_usd"], "model spend")
     if spend > job["model_cap_usd"]:
         raise ValueError("Reported model spend exceeded the frozen job cap")
@@ -213,7 +230,9 @@ def audit_report(
     root = set(root_ids)
     if maximum_deletions is not None and (
         type(maximum_deletions) is not int
-        or not len(root) < maximum_deletions <= spec["starting_genotype"]["registry_genes"]
+        or not len(root)
+        < maximum_deletions
+        <= spec["starting_genotype"]["registry_genes"]
     ):
         raise ValueError("Invalid depth-matching deletion ceiling")
     seen, feasible, curves = set(), [], []
@@ -296,8 +315,11 @@ def audit_report(
     if report["status"] == "completed" and complete != len(records):
         raise ValueError("Incomplete evaluations cannot be labelled completed")
     finalist = min(
-        (row for row in feasible if maximum_deletions is None
-         or row["genes_deleted"] <= maximum_deletions),
+        (
+            row
+            for row in feasible
+            if maximum_deletions is None or row["genes_deleted"] <= maximum_deletions
+        ),
         key=lambda row: (
             -row["additional_deletions"],
             -row["fba_growth"],
@@ -355,21 +377,30 @@ def collect(bundle: Path, *, maximum_deletions: int | None = None) -> dict[str, 
         ):
             raise ValueError(f"Missing or mismatched verified report: {job['run_id']}")
         row = audit_report(
-            spec, job, json.loads(raw), root_ids, protocol_hash,
+            spec,
+            job,
+            json.loads(raw),
+            root_ids,
+            protocol_hash,
             maximum_deletions=maximum_deletions,
         )
         row.update(report_sha256=digest(raw), verification=receipt)
         if spec.get("study_kind") == "baseline_depth_continuation_v1":
             row.update(
-                parent_run_id=job["parent"]["run_id"], inherited_candidates=100,
-                additional_attempted_candidates=row["attempted_unique_candidates"] - 100,
+                parent_run_id=job["parent"]["run_id"],
+                inherited_candidates=100,
+                additional_attempted_candidates=row["attempted_unique_candidates"]
+                - 100,
                 additional_completed_evaluations=row["completed_evaluations"] - 100,
-                cumulative_wall_time_s=row["wall_time_s"] + job["parent"]["prior_wall_time_s"],
-                cumulative_cpu_hours=row["cpu_hours"] + job["parent"]["prior_cpu_hours"],
+                cumulative_wall_time_s=row["wall_time_s"]
+                + job["parent"]["prior_wall_time_s"],
+                cumulative_cpu_hours=row["cpu_hours"]
+                + job["parent"]["prior_cpu_hours"],
             )
             if row["finalist"]:
                 row["finalist"]["unchanged_parent_finalist"] = (
-                    row["finalist"]["state_id"] == job["parent"]["previous_finalist_state_id"]
+                    row["finalist"]["state_id"]
+                    == job["parent"]["previous_finalist_state_id"]
                 )
         rows.append(row)
         candidate = row["finalist"]

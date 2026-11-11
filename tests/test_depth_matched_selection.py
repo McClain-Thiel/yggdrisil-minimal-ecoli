@@ -11,12 +11,20 @@ class DepthTargetTests(unittest.TestCase):
         return {
             "experiment_id": "search-replication-20261109",
             "finalist_selection_frozen": True,
-            "runs": [{
-                "method": method, "seed": seed, "run_id": f"{method}-{seed}",
-                "status": "failed" if seed == 103 else "completed",
-                "finalist": {"state_id": f"{method}-{seed}",
-                             "genes_deleted": 1500 + i},
-            } for method in METHODS for i, seed in enumerate(SEEDS)],
+            "runs": [
+                {
+                    "method": method,
+                    "seed": seed,
+                    "run_id": f"{method}-{seed}",
+                    "status": "failed" if seed == 103 else "completed",
+                    "finalist": {
+                        "state_id": f"{method}-{seed}",
+                        "genes_deleted": 1500 + i,
+                    },
+                }
+                for method in METHODS
+                for i, seed in enumerate(SEEDS)
+            ],
         }
 
     def test_all_runs_enter_mean_independent_of_whole_cell_outcomes(self):

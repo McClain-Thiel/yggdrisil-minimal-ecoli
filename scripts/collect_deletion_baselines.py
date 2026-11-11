@@ -27,7 +27,8 @@ def collect(bundle: Path) -> dict[str, Any]:
             result_hash = file_sha256(folder / "result.json")
             members = {m["path"]: m["sha256"] for m in ref["files"]}
             if (
-                done["status"] != "completed_verified" or ref["status"] != "verified"
+                done["status"] != "completed_verified"
+                or ref["status"] != "verified"
                 or ref.get("full_get_verified") is not True
                 or ref.get("wandb_download_verified") is not True
                 or done["result_sha256"] != result_hash
@@ -36,18 +37,26 @@ def collect(bundle: Path) -> dict[str, Any]:
             ):
                 raise ValueError(f"Unverified or changed result: {job['run_id']}")
             report = json.loads((folder / "result.json").read_text())
-            row.update(status="completed_verified", result_sha256=result_hash,
-                       checkpoint=ref, stop_reason=report["stop_reason"],
-                       new_evaluated_states=report["new_evaluated_states"],
-                       finalist=report["finalist"])
+            row.update(
+                status="completed_verified",
+                result_sha256=result_hash,
+                checkpoint=ref,
+                stop_reason=report["stop_reason"],
+                new_evaluated_states=report["new_evaluated_states"],
+                finalist=report["finalist"],
+            )
             finalist = report["finalist"]
             if finalist:
-                nomination = nominations.setdefault(finalist["state_id"], {
-                    "state_id": finalist["state_id"],
-                    "deleted_gene_ids": finalist["deleted_gene_ids"],
-                    "genes_deleted": finalist["genes_deleted"], "source_run_ids": [],
-                    "validation_status": "not_launched",
-                })
+                nomination = nominations.setdefault(
+                    finalist["state_id"],
+                    {
+                        "state_id": finalist["state_id"],
+                        "deleted_gene_ids": finalist["deleted_gene_ids"],
+                        "genes_deleted": finalist["genes_deleted"],
+                        "source_run_ids": [],
+                        "validation_status": "not_launched",
+                    },
+                )
                 nomination["source_run_ids"].append(job["run_id"])
         elif (folder / "progress.json").exists():
             row.update(json.loads((folder / "progress.json").read_text()))
@@ -55,10 +64,12 @@ def collect(bundle: Path) -> dict[str, Any]:
         rows.append(row)
     complete = all(r["status"] == "completed_verified" for r in rows)
     return {
-        "schema_version": 1, "experiment_id": spec["experiment_id"],
+        "schema_version": 1,
+        "experiment_id": spec["experiment_id"],
         "protocol_sha256": file_sha256(bundle / "protocol.json"),
         "status": "search_completed_verified" if complete else "incomplete",
-        "jobs": rows, "finalist_selection_frozen": complete,
+        "jobs": rows,
+        "finalist_selection_frozen": complete,
         "nominations": sorted(nominations.values(), key=lambda n: n["state_id"]),
         "interpretation": spec["analysis"]["inference_limit"],
         "validation_launch_authorized": False,

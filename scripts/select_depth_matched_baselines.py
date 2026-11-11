@@ -36,11 +36,16 @@ def reference_rule(reference: dict[str, Any], reference_sha256: str) -> dict[str
         count = finalist["genes_deleted"]
         if not 1030 < count <= 4290:
             raise ValueError("Invalid reference deletion count")
-        cohort.append({
-            "run_id": row["run_id"], "method": row["method"], "seed": row["seed"],
-            "search_status": row["status"], "state_id": finalist["state_id"],
-            "genes_deleted": count,
-        })
+        cohort.append(
+            {
+                "run_id": row["run_id"],
+                "method": row["method"],
+                "seed": row["seed"],
+                "search_status": row["status"],
+                "state_id": finalist["state_id"],
+                "genes_deleted": count,
+            }
+        )
     total = sum(r["genes_deleted"] for r in cohort)
     return {
         "reference_experiment_id": reference["experiment_id"],
@@ -59,7 +64,9 @@ def reference_rule(reference: dict[str, Any], reference_sha256: str) -> dict[str
     }
 
 
-def select(bundle: Path, amendment: dict[str, Any], reference_path: Path) -> dict[str, Any]:
+def select(
+    bundle: Path, amendment: dict[str, Any], reference_path: Path
+) -> dict[str, Any]:
     raw = reference_path.read_bytes()
     rule = reference_rule(json.loads(raw), digest(raw))
     if amendment.get("selection") != rule:
@@ -76,12 +83,15 @@ def select(bundle: Path, amendment: dict[str, Any], reference_path: Path) -> dic
         finalist = row["finalist"]
         row["deletion_shortfall_from_target"] = (
             rule["maximum_total_deletions"] - finalist["genes_deleted"]
-            if finalist else None
+            if finalist
+            else None
         )
     result.update(
         selection_amendment_sha256=digest(encoded(amendment)),
         reference_nominations_sha256=digest(raw),
-        unrestricted_nominations_sha256=digest((bundle / "nominations.json").read_bytes()),
+        unrestricted_nominations_sha256=digest(
+            (bundle / "nominations.json").read_bytes()
+        ),
         selection=rule,
         interpretation="Exploratory depth-matched comparison selected after observing baseline search depth, before any new whole-cell outcomes. Original search budgets, unrestricted endpoints and failures remain separate and unchanged. Search feasibility is not whole-cell viability.",
     )
@@ -99,10 +109,14 @@ def main() -> None:
         raise RuntimeError("Scientific report selection runs on remote Linux only")
     if args.output.exists():
         raise FileExistsError("Refusing to overwrite a frozen selection")
-    result = select(args.bundle, json.loads(args.amendment.read_bytes()), args.reference)
+    result = select(
+        args.bundle, json.loads(args.amendment.read_bytes()), args.reference
+    )
     with args.output.open("xb") as handle:
         handle.write(encoded(result))
-    print(f"Selected {len(result['nominations'])} unique depth-matched genomes; backup verification and validation approval are required before launch")
+    print(
+        f"Selected {len(result['nominations'])} unique depth-matched genomes; backup verification and validation approval are required before launch"
+    )
 
 
 if __name__ == "__main__":

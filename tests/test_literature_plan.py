@@ -48,8 +48,12 @@ def test_information_arms_share_settings_but_isolate_memory(spec):
             common = {
                 key: value
                 for key, value in config.items()
-                if key not in {
-                    "mode", "seed", "session_path", "edison_cache_path",
+                if key
+                not in {
+                    "mode",
+                    "seed",
+                    "session_path",
+                    "edison_cache_path",
                     "require_initial_research",
                 }
             }

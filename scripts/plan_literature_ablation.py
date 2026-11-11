@@ -89,7 +89,11 @@ def build_jobs(
     if common["orchestration"] != "manager" or common["edison"] is not False:
         raise ValueError("All arms require the same manager with live Edison disabled")
     if {
-        "mode", "seed", "session_path", "edison_cache_path", "require_initial_research"
+        "mode",
+        "seed",
+        "session_path",
+        "edison_cache_path",
+        "require_initial_research",
     } & common.keys():
         raise ValueError(
             "Arm mode, seed and isolated storage are assigned by the planner"
