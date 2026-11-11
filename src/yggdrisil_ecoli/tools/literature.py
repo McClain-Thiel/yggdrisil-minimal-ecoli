@@ -113,7 +113,9 @@ def _get(url: str) -> bytes:
                 raise
             logger.warning(
                 "Europe PMC %s; retrying identical request (%s/2): %s",
-                f"HTTP {exc.code}" if isinstance(exc, HTTPError) else type(exc).__name__,
+                f"HTTP {exc.code}"
+                if isinstance(exc, HTTPError)
+                else type(exc).__name__,
                 attempt + 1,
                 url,
             )
