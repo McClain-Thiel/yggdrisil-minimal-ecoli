@@ -188,7 +188,8 @@ class CheckpointPolicy:
         atomic_json(self.folder / "curves.json", rows)
         self.tracked.log(progress)
         if (
-            len(graph) - self.last_count >= 10
+            self.last_count < 0
+            or len(graph) - self.last_count >= 10
             or time.monotonic() - self.last_time >= 120
         ):
             task = asyncio.create_task(

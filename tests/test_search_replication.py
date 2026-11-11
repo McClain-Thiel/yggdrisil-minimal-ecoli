@@ -26,6 +26,7 @@ from scripts.plan_search_replication import (
     validate_protocol,
     verify_bundle,
 )
+from tests.study_fixtures import replication_inputs
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL = ROOT / "benchmarks/search_replication.json"
@@ -33,7 +34,11 @@ PROTOCOL = ROOT / "benchmarks/search_replication.json"
 
 class ReplicationTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.spec = json.loads(PROTOCOL.read_text())
+        scratch = tempfile.TemporaryDirectory()
+        self.addCleanup(scratch.cleanup)
+        self.root = Path(scratch.name)
+        self.protocol = replication_inputs(self.root)
+        self.spec = json.loads(self.protocol.read_text())
         self.jobs = build_jobs(self.spec)
         self.job = next(j for j in self.jobs if j["method"] == "no_retrieval")
         self.root_ids = ["b0001", "b0002"]
@@ -140,7 +145,7 @@ class ReplicationTests(unittest.TestCase):
     def test_prepare_and_verify_actual_root_without_science_or_cloud(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             out = Path(temp) / "bundle"
-            manifest = prepare(PROTOCOL, ROOT, out)
+            manifest = prepare(self.protocol, self.root, out)
             self.assertFalse(manifest["launch_ready"])
             self.assertEqual(manifest["maximum_new_candidates"], 2500)
             self.assertEqual(manifest["maximum_validation_lineages"], 81)
@@ -150,7 +155,7 @@ class ReplicationTests(unittest.TestCase):
             self.assertFalse(list(out.rglob("*.sqlite")))
             self.assertFalse(list(out.rglob("*.py")))
             with self.assertRaises(FileExistsError):
-                prepare(PROTOCOL, ROOT, out)
+                prepare(self.protocol, self.root, out)
             (out / "jobs.json").write_text("[]")
             with self.assertRaisesRegex(ValueError, "Changed study input"):
                 verify_bundle(out)
@@ -163,7 +168,7 @@ class ReplicationTests(unittest.TestCase):
             path.write_bytes(encoded(spec))
             out = Path(temp) / "bundle"
             with self.assertRaisesRegex(ValueError, "Changed source"):
-                prepare(path, ROOT, out)
+                prepare(path, self.root, out)
             self.assertFalse(out.exists())
 
     def test_finalist_order_is_deletions_then_growth_then_state_hash(self) -> None:
@@ -348,7 +353,7 @@ class ReplicationTests(unittest.TestCase):
     def test_collector_requires_all_reports_and_verified_receipts(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             out = Path(temp) / "bundle"
-            prepare(PROTOCOL, ROOT, out)
+            prepare(self.protocol, self.root, out)
             with self.assertRaises(FileNotFoundError):
                 collect(out)
             self.root_ids = json.loads(
@@ -416,7 +421,7 @@ class ReplicationTests(unittest.TestCase):
     def test_graph_export_is_read_only_and_preserves_insertion_order(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             bundle = Path(temp) / "bundle"
-            prepare(PROTOCOL, ROOT, bundle)
+            prepare(self.protocol, self.root, bundle)
             root = json.loads((bundle / "inputs/starting-genotype.json").read_text())
             self.root_ids = root["deleted_gene_ids"]
             job_index = next(

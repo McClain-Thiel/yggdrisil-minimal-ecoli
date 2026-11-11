@@ -391,7 +391,10 @@ def test_checkpoint_allowlist_and_wandb_corruption(prepared, tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_cancellation_waits_for_checkpoint_before_return(tmp_path):
+async def test_cancellation_waits_for_checkpoint_before_return(tmp_path, monkeypatch):
+    import scripts.run_deletion_baseline as baseline_runner
+
+    monkeypatch.setattr(baseline_runner, "time", SimpleNamespace(monotonic=lambda: 1.0))
     started, release, finished = threading.Event(), threading.Event(), threading.Event()
 
     class Archive:

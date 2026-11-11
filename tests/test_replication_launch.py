@@ -248,7 +248,11 @@ class LaunchGuards(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             bundle = root / "bundle"
-            prepare(ROOT / "benchmarks/search_replication.json", ROOT, bundle)
+            from tests.study_fixtures import replication_inputs
+
+            inputs = root / "fixture-inputs"
+            protocol = replication_inputs(inputs)
+            prepare(protocol, inputs, bundle)
             repo = root / "application"
             repo.mkdir()
             marker = repo / "marker.txt"

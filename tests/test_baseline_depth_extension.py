@@ -24,15 +24,22 @@ from scripts.baseline_depth_extension import (
     verify_bundle,
 )
 from scripts.plan_search_replication import digest, encoded
+from tests.study_fixtures import depth_inputs
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 class ExtensionTests(unittest.TestCase):
+    def setUp(self):
+        scratch = tempfile.TemporaryDirectory()
+        self.addCleanup(scratch.cleanup)
+        self.root = Path(scratch.name)
+        depth_inputs(self.root)
+
     def test_prepare_all_parents_and_reject_changed_science(self):
         with tempfile.TemporaryDirectory() as temp:
             bundle = Path(temp) / "bundle"
-            manifest = prepare(ROOT, bundle)
+            manifest = prepare(self.root, bundle)
             spec, jobs = verify_bundle(bundle)
             self.assertFalse(manifest["launch_ready"])
             self.assertEqual(len(jobs), 10)
@@ -42,7 +49,7 @@ class ExtensionTests(unittest.TestCase):
             )
             self.assertFalse(list(bundle.rglob("*.sqlite")))
             with self.assertRaises(FileExistsError):
-                prepare(ROOT, bundle)
+                prepare(self.root, bundle)
             spec["search"]["new_candidate_slots"] += 1
             with self.assertRaises(ValueError):
                 build_jobs(spec)
@@ -256,7 +263,7 @@ class ExtensionTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temp:
             bundle = Path(temp) / "bundle"
-            prepare(ROOT, bundle)
+            prepare(self.root, bundle)
             spec, jobs = verify_bundle(bundle)
             job = jobs[0]
             root = json.loads((bundle / "inputs/starting-genotype.json").read_text())
