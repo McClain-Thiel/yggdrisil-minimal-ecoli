@@ -22,7 +22,7 @@ from scripts.plan_search_replication import (
     verify_bundle,
 )
 
-TERMINAL = {"completed", "model_budget", "deadline", "exhausted", "failed"}
+TERMINAL = {"completed", "model_budget", "deadline", "exhausted", "failed", "user_stopped"}
 
 
 def decode_graph_value(value: Any) -> Any:
@@ -73,13 +73,24 @@ def export_graph_report(
         if [r[0] for r in db.execute("PRAGMA quick_check")] != ["ok"]:
             raise ValueError("Graph failed SQLite quick_check")
         runs = db.execute("SELECT run_id, status, metadata_json FROM runs").fetchall()
-        if len(runs) != 1 or runs[0]["run_id"] != job["run_id"]:
+        expected_runs = {job["run_id"]}
+        if spec.get("study_kind") == "baseline_depth_continuation_v1":
+            expected_runs.add(job["parent"]["run_id"])
+            parent = next((r for r in runs if r["run_id"] == job["parent"]["run_id"]), None)
+            if parent is None or parent["status"] != "completed":
+                raise ValueError("Inherited parent run is missing or changed")
+            parent_meta = decode_graph_value(json.loads(parent["metadata_json"]))
+            if (parent_meta["evaluators"] != spec["evaluator_ids"]
+                    or parent_meta["protocol_sha256"] != job["parent"]["protocol_sha256"]):
+                raise ValueError("Inherited parent provenance changed")
+        if len(runs) != len(expected_runs) or {r["run_id"] for r in runs} != expected_runs:
             raise ValueError("Graph contains a different or inherited run")
-        if runs[0]["status"] not in {"completed", "failed"}:
+        current = next(r for r in runs if r["run_id"] == job["run_id"])
+        if current["status"] not in {"completed", "failed"}:
             raise ValueError(
                 "Graph is still running; inspect live process and lock before export"
             )
-        meta = decode_graph_value(json.loads(runs[0]["metadata_json"]))
+        meta = decode_graph_value(json.loads(current["metadata_json"]))
         if (
             meta["evaluators"] != spec["evaluator_ids"]
             or meta["protocol_sha256"] != protocol_hash
@@ -141,6 +152,14 @@ def export_graph_report(
         "evaluator_ids": spec["evaluator_ids"],
         "candidates": records,
     }
+    if spec.get("study_kind") == "baseline_depth_continuation_v1":
+        prefix = meta["parent_checkpoint"]["candidate_prefix_sha256"]
+        if digest(encoded(records[:100])) != prefix:
+            raise ValueError("Inherited candidate records changed during continuation")
+        report.update(
+            inherited_candidates=100, additional_attempted_candidates=len(records) - 100,
+            parent_run_id=job["parent"]["run_id"],
+        )
     audit_report(spec, job, report, root["deleted_gene_ids"], protocol_hash)
     return report
 
@@ -157,6 +176,8 @@ def audit_report(
     report: dict[str, Any],
     root_ids: list[str],
     protocol_sha256: str,
+    *,
+    maximum_deletions: int | None = None,
 ) -> dict[str, Any]:
     for key in ("run_id", "method", "seed"):
         if report[key] != job[key]:
@@ -173,6 +194,12 @@ def audit_report(
         raise ValueError("Validation must not precede finalist freezing")
     if report["status"] == "failed" and not report.get("error"):
         raise ValueError("Failed attempts require explicit error evidence")
+    if report["status"] == "user_stopped" and (
+        report.get("stop_reason") != "user_early_stop_at_target_depth"
+        or not report.get("early_stop_authorization_sha256")
+        or not report.get("closure_provenance")
+    ):
+        raise ValueError("User-stopped searches require authorization and closure provenance")
     spend = nonnegative(report["model_spend_usd"], "model spend")
     if spend > job["model_cap_usd"]:
         raise ValueError("Reported model spend exceeded the frozen job cap")
@@ -184,6 +211,11 @@ def audit_report(
     if report["status"] == "completed" and len(records) != job["new_candidate_slots"]:
         raise ValueError("An early stop cannot be labelled budget-complete")
     root = set(root_ids)
+    if maximum_deletions is not None and (
+        type(maximum_deletions) is not int
+        or not len(root) < maximum_deletions <= spec["starting_genotype"]["registry_genes"]
+    ):
+        raise ValueError("Invalid depth-matching deletion ceiling")
     seen, feasible, curves = set(), [], []
     best, complete = len(root), 0
     for index, row in enumerate(records, start=1):
@@ -264,7 +296,8 @@ def audit_report(
     if report["status"] == "completed" and complete != len(records):
         raise ValueError("Incomplete evaluations cannot be labelled completed")
     finalist = min(
-        feasible,
+        (row for row in feasible if maximum_deletions is None
+         or row["genes_deleted"] <= maximum_deletions),
         key=lambda row: (
             -row["additional_deletions"],
             -row["fba_growth"],
@@ -297,7 +330,7 @@ def audit_report(
     }
 
 
-def collect(bundle: Path) -> dict[str, Any]:
+def collect(bundle: Path, *, maximum_deletions: int | None = None) -> dict[str, Any]:
     spec, jobs = verify_bundle(bundle)
     protocol_hash = digest(read_bytes(bundle / "protocol.json"))
     root_ids = json.loads(read_bytes(bundle / "inputs/starting-genotype.json"))[
@@ -321,8 +354,23 @@ def collect(bundle: Path) -> dict[str, Any]:
             or not receipt.get("wandb_artifact")
         ):
             raise ValueError(f"Missing or mismatched verified report: {job['run_id']}")
-        row = audit_report(spec, job, json.loads(raw), root_ids, protocol_hash)
+        row = audit_report(
+            spec, job, json.loads(raw), root_ids, protocol_hash,
+            maximum_deletions=maximum_deletions,
+        )
         row.update(report_sha256=digest(raw), verification=receipt)
+        if spec.get("study_kind") == "baseline_depth_continuation_v1":
+            row.update(
+                parent_run_id=job["parent"]["run_id"], inherited_candidates=100,
+                additional_attempted_candidates=row["attempted_unique_candidates"] - 100,
+                additional_completed_evaluations=row["completed_evaluations"] - 100,
+                cumulative_wall_time_s=row["wall_time_s"] + job["parent"]["prior_wall_time_s"],
+                cumulative_cpu_hours=row["cpu_hours"] + job["parent"]["prior_cpu_hours"],
+            )
+            if row["finalist"]:
+                row["finalist"]["unchanged_parent_finalist"] = (
+                    row["finalist"]["state_id"] == job["parent"]["previous_finalist_state_id"]
+                )
         rows.append(row)
         candidate = row["finalist"]
         if candidate:
@@ -335,7 +383,7 @@ def collect(bundle: Path) -> dict[str, Any]:
                 },
             )
             nomination["source_run_ids"].append(job["run_id"])
-    return {
+    result = {
         "schema_version": 1,
         "experiment_id": spec["experiment_id"],
         "protocol_sha256": protocol_hash,
@@ -350,6 +398,13 @@ def collect(bundle: Path) -> dict[str, Any]:
         "interpretation": "Search feasibility is not whole-cell viability. Replication unit is the independent search run; identical genotypes may share validation, never independent validation evidence.",
         "verification_scope": "This offline collector validates receipts and hashes; the remote verifier must actually download S3 and W&B contents before issuing receipts.",
     }
+    if maximum_deletions is not None:
+        result.update(
+            status="depth_matched_nominations_frozen_pending_validation",
+            maximum_total_deletions=maximum_deletions,
+            selection_mode="deepest_growth_gate_passing_at_or_below_ceiling",
+        )
+    return result
 
 
 def validation_outcome(

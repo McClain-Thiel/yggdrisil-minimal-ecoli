@@ -192,6 +192,40 @@ class ReplicationTests(unittest.TestCase):
         self.assertEqual(result["growth_gate_passing_candidates"], 1)
         self.assertEqual(result["finalist"]["state_id"], rows[0]["state_id"])
 
+    def test_depth_match_keeps_full_search_but_selects_below_ceiling(self) -> None:
+        rows = [self.candidate(1, ["b0003"]),
+                self.candidate(2, ["b0004", "b0005"]),
+                self.candidate(3, ["b0006", "b0007", "b0008"])]
+        report = self.report(rows)
+        original = self.audit(report)
+        matched = audit_report(
+            self.spec, self.job, report, self.root_ids, "f" * 64,
+            maximum_deletions=4,
+        )
+        self.assertEqual(matched["finalist"]["state_id"], rows[1]["state_id"])
+        self.assertEqual(original["finalist"]["state_id"], rows[2]["state_id"])
+        for key in ["attempted_unique_candidates", "completed_evaluations",
+                    "growth_gate_passing_candidates", "checkpoints"]:
+            self.assertEqual(original[key], matched[key])
+        rows[1]["evaluations"]["resource_allocation"]["metrics"]["feasible_at_growth_floor"] = False
+        matched = audit_report(
+            self.spec, self.job, report, self.root_ids, "f" * 64,
+            maximum_deletions=4,
+        )
+        self.assertEqual(matched["finalist"]["state_id"], rows[0]["state_id"])
+
+    def test_depth_match_never_fabricates_a_nominee(self) -> None:
+        report = self.report([self.candidate(1, ["b0003", "b0004"])])
+        matched = audit_report(
+            self.spec, self.job, report, self.root_ids, "f" * 64,
+            maximum_deletions=3,
+        )
+        self.assertIsNone(matched["finalist"])
+        for invalid in [True, 2, 4291, 4.5]:
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                audit_report(self.spec, self.job, report, self.root_ids,
+                             "f" * 64, maximum_deletions=invalid)
+
     def test_partial_failure_retains_incumbent_without_budget_reset(self) -> None:
         rows = [self.candidate(1, ["b0003"]), self.candidate(2, ["b0003", "b0004"])]
         rows[1].update(

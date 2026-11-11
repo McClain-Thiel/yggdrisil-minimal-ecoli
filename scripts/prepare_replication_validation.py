@@ -22,6 +22,8 @@ from pathlib import Path
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", required=True, type=Path)
+    parser.add_argument("--depth-matched", action="store_true")
+    parser.add_argument("--worker-role", choices=["primary", "secondary"])
     args = parser.parse_args()
     if sys.platform != "linux":
         raise RuntimeError("Native preparation is remote Linux only")
@@ -49,6 +51,44 @@ def main() -> None:
         raise RuntimeError(
             "All terminal nominations must be frozen and backed up first"
         )
+    nomination_path = bundle / "nominations.json"
+    verification_path = bundle / "nominations-verification.json"
+    validation_id = spec["experiment_id"] + "-validation"
+    seed_labels = [None, *spec["validation"]["seeds"]]
+    calibration_label = "calibration"
+    maximum_cells = 3
+    selection_algorithm = spec["selection"]
+    tracking_prefix = spec["tracking"]["s3_prefix"] + "validation/"
+    if args.depth_matched:
+        from scripts.select_depth_matched_baselines import select
+
+        if args.worker_role is None:
+            raise ValueError("Depth-matched validation requires a bound worker role")
+        approval = read(root / "resource-approval.json")
+        plan = read(root / "plan.json")
+        if (
+            approval["approved_cap_usd"] != 100
+            or approval["paid_launch"] is not True
+            or approval["model_calls_allowed"] is not False
+            or plan["experiment_id"] != approval["experiment_id"]
+        ):
+            raise ValueError("Missing approved depth-matched validation bounds")
+        nomination_path = bundle / "matched-nominations.json"
+        verification_path = bundle / "matched-nominations-verification.json"
+        frozen = read(nomination_path)
+        if frozen != select(
+            bundle, read(root / "selection-amendment.json"),
+            root / "reference-nominations.json",
+        ) or read(verification_path)["status"] != "verified":
+            raise RuntimeError("Matched nominations must be reproducible and backed up")
+        validation_id = approval["experiment_id"]
+        seed_labels = [None, *plan["worker_allocation"][args.worker_role]["seeds"]]
+        calibration_label = "calibration-" + args.worker_role
+        maximum_cells = plan["worker_allocation"][args.worker_role]["maximum_cells_per_workflow"]
+        selection_algorithm = frozen["selection"]
+        tracking_prefix = "s3://phd-research-storage-1758274488/yggdrisil/experiments/" + validation_id + "/"
+    elif args.worker_role is not None:
+        raise ValueError("Worker role requires depth-matched validation")
     if (valid / "prepared.json").exists() or (valid / "batch-progress.json").exists():
         raise RuntimeError(
             "Validation already prepared or running; inspect before recovery"
@@ -115,7 +155,7 @@ def main() -> None:
                     "graph_path": str(graph),
                     "graph_files": {graph.name: checksum},
                     "run_id": job["run_id"],
-                    "selection_algorithm": spec["selection"],
+                    "selection_algorithm": selection_algorithm,
                     "terminal_report_sha256": file_sha256(
                         bundle / job["directory"] / "run-report.json"
                     ),
@@ -124,6 +164,15 @@ def main() -> None:
             }
         )
     finalists = copy.deepcopy(base["finalists"][:2])
+    if args.depth_matched:
+        import math
+
+        # The historical starting-control table encoded absent references as NaN.
+        for finalist in finalists:
+            for key in ("search_data_artifact", "search_result"):
+                value = finalist.get(key)
+                if isinstance(value, float) and math.isnan(value):
+                    finalist[key] = None
     if (
         finalists[0]["deletion_count"] != 0
         or finalists[1]["deletion_set_sha256"]
@@ -180,21 +229,23 @@ def main() -> None:
     )
     finalists = read(audit / "manifest.json")["finalists"]
     controller = valid / "application/scripts/track_vecoli_experiment.py"
-    for seed in [None, *spec["validation"]["seeds"]]:
+    labels = []
+    for seed in seed_labels:
         calibration = seed is None
         seed = 101 if calibration else seed
-        label = "calibration" if calibration else f"seed-{seed}"
+        label = calibration_label if calibration else f"seed-{seed}"
+        labels.append(label)
         folder = valid / "runs" / label
         folder.mkdir(parents=True, exist_ok=False)
         for name in ("runscripts", "ecoli"):
             (folder / name).symlink_to(native / name, target_is_directory=True)
-        exp = spec["experiment_id"] + "-validation-" + label
+        exp = validation_id + "-" + label
         config = copy.deepcopy(workflow)
         config.update(
             experiment_id=exp.replace("-", "_"),
             generations=2 if calibration else 20,
             lineage_seed=seed,
-            SIM_CPUS=5,
+            SIM_CPUS=16 // maximum_cells if args.depth_matched else 5,
             SIM_MEM=4,
             sim_data_path=str(sim),
         )
@@ -221,9 +272,12 @@ def main() -> None:
         manifest.pop("application", None)
         manifest["parent_experiment_ids"] = [spec["experiment_id"]]
         manifest["parent_data_artifact"] = read(
-            bundle / "nominations-verification.json"
+            verification_path
         )["wandb_artifact"]
-        manifest["frozen_nominations_sha256"] = file_sha256(bundle / "nominations.json")
+        manifest["frozen_nominations_sha256"] = file_sha256(nomination_path)
+        if args.depth_matched:
+            manifest["selection_amendment_sha256"] = frozen["selection_amendment_sha256"]
+            manifest["purpose"] = "Exploratory depth-matched baseline validation; all earlier endpoints retained"
         manifest["lineage"].update(seed=seed, max_generations=config["generations"])
         manifest["validation"].update(require_generations=config["generations"])
         manifest["controller_source"] = {
@@ -235,7 +289,7 @@ def main() -> None:
             "vecoli_python": str(native / ".venv/bin/python"),
             "nextflow_executable": str(root / "bin/nextflow"),
             "workflow_working_directory": str(folder),
-            "max_parallel_cells": 1 if calibration else 3,
+            "max_parallel_cells": 1 if calibration else maximum_cells,
             "paid_compute": True,
             "application_root": str(valid / "application"),
             "credential_directory": str(root / "credentials"),
@@ -269,7 +323,7 @@ def main() -> None:
             run_id=hashlib.sha256(exp.encode()).hexdigest()[:16],
             run_name=exp,
             artifact_name=exp + "-data",
-            s3_prefix=spec["tracking"]["s3_prefix"] + "validation/" + label,
+            s3_prefix=tracking_prefix + label,
             tags=["replication", "lineage20", "strict-solver-recovery", label],
         )
         manifest["solver_policy"] = spec["validation"]["numerical_policy"]
@@ -280,13 +334,12 @@ def main() -> None:
             {"experiments": [{"id": exp, "status": "prepared", "data_backup": {}}]},
         )
     validation_spec = {
-        "experiment_id": spec["experiment_id"] + "-validation",
-        "seeds": spec["validation"]["seeds"],
+        "experiment_id": validation_id,
+        "seeds": seed_labels[1:],
+        "calibration_label": calibration_label,
         "tracking": {
             "s3_bucket": "phd-research-storage-1758274488",
-            "s3_prefix": "yggdrisil/experiments/"
-            + spec["experiment_id"]
-            + "/validation/",
+            "s3_prefix": tracking_prefix.removeprefix("s3://phd-research-storage-1758274488/"),
         },
     }
     atomic_json(valid / "protocol.json", validation_spec)
@@ -294,7 +347,7 @@ def main() -> None:
         valid / "approval.json",
         {
             **approval,
-            "parent_protocol_sha256": approval["protocol_sha256"],
+            "parent_protocol_sha256": file_sha256(bundle / "protocol.json"),
             "protocol_sha256": file_sha256(valid / "protocol.json"),
         },
     )
@@ -317,7 +370,7 @@ def main() -> None:
             ],
             "manifest_sha256": {
                 label: file_sha256(valid / "runs" / label / "manifest.json")
-                for label in ("calibration", "seed-101", "seed-211", "seed-307")
+                for label in labels
             },
         },
     )
@@ -328,7 +381,7 @@ def main() -> None:
         {
             "status": "passed",
             "knockouts": file_sha256(audit / "variant-knockout-audit.json"),
-            "nominations": file_sha256(bundle / "nominations.json"),
+            "nominations": file_sha256(nomination_path),
             "initial_backups_required_by_controllers": True,
         },
     )
@@ -337,7 +390,7 @@ def main() -> None:
             {
                 "status": "prepared",
                 "genotypes": len(finalists),
-                "lineages": len(finalists) * 3,
+                "lineages": len(finalists) * len(seed_labels[1:]),
             }
         ),
         flush=True,

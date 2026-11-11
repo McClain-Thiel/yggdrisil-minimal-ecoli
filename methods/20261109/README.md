@@ -20,4 +20,4 @@ The `runtime/` files preserve exact executed bytes. Maintained entry points unde
 
 The summary uses the frozen 4,290-gene registry, 1,915-gene current functional panel, and 1,197-gene shared functional panel. These are different denominators. They describe expression knockouts and selected model coverage, not physical DNA shortening or experimental viability.
 
-[The proposed baseline continuation](baseline-depth-extension-draft.json) is an exploratory follow-up designed after seeing these results. It preserves the original equal-ceiling comparison and requires separate launch/cost approval. No searches or simulations should be launched locally, including these historical source snapshots.
+[The proposed baseline continuation](baseline-depth-extension-draft.json) is an exploratory follow-up designed after seeing these results. It preserves the original equal-ceiling comparison. The separately authorized follow-up is now completed; see the [11 November methods and amendments](../20261111/README.md). No searches or simulations should be launched locally, including these historical source snapshots.

@@ -65,7 +65,9 @@ class FakeWandb:
 
     def Api(self, **kwargs):
         def entry(name):
-            def download(root):
+            def download(root, skip_cache=False):
+                if not skip_cache:
+                    raise AssertionError("Verification must bypass the artifact cache")
                 path = Path(root) / name
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(b"corrupt" if self.corrupt else self.files[name])

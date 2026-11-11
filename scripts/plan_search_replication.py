@@ -331,6 +331,10 @@ def prepare(protocol: Path, root: Path, output: Path) -> dict[str, Any]:
 
 def verify_bundle(bundle: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     manifest = json.loads(read_bytes(bundle / "manifest.json"))
+    if "parent-protocol.json" in manifest.get("files", {}):
+        from scripts.baseline_depth_extension import verify_bundle as verify_extension
+
+        return verify_extension(bundle)
     required = {
         "protocol.json",
         "jobs.json",

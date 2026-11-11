@@ -1,6 +1,28 @@
 # Experiment ledger
 
-Start with the [9 November replication results](comparisons/search-replication-20261109.json), [frozen methods](../methods/20261109/README.md), and [study record](records/search-replication-20261109.json). The [complete ledger index](index.json) links every study to exact inputs, results, W&B artifacts, private S3 objects, SHA256 checksums, failed attempts, and cleanup evidence.
+Start with the [11 November comparison](comparisons/depth-matched-20261111.json), [data catalog](comparisons/depth-matched-data-index-20261111.json), [figure](figures/depth-matched-20261111.pdf), and [frozen methods](../methods/20261111/README.md). The [complete ledger index](index.json) links every study to exact inputs, results, W&B artifacts, private S3 objects, checksums, failed attempts and cleanup evidence.
+
+## Deeper baselines and matched validation: 10–11 November 2026
+
+The ten baseline searches continued their saved graphs. Four reached the 2,000-evaluation ceiling; six ended under the recorded user-approved early-stop amendment. Before new whole-cell outcomes, selection chose the deepest fully evaluated, growth-gate-passing genome at or below **1,720 total registry deletions** (the floored mean of the 15 original agent nominees). Nine nominees had 1,705–1,720 deletions; greedy seed 227 retained its 1,405-deletion shortfall. Original unrestricted endpoints and all partial/failed attempts remain preserved.
+
+| Method | Nominees reaching 20 generations in all 3 simulation seeds |
+| --- | ---: |
+| No retrieval (original validation) | 2/5 |
+| Frozen dossier (original validation) | 2/5 |
+| Adaptive literature (original validation) | 4/5 |
+| Greedy baseline (new validation) | 0/5 |
+| Randomized baseline (new validation) | 0/5 |
+
+![Deletion depth and whole-cell outcomes](figures/depth-matched-20261111.png)
+
+The new validation followed **27 unique baseline trajectories and six controls**: 155 divisions in total; all six controls reached 20. Of the baseline trajectories, **23 ended without the next division within 10,800 simulated seconds**, after 0–4 completed divisions. **Four ended with model/numerical exceptions**, after 2–6 divisions, and remain inconclusive for viability. Greedy 349 and randomized 349 share the same genome and three trajectories; do not double-count them as independent evidence.
+
+This supports the exploratory observation that passing the cheap growth gates and achieving many deletions do not guarantee sustained whole-cell division. The stopping/selection amendments followed the original study, agent results are reused, and deletion depth and realized search budgets are not exactly matched across methods. This is not a confirmatory superiority test or proof of laboratory viability. Counts include the common 1,030 deletions and use the 4,290-gene registry, not a model-functional denominator.
+
+Use the [data catalog](comparisons/depth-matched-data-index-20261111.json) to follow each search ID and genotype hash to its outcomes, final search archive, three validation checkpoint indexes, two final worker archives, exact W&B versions and verification receipts. Full search graphs, trajectories, daughter states and detailed audits stay private in S3. Every indexed final archive member was independently verified (3,887 validation members); all 310 saved daughter hashes are covered. Both dedicated workers and disks were removed only after verification. Shared compute was retained.
+
+The [search record](records/baseline-depth-extension-20261110.json) and [validation record](records/vecoli-depth-matched-20261111.json) retain costs, amendments, exceptions and provenance. [CSV results](comparisons/depth-matched-20261111.csv) and [PDF figure](figures/depth-matched-20261111.pdf) are available directly. Rebuild the figure offline with `python scripts/plot_depth_matched_comparison.py --output /tmp/depth-matched`; it reads only compact metadata and launches no science or API calls.
 
 ## Search replication: 9–10 November 2026
 
@@ -20,7 +42,7 @@ There were **927 divisions; 41/66 lineages reached 20 generations**. Eleven stop
 
 The two baseline methods selected the same five genotypes. Their shared trajectories are not independent validation evidence. Four adaptive searches ended early (three errors, one model-budget stop), so the arms had equal assigned ceilings but unequal realized evaluation budgets. The summary retains every assigned search and provides registry, current-functional, and shared-functional deletion percentages using the frozen mapping. Simulation seeds are repeated trajectories, not independent searches. Five searches per method support an exploratory comparison; these data do not establish a retrieval benefit or a universal agent survival advantage.
 
-The baseline audit found 998/1,000 evaluations used the coarse 100- or 50-gene block settings, with 12 growth-gate-passing proposals. A [separate deeper-baseline draft](../methods/20261109/baseline-depth-extension-draft.json) proposes continuing the saved graphs to a fixed 2,000-evaluation ceiling and freezing nominees at predefined deletion thresholds. It is **not authorized or launched**. Survival, failure, and inability to reach a threshold are all informative; nominees must never be chosen for anticipated failure.
+The baseline audit found 998/1,000 evaluations used the coarse 100- or 50-gene block settings, with 12 growth-gate-passing proposals. The [original deeper-baseline draft](../methods/20261109/baseline-depth-extension-draft.json) was subsequently authorized and completed, with the later selection and stopping amendments explicitly recorded in the [11 November methods](../methods/20261111/README.md). The original draft remains unchanged as historical provenance. Survival, failure, and inability to reach a threshold are all informative; nominees must never be chosen for anticipated failure.
 
 Use the [study record](records/search-replication-20261109.json) → `final_results` and `data_preservation` for the compact analysis, three worker archives, aggregate archive, catalog, independent member audits, and exact W&B versions. Full graphs, histories, daughter states, failed attempts, and source input identities remain in private S3. Git contains screened source and compact results only. The old operational `coordinator/status.json` ended with a stale running label; the closed final catalog is authoritative.
 

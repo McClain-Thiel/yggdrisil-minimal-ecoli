@@ -218,6 +218,7 @@ def search_files(bundle: Path, jobs: list[dict[str, Any]]) -> dict[str, Path]:
         "jobs.json",
         "manifest.json",
         "source-manifest.json",
+        "parent-protocol.json",
         "runtime-manifest.json",
         "approval.json",
         "inputs/starting-genotype.json",
@@ -241,6 +242,7 @@ def search_files(bundle: Path, jobs: list[dict[str, Any]]) -> dict[str, Path]:
             result["operation/" + name] = bundle.parent / name
     allowed = {
         "config.json",
+        "parent-checkpoint.json",
         "launch.json",
         "process.json",
         "environment.json",
@@ -291,6 +293,9 @@ def main() -> None:
 
     approval = read(bundle / "approval.json")
     spec, jobs = validate_launch(bundle, repo, approval)
+    extension = spec.get("study_kind") == "baseline_depth_continuation_v1"
+    if extension and args.resume_operational_repair:
+        raise ValueError("Inspect continuation identities before designing a separate recovery")
     lock = (root / "batch.lock").open("a+")
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     if (root / "batch-progress.json").exists() and not args.resume_operational_repair:
@@ -304,9 +309,10 @@ def main() -> None:
         if args.resume_operational_repair
         else {}
     )
-    from litellm.responses.mcp.chat_completions_handler import acompletion_with_mcp
+    if not extension:
+        from litellm.responses.mcp.chat_completions_handler import acompletion_with_mcp
 
-    assert callable(acompletion_with_mcp)
+        assert callable(acompletion_with_mcp)
     os.environ.update(read(root / "credentials/tracking.json"))
     os.environ.pop("OPENROUTER_API_KEY", None)
     os.environ.update(
@@ -533,6 +539,17 @@ def main() -> None:
                 "search-final",
                 secrets,
             )
+            if extension:
+                state["status"] = "search_completed_pending_independent_review"
+                state["validation_launch_authorized"] = False
+                persist()
+                state["final_catalog_backup"] = publish(
+                    {"batch-progress.json": root / "batch-progress.json",
+                     "nominations.json": bundle / "nominations.json"},
+                    archive, tracked, wandb, "final-catalog", secrets,
+                )
+                persist()
+                return
             state["status"] = "validation_preparing"
             persist()
             subprocess.run(

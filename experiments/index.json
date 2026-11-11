@@ -440,14 +440,29 @@
       "path": "records/search-replication-20261109.json",
       "sha256": "da2471eb103f97b098f2277f13d9a6bc09cfd5baa783715cdc8b85de10b2ba74",
       "status": "completed_with_exceptions_verified"
+    },
+    {
+      "bytes": 116683,
+      "id": "baseline-depth-extension-20261110",
+      "path": "records/baseline-depth-extension-20261110.json",
+      "sha256": "4ab51c0fc779cacb545f43e59a2a7807f64ba337f3ae967ed1f2b96db7442f63",
+      "status": "completed_with_user_stopped_searches_verified"
+    },
+    {
+      "bytes": 93021,
+      "id": "vecoli-depth-matched-20261111",
+      "path": "records/vecoli-depth-matched-20261111.json",
+      "sha256": "1ca1634788235dc295b0d1456fb483f00a49873575ddaf21b35b86f2943501bb",
+      "status": "completed_with_exceptions_verified"
     }
   ],
   "export_schema_version": 1,
   "full_ledger": {
-    "bytes": 856012,
+    "bytes": 1081934,
     "full_get_verified": true,
-    "sha256": "ddca4e84177c26e0627a1e6ae63bff859827e9e89ee3d245e1f0e316c9e534d2",
-    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/ddca4e84177c26e0627a1e6ae63bff859827e9e89ee3d245e1f0e316c9e534d2.json"
+    "sha256": "9c94007f78310b4c29f2dfe1f5c73ec3d860f1089d2fadd6aef58f8e0acac8b9",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/9c94007f78310b4c29f2dfe1f5c73ec3d860f1089d2fadd6aef58f8e0acac8b9.json",
+    "verified_at": "2026-11-11T09:51:05.622876+00:00"
   },
   "ledger_metadata": {
     "catalog_corrections": [
@@ -647,6 +662,6 @@
       "progress": "Active experiment controllers run remotely; record remote progress/events and verified S3 checkpoints here.",
       "registry": "This compact catalog stays in Git. Historical local data paths are restore paths after migration; bulk data and complete inventories are in private S3."
     },
-    "updated_at": "2026-11-10T19:42:17.962088+00:00"
+    "updated_at": "2026-11-11T09:51:05.622876+00:00"
   }
 }

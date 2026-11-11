@@ -122,7 +122,7 @@ class BaselineArchive:
                 target = members / name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes((bundle / name).read_bytes())
-            for name in ("config.json", "launch.json", "tracking.json", "progress.json", "result.json", "failure.json", "failures.jsonl", "curves.json", "process.json", "environment.json", "checkpoints.jsonl", "run-report.json", "terminal.json", "model-usage.json", "provider-usage.jsonl", "proposal-accounting.json"):
+            for name in ("config.json", "parent-checkpoint.json", "launch.json", "tracking.json", "progress.json", "result.json", "failure.json", "failures.jsonl", "curves.json", "process.json", "environment.json", "checkpoints.jsonl", "run-report.json", "terminal.json", "model-usage.json", "provider-usage.jsonl", "proposal-accounting.json"):
                 if (folder / name).exists():
                     (members / name).write_bytes((folder / name).read_bytes())
             if (folder / "transport-events.jsonl").exists():
@@ -131,7 +131,7 @@ class BaselineArchive:
                 sqlite_snapshot(folder / "graph.sqlite", members / "graph.sqlite")
             if (folder / "agents.sqlite").exists():
                 sqlite_snapshot(folder / "agents.sqlite", members / "agents.sqlite")
-            for name in ("inputs/dossier.json", "approval.json", "runtime-manifest.json", "input-verification.json"):
+            for name in ("parent-protocol.json", "inputs/dossier.json", "approval.json", "runtime-manifest.json", "input-verification.json"):
                 if (bundle / name).exists():
                     target = members / name
                     target.parent.mkdir(parents=True, exist_ok=True)
@@ -169,7 +169,7 @@ class BaselineArchive:
             if remote.state != "COMMITTED":
                 raise RuntimeError("W&B checkpoint is not committed")
             for name, expected in (("checkpoint.tar.gz", archive_ref), ("index.json", index_ref)):
-                downloaded = Path(remote.get_entry(name).download(root=str(tmp / "verify")))
+                downloaded = Path(remote.get_entry(name).download(root=str(tmp / "verify"), skip_cache=True))
                 if file_sha256(downloaded) != expected["sha256"]:
                     raise RuntimeError("W&B downloaded checkpoint checksum mismatch")
             result = {"verified_at": datetime.now(timezone.utc).isoformat(),

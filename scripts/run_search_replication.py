@@ -46,11 +46,27 @@ def validate_launch(
             "Scientific execution is restricted to the approved remote Linux worker"
         )
     spec, jobs = verify_bundle(bundle)
+    extension = spec.get("study_kind") == "baseline_depth_continuation_v1"
+    if extension:
+        from scripts.baseline_depth_extension import validate_approval
+
+        validate_approval(approval)
+        if any(
+            approval.get(k)
+            for k in (
+                "operational_repair_sha256",
+                "transport_recovery_sha256",
+                "queue_timing_correction_sha256",
+            )
+        ):
+            raise ValueError(
+                "Historical repair approvals cannot authorize this continuation"
+            )
     if (
         approval.get("paid_launch") is not True
         or approval.get("science_dispatch_ready") is not True
         or approval.get("experiment_id") != spec["experiment_id"]
-        or approval.get("total_cap_usd") != 550
+        or (not extension and approval.get("total_cap_usd") != 550)
         or approval.get("protocol_sha256")
         != digest(read_bytes(bundle / "protocol.json"))
         or approval.get("manifest_sha256")
@@ -76,10 +92,16 @@ def validate_launch(
         raise ValueError("Invalid absolute deadlines")
     if (
         not launch <= time.time() < science < stop
-        or stop - launch > 72 * 3600
+        or stop - launch > (24 if extension else 72) * 3600
         or stop - science < 2 * 3600
     ):
         raise ValueError("Expired or extended study window")
+    if approval.get("logging_recovery_sha256"):
+        if (
+            digest(read_bytes(repo.parent / "logging-recovery.json"))
+            != approval["logging_recovery_sha256"]
+        ):
+            raise ValueError("Logging recovery provenance changed")
     runtime = json.loads(read_bytes(bundle / "runtime-manifest.json"))
     if approval.get("operational_repair_sha256"):
         if (
@@ -106,7 +128,16 @@ def validate_launch(
             or digest(read_bytes(path)) != expected
         ):
             raise ValueError(f"Changed deployed runtime: {name}")
-    if (
+    if extension:
+        source_manifest = json.loads(read_bytes(bundle / "source-manifest.json"))
+        for name, expected in source_manifest["frozen_scientific_sources"].items():
+            path = (repo / name).resolve()
+            if (
+                not path.is_relative_to(repo.resolve())
+                or digest(read_bytes(path)) != expected
+            ):
+                raise ValueError(f"Changed inherited scientific source: {name}")
+    if not extension and (
         spec["agent"]["provider_route"] != spec["execution"]["provider_route"]
         or spec["agent"]["provider_fallback_allowed"]
     ):
@@ -169,6 +200,7 @@ class CheckpointPolicy:
         folder: Path,
         identities: dict[str, str],
         model_cap: int,
+        checkpoint_interval: int = 10,
     ) -> None:
         self.policy, self.archive, self.tracked = policy, archive, tracked
         self.bundle, self.folder, self.identities, self.model_cap = (
@@ -177,6 +209,7 @@ class CheckpointPolicy:
             identities,
             model_cap,
         )
+        self.checkpoint_interval = checkpoint_interval
         self.last_count, self.last_time = 0, time.monotonic()
         self.stopped_for_budget = False
 
@@ -190,7 +223,9 @@ class CheckpointPolicy:
         from yggdrisil import Decision
 
         from scripts.run_deletion_baseline import curves
-        from scripts.run_literature_ablation import check_key_budget, key_usage
+
+        if self.model_cap:
+            from scripts.run_literature_ablation import check_key_budget, key_usage
 
         rows = curves(graph, self.identities, 1030)
         progress = {
@@ -214,10 +249,19 @@ class CheckpointPolicy:
             progress["model_spend_usd"] = float(spent)
             if Decimal(self.model_cap) - spent < Decimal("1.25"):
                 self.stopped_for_budget = True
+        if not self.model_cap:
+            by_scale: dict[str, int] = {}
+            by_length: dict[str, int] = {}
+            for edge in graph.edges():
+                scale = str(edge.metadata["block_size"])
+                length = str(len(edge.action.genes))
+                by_scale[scale] = by_scale.get(scale, 0) + 1
+                by_length[length] = by_length.get(length, 0) + 1
+            progress.update(block_settings=by_scale, actual_action_lengths=by_length)
         save(self.folder / "progress.json", progress)
         self.tracked.log(progress)
         if (
-            len(graph) - self.last_count >= 10
+            len(graph) - self.last_count >= self.checkpoint_interval
             or time.monotonic() - self.last_time >= 120
         ):
             task = asyncio.create_task(
@@ -233,6 +277,8 @@ class CheckpointPolicy:
             return [
                 Decision(role="budget", output={"reason": "model_budget", **progress})
             ]
+        if not self.model_cap:
+            return await self.policy.step(graph, status)
         return await self._step_with_transport_recovery(graph, status, progress)
 
     async def _step_with_transport_recovery(
@@ -317,13 +363,20 @@ async def execute(
     from decimal import Decimal
     from importlib.metadata import distributions, version
 
+    os.environ.pop("WANDB_SERVICE", None)
     import boto3
     import wandb
     from yggdrisil import EvaluatorSuite, RunLimits, Runner, SQLiteStateGraph
 
     from scripts.collect_search_replication import export_graph_report
-    from scripts.run_literature_ablation import check_key_budget, key_usage, seed_memory
-    from yggdrisil_ecoli.agent_policy import AgentSearchConfig, make_agent_policy
+
+    if job["model_cap_usd"]:
+        from scripts.run_literature_ablation import (
+            check_key_budget,
+            key_usage,
+            seed_memory,
+        )
+        from yggdrisil_ecoli.agent_policy import AgentSearchConfig, make_agent_policy
     from yggdrisil_ecoli.baseline_storage import (
         BaselineArchive,
         configured_secrets,
@@ -340,17 +393,31 @@ async def execute(
     from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
     from yggdrisil_ecoli.state import GenomeState
 
+    extension = spec.get("study_kind") == "baseline_depth_continuation_v1"
     transport = (
         json.loads(read_bytes(repo.parent / "transport-recovery.json"))
         if approval.get("transport_recovery_sha256")
         else None
     )
     continuation = transport["resumes"].get(job["run_id"]) if transport else None
+    recovery = (
+        json.loads(read_bytes(repo.parent / "logging-recovery.json"))["jobs"].get(
+            job["run_id"]
+        )
+        if approval.get("logging_recovery_sha256")
+        else None
+    )
+    if recovery:
+        from scripts.baseline_depth_logging_recovery import verify_resume
+
+        verify_resume(folder, recovery, job)
     if continuation:
         for name, expected in continuation["database_hashes"].items():
             if digest(read_bytes(folder / name)) != expected:
                 raise ValueError("Saved graph/session changed before transport resume")
-    elif (folder / "launch.json").exists() or (folder / "graph.sqlite").exists():
+    elif not recovery and (
+        (folder / "launch.json").exists() or (folder / "graph.sqlite").exists()
+    ):
         raise RuntimeError(
             "Attempt already exists; no automatic scientific retry or budget reset"
         )
@@ -362,7 +429,9 @@ async def execute(
     )
     retry = repair["retries"].get(job["run_id"]) if repair else None
     tracking_id = job["run_id"] + (
-        transport.get("tracking_suffix", "-transport-resume1")
+        "-logging-resume1"
+        if recovery
+        else transport.get("tracking_suffix", "-transport-resume1")
         if continuation
         else "-dependency-retry1"
         if retry
@@ -442,6 +511,8 @@ async def execute(
     started, cpu_started = time.time(), cpu_seconds()
     if continuation and not timing:
         started = continuation["started_at_unix"]
+    if recovery:
+        started = recovery["started_at_unix"]
     launch = {
         "started_at_unix": started,
         "deadline_unix": min(
@@ -449,6 +520,7 @@ async def execute(
             approval["science_deadline_unix"],
             retry["original_deadline_unix"] if retry else float("inf"),
             continuation["deadline_unix"] if continuation else float("inf"),
+            recovery["deadline_unix"] if recovery else float("inf"),
         ),
         "wandb_id": hashlib.sha256(tracking_id.encode()).hexdigest()[:16],
     }
@@ -474,6 +546,7 @@ async def execute(
         "initial_state_id": root["state_id"],
         "operational_retry": retry,
         "transport_continuation": continuation,
+        "logging_recovery": recovery,
         "execution_time_accounting": timing,
     }
     save(folder / "config.json", metadata)
@@ -527,6 +600,16 @@ async def execute(
             run_id=tracking_id,
             secrets=secrets,
         )
+        if extension:
+            from scripts.baseline_depth_extension import restore_parent
+
+            parent_proof = (
+                json.loads(read_bytes(folder / "parent-checkpoint.json"))
+                if recovery
+                else restore_parent(folder, job, spec, archive, wandb)
+            )
+            metadata["parent_checkpoint"] = parent_proof
+            save(folder / "config.json", metadata)
         archive.checkpoint(bundle, folder)
         error, result, wrapped = None, None, None
         try:
@@ -575,6 +658,7 @@ async def execute(
                     folder,
                     identities,
                     job["model_cap_usd"],
+                    checkpoint_interval=50 if extension else 10,
                 )
                 result = await Runner(
                     EcoliProblem(
@@ -583,13 +667,14 @@ async def execute(
                     wrapped,
                     graph,
                     RunLimits(
-                        max_states=101,
-                        max_steps=750,
+                        max_states=2001 if extension else 101,
+                        max_steps=2000 if extension else 750,
                         max_wall_time_s=max(0, launch["deadline_unix"] - time.time()),
                     ),
                     evaluators=EvaluatorSuite(scorers),
                     run_id=job["run_id"],
                     metadata=metadata,
+                    resume=bool(recovery) or not extension,
                 ).run()
         except Exception as exc:
             error = {"type": type(exc).__name__, "message": str(exc)}
@@ -637,9 +722,31 @@ async def execute(
                 if timing
                 else continuation["cpu_hours"]
                 if continuation
+                else recovery["prior_cpu_hours"]
+                if recovery
                 else 0
             ),
         }
+        if extension:
+            terminal.update(
+                inherited_candidates=100,
+                prior_wall_time_s=job["parent"]["prior_wall_time_s"],
+                prior_cpu_hours=job["parent"]["prior_cpu_hours"],
+                cumulative_wall_time_s=terminal["wall_time_s"]
+                + job["parent"]["prior_wall_time_s"],
+                cumulative_cpu_hours=terminal["cpu_hours"]
+                + job["parent"]["prior_cpu_hours"],
+            )
+        if recovery:
+            from scripts.baseline_depth_logging_recovery import verify_preserved_rows
+
+            verify_preserved_rows(folder / "graph.sqlite", recovery["preserved_rows"])
+            terminal.update(
+                logging_recovery=True,
+                preserved_evaluations_unchanged=True,
+                cpu_hours_is_upper_bound=recovery["cpu_hours_is_upper_bound"],
+                original_execution_deadline_unix=recovery["deadline_unix"],
+            )
         save(folder / "terminal.json", terminal)
         report = export_graph_report(bundle, index, folder / "graph.sqlite", terminal)
         save(folder / "run-report.json", report)

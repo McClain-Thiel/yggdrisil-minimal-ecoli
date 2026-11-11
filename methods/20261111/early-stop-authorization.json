@@ -1,0 +1,15 @@
+{
+  "at": "2026-11-11T01:13:01.791666+00:00",
+  "decision": "Stop all remaining searches; nine of ten have fully evaluated matched candidates at1705\u20131720 deletions. Preserve the stalled greedy227 partial run and its1405-deletion feasible candidate, retain it in all denominators, and label the shortfall. Four completed searches stay completed. Six partial searches are user-stopped, not budget-complete or biologically failed.",
+  "hourly_report_id": "hourly-matched-validation-health-report",
+  "inspection_sha256": "c7116e48bd0bf4f7de427bc51d06bf8e5dbeb2ad93da2ee34ff9d17128947c6a",
+  "normalization": "Original worker graphs and attempts remain untouched. If a force-stopped graph still has an open run marker, close only a separately preserved snapshot for read-only report export; record exact before/after hashes and prove all candidate/evaluation rows unchanged.",
+  "search_experiment_id": "baseline-depth-extension-20261110",
+  "status": "authorized_user_early_stop",
+  "timing_target": "Morning11November2026 Europe/London; no promised endpoint completion time or deadline extension.",
+  "unchanged": [
+    "Original scientific evaluators, starting genotype, all accumulated data, selection ceiling1720, no outcome-based selection, original budgets and validation deadlines."
+  ],
+  "user_instruction": "if these are taking a super long time and alreayd have areuon 1700 deletions we can consider stopping early. check every hour and try to get this finished by moring",
+  "validation_experiment_id": "vecoli-depth-matched-20261111"
+}

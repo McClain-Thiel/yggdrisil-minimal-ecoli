@@ -1,0 +1,147 @@
+{
+  "created_at": "2026-11-11T00:30:22.611655+00:00",
+  "deeper_endpoints_retained": true,
+  "experiment_id": "vecoli-depth-matched-20261111",
+  "historical_search_protocol_unchanged": true,
+  "maximum_baseline_nominees": 10,
+  "search_experiment_id": "baseline-depth-extension-20261110",
+  "selection": {
+    "cohort": [
+      {
+        "genes_deleted": 1468,
+        "method": "adaptive_literature",
+        "run_id": "search-replication-20261109-adaptive-literature-seed-103",
+        "search_status": "failed",
+        "seed": 103,
+        "state_id": "42260b9dbb915f6654b82ad4b22b05f5158e94a080f5caf9d54adae1dcb0eaaa"
+      },
+      {
+        "genes_deleted": 1622,
+        "method": "adaptive_literature",
+        "run_id": "search-replication-20261109-adaptive-literature-seed-227",
+        "search_status": "model_budget",
+        "seed": 227,
+        "state_id": "528c93aa82c4ae8001fd5f51eeb2bececeed8b50ee4ce57e1541c0958c5ca0dd"
+      },
+      {
+        "genes_deleted": 1898,
+        "method": "adaptive_literature",
+        "run_id": "search-replication-20261109-adaptive-literature-seed-349",
+        "search_status": "completed",
+        "seed": 349,
+        "state_id": "e79d4769780fbbbc28988e5fa9ab5416ab7f86d6ed3d1bd024e6f883d311f6f2"
+      },
+      {
+        "genes_deleted": 1053,
+        "method": "adaptive_literature",
+        "run_id": "search-replication-20261109-adaptive-literature-seed-461",
+        "search_status": "failed",
+        "seed": 461,
+        "state_id": "4e0b1535f5707b381dfc929419c61ee9d8c0d981541849e00abd35081717baa9"
+      },
+      {
+        "genes_deleted": 1281,
+        "method": "adaptive_literature",
+        "run_id": "search-replication-20261109-adaptive-literature-seed-587",
+        "search_status": "failed",
+        "seed": 587,
+        "state_id": "af857a40162fac386ffb7a5203695f51144fe750eda13a80e0b7f841f9f14123"
+      },
+      {
+        "genes_deleted": 1859,
+        "method": "frozen_dossier",
+        "run_id": "search-replication-20261109-frozen-dossier-seed-103",
+        "search_status": "completed",
+        "seed": 103,
+        "state_id": "9b878eb67ecfddd9f1d9ce07de1260e611d64f164f144d89464132687c42044e"
+      },
+      {
+        "genes_deleted": 1699,
+        "method": "frozen_dossier",
+        "run_id": "search-replication-20261109-frozen-dossier-seed-227",
+        "search_status": "completed",
+        "seed": 227,
+        "state_id": "774ad1ac8cb374606dbf5b7ef3f7729810fe72bd428dd3166a50166b854f3ff2"
+      },
+      {
+        "genes_deleted": 1534,
+        "method": "frozen_dossier",
+        "run_id": "search-replication-20261109-frozen-dossier-seed-349",
+        "search_status": "completed",
+        "seed": 349,
+        "state_id": "961cca126fe01df9e432bf35849fc7474e5bec402a15c214bd8f796df185808d"
+      },
+      {
+        "genes_deleted": 2025,
+        "method": "frozen_dossier",
+        "run_id": "search-replication-20261109-frozen-dossier-seed-461",
+        "search_status": "completed",
+        "seed": 461,
+        "state_id": "3a6130176f4242b83775ec3dd4748c6a8643073f93113daa9ab6f6531d85771e"
+      },
+      {
+        "genes_deleted": 1745,
+        "method": "frozen_dossier",
+        "run_id": "search-replication-20261109-frozen-dossier-seed-587",
+        "search_status": "completed",
+        "seed": 587,
+        "state_id": "16b2aa91844de8041390b8b72c2f0a6d780dd73ef83f9f72e4921df3795a0cec"
+      },
+      {
+        "genes_deleted": 1562,
+        "method": "no_retrieval",
+        "run_id": "search-replication-20261109-no-retrieval-seed-103",
+        "search_status": "completed",
+        "seed": 103,
+        "state_id": "23948ccdbdc63c593163b3a016fef9ae06b86f66a0ce75d47aee4dd5bb888198"
+      },
+      {
+        "genes_deleted": 2318,
+        "method": "no_retrieval",
+        "run_id": "search-replication-20261109-no-retrieval-seed-227",
+        "search_status": "completed",
+        "seed": 227,
+        "state_id": "eabc96e1c0cc223820f530f43188aa0f4113ad3516d89d7758fafd6158f85bba"
+      },
+      {
+        "genes_deleted": 1996,
+        "method": "no_retrieval",
+        "run_id": "search-replication-20261109-no-retrieval-seed-349",
+        "search_status": "completed",
+        "seed": 349,
+        "state_id": "c7710bb29df0f762cb1cd139e0614c158978badae17a89ed11e461cae6746f5b"
+      },
+      {
+        "genes_deleted": 1813,
+        "method": "no_retrieval",
+        "run_id": "search-replication-20261109-no-retrieval-seed-461",
+        "search_status": "completed",
+        "seed": 461,
+        "state_id": "21269ea10c74667151dd87ec0a39eb4dd6ab312a23ff3f0b580c127dc7cab65a"
+      },
+      {
+        "genes_deleted": 1933,
+        "method": "no_retrieval",
+        "run_id": "search-replication-20261109-no-retrieval-seed-587",
+        "search_status": "completed",
+        "seed": 587,
+        "state_id": "e19de6c5b5a7932492425da48f15b9039535601c8845ee06a41d453158a13294"
+      }
+    ],
+    "common_root_deletions": 1030,
+    "deduplication": "Validate identical genotypes once and retain every source-run link; shared outcomes are not independent replicates.",
+    "maximum_total_deletions": 1720,
+    "missing_or_shallower_run": "Retain the run in the denominator; report the exact shortfall or missing nominee. Never synthesize a genotype or replace after validation.",
+    "reference_count": 15,
+    "reference_experiment_id": "search-replication-20261109",
+    "reference_mean_total_deletions": 1720.4,
+    "reference_nominations_sha256": "ddb1eb0233e5a918c402db26bcb8c1d2f4844b850dfde337b56f92af4892b1a5",
+    "reference_total_deletions": 25806,
+    "registry_genes": 4290,
+    "rule": "One deepest fully evaluated growth-gate-passing candidate at or below the integer floor of the mean total deletions across all fifteen original agent finalists; ties by higher finite FBA growth then ascending state_id.",
+    "whole_cell_outcomes_used": false
+  },
+  "status": "selection_frozen_before_new_validation",
+  "timing": "Exploratory amendment after observing baseline deletion depth, before any new whole-cell outcome; not part of the original equal-budget comparison.",
+  "user_request": "Aim for the mean or a bit less than the other modes; then validate with vEcoli."
+}

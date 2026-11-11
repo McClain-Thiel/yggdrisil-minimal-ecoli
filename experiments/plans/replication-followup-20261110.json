@@ -1,0 +1,924 @@
+{
+  "authorization": {
+    "new_compute_or_model_calls_started": false,
+    "new_spending_approved_usd": 0,
+    "note": "The completed original study budget is not an open extension. Obtain a separate costed approval before new paid execution.",
+    "paid_launch_authorized": false,
+    "planning_authorized": true
+  },
+  "baseline_search": {
+    "candidate_evaluations_additional_maximum_all_runs": 19000,
+    "candidate_evaluations_per_run_additional_maximum": 1900,
+    "candidate_evaluations_per_run_total_including_original": 2000,
+    "checkpoint_total_candidate_counts": [
+      250,
+      500,
+      1000,
+      2000
+    ],
+    "comparison": "Exploratory higher-budget depth extension, reported separately from the original100-evaluation comparison. Report search success, deletion depth, passing designs per evaluation, wall/CPU time and cost. A stronger surviving baseline remains an informative result.",
+    "growth_gates": {
+      "fba_growth_strictly_positive": true,
+      "rba_growth_floor_per_hour": 0.1
+    },
+    "methods": [
+      "greedy_block",
+      "randomized_block"
+    ],
+    "model_calls": false,
+    "nomination": {
+      "count_expectation": "Previous five paired finalists were identical. Up to ten distinct new finalists are possible; five is a planning preference, not a guaranteed number or an outcome-based selection rule.",
+      "deduplication": "Identical deletion sets receive one validation with all source-run links preserved; their outcomes are not independent replicates.",
+      "freeze_before_whole_cell_results": true,
+      "if_a_hard_five_genome_cap_is_required": "Predefine a balanced subset of search runs before continuation and validation; do not select five after seeing whole-cell outcomes.",
+      "maximum_nominees_before_deduplication": 10,
+      "new_validation_eligibility": "Further-reduced nominee not already validated under the same runtime/protocol. Retain unchanged or target-not-reached endpoints in analysis; do not silently replace them.",
+      "rule": "One deepest fully evaluated growth-gate-passing incumbent per search at its fixed endpoint; ties by higher finite FBA growth then ascending state_id. Count the common1030 starting deletions separately.",
+      "selecting_for_failure_forbidden": true,
+      "threshold_checkpoints": "Preserve crossing1500/1750/2000/2250 for depth/cost analysis; this draft narrows the earlier up-to50-nominee proposal to endpoint nominees only."
+    },
+    "original_limitation": {
+      "candidates_from_100_or_50_block_settings": 998,
+      "evaluations": 1000,
+      "growth_gate_passing_candidates": 12,
+      "interpretation": "Shallow endpoints reflect this coarse-to-fine policy under 100 evaluations. The results do not establish that stronger or longer-running non-LLM searches cannot find deeply reduced viable designs.",
+      "note_block_setting_is_not_always_actual_block_length": "The final remainder in a partition can contain fewer genes; actual per-candidate action lengths are retained.",
+      "paired_methods": [
+        {
+          "same_finalist": true,
+          "seed": 103,
+          "shared_evaluated_genotypes": 92,
+          "unique_union": 108
+        },
+        {
+          "same_finalist": true,
+          "seed": 227,
+          "shared_evaluated_genotypes": 94,
+          "unique_union": 106
+        },
+        {
+          "same_finalist": true,
+          "seed": 349,
+          "shared_evaluated_genotypes": 99,
+          "unique_union": 101
+        },
+        {
+          "same_finalist": true,
+          "seed": 461,
+          "shared_evaluated_genotypes": 100,
+          "unique_union": 100
+        },
+        {
+          "same_finalist": true,
+          "seed": 587,
+          "shared_evaluated_genotypes": 99,
+          "unique_union": 101
+        }
+      ]
+    },
+    "parent_checkpoints": [
+      {
+        "checkpoint": {
+          "archive": {
+            "bytes": 1594106,
+            "sha256": "f7c8e273d27a267cf8ee346ea32f57f40c41c3c4e267458b0cacb37af4a6d8ed",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-103/archives/f7c8e273d27a267cf8ee346ea32f57f40c41c3c4e267458b0cacb37af4a6d8ed.tar.gz"
+          },
+          "full_get_verified": true,
+          "index": {
+            "bytes": 3476,
+            "sha256": "8d420200e0fcea9997da0afa4ffc4d423e04d8dda3560db6306e899973857116",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-103/indexes/8d420200e0fcea9997da0afa4ffc4d423e04d8dda3560db6306e899973857116.json"
+          },
+          "member_count": 20,
+          "status": "verified",
+          "verified_at": "2026-11-09T14:03:37.236998+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-greedy-block-seed-103-data:v7",
+          "wandb_download_verified": true
+        },
+        "method": "greedy_block",
+        "previous_candidate_budget": 100,
+        "report_sha256": "93db95b88e41c62697b937e9a403eae511ecbe59fcce5579157d586cdf7ab881",
+        "run_id": "search-replication-20261109-greedy-block-seed-103",
+        "seed": 103
+      },
+      {
+        "checkpoint": {
+          "archive": {
+            "bytes": 1620477,
+            "sha256": "38e3b36b6029170e089a98c7cee7c525b818381adaf85d1951780a3412ab8666",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-103/archives/38e3b36b6029170e089a98c7cee7c525b818381adaf85d1951780a3412ab8666.tar.gz"
+          },
+          "full_get_verified": true,
+          "index": {
+            "bytes": 3484,
+            "sha256": "4bd7105099119b89e1039c01233d9daa164c2538f944c1ddb8e4aefca1044edd",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-103/indexes/4bd7105099119b89e1039c01233d9daa164c2538f944c1ddb8e4aefca1044edd.json"
+          },
+          "member_count": 20,
+          "status": "verified",
+          "verified_at": "2026-11-09T14:04:17.299182+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-randomized-block-seed-103-data:v11",
+          "wandb_download_verified": true
+        },
+        "method": "randomized_block",
+        "previous_candidate_budget": 100,
+        "report_sha256": "b75fb13102024209253d996127d3650cd2cf017705a299bcc389d524f98367b9",
+        "run_id": "search-replication-20261109-randomized-block-seed-103",
+        "seed": 103
+      },
+      {
+        "checkpoint": {
+          "archive": {
+            "bytes": 1592349,
+            "sha256": "a2a6768e43a48cb14dbd77cb4f99b525611d097972577357eb6c77eb58e23885",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-227/archives/a2a6768e43a48cb14dbd77cb4f99b525611d097972577357eb6c77eb58e23885.tar.gz"
+          },
+          "full_get_verified": true,
+          "index": {
+            "bytes": 3476,
+            "sha256": "2331aa867fae3d59a5b855495b6ec96f00767ba8110bf4217544739e34d0cb25",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-227/indexes/2331aa867fae3d59a5b855495b6ec96f00767ba8110bf4217544739e34d0cb25.json"
+          },
+          "member_count": 20,
+          "status": "verified",
+          "verified_at": "2026-11-09T14:05:02.555743+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-greedy-block-seed-227-data:v7",
+          "wandb_download_verified": true
+        },
+        "method": "greedy_block",
+        "previous_candidate_budget": 100,
+        "report_sha256": "430b433afd95ccd1e7956d37380d484adfcb0884c48a11b9e231de64cbd09e7d",
+        "run_id": "search-replication-20261109-greedy-block-seed-227",
+        "seed": 227
+      },
+      {
+        "checkpoint": {
+          "archive": {
+            "bytes": 1603283,
+            "sha256": "40f9161571b1d7eabed08fd6eda1fd1c6ce1c70d275f526f78836d6224cb1d7b",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-227/archives/40f9161571b1d7eabed08fd6eda1fd1c6ce1c70d275f526f78836d6224cb1d7b.tar.gz"
+          },
+          "full_get_verified": true,
+          "index": {
+            "bytes": 3484,
+            "sha256": "d6ffc1a4d878c4f4765275535ff9ec298989e215156ef9dc38bcf4a5395d1e5c",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-227/indexes/d6ffc1a4d878c4f4765275535ff9ec298989e215156ef9dc38bcf4a5395d1e5c.json"
+          },
+          "member_count": 20,
+          "status": "verified",
+          "verified_at": "2026-11-09T14:05:40.148522+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-randomized-block-seed-227-data:v11",
+          "wandb_download_verified": true
+        },
+        "method": "randomized_block",
+        "previous_candidate_budget": 100,
+        "report_sha256": "5e4d9cb07986d8844dc8201a8d0c774b85655612b69a6c5d7003ac12bad3bafe",
+        "run_id": "search-replication-20261109-randomized-block-seed-227",
+        "seed": 227
+      },
+      {
+        "checkpoint": {
+          "archive": {
+            "bytes": 1576516,
+            "sha256": "e676ddcd5d67d24f5f686b6a79c1a1096c97a845515bfba906a2b7a3514fb21c",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-349/archives/e676ddcd5d67d24f5f686b6a79c1a1096c97a845515bfba906a2b7a3514fb21c.tar.gz"
+          },
+          "full_get_verified": true,
+          "index": {
+            "bytes": 3484,
+            "sha256": "eb48753ad792658ec545b5479383b865127d9e261e09b1fd092662d232d94129",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-349/indexes/eb48753ad792658ec545b5479383b865127d9e261e09b1fd092662d232d94129.json"
+          },
+          "member_count": 20,
+          "status": "verified",
+          "verified_at": "2026-11-09T14:06:35.273725+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-randomized-block-seed-349-data:v11",
+          "wandb_download_verified": true
+        },
+        "method": "randomized_block",
+        "previous_candidate_budget": 100,
+        "report_sha256": "f80ab187a22384f7050fc70dd056ddcec6a5363cc83d5354f09f61d7c021aef6",
+        "run_id": "search-replication-20261109-randomized-block-seed-349",
+        "seed": 349
+      },
+      {
+        "checkpoint": {
+          "archive": {
+            "bytes": 1571045,
+            "sha256": "5ad882942d307c31ded179048fd728a42a6f7f97026790181686c2fa7cd2d8b8",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-349/archives/5ad882942d307c31ded179048fd728a42a6f7f97026790181686c2fa7cd2d8b8.tar.gz"
+          },
+          "full_get_verified": true,
+          "index": {
+            "bytes": 3476,
+            "sha256": "76e6b1d8597d50a435f1682b20de01ddd2bfc48e8dda732dd8a5dae2603d763d",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-349/indexes/76e6b1d8597d50a435f1682b20de01ddd2bfc48e8dda732dd8a5dae2603d763d.json"
+          },
+          "member_count": 20,
+          "status": "verified",
+          "verified_at": "2026-11-09T14:06:06.479115+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-greedy-block-seed-349-data:v7",
+          "wandb_download_verified": true
+        },
+        "method": "greedy_block",
+        "previous_candidate_budget": 100,
+        "report_sha256": "6a63c8221288bff7b4f5efbc8d2eef2271ede20d7ddd691fcbd5c6a4a1070cf4",
+        "run_id": "search-replication-20261109-greedy-block-seed-349",
+        "seed": 349
+      },
+      {
+        "checkpoint": {
+          "archive": {
+            "bytes": 1590430,
+            "sha256": "6ff2e877e0a46d375b8b98f16dc314495f2e02c7af5512bd7cb03183a42a6f65",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-461/archives/6ff2e877e0a46d375b8b98f16dc314495f2e02c7af5512bd7cb03183a42a6f65.tar.gz"
+          },
+          "full_get_verified": true,
+          "index": {
+            "bytes": 3476,
+            "sha256": "102b007699aa5e77935946a611e2db5b0538ab0b8076f2fcb01e396a3f2e5cef",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-461/indexes/102b007699aa5e77935946a611e2db5b0538ab0b8076f2fcb01e396a3f2e5cef.json"
+          },
+          "member_count": 20,
+          "status": "verified",
+          "verified_at": "2026-11-09T14:07:53.502197+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-greedy-block-seed-461-data:v7",
+          "wandb_download_verified": true
+        },
+        "method": "greedy_block",
+        "previous_candidate_budget": 100,
+        "report_sha256": "e9d8f051da884e85149e6d9870cc921b3ecb676024a239ebc963c05aac6521ea",
+        "run_id": "search-replication-20261109-greedy-block-seed-461",
+        "seed": 461
+      },
+      {
+        "checkpoint": {
+          "archive": {
+            "bytes": 1600742,
+            "sha256": "9de4d0e3562b6a671b9fd8d5d752acd3dec605704b1052505c2ea52aeb33f7ae",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-461/archives/9de4d0e3562b6a671b9fd8d5d752acd3dec605704b1052505c2ea52aeb33f7ae.tar.gz"
+          },
+          "full_get_verified": true,
+          "index": {
+            "bytes": 3484,
+            "sha256": "0c529db225d9c4630ca1fc25fbbdb2134837fd4aa8b2ada688b40928471ca1f8",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-461/indexes/0c529db225d9c4630ca1fc25fbbdb2134837fd4aa8b2ada688b40928471ca1f8.json"
+          },
+          "member_count": 20,
+          "status": "verified",
+          "verified_at": "2026-11-09T14:09:05.052084+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-randomized-block-seed-461-data:v11",
+          "wandb_download_verified": true
+        },
+        "method": "randomized_block",
+        "previous_candidate_budget": 100,
+        "report_sha256": "e808e92d3e169b6411d475ffe7ea8583b83f34813b1cfccb70927997206914ef",
+        "run_id": "search-replication-20261109-randomized-block-seed-461",
+        "seed": 461
+      },
+      {
+        "checkpoint": {
+          "archive": {
+            "bytes": 1571536,
+            "sha256": "e5adea7b54df32d09e7fb0d4e925adbe901db55c2c4e4eba6c902af3a5fdba7e",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-587/archives/e5adea7b54df32d09e7fb0d4e925adbe901db55c2c4e4eba6c902af3a5fdba7e.tar.gz"
+          },
+          "full_get_verified": true,
+          "index": {
+            "bytes": 3476,
+            "sha256": "39a5176d5a16df40d686d5ebe147302ecd35b89dead3d59c31fb5b11b571ba8f",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-greedy-block-seed-587/indexes/39a5176d5a16df40d686d5ebe147302ecd35b89dead3d59c31fb5b11b571ba8f.json"
+          },
+          "member_count": 20,
+          "status": "verified",
+          "verified_at": "2026-11-09T14:09:02.910806+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-greedy-block-seed-587-data:v7",
+          "wandb_download_verified": true
+        },
+        "method": "greedy_block",
+        "previous_candidate_budget": 100,
+        "report_sha256": "64ef3621dd71c2a43e3d7d23abd725acafb38f7730351de42e011ee3aaf4b055",
+        "run_id": "search-replication-20261109-greedy-block-seed-587",
+        "seed": 587
+      },
+      {
+        "checkpoint": {
+          "archive": {
+            "bytes": 1580081,
+            "sha256": "b6a119c598b4e7dbee94c709f888825f113aa95bd3e66c81892a4e6edb1d8675",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-587/archives/b6a119c598b4e7dbee94c709f888825f113aa95bd3e66c81892a4e6edb1d8675.tar.gz"
+          },
+          "full_get_verified": true,
+          "index": {
+            "bytes": 3484,
+            "sha256": "bf3ece2cd9173b10f905dbdcf87ff1d20bb0611fe42748c1130acc317091270d",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-randomized-block-seed-587/indexes/bf3ece2cd9173b10f905dbdcf87ff1d20bb0611fe42748c1130acc317091270d.json"
+          },
+          "member_count": 20,
+          "status": "verified",
+          "verified_at": "2026-11-10T04:25:16.514970+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-randomized-block-seed-587-data:v11",
+          "wandb_download_verified": true
+        },
+        "method": "randomized_block",
+        "previous_candidate_budget": 100,
+        "report_sha256": "c57235ee7292382def951890d401033734a16051f74cab370057b9b90f79d43c",
+        "run_id": "search-replication-20261109-randomized-block-seed-587",
+        "seed": 587
+      }
+    ],
+    "policy": "Unchanged frozen block-v1: sizes100,50,25,10,5,1; greedy neighborhood8, randomized neighborhood1. The accepted parent retains its finer-resolution ceiling. Do not silently change policy during continuation.",
+    "proposed_new_wall_time_cap_seconds_per_run": 21600,
+    "resume_policy": "Restore verified copies of all ten original search graphs into new runs; preserve original graphs, candidate counts, rejected candidates, deterministic proposal order and evaluator identities.",
+    "search_runs": 10,
+    "search_seeds": [
+      103,
+      227,
+      349,
+      461,
+      587
+    ],
+    "starting_genotype": {
+      "deletion_count": 1030,
+      "deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52",
+      "local_reference": {
+        "path": "runs/deletion-baselines-20261106/inputs/starting-genotype.json",
+        "sha256": "9cbb7c3b1073697196a41940b3a8e50a2c0794daa6f2965a0828851f27189632"
+      },
+      "name": "common-1030-deletion-root",
+      "reference": "NC_000913.3",
+      "registry_genes": 4290
+    },
+    "stop_rule": "First of fixed evaluation budget, frozen wall deadline, approved cost cap, or exhausted neighborhood; label early termination explicitly. Do not extend because target depth was not reached.",
+    "stretch_additional_deletions_beyond_start": 1220,
+    "stretch_total_deleted_registry_genes": 2250,
+    "target_additional_deletions_beyond_start": [
+      470,
+      720,
+      970
+    ],
+    "target_depth_is_not_guaranteed": true,
+    "target_total_deleted_registry_genes": [
+      1500,
+      1750,
+      2000
+    ],
+    "wall_time_cap_status": "draft_to_be_costed_and_frozen_before_launch",
+    "whole_cell_feedback": false
+  },
+  "core_agent_rerun_candidates": [
+    {
+      "additional_deletions_beyond_start": 995,
+      "deletion_set_sha256": "e2eb5977857776d046400718f71c4cc8b1872d3df2b3b5a7f15c3e8db58ea72b",
+      "lineages": [
+        {
+          "audit_category": "software_error_handling_path",
+          "exception": "AttributeError: 'list' object has no attribute 'T'",
+          "failed_generation": 4,
+          "original_completed_divisions": 3,
+          "original_terminal_reason": "model_exception",
+          "planned_action": "diagnose_then_conditional_checkpoint_replay",
+          "resume_parent": {
+            "required_closed_generation": 3,
+            "status": "resolve_exact_daughter_member_and_verify_before_replay"
+          },
+          "simulation_seed": 101,
+          "stderr_s3_reference": {
+            "bytes": 3914,
+            "sha256": "d999881107d7a8514715b4330171b429f641552a6eb99be5b34d49e4b4b59b02",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-101/objects/d999881107d7a8514715b4330171b429f641552a6eb99be5b34d49e4b4b59b02"
+          },
+          "stderr_sha256": "d999881107d7a8514715b4330171b429f641552a6eb99be5b34d49e4b4b59b02"
+        },
+        {
+          "audit_category": "software_error_handling_path",
+          "exception": "AttributeError: 'list' object has no attribute 'T'",
+          "failed_generation": 12,
+          "original_completed_divisions": 11,
+          "original_terminal_reason": "model_exception",
+          "planned_action": "diagnose_then_conditional_checkpoint_replay",
+          "resume_parent": {
+            "required_closed_generation": 11,
+            "status": "resolve_exact_daughter_member_and_verify_before_replay"
+          },
+          "simulation_seed": 211,
+          "stderr_s3_reference": {
+            "bytes": 3697,
+            "sha256": "718efc6e3036ed140781c6a1f31cc75471d30e3cd455705f00b8ea9fd9779c4e",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-211/objects/718efc6e3036ed140781c6a1f31cc75471d30e3cd455705f00b8ea9fd9779c4e"
+          },
+          "stderr_sha256": "718efc6e3036ed140781c6a1f31cc75471d30e3cd455705f00b8ea9fd9779c4e"
+        },
+        {
+          "audit_category": "software_error_handling_path",
+          "exception": "AttributeError: 'list' object has no attribute 'T'",
+          "failed_generation": 5,
+          "original_completed_divisions": 4,
+          "original_terminal_reason": "model_exception",
+          "planned_action": "diagnose_then_conditional_checkpoint_replay",
+          "resume_parent": {
+            "required_closed_generation": 4,
+            "status": "resolve_exact_daughter_member_and_verify_before_replay"
+          },
+          "simulation_seed": 307,
+          "stderr_s3_reference": {
+            "bytes": 3697,
+            "sha256": "9d65463acc938d2a97b31a36fc07c5074c695477b76ecc5382b4474a5eb68e04",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-307/objects/9d65463acc938d2a97b31a36fc07c5074c695477b76ecc5382b4474a5eb68e04"
+          },
+          "stderr_sha256": "9d65463acc938d2a97b31a36fc07c5074c695477b76ecc5382b4474a5eb68e04"
+        }
+      ],
+      "method": "frozen_dossier",
+      "optional": false,
+      "original_candidate_name": "finalist-05",
+      "original_search_runs": [
+        {
+          "evaluations": 100,
+          "full_evaluation_budget_reached": true,
+          "method": "frozen_dossier",
+          "model_spend_usd": 20.10494614,
+          "run_id": "search-replication-20261109-frozen-dossier-seed-461",
+          "search_status": "completed",
+          "seed": 461
+        }
+      ],
+      "priority": 1,
+      "search_seed": 461,
+      "state_id": "3a6130176f4242b83775ec3dd4748c6a8643073f93113daa9ab6f6531d85771e",
+      "total_deleted_registry_genes": 2025
+    },
+    {
+      "additional_deletions_beyond_start": 783,
+      "deletion_set_sha256": "472d0e84ab502cc4f7815b11903c9a8dc06963d206aa553c3b7eaab6423d0c8c",
+      "lineages": [
+        {
+          "audit_category": "unresolved_model_or_numerical_failure",
+          "exception": "ValueError: Failed to meet molecule limits with ppGpp reactions.",
+          "failed_generation": 2,
+          "original_completed_divisions": 1,
+          "original_terminal_reason": "model_exception",
+          "planned_action": "diagnose_then_conditional_checkpoint_replay",
+          "resume_parent": {
+            "required_closed_generation": 1,
+            "status": "resolve_exact_daughter_member_and_verify_before_replay"
+          },
+          "simulation_seed": 101,
+          "stderr_s3_reference": {
+            "bytes": 4416,
+            "sha256": "12564414485fb753de1d38b3af567ce05b735407f9712448f06761e0f81a7f10",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-101/objects/12564414485fb753de1d38b3af567ce05b735407f9712448f06761e0f81a7f10"
+          },
+          "stderr_sha256": "12564414485fb753de1d38b3af567ce05b735407f9712448f06761e0f81a7f10"
+        },
+        {
+          "audit_category": "unresolved_model_or_numerical_failure",
+          "exception": "ValueError: Failed to meet molecule limits with ppGpp reactions.",
+          "failed_generation": 2,
+          "original_completed_divisions": 1,
+          "original_terminal_reason": "model_exception",
+          "planned_action": "diagnose_then_conditional_checkpoint_replay",
+          "resume_parent": {
+            "required_closed_generation": 1,
+            "status": "resolve_exact_daughter_member_and_verify_before_replay"
+          },
+          "simulation_seed": 211,
+          "stderr_s3_reference": {
+            "bytes": 4019,
+            "sha256": "f86cd46f54f493b5900404b3fd814013166913563cd82a61b924b051e866a430",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-211/objects/f86cd46f54f493b5900404b3fd814013166913563cd82a61b924b051e866a430"
+          },
+          "stderr_sha256": "f86cd46f54f493b5900404b3fd814013166913563cd82a61b924b051e866a430"
+        },
+        {
+          "audit_category": "unresolved_model_or_numerical_failure",
+          "exception": "ValueError: Failed to meet molecule limits with ppGpp reactions.",
+          "failed_generation": 2,
+          "original_completed_divisions": 1,
+          "original_terminal_reason": "model_exception",
+          "planned_action": "diagnose_then_conditional_checkpoint_replay",
+          "resume_parent": {
+            "required_closed_generation": 1,
+            "status": "resolve_exact_daughter_member_and_verify_before_replay"
+          },
+          "simulation_seed": 307,
+          "stderr_s3_reference": {
+            "bytes": 3947,
+            "sha256": "6dc53eaee525c2f95ba52c36d5496c35d778bfe324fe4951dd8a5f8aaca70972",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-307/objects/6dc53eaee525c2f95ba52c36d5496c35d778bfe324fe4951dd8a5f8aaca70972"
+          },
+          "stderr_sha256": "6dc53eaee525c2f95ba52c36d5496c35d778bfe324fe4951dd8a5f8aaca70972"
+        }
+      ],
+      "method": "no_retrieval",
+      "optional": false,
+      "original_candidate_name": "finalist-02",
+      "original_search_runs": [
+        {
+          "evaluations": 100,
+          "full_evaluation_budget_reached": true,
+          "method": "no_retrieval",
+          "model_spend_usd": 15.56426686,
+          "run_id": "search-replication-20261109-no-retrieval-seed-461",
+          "search_status": "completed",
+          "seed": 461
+        }
+      ],
+      "priority": 2,
+      "search_seed": 461,
+      "state_id": "21269ea10c74667151dd87ec0a39eb4dd6ab312a23ff3f0b580c127dc7cab65a",
+      "total_deleted_registry_genes": 1813
+    },
+    {
+      "additional_deletions_beyond_start": 966,
+      "deletion_set_sha256": "1f722828b8cd43a25a1102fb0310f717f3ef78f6eb6495034d2ca785728c19ae",
+      "lineages": [
+        {
+          "audit_category": "unresolved_model_or_numerical_failure",
+          "exception": "wholecell.utils.modular_fba.InvalidBoundaryError: Negative molecule levels not allowed",
+          "failed_generation": 4,
+          "original_completed_divisions": 3,
+          "original_terminal_reason": "model_exception",
+          "planned_action": "diagnose_then_conditional_checkpoint_replay",
+          "resume_parent": {
+            "required_closed_generation": 3,
+            "status": "resolve_exact_daughter_member_and_verify_before_replay"
+          },
+          "simulation_seed": 101,
+          "stderr_s3_reference": {
+            "bytes": 3992,
+            "sha256": "c46b01107626b53c8ae1108504b19e3840d4c8385a04e12e5001bb516293e6ec",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-101/objects/c46b01107626b53c8ae1108504b19e3840d4c8385a04e12e5001bb516293e6ec"
+          },
+          "stderr_sha256": "c46b01107626b53c8ae1108504b19e3840d4c8385a04e12e5001bb516293e6ec"
+        },
+        {
+          "audit_category": "observed_nondivision",
+          "exception": "TimeLimitError: Exceeded maximum simulation time: 10800.0",
+          "failed_generation": 3,
+          "original_completed_divisions": 2,
+          "original_terminal_reason": "nondivision_max_duration",
+          "planned_action": "retain_original_nondivision_no_rerun",
+          "resume_parent": null,
+          "simulation_seed": 211,
+          "stderr_s3_reference": {
+            "bytes": 1203,
+            "sha256": "348474a860c80b1ff992eccfa7e5d01a7917a48c91afa54e258b015661830052",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-211/objects/348474a860c80b1ff992eccfa7e5d01a7917a48c91afa54e258b015661830052"
+          },
+          "stderr_sha256": "348474a860c80b1ff992eccfa7e5d01a7917a48c91afa54e258b015661830052"
+        },
+        {
+          "audit_category": "unresolved_model_or_numerical_failure",
+          "exception": "ValueError: array must not contain infs or NaNs",
+          "failed_generation": 4,
+          "original_completed_divisions": 3,
+          "original_terminal_reason": "model_exception",
+          "planned_action": "diagnose_then_conditional_checkpoint_replay",
+          "resume_parent": {
+            "required_closed_generation": 3,
+            "status": "resolve_exact_daughter_member_and_verify_before_replay"
+          },
+          "simulation_seed": 307,
+          "stderr_s3_reference": {
+            "bytes": 4981,
+            "sha256": "3e8a2525062d3335f31eb539d63a19f897109b561cbd7e40eb97e04ff8a3f411",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-307/objects/3e8a2525062d3335f31eb539d63a19f897109b561cbd7e40eb97e04ff8a3f411"
+          },
+          "stderr_sha256": "3e8a2525062d3335f31eb539d63a19f897109b561cbd7e40eb97e04ff8a3f411"
+        }
+      ],
+      "method": "no_retrieval",
+      "optional": false,
+      "original_candidate_name": "finalist-16",
+      "original_search_runs": [
+        {
+          "evaluations": 100,
+          "full_evaluation_budget_reached": true,
+          "method": "no_retrieval",
+          "model_spend_usd": 14.8259679,
+          "run_id": "search-replication-20261109-no-retrieval-seed-349",
+          "search_status": "completed",
+          "seed": 349
+        }
+      ],
+      "priority": 3,
+      "search_seed": 349,
+      "state_id": "c7710bb29df0f762cb1cd139e0614c158978badae17a89ed11e461cae6746f5b",
+      "total_deleted_registry_genes": 1996
+    },
+    {
+      "additional_deletions_beyond_start": 829,
+      "deletion_set_sha256": "41de7d69a2ef1706c50bb5b5c229d3602f639f96e28b24a743251407dd1a9641",
+      "lineages": [
+        {
+          "audit_category": "unresolved_model_or_numerical_failure",
+          "exception": "wholecell.utils.modular_fba.InvalidBoundaryError: Negative molecule levels not allowed",
+          "failed_generation": 5,
+          "original_completed_divisions": 4,
+          "original_terminal_reason": "model_exception",
+          "planned_action": "diagnose_then_conditional_checkpoint_replay",
+          "resume_parent": {
+            "required_closed_generation": 4,
+            "status": "resolve_exact_daughter_member_and_verify_before_replay"
+          },
+          "simulation_seed": 101,
+          "stderr_s3_reference": {
+            "bytes": 3653,
+            "sha256": "337ed9e5e2382ac4a47745c9b6d6155ac9ea867d4b99686bd0540ae1da073e4f",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-101/objects/337ed9e5e2382ac4a47745c9b6d6155ac9ea867d4b99686bd0540ae1da073e4f"
+          },
+          "stderr_sha256": "337ed9e5e2382ac4a47745c9b6d6155ac9ea867d4b99686bd0540ae1da073e4f"
+        },
+        {
+          "audit_category": "unresolved_model_or_numerical_failure",
+          "exception": "ValueError: Failed to meet molecule limits with ppGpp reactions.",
+          "failed_generation": 5,
+          "original_completed_divisions": 4,
+          "original_terminal_reason": "model_exception",
+          "planned_action": "diagnose_then_conditional_checkpoint_replay",
+          "resume_parent": {
+            "required_closed_generation": 4,
+            "status": "resolve_exact_daughter_member_and_verify_before_replay"
+          },
+          "simulation_seed": 211,
+          "stderr_s3_reference": {
+            "bytes": 4019,
+            "sha256": "f86cd46f54f493b5900404b3fd814013166913563cd82a61b924b051e866a430",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-211/objects/f86cd46f54f493b5900404b3fd814013166913563cd82a61b924b051e866a430"
+          },
+          "stderr_sha256": "f86cd46f54f493b5900404b3fd814013166913563cd82a61b924b051e866a430"
+        },
+        {
+          "audit_category": "observed_nondivision",
+          "exception": "TimeLimitError: Exceeded maximum simulation time: 10800.0",
+          "failed_generation": 2,
+          "original_completed_divisions": 1,
+          "original_terminal_reason": "nondivision_max_duration",
+          "planned_action": "retain_original_nondivision_no_rerun",
+          "resume_parent": null,
+          "simulation_seed": 307,
+          "stderr_s3_reference": {
+            "bytes": 792,
+            "sha256": "871747a1164469ba7c90027925eb59cc82c91f12b93cec2147fd23e5d8a83ebc",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-307/objects/871747a1164469ba7c90027925eb59cc82c91f12b93cec2147fd23e5d8a83ebc"
+          },
+          "stderr_sha256": "871747a1164469ba7c90027925eb59cc82c91f12b93cec2147fd23e5d8a83ebc"
+        }
+      ],
+      "method": "frozen_dossier",
+      "optional": false,
+      "original_candidate_name": "finalist-13",
+      "original_search_runs": [
+        {
+          "evaluations": 100,
+          "full_evaluation_budget_reached": true,
+          "method": "frozen_dossier",
+          "model_spend_usd": 16.83466766,
+          "run_id": "search-replication-20261109-frozen-dossier-seed-103",
+          "search_status": "completed",
+          "seed": 103
+        }
+      ],
+      "priority": 4,
+      "search_seed": 103,
+      "state_id": "9b878eb67ecfddd9f1d9ce07de1260e611d64f164f144d89464132687c42044e",
+      "total_deleted_registry_genes": 1859
+    }
+  ],
+  "created_at": "2026-11-10T19:50:26.214702+00:00",
+  "evidence": {
+    "comparison": {
+      "bytes": 123816,
+      "path": "experiments/comparisons/search-replication-20261109.json",
+      "sha256": "f70b6a2dc78416bc2c2bd49503470c17a9c24c999402dbd81c6e69bbe3458da2"
+    },
+    "comparison_s3": {
+      "bytes": 123816,
+      "full_get_verified": true,
+      "sha256": "f70b6a2dc78416bc2c2bd49503470c17a9c24c999402dbd81c6e69bbe3458da2",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/f70b6a2dc78416bc2c2bd49503470c17a9c24c999402dbd81c6e69bbe3458da2.json"
+    },
+    "current_policy_reviewed": {
+      "bytes": 9319,
+      "path": "src/yggdrisil_ecoli/policies.py",
+      "sha256": "6e3244a27fc70676a7cda46a6d4583141868f2b90d5700a04581decaaaa7a0d2"
+    },
+    "data_index": {
+      "bytes": 59210,
+      "full_get_verified": true,
+      "sha256": "80e353967e811262e317268b17be467d9c80aa24762863ba02d8fcd298392dad",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/80e353967e811262e317268b17be467d9c80aa24762863ba02d8fcd298392dad.json"
+    },
+    "failure_audit": {
+      "bytes": 130421,
+      "path": "runs/search-replication-20261109/analysis/failure-and-baseline-audit-20261110/summary.json",
+      "sha256": "68f14552078f1571c592a15a9f50ce47a939e3d6e9935db0b9b02290fce03b66"
+    },
+    "original_study": "search-replication-20261109",
+    "previous_baseline_draft": {
+      "bytes": 18551,
+      "path": "methods/20261109/baseline-depth-extension-draft.json",
+      "sha256": "a806c6395ee90fe8d2a35d5b662ccf95d5653e2b114d73e4b446e6b2a7fd707d"
+    },
+    "verification_scope": "Read existing independently verified final records; no new S3 or W&B download was performed for this planning step."
+  },
+  "implementation_before_launch": [
+    "Verify parent archive and member hashes from S3 and committed W&B before restoring each graph/state on remote Linux.",
+    "Test graph-copy isolation, deterministic next-proposal identity and cumulative evaluation-budget accounting with lightweight fixtures.",
+    "Record block setting and actual action length, passing counts and evaluation usage by scale; verify the continuation can reach finer scales without resetting accepted-parent resolution.",
+    "Resolve exact recovery daughter/checkpoint references, source hashes, configuration and cell seeds into immutable per-attempt manifests.",
+    "Freeze nomination and uniform recovery rules before new whole-cell outcomes; cost the bounded work and obtain new approval.",
+    "Test backup interruption and resume; only closed data are archived, with full configured-secret rejection and no source archives.",
+    "Use new experiment/run IDs, private S3 prefixes and W&B runs; update both ledger copies without rewriting historical completed studies."
+  ],
+  "new_baseline_validation": {
+    "actual_scope": "Finalize after genotype deduplication and runtime review; add only separately approved diagnostic/recovery cells. No scientific execution has started.",
+    "cell_time_cap_seconds": 10800,
+    "controls": [
+      "MG1655",
+      "common1030-deletion-root"
+    ],
+    "followed_daughters": 1,
+    "generations": 20,
+    "maximum_fresh_cell_cycles_excluding_calibration_and_diagnostic_replays": 720,
+    "maximum_fresh_lineages_including_controls": 36,
+    "maximum_new_baseline_genotypes_before_deduplication": 10,
+    "medium": "aerobic M9 glucose at37C",
+    "primary_candidate_success": "All three seeds reach20 generations with exact knockout/transcript checks, finite histories and required numerical checks.",
+    "same_controls_for_recovery_runtime": true,
+    "simulation_seeds": [
+      101,
+      211,
+      307
+    ]
+  },
+  "not_in_default_rerun_queue": [
+    {
+      "method": "no_retrieval",
+      "reason": "Nondivision after15/13/12 completed generations, without an unresolved exception.",
+      "search_seed": 103
+    },
+    {
+      "method": "frozen_dossier",
+      "reason": "One nondivision after17 generations; other two reached20. Retain the observed outcome.",
+      "search_seed": 349
+    },
+    {
+      "reason": "Do not repeat merely for unfavorable comparison or to seek a different stochastic outcome; broader uniform runtime sensitivity would be separately specified.",
+      "scope": "already successful agent lineages and unchanged shallow baseline genomes"
+    }
+  ],
+  "optional_adaptive_decision": "Defer adaptive_literature103 initially. Its fixed genome has two unresolved exceptions and one nondivision; its incomplete model search is a different question and is not resumed by this plan.",
+  "optional_agent_rerun_candidates": [
+    {
+      "additional_deletions_beyond_start": 438,
+      "deletion_set_sha256": "fedeef935cb0e541155aa7f2bb4d6957e096eedd2d94acae96ea069655ebc686",
+      "lineages": [
+        {
+          "audit_category": "observed_nondivision",
+          "exception": "TimeLimitError: Exceeded maximum simulation time: 10800.0",
+          "failed_generation": 3,
+          "original_completed_divisions": 2,
+          "original_terminal_reason": "nondivision_max_duration",
+          "planned_action": "retain_original_nondivision_no_rerun",
+          "resume_parent": null,
+          "simulation_seed": 101,
+          "stderr_s3_reference": {
+            "bytes": 1203,
+            "sha256": "fd968fcbd140dbb0499ea3f78b2ce8fd77dbffb72659085b5c614e35fc37b042",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-101/objects/fd968fcbd140dbb0499ea3f78b2ce8fd77dbffb72659085b5c614e35fc37b042"
+          },
+          "stderr_sha256": "fd968fcbd140dbb0499ea3f78b2ce8fd77dbffb72659085b5c614e35fc37b042"
+        },
+        {
+          "audit_category": "unresolved_model_or_numerical_failure",
+          "exception": "wholecell.utils.modular_fba.InvalidBoundaryError: Negative molecule levels not allowed",
+          "failed_generation": 3,
+          "original_completed_divisions": 2,
+          "original_terminal_reason": "model_exception",
+          "planned_action": "diagnose_then_conditional_checkpoint_replay",
+          "resume_parent": {
+            "required_closed_generation": 2,
+            "status": "resolve_exact_daughter_member_and_verify_before_replay"
+          },
+          "simulation_seed": 211,
+          "stderr_s3_reference": {
+            "bytes": 3992,
+            "sha256": "4ae850ea32329ef36387d608c06fbbefd6a20e5002827f494f0fd01f3ffd3a34",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-211/objects/4ae850ea32329ef36387d608c06fbbefd6a20e5002827f494f0fd01f3ffd3a34"
+          },
+          "stderr_sha256": "4ae850ea32329ef36387d608c06fbbefd6a20e5002827f494f0fd01f3ffd3a34"
+        },
+        {
+          "audit_category": "unresolved_model_or_numerical_failure",
+          "exception": "wholecell.utils.modular_fba.InvalidBoundaryError: Negative molecule levels not allowed",
+          "failed_generation": 4,
+          "original_completed_divisions": 3,
+          "original_terminal_reason": "model_exception",
+          "planned_action": "diagnose_then_conditional_checkpoint_replay",
+          "resume_parent": {
+            "required_closed_generation": 3,
+            "status": "resolve_exact_daughter_member_and_verify_before_replay"
+          },
+          "simulation_seed": 307,
+          "stderr_s3_reference": {
+            "bytes": 3978,
+            "sha256": "cd1d012ddd32c475ed2d9c39862ec8fc6b6c469c1df60698da45d4f4305c162e",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-307/objects/cd1d012ddd32c475ed2d9c39862ec8fc6b6c469c1df60698da45d4f4305c162e"
+          },
+          "stderr_sha256": "cd1d012ddd32c475ed2d9c39862ec8fc6b6c469c1df60698da45d4f4305c162e"
+        }
+      ],
+      "method": "adaptive_literature",
+      "optional": true,
+      "original_candidate_name": "finalist-07",
+      "original_search_runs": [
+        {
+          "evaluations": 49,
+          "full_evaluation_budget_reached": false,
+          "method": "adaptive_literature",
+          "model_spend_usd": 11.36652542,
+          "run_id": "search-replication-20261109-adaptive-literature-seed-103",
+          "search_status": "failed",
+          "seed": 103
+        }
+      ],
+      "priority": 5,
+      "search_seed": 103,
+      "state_id": "42260b9dbb915f6654b82ad4b22b05f5158e94a080f5caf9d54adae1dcb0eaaa",
+      "total_deleted_registry_genes": 1468
+    }
+  ],
+  "plan_id": "replication-followup-20261110",
+  "queue": [
+    {
+      "deliverable": "Tested isolated graph restoration, cumulative evaluation accounting, frozen selection rule and costed remote execution plan.",
+      "order": 1,
+      "stage": "prepare_and_cost_deeper_baseline_continuation"
+    },
+    {
+      "deliverable": "Ten fixed-budget search continuations, frozen finalists and complete checkpoint/cost records; no whole-cell feedback into search.",
+      "order": 2,
+      "stage": "run_deeper_baseline_searches_after_approval"
+    },
+    {
+      "deliverable": "Cause assessment and minimal saved-cell replays where justified. Read-only traceback analysis may be prepared while baseline searches run; paid replays require approval.",
+      "order": 3,
+      "stage": "diagnose_existing_agent_exceptions"
+    },
+    {
+      "deliverable": "Deduplicated baseline finalists, exact recovery parent states, controls and a uniform numerical/error policy. Approve the exact cost and maximum scope before execution.",
+      "order": 4,
+      "stage": "freeze_validation_batch_and_runtime"
+    },
+    {
+      "deliverable": "New baseline lineages and justified recoveries through generation20, with original and recovered outcomes separately indexed and independently verified before cleanup.",
+      "order": 5,
+      "stage": "validate_and_preserve"
+    }
+  ],
+  "recovery_protocol": {
+    "causal_caution": "An exception is not proof of biological nonviability or of a harmless software bug. The list.T traceback is an error-handling problem; its underlying integration failure remains unresolved.",
+    "checkpoint_replay": "Resolve and verify exact archived daughter from last completed generation, genotype hash, simulation seed/cell seed, global time and source hashes. Preserve parent state unmodified; capture the first failing cell and its diagnostics. An unchanged deterministic replay is diagnosis, not independent replication.",
+    "conditional_continuation": "Only after an evidenced, separately versioned repair and acceptance checks, continue the same lineage from the validated parent through generation20 total. Do not rerun already successful generations or select a favorable random seed.",
+    "core_candidate_genomes": 4,
+    "core_exception_lineages": 10,
+    "diagnosis_order": [
+      "frozen_dossier461: inspect failed integration result before list.T conversion",
+      "no_retrieval461: ppGpp molecule-limit state",
+      "no_retrieval349: negative pools and nonfinite array",
+      "frozen_dossier103: negative pools and ppGpp limits"
+    ],
+    "fairness": "Classify the same error signatures consistently across methods. Existing baseline461 simulationseeds211/307 have negative-molecule exceptions and must be included as diagnostic comparators if that error class is repaired. Do not repair only agent results while comparing them with unrepaired baseline outcomes.",
+    "no_genotype_substitutions": true,
+    "no_unapproved_solver_tolerance_or_biology_changes": true,
+    "no_weakened_growth_or_knockout_or_finite_checks": true,
+    "outcome_reporting": "Original primary results stay immutable. Recovered continuations are a separate secondary analysis with original/replay/repair identities and all attempts.",
+    "retain_original_errors_and_failed_replays": true,
+    "retain_original_nondivision": true,
+    "runtime_change_gate": "A change that affects scientific numerical behavior requires a predeclared uniform sensitivity protocol and matched controls, potentially broader revalidation. Do not pool different runtime versions into the original primary comparison."
+  },
+  "schema_version": 1,
+  "scope": "Deeper non-LLM baseline searches first; targeted diagnosis and conditional vEcoli replay of four existing agent candidates; optional adaptive candidate deferred.",
+  "status": "draft_for_review_not_launched",
+  "storage_and_execution": {
+    "cleanup_gate": "Independently download and hash-verify S3 and committed W&B final archives and every indexed member, record exact references in both ledgers, then clean up only new dedicated resources.",
+    "current_plan_publication": "Local draft only; no Git commit, push, S3 upload or W&B run made by this planning step.",
+    "local_allowed": "editing, inspection, lightweight tests and compact metadata only",
+    "new_finalists": "Freeze gene-list hashes, registry and model-specific deletion denominators before validation; registry-gene percentages are not DNA-length percentages.",
+    "preserve": [
+      "all parent checkpoints",
+      "all failed attempts",
+      "closed scientific data",
+      "stderr and numerical diagnostics",
+      "source/configuration hashes",
+      "selection decisions and all exclusions"
+    ],
+    "private_s3_root": "s3://phd-research-storage-1758274488/yggdrisil/",
+    "scientific_execution": "remote_linux_only",
+    "shared_compute_untouched": true,
+    "tracking": "W&B with configuration, checkpoints, events, cost/time and source identities"
+  }
+}

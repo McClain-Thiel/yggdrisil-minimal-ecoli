@@ -1,0 +1,86 @@
+{
+  "comparison_figure": {
+    "baseline_series": [
+      "Greedy",
+      "Randomized"
+    ],
+    "controls": "MG1655 and common1030 shown as distinct references",
+    "headings": [
+      "No retrieval",
+      "Frozen dossier",
+      "Adaptive literature",
+      "Baselines"
+    ],
+    "no_new_results_imputed": true,
+    "old_agent_results_reused_with_explicit_study_labels": true,
+    "panels": [
+      "Deletion count with target1720 and starting1030 reference",
+      "Generations reached for each of three simulation seeds; separate nondivision/solver/infrastructure markers",
+      "Fraction of five assigned searches with all three lineages reaching20; show exact n and missing/error cases"
+    ],
+    "primary_unit": "Independent search seed; simulation seeds are within-genome replicates"
+  },
+  "experiment_id": "vecoli-depth-matched-20261111",
+  "launch_gates": [
+    "All ten search attempts terminal or explicitly deadline-closed; complete and failed attempts preserved",
+    "Unrestricted endpoint catalog frozen and backed up",
+    "Matched selection reproducible from fully verified reports and amendment; all source links retained",
+    "Knockout mapping audited; frozen native source and solver checks; no biological changes",
+    "S3/W&B upload plus independent uncached download checks",
+    "Calibration passes on each worker; absolute budget timer active",
+    "No duplicate controllers or live original search parent shutdown conflicts"
+  ],
+  "maximum_divisions_excluding_calibration": 720,
+  "maximum_lineages_including_controls": 36,
+  "maximum_parallel_cells": 16,
+  "maximum_unique_candidates": 10,
+  "native_environment": "Pinned native commit and exact strict numerical patch from completed replication; Python3.12.12 and Nextflow25.10.4. Technical two-generation MG1655 calibration on each worker.",
+  "parent_search": "baseline-depth-extension-20261110",
+  "reference_agent_study": "search-replication-20261109",
+  "selection_amendment_sha256": "1fe6c567a15745d00fdd4317c6c5d593b4901d5bdc18a312e0aeb09e0fd9c904",
+  "status": "approved_preparing_waiting_search",
+  "validation": {
+    "calibration": "Two-generation MG1655 control, finite outputs and <=4 GiB peak RSS before batch dispatch.",
+    "controls": [
+      "MG1655",
+      "common-1030-deletion-root"
+    ],
+    "controls_policy": "Controls must pass in the same runtime/batch. Control failure makes the batch inconclusive pending operational diagnosis, not evidence of candidate nonviability.",
+    "deduplication": "Validate identical genotypes once per runtime/batch and map to every originating search. Shared trajectories are not independent observations.",
+    "failure_categories": [
+      "nondivision_max_duration",
+      "model_exception",
+      "deadline",
+      "infrastructure_failure"
+    ],
+    "followed_daughters": 1,
+    "generations": 20,
+    "max_cell_time_s": 10800,
+    "medium": "aerobic M9 glucose at 37 C",
+    "native_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+    "no_repairs_after_results": true,
+    "numerical_policy": "Use the existing strict v2 numerical patch uniformly. Unchanged LP/objective/constraints/tolerances; accept fallback only with identical LP, GLP_OPT and finite KKT relative residuals <=1e-7; latch failure against outer retries. Record every assisted cell.",
+    "primary_endpoint": "A further-reduced nominated genome reaches 20 generations in all three seeds with exact-knockout, finite-output and numerical-policy checks. Denominator includes all five assigned searches per method.",
+    "seeds": [
+      101,
+      211,
+      307
+    ],
+    "solver_patch_sha256": "3a4a50fdc7b4d16277b7ce8d3cb76e2e2fd69132937a4d57cbb232b01a06592a"
+  },
+  "worker_allocation": {
+    "primary": {
+      "maximum_cells_per_workflow": 4,
+      "seeds": [
+        101,
+        211
+      ]
+    },
+    "secondary": {
+      "maximum_cells_per_workflow": 8,
+      "seeds": [
+        307
+      ]
+    }
+  }
+}

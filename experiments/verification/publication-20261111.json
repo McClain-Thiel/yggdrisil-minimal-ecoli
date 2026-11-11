@@ -1,0 +1,76 @@
+{
+  "artifacts": {
+    "availability_check": {
+      "bytes": 13972,
+      "full_get_verified": true,
+      "sha256": "12390a86ef9c05346b0e78191ccf08fa43c0c85809ce469f865994f49383d1c6",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/12390a86ef9c05346b0e78191ccf08fa43c0c85809ce469f865994f49383d1c6.json",
+      "verified_at": "2026-11-11T09:51:05.622876+00:00"
+    },
+    "experiments/comparisons/depth-matched-20261111.csv": {
+      "bytes": 16794,
+      "full_get_verified": true,
+      "sha256": "4c9f1a2c1c70998b223344112c88203c22367b699a2869cd251f2ab4608b6acd",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/4c9f1a2c1c70998b223344112c88203c22367b699a2869cd251f2ab4608b6acd.csv",
+      "verified_at": "2026-11-11T09:51:05.622876+00:00"
+    },
+    "experiments/comparisons/depth-matched-20261111.json": {
+      "bytes": 92250,
+      "full_get_verified": true,
+      "sha256": "79b77329c643f5d799fe67fc85ab40d3c2a6212fd1bd18c49e382f78ca1adf3e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/79b77329c643f5d799fe67fc85ab40d3c2a6212fd1bd18c49e382f78ca1adf3e.json",
+      "verified_at": "2026-11-11T09:51:05.622876+00:00"
+    },
+    "experiments/comparisons/depth-matched-data-index-20261111.json": {
+      "bytes": 56344,
+      "full_get_verified": true,
+      "sha256": "c5098f1f78e522750dcce9e3cad9160b86b8413a1e41b80adbb994ad1ed7292e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/c5098f1f78e522750dcce9e3cad9160b86b8413a1e41b80adbb994ad1ed7292e.json",
+      "verified_at": "2026-11-11T09:51:05.622876+00:00"
+    },
+    "experiments/figures/depth-matched-20261111.pdf": {
+      "bytes": 29632,
+      "full_get_verified": true,
+      "sha256": "cfc941bf11a8362794cbe2bb15c9a4fe305965121d023fce325ff99138c5d53a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/cfc941bf11a8362794cbe2bb15c9a4fe305965121d023fce325ff99138c5d53a.pdf",
+      "verified_at": "2026-11-11T09:51:05.622876+00:00"
+    },
+    "experiments/figures/depth-matched-20261111.png": {
+      "bytes": 276342,
+      "full_get_verified": true,
+      "sha256": "80cf0c4b92cbb5994ef8b55b3f29e2eb928a1563aaddcea9834128e5b6e85993",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/80cf0c4b92cbb5994ef8b55b3f29e2eb928a1563aaddcea9834128e5b6e85993.png",
+      "verified_at": "2026-11-11T09:51:05.622876+00:00"
+    }
+  },
+  "at": "2026-11-11T09:51:05.622876+00:00",
+  "availability_check": "passed",
+  "bulk_verification": {
+    "bytes": 5499,
+    "full_get_verified": true,
+    "sha256": "d49f3574d30a46f583d5c6d3b2ab74889321b6aa9af4494a29e6a9a2dc426de6",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/d49f3574d30a46f583d5c6d3b2ab74889321b6aa9af4494a29e6a9a2dc426de6.json",
+    "verified_at": "2026-11-11T06:23:41.890063+00:00"
+  },
+  "checked_object_count": 32,
+  "cleanup": {
+    "bytes": 2595,
+    "full_get_verified": true,
+    "sha256": "9e59a7a61d0c2f24ff40245dd90990dd4195c3fac31c231ddb53365f84c5e688",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/9e59a7a61d0c2f24ff40245dd90990dd4195c3fac31c231ddb53365f84c5e688.json",
+    "verified_at": "2026-11-11T06:23:41.890063+00:00"
+  },
+  "ledger": {
+    "bytes": 1081934,
+    "full_get_verified": true,
+    "sha256": "9c94007f78310b4c29f2dfe1f5c73ec3d860f1089d2fadd6aef58f8e0acac8b9",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/9c94007f78310b4c29f2dfe1f5c73ec3d860f1089d2fadd6aef58f8e0acac8b9.json",
+    "verified_at": "2026-11-11T09:51:05.622876+00:00"
+  },
+  "source_manifest_sha256": "009509d5a026c3edd7da17468fd0738cc0491328b5f311206f45225c6a609579",
+  "tests": {
+    "pytest_passed": 55,
+    "ruff": "passed",
+    "subtests_passed": 52
+  }
+}
