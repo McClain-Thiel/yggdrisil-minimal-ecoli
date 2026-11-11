@@ -1,0 +1,109 @@
+{
+  "closed_candidate_cycles": 657,
+  "control_lineages": 6,
+  "figures": [
+    {
+      "bytes": 68630,
+      "path": "experiments/figures/depth-matched-analysis-20261111/deletion-depth-outcomes.png",
+      "sha256": "bfcd1098a7ba6fd3c44f657d524e69e551f29f51dfae686886528bebc96a149e"
+    },
+    {
+      "bytes": 32906,
+      "path": "experiments/figures/depth-matched-analysis-20261111/deletion-depth-outcomes.pdf",
+      "sha256": "6760f4e497d5cec6c12d3ae96efe01394eef2e21853b44f6eb374440bfbc3311"
+    },
+    {
+      "bytes": 47946,
+      "path": "experiments/figures/depth-matched-analysis-20261111/nominee-endpoint-success.png",
+      "sha256": "2d07941f47a3da119e9d1c3126ab1786b4aac99dbb11d3ec5e590c621091c98c"
+    },
+    {
+      "bytes": 25726,
+      "path": "experiments/figures/depth-matched-analysis-20261111/nominee-endpoint-success.pdf",
+      "sha256": "290af11996532d803f027aa659f2fef46ddb8aa3326a188729e30d4628908a94"
+    },
+    {
+      "bytes": 199237,
+      "path": "experiments/figures/depth-matched-analysis-20261111/growth-dynamics.png",
+      "sha256": "fe009fa83652a9d36e2b0d6a0964f07fa1429e3ae78c6c647127934a71569fd6"
+    },
+    {
+      "bytes": 82515,
+      "path": "experiments/figures/depth-matched-analysis-20261111/growth-dynamics.pdf",
+      "sha256": "c810b245906722ece957ccfe785e418b2511c9408be7357e6c5ef81cb6957bcc"
+    }
+  ],
+  "inherited_deletions": 1030,
+  "interpretation": "Exploratory, unequal realized budgets and deletion depths; model exceptions unresolved; shared baseline genotype counted once in pooled physical summaries; not laboratory viability.",
+  "kind": "descriptive_analysis_no_new_science",
+  "mass_ratio_inspection_flags": 6,
+  "method_summary": [
+    {
+      "All 3 seeds at 20": 2,
+      "Lineages at 20": 6,
+      "Max deletions": 2318,
+      "Median deletions": 1933.0,
+      "Method": "No retrieval",
+      "Min deletions": 1562,
+      "Nondivision": 4,
+      "Numerical/model errors": 5,
+      "Search nominees": 5
+    },
+    {
+      "All 3 seeds at 20": 2,
+      "Lineages at 20": 8,
+      "Max deletions": 2025,
+      "Median deletions": 1745.0,
+      "Method": "Frozen dossier",
+      "Min deletions": 1534,
+      "Nondivision": 2,
+      "Numerical/model errors": 5,
+      "Search nominees": 5
+    },
+    {
+      "All 3 seeds at 20": 4,
+      "Lineages at 20": 12,
+      "Max deletions": 1898,
+      "Median deletions": 1468.0,
+      "Method": "Adaptive literature",
+      "Min deletions": 1053,
+      "Nondivision": 1,
+      "Numerical/model errors": 2,
+      "Search nominees": 5
+    },
+    {
+      "All 3 seeds at 20": 0,
+      "Lineages at 20": 0,
+      "Max deletions": 1720,
+      "Median deletions": 1715.0,
+      "Method": "Greedy",
+      "Min deletions": 1405,
+      "Nondivision": 13,
+      "Numerical/model errors": 2,
+      "Search nominees": 5
+    },
+    {
+      "All 3 seeds at 20": 0,
+      "Lineages at 20": 0,
+      "Max deletions": 1715,
+      "Median deletions": 1715.0,
+      "Method": "Randomized",
+      "Min deletions": 1705,
+      "Nondivision": 13,
+      "Numerical/model errors": 2,
+      "Search nominees": 5
+    }
+  ],
+  "nominees": 25,
+  "notebook": "scripts/analyze_depth_matched.py",
+  "physical_candidate_lineages": 72,
+  "registry_denominator": 4290,
+  "schema_version": 1,
+  "source": "experiments/comparisons/depth-matched-20261111.json",
+  "source_sha256": "79b77329c643f5d799fe67fc85ab40d3c2a6212fd1bd18c49e382f78ca1adf3e",
+  "versions": {
+    "marimo": "0.25.2",
+    "matplotlib": "3.11.2",
+    "polars": "1.44.2"
+  }
+}

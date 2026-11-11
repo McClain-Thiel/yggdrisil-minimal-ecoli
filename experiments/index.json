@@ -442,27 +442,27 @@
       "status": "completed_with_exceptions_verified"
     },
     {
-      "bytes": 118346,
+      "bytes": 123365,
       "id": "baseline-depth-extension-20261110",
       "path": "records/baseline-depth-extension-20261110.json",
-      "sha256": "40c3b807fb6a834fbbd2fdc5d0c4d1e3d3c0fcdb262e065df42d4f311b5d96b3",
+      "sha256": "0b5c7e24879eb49d98807c9604f454e2fac4b5bb50e9198e6116e020287217eb",
       "status": "completed_with_user_stopped_searches_verified"
     },
     {
-      "bytes": 94684,
+      "bytes": 99703,
       "id": "vecoli-depth-matched-20261111",
       "path": "records/vecoli-depth-matched-20261111.json",
-      "sha256": "b29d8912e106781e31c3e0d91c7dcc53dcfc115408dbd62873678162a8d9a2a2",
+      "sha256": "1d04ad0a9eb75e5ca05fe16701988eb54e613aac3de3d4db1e42cf542b409a1e",
       "status": "completed_with_exceptions_verified"
     }
   ],
   "export_schema_version": 1,
   "full_ledger": {
-    "bytes": 1085444,
+    "bytes": 1096098,
     "full_get_verified": true,
-    "sha256": "0ebbb7bcd4ffc612df1182226e3438c378adf76a394d181f98cfc937279b6c62",
-    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/0ebbb7bcd4ffc612df1182226e3438c378adf76a394d181f98cfc937279b6c62.json",
-    "verified_at": "2026-11-11T09:53:25.527532+00:00"
+    "sha256": "ffc4c50dd17708ac040ca17c4622f8b7aa5538db6672b6c767ce83f6d4caa751",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/analysis/ffc4c50dd17708ac040ca17c4622f8b7aa5538db6672b6c767ce83f6d4caa751.json",
+    "verified_at": "2026-11-11T12:40:06.474170+00:00"
   },
   "ledger_metadata": {
     "catalog_corrections": [
@@ -662,6 +662,6 @@
       "progress": "Active experiment controllers run remotely; record remote progress/events and verified S3 checkpoints here.",
       "registry": "This compact catalog stays in Git. Historical local data paths are restore paths after migration; bulk data and complete inventories are in private S3."
     },
-    "updated_at": "2026-11-11T09:53:25.527532+00:00"
+    "updated_at": "2026-11-11T12:40:06.474170+00:00"
   }
 }

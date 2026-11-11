@@ -31,4 +31,4 @@ jobs:
       - name: Check types
         run: .venv/bin/mypy src
       - name: Check notebooks
-        run: .venv/bin/marimo check scripts/experiment.py scripts/prepare_data.py
+        run: .venv/bin/marimo check scripts/experiment.py scripts/prepare_data.py scripts/analyze_depth_matched.py
