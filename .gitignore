@@ -13,7 +13,10 @@ build/
 dist/
 runs/
 
-# Prepared scientific data and marimo session state stay local.
+# Full working ledger is backed up to private S3; experiments/ is its lossless Git export.
+/experiments.json
+
+# Scientific data and marimo session state stay out of Git.
 /data
 __marimo__/
 

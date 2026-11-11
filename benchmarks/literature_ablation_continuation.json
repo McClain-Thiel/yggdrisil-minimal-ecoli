@@ -1,0 +1,397 @@
+{
+  "schema_version": 1,
+  "experiment_id": "literature-ablation-kimi-continuation-20261106",
+  "created_at": "2026-11-06T07:45:32.800873+00:00",
+  "status": "authorized_preparing_remote_execution",
+  "parent_experiment_id": "literature-ablation-kimi-full-20261105",
+  "parent_validation_id": "vecoli-kimi-20gen-3seed-20261105",
+  "user_scope": "Continue all three conditions from their last saved state, seek higher deletion percentage, then validate again with vEcoli.",
+  "execution_policy": "Scientific execution and controllers on remote Linux only. Local code, compact metadata and lightweight offline tests only.",
+  "authorization": {
+    "preparation": true,
+    "paid_launch": true,
+    "budget_approved": true,
+    "credential_transfer_approved": true,
+    "approved_at": "2026-11-06T07:49:49.128046+00:00",
+    "incremental_cap_usd": 50,
+    "user_message": "you have permission to spend up t o50$ more",
+    "scope": "All three checkpoint continuations and subsequent remote vEcoli validation; scoped run keys and W&B tracking key as described in the approval request."
+  },
+  "reference": {
+    "organism": "E. coli K-12 MG1655",
+    "accession": "NC_000913.3",
+    "registry_genes": 4290,
+    "starting_deleted_genes": 1030,
+    "starting_deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52"
+  },
+  "continuation": {
+    "mode": "Separate traceable execution from immutable copies of each complete graph and ADK session checkpoint.",
+    "preserve": [
+      "All candidate states, evaluations, decisions, failed proposals and explorer sessions",
+      "Navigator plan, shared memory, immutable dossier and original 1030-deletion root",
+      "Original candidate-order seed 59, model, inference parameters and evaluator identities"
+    ],
+    "internal_identity": "Retain parent graph/ADK identity inside each copied database; use a distinct execution ID, W&B run, stage budget and new stage deadline.",
+    "old_attempts": "Never overwrite parent archives or extend their expired deadlines. Retain parent config/launch/results in immutable provenance.",
+    "limits_basis": "Additional states and steps relative to each parent checkpoint; not absolute limits copied from the parent.",
+    "branching": "Continue the saved search graph, allowing the existing manager to choose any eligible parent. Only the original 1030 deletions are mandatory in every candidate.",
+    "fresh_research_gate": "For adaptive-literature only, record the inherited successful-search count, reset the new-stage gate using an auditable session event, and require a successful fresh Europe PMC search before any new exploration. Preserve prior notes/history.",
+    "no_validation_feedback": "Do not inject prior vEcoli trajectories or cross-arm findings into search-agent memory.",
+    "evaluator_ids": {
+      "essentiality": "8939b4281ff028967f6a6f188a1e23a7d5128e9b174212f5cdd7f2cd65e1d1a5",
+      "fba": "583a179d05ef19c643fccf5fe00bc95a83b2123bdacf5c5df2669db97a17d466",
+      "genome_size": "1218f065b8ecd291f64800ed768e830b095083209eac483715227c888b4e3946",
+      "module_retention": "b5c46d84f805847ec8356af3ebac80f923867987be63ddbc0becd84d350e447a",
+      "resource_allocation": "a4592a05342c0b10b18cf1e158644aa3d825c05eb046f7e4349b355b246813d6"
+    },
+    "required_source_hashes": {
+      "application": "bed762601a7434c1132faa696a13e3c180282ffa3bc88f130a3c8c905570ba9b",
+      "framework": "dc6d78e23e7de45381e5f265ca72c68723b499689221ac7bd4047ccb974723f3"
+    },
+    "required_versions": {
+      "RBApy": "3.0.3",
+      "RBAtools": "2.0.1",
+      "cobra": "0.32.1",
+      "google-adk": "2.13.0",
+      "litellm": "1.106.4",
+      "pandas": "2.3.3"
+    },
+    "operational_changes": "A separate continuation wrapper will be frozen and tested before launch; scientific packages remain unchanged.",
+    "max_additional_states_per_arm": 500,
+    "max_additional_steps_per_arm": 750,
+    "max_search_wall_seconds": 21600,
+    "frozen_inputs_group_index": {
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-0830845f20ebe8f35d49b9024329fa241b83a78f6a302420f52a150583f024ee.json",
+      "sha256": "0830845f20ebe8f35d49b9024329fa241b83a78f6a302420f52a150583f024ee"
+    },
+    "full_parent_checkpoint": {
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v60",
+      "sha256": "6e9a98ce1c11433c2bbd95aa78fb9977e02ded4e57f03c669697a26309714fd9"
+    },
+    "finalist_selection": "Use the existing frozen selection: most deletions among candidates passing the unchanged growth gates, then highest FBA growth, then ascending state ID. Freeze exact genotype hashes before vEcoli. Report additional deletions relative to parent best and common root; report no improvement explicitly.",
+    "new_edison_jobs": false,
+    "new_model_runs_outside_three_arms": false
+  },
+  "arms": [
+    {
+      "arm": "no_retrieval",
+      "execution_id": "literature-ablation-kimi-continuation-20261106-no-retrieval-seed-59",
+      "parent_run_id": "literature-ablation-kimi-full-20261105-no-retrieval-seed-59",
+      "checkpoint": {
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/literature-ablation-kimi-full-20261105-no-retrieval-seed-59-data-v1/a2b827bb2046255e9bd75304f67b3ad2ce78cf95bf930b41f4d7a4b3c7c4a7f9.tar.gz",
+        "sha256": "a2b827bb2046255e9bd75304f67b3ad2ce78cf95bf930b41f4d7a4b3c7c4a7f9",
+        "bytes": 1955866,
+        "member_sha256": {
+          "agents.sqlite": "4d3dce0e184059fa5ec53065f97261297abc0c51486d5cc41a15acdcd3d983b2",
+          "config.json": "bfb40a2e60ce678f906f77e642be6c077448ae8720781f52cfec94292907d031",
+          "graph.sqlite": "35f5c2d0294a7afa22beef33aac5300226ed204a165fe71f62fc2f08782469d4",
+          "launch.json": "ff405e3af93537e61beb3282fdc942c4b50bddd77aff01798a4038bc1ea7bb48",
+          "progress.json": "760a792397e6237aeac833abbe5efbf1d741fecad526d75362de2d977bd0c535",
+          "result.json": "bac14899b6f065d5ce6c72610f40ebcb9da9106fee6f0d98f9ae0a5b5dbcb918",
+          "tracking.json": "efa7e029e83ab8d0ff1c839ed0588c20a8f80e0c9f2386f56fa76ecf3f04fefd"
+        },
+        "verified_full_get": true,
+        "verified_at": "2026-11-06T07:45:32.800873+00:00"
+      },
+      "inherited_states": 41,
+      "inherited_steps": 22,
+      "parent_best_state_id": "05d781cd7050e63b3524e64a284023883504e3f363d914d634ac739208db2477",
+      "parent_best_deletions": 1589,
+      "parent_deletion_percent": 37.03962703962704,
+      "parent_best_deletion_set_sha256": "80a2713fdfafd02665cc034d9979e4f54cbce8010763ae3fb60b3d0dafdb579f",
+      "parent_stop_reason": "model_budget",
+      "parent_literature_searches": 0,
+      "agent_config": {
+        "bundle_size": 100,
+        "edison": false,
+        "edison_cache_path": "search/literature-ablation-kimi-full-20261105-no-retrieval-seed-59/edison-disabled.sqlite",
+        "max_actions": 2,
+        "max_cost_per_call_usd": "1.00",
+        "max_gene_inspections": 200,
+        "max_manager_output_tokens": 8000,
+        "max_model_requests": 12,
+        "max_output_tokens": 8000,
+        "max_tool_calls": 8,
+        "mode": "tool-rich",
+        "model": "moonshotai/kimi-k3.1-pro",
+        "open_set": {
+          "active_width": 12,
+          "parents_per_step": 1
+        },
+        "orchestration": "manager",
+        "reasoning_effort": "low",
+        "require_initial_research": false,
+        "seed": 59,
+        "send_model_seed": false,
+        "session_path": "search/literature-ablation-kimi-full-20261105-no-retrieval-seed-59/agents.sqlite",
+        "temperature": null
+      },
+      "dossier": null,
+      "max_total_states": 541,
+      "max_total_steps": 772,
+      "model_budget_usd": 12
+    },
+    {
+      "arm": "frozen_dossier",
+      "execution_id": "literature-ablation-kimi-continuation-20261106-frozen-dossier-seed-59",
+      "parent_run_id": "literature-ablation-kimi-full-20261105-frozen-dossier-seed-59",
+      "checkpoint": {
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/literature-ablation-kimi-full-20261105-frozen-dossier-seed-59-data-v1/4c8579ec740700ee7b926fa45ec57e18de1441b1cebe672ce05ef5170e2d3828.tar.gz",
+        "sha256": "4c8579ec740700ee7b926fa45ec57e18de1441b1cebe672ce05ef5170e2d3828",
+        "bytes": 1991508,
+        "member_sha256": {
+          "agents.sqlite": "509011334eb30b10390607cd8e82384b3acbc4f549dc749205a6abe1a68a4712",
+          "config.json": "68a62e9e6311a2dd6429ae7c54ce597e19dce649b4cc1b1db2c7f952139ba3a0",
+          "graph.sqlite": "013873235cfa83317b297b16b9c3cd9e2c8845ed42d72667f18c248655f09f30",
+          "launch.json": "cb30ad8e3a99bd731ae54e78aba71d7567de2e61bc345ae2d24ead6f312f10b1",
+          "progress.json": "cd4b5e37c353fbc287eb03fca46d68bce1250291d9c73dae653ac69b39e81398",
+          "result.json": "4f1d02ec18e01672fe6529cbd9b6d1ab9af04dca0b3bbdf723b24921483f1e34",
+          "tracking.json": "0094497ec1aff2d4719b1a4c794c95fd61006851213cfb110905cae71b38840e"
+        },
+        "verified_full_get": true,
+        "verified_at": "2026-11-06T07:45:32.800873+00:00"
+      },
+      "inherited_states": 45,
+      "inherited_steps": 24,
+      "parent_best_state_id": "ec6e4d3e973b20f52d5f64e5848cfa0dddd4a19e8ae5e7c55e6a2888b27a8a97",
+      "parent_best_deletions": 1228,
+      "parent_deletion_percent": 28.624708624708624,
+      "parent_best_deletion_set_sha256": "3405712823efdb2afd55a54ebf125b6700eeeb06122b597fc45d6990230d6928",
+      "parent_stop_reason": "model_budget",
+      "parent_literature_searches": 0,
+      "agent_config": {
+        "bundle_size": 100,
+        "edison": false,
+        "edison_cache_path": "search/literature-ablation-kimi-full-20261105-frozen-dossier-seed-59/edison-disabled.sqlite",
+        "max_actions": 2,
+        "max_cost_per_call_usd": "1.00",
+        "max_gene_inspections": 200,
+        "max_manager_output_tokens": 8000,
+        "max_model_requests": 12,
+        "max_output_tokens": 8000,
+        "max_tool_calls": 8,
+        "mode": "tool-rich",
+        "model": "moonshotai/kimi-k3.1-pro",
+        "open_set": {
+          "active_width": 12,
+          "parents_per_step": 1
+        },
+        "orchestration": "manager",
+        "reasoning_effort": "low",
+        "require_initial_research": false,
+        "seed": 59,
+        "send_model_seed": false,
+        "session_path": "search/literature-ablation-kimi-full-20261105-frozen-dossier-seed-59/agents.sqlite",
+        "temperature": null
+      },
+      "dossier": "inputs/dossier.json",
+      "max_total_states": 545,
+      "max_total_steps": 774,
+      "model_budget_usd": 12
+    },
+    {
+      "arm": "adaptive_literature",
+      "execution_id": "literature-ablation-kimi-continuation-20261106-adaptive-literature-seed-59",
+      "parent_run_id": "literature-ablation-kimi-full-20261105-adaptive-literature-seed-59",
+      "checkpoint": {
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/literature-ablation-kimi-full-20261105-adaptive-literature-seed-59-data-v1/4bb5ed33afb14ad6e17285d6697b0c8b9230b48bb715061e6a2d4e97700c4914.tar.gz",
+        "sha256": "4bb5ed33afb14ad6e17285d6697b0c8b9230b48bb715061e6a2d4e97700c4914",
+        "bytes": 1911485,
+        "member_sha256": {
+          "agents.sqlite": "4e11218bf29e23fb23416e20dafb8fd2c1e18c0471e6c717aec6dd7e319d2257",
+          "config.json": "6323ad2c327f593145baf8d5598ad95c25e1563edfd5401a8e36201b7c63d3e4",
+          "graph.sqlite": "35b21edb1c4a4a72bd83a5e869345b91c6b1fcb83af078c6c7659a9250d03349",
+          "launch.json": "1af6c9b3a9f5bdb2089c7403494a0f137298a161361756c014da4825101e649f",
+          "progress.json": "cf3bbc3dad95de369480981166b6cf4f096f67e182f470eb17f063f248263ef5",
+          "result.json": "8a7fd0d6ffbf3a62051e74fc1c888f0dd18e63c75e7ee2250e4a476c79c1d86f",
+          "tracking.json": "93e0005fb90720d152d5859fefbf19e32938ca0d419ef03fb7d80f55a0dfb41e"
+        },
+        "verified_full_get": true,
+        "verified_at": "2026-11-06T07:45:32.800873+00:00"
+      },
+      "inherited_states": 31,
+      "inherited_steps": 16,
+      "parent_best_state_id": "e8b788ca08fe2ee21c921840003486f1de5c23d8608d61f3a8563acaa713171b",
+      "parent_best_deletions": 1323,
+      "parent_deletion_percent": 30.83916083916084,
+      "parent_best_deletion_set_sha256": "e13b2a7bbbe71c634fe38901eab792896c928d2598a8c29eb683a76da536fa88",
+      "parent_stop_reason": "model_budget",
+      "parent_literature_searches": 21,
+      "agent_config": {
+        "bundle_size": 100,
+        "edison": false,
+        "edison_cache_path": "search/literature-ablation-kimi-full-20261105-adaptive-literature-seed-59/edison-disabled.sqlite",
+        "max_actions": 2,
+        "max_cost_per_call_usd": "1.00",
+        "max_gene_inspections": 200,
+        "max_manager_output_tokens": 8000,
+        "max_model_requests": 12,
+        "max_output_tokens": 8000,
+        "max_tool_calls": 8,
+        "mode": "research",
+        "model": "moonshotai/kimi-k3.1-pro",
+        "open_set": {
+          "active_width": 12,
+          "parents_per_step": 1
+        },
+        "orchestration": "manager",
+        "reasoning_effort": "low",
+        "require_initial_research": true,
+        "seed": 59,
+        "send_model_seed": false,
+        "session_path": "search/literature-ablation-kimi-full-20261105-adaptive-literature-seed-59/agents.sqlite",
+        "temperature": null
+      },
+      "dossier": "inputs/dossier.json",
+      "max_total_states": 531,
+      "max_total_steps": 766,
+      "model_budget_usd": 12
+    }
+  ],
+  "remote_plan": {
+    "instance_id": null,
+    "region": "us-east-1",
+    "instance_type": "m7i.4xlarge",
+    "vcpus": 16,
+    "memory_gib": 64,
+    "encrypted_gp3_gib": 200,
+    "maximum_instance_hours": 12,
+    "remote_root": "/home/ubuntu/yggdrisil-continuation-20261106",
+    "search_parallelism": 3,
+    "validation_maximum_concurrent_cells": 9,
+    "shared_instances": "Leave all pre-existing shared instances running.",
+    "scientific_deadline_hours_from_instance_launch": 10.5,
+    "shutdown": "Stop science by its deadline, archive and full-GET verify all closed data, then stop and terminate only this dedicated worker. Independent systemd stop at 12 hours. Retain disk and notify if verification fails.",
+    "no_automatic_extension": true
+  },
+  "budget_proposal": {
+    "currency": "USD",
+    "incremental_total_cap": 50,
+    "model_per_arm_cap": 12,
+    "combined_model_cap": 36,
+    "compute_storage_transfer_allowance": 14,
+    "worker_hourly_price": 0.8064,
+    "maximum_vm_cost": 9.6768,
+    "remaining_noncompute_allowance": 4.3232,
+    "price_check": {
+      "checked_at": "2026-11-06T07:35:48.584842+00:00",
+      "model": {
+        "id": "moonshotai/kimi-k3.1-pro",
+        "pricing": {
+          "prompt": "0.000002",
+          "completion": "0.00001",
+          "input_cache_read": "0.0000002"
+        },
+        "context_length": 1048576,
+        "supported_parameters": [
+          "frequency_penalty",
+          "include_reasoning",
+          "logit_bias",
+          "logprobs",
+          "max_tokens",
+          "min_p",
+          "presence_penalty",
+          "reasoning",
+          "reasoning_effort",
+          "repetition_penalty",
+          "response_format",
+          "seed",
+          "stop",
+          "structured_outputs",
+          "temperature",
+          "tool_choice",
+          "tools",
+          "top_k",
+          "top_logprobs",
+          "top_p"
+        ]
+      },
+      "worker": {
+        "instance_type": "m7i.4xlarge",
+        "region": "us-east-1",
+        "prices": [
+          {
+            "usd_per_hour": "0.8064000000",
+            "description": "$0.8064 per On Demand Linux m7i.4xlarge Instance Hour",
+            "effective_date": "2026-11-01T00:00:00Z"
+          }
+        ],
+        "source": "AWS Pricing GetProducts"
+      }
+    },
+    "provider_keys": "Create three fresh non-resetting $12 keys; retain $1.25 turn headroom, disable only these keys after jobs stop and reconcile settled charges. Old keys stay disabled.",
+    "cost_caveat": "Hard model-key caps and 24-hour worker limit. Storage/transfer usage monitored within the remaining allowance; stop before exceeding approved total."
+  },
+  "credential_plan": {
+    "requires_explicit_approval": true,
+    "allowed_transfer": [
+      "Three new capped OpenRouter run keys",
+      "W&B tracking API key"
+    ],
+    "transport": "Encrypted SSH to the newly approved dedicated worker, owner-only permissions, excluded from every data backup, removed with deleted worker disk.",
+    "stay_local": [
+      "AWS management credentials",
+      "OpenRouter management key",
+      "All other service keys"
+    ],
+    "approved_at": "2026-11-06T07:49:49.128046+00:00"
+  },
+  "validation": {
+    "experiment_id": "vecoli-kimi-continuation-20gen-3seed-20261106",
+    "parent_experiment_id": "literature-ablation-kimi-continuation-20261106",
+    "status": "prepared_waiting_for_search_and_budget_approval",
+    "candidate_count": 3,
+    "controls": [
+      "MG1655 wild type",
+      "Common 1030-deletion starting genome"
+    ],
+    "genotype_count": 5,
+    "seeds": [
+      101,
+      211,
+      307
+    ],
+    "generations": 20,
+    "single_daughter": true,
+    "maximum_cells": 300,
+    "additional_calibration_cells": 2,
+    "cell_simulated_seconds_cap": 10800,
+    "conditions": "Aerobic M9 glucose; same frozen input lineage model and exact target-transcript suppression audit.",
+    "native_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+    "python": "3.12.12",
+    "nextflow": "25.10.4",
+    "solver_policy": "Apply the documented v2 numerical recovery consistently to all five genotypes. Retry GLP_UNBND once with fresh basis, presolve and ordinary simplex refinement, unchanged LP/objective/constraints/tolerances; accept only identical LP hash, GLP_OPT and finite KKT relative residuals <=1e-7. Latch validation failure against outer retries. Log every fallback and distinguish patch-assisted cells from unassisted trajectories. No candidate substitutions or additional repairs after results.",
+    "solver_patch_local": "runs/storage-migration-20261105/remote-validation/source/yggdrisil-glpk-recovery-v2.patch",
+    "solver_patch_sha256": "3a4a50fdc7b4d16277b7ce8d3cb76e2e2fd69132937a4d57cbb232b01a06592a",
+    "calibration_gate": "MG1655 must divide twice with finite output, exact runtime checks, peak RSS <=4 GiB and valid solver diagnostics before dispatch.",
+    "analysis": [
+      "Per-genotype, per-seed completed generations and division times",
+      "Exact target-transcript and finite mass/time audits",
+      "Dry-mass fold changes and birth-mass drift against both controls",
+      "Model exceptions, biological nondivision, warnings and numerical fallback counts separately"
+    ],
+    "interpretation": "Model evidence only. Do not claim laboratory viability, a globally minimal genome, or long-term stability from these simulations.",
+    "deadline_behavior": "Record deadline-truncated trajectories as censored/incomplete; never silently extend."
+  },
+  "tracking": {
+    "project": "yggdrisil",
+    "entity": "mcclain",
+    "tags": [
+      "yggdrisil",
+      "ablation",
+      "continuation",
+      "remote-only"
+    ],
+    "s3_prefix": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/",
+    "validation_s3_prefix": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/",
+    "verification": "Hash-check restored archives and members, SQLite backup/quick_check, commit W&B artifacts and full S3 GET checksums before cleanup. Checkpoint closed scientific data during execution. Source and secrets excluded."
+  },
+  "prelaunch_checks": [
+    "Verify all three parent archives and member hashes on Linux, restore immutable inputs without source/secret data upload",
+    "Test continuation preserves graph/history/dossier and restores counters while applying additional limits and a new stage deadline",
+    "Test adaptive stage rejects zero fresh searches despite inherited research",
+    "Test fresh dedicated key limits, expired-deadline resume rejection, remote-only guard and no duplicate controllers",
+    "Freeze operational source hashes and resource/budget watchdogs; verify input backups before model calls",
+    "Record user approval and permitted credential transfer before provisioning"
+  ]
+}

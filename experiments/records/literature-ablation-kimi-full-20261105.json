@@ -1,0 +1,1011 @@
+{
+  "all_keys_disabled": true,
+  "analysis_artifact": {
+    "artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-analysis:v0",
+    "sha256": {
+      "artifact-verification.json": "d9d534e0696676d1e1b11d2169c1d3a59d0aee216d39105cb99c8eeec3ea22b7",
+      "final-analysis.json": "51fb359cc69e56745b3a011454910f717a2ca539d6137e405ff5e279a525df20",
+      "final-artifact-repair.json": "1de59af00f79178e10b3e687fdf7cdffc174392af1f2e62b175d34eea81137ac",
+      "registry-entry.json": "c72fd5d106940d301158c266fe7f4decc1f3ec0ccba88e6eee1fb3cf3e4e73a2",
+      "settled-provider-accounting.json": "601a456380ac8cc6ca5f53a82eb1ea5667a3b1f6b9081b91c99a054ac878e827"
+    },
+    "state": "COMMITTED",
+    "verified_at": "2026-11-05T15:05:30.526468+00:00"
+  },
+  "artifact_verification": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/artifact-verification.json",
+  "authorization": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/authorization.json",
+  "batch_progress": {
+    "checkpoint_run_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/oiibjbyh",
+    "finished_at": "2026-11-05T14:46:09.651023+00:00",
+    "jobs": {
+      "0": {
+        "command": [
+          "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/env/bin/python",
+          "-m",
+          "scripts.run_literature_ablation",
+          "--bundle",
+          "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/application/runs/literature-ablation-kimi-full-20261105",
+          "--job-index",
+          "0",
+          "--repo-root",
+          "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/application",
+          "--model-budget-usd",
+          "8"
+        ],
+        "pid": 24455,
+        "started_at": "2026-11-05T14:21:15.553380+00:00"
+      },
+      "1": {
+        "command": [
+          "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/env/bin/python",
+          "-m",
+          "scripts.run_literature_ablation",
+          "--bundle",
+          "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/application/runs/literature-ablation-kimi-full-20261105",
+          "--job-index",
+          "1",
+          "--repo-root",
+          "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/application",
+          "--model-budget-usd",
+          "8"
+        ],
+        "pid": 24456,
+        "started_at": "2026-11-05T14:21:15.556485+00:00"
+      },
+      "2": {
+        "command": [
+          "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/env/bin/python",
+          "-m",
+          "scripts.run_literature_ablation",
+          "--bundle",
+          "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/application/runs/literature-ablation-kimi-full-20261105",
+          "--job-index",
+          "2",
+          "--repo-root",
+          "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/application",
+          "--model-budget-usd",
+          "8"
+        ],
+        "pid": 24457,
+        "started_at": "2026-11-05T14:21:15.561230+00:00"
+      }
+    },
+    "results": [
+      {
+        "finished_at": "2026-11-05T14:44:00.554773+00:00",
+        "job_index": 1,
+        "returncode": 0
+      },
+      {
+        "finished_at": "2026-11-05T14:44:32.202369+00:00",
+        "job_index": 0,
+        "returncode": 0
+      },
+      {
+        "finished_at": "2026-11-05T14:46:09.630227+00:00",
+        "job_index": 2,
+        "returncode": 0
+      }
+    ],
+    "started_at": "2026-11-05T14:21:10.052174+00:00",
+    "status": "search_complete_validation_pending"
+  },
+  "checkpoint_run_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/oiibjbyh",
+  "checkpoints": [
+    {
+      "archive_sha256": "4ab56ea0dce2774a44bbaa8377ed818139cfa7ea6d637f4ad842712fd66f8224",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:12:59.429433+00:00",
+      "created_at": "2026-11-05T14:12:55.299025+00:00",
+      "files": 11,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T141255288291Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 20984,
+      "sqlite_backups": 0,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v0"
+    },
+    {
+      "archive_sha256": "602ead8ed2fce559c0b9188adff510b8f877eba94a74be9f21a7d78b9913facf",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:21:15.543301+00:00",
+      "created_at": "2026-11-05T14:21:11.439272+00:00",
+      "files": 19,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142111422833Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 31881,
+      "sqlite_backups": 0,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v1"
+    },
+    {
+      "archive_sha256": "64d909a1c5708c06accdc623c0c828124c64d9d5db2972dcc7819895c9748b74",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:21:19.319516+00:00",
+      "created_at": "2026-11-05T14:21:15.652879+00:00",
+      "files": 25,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142115618778Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 32758,
+      "sqlite_backups": 0,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v2"
+    },
+    {
+      "archive_sha256": "3041f8586549c664d5723038a2d997da2710c400ebccbb2642fd7c54c3f4cf07",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:21:33.063750+00:00",
+      "created_at": "2026-11-05T14:21:29.485758+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142129402633Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 114534,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v3"
+    },
+    {
+      "archive_sha256": "09876041d7477f7c6e2b4c4fabcb60574069134463beeb197a3a2d0abdda5d6c",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:22:44.420236+00:00",
+      "created_at": "2026-11-05T14:22:38.266563+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142238189461Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 242902,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v4"
+    },
+    {
+      "archive_sha256": "80879c8765780b0bbf2a1666b34f9bd0ee6f6629243e50822712791d96392f15",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:23:13.419232+00:00",
+      "created_at": "2026-11-05T14:23:09.583981+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142309483047Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 424818,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v5"
+    },
+    {
+      "archive_sha256": "58766391c640ca845998783fe22b407af1c4a7ef36afed3cd9c8a7bce9cc77a2",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:23:32.641905+00:00",
+      "created_at": "2026-11-05T14:23:28.617512+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142328478280Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 502494,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v6"
+    },
+    {
+      "archive_sha256": "54655d255d2e38f7d0f1392f15b5f1a48d9eddbcceb74974ad59c19da187920d",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:24:11.606333+00:00",
+      "created_at": "2026-11-05T14:24:07.888815+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142407760691Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 592105,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v7"
+    },
+    {
+      "archive_sha256": "57163fcc54bba557890ab4c57dca17ae3995cea5ef598c017b97a76821c40cfc",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:24:55.669670+00:00",
+      "created_at": "2026-11-05T14:24:51.876768+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142451724230Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 702909,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v8"
+    },
+    {
+      "archive_sha256": "25001c34c4b7a229d45505f17bf9f5aecb832f9a213493a091b53fcb747b8e62",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:25:20.278587+00:00",
+      "created_at": "2026-11-05T14:25:15.950251+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142515782381Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 793477,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v9"
+    },
+    {
+      "archive_sha256": "598b54978f6181537cd2d8ba50fd9dd8bd4ed0ccfe5ed9206c50f0d648f37c64",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:25:49.923140+00:00",
+      "created_at": "2026-11-05T14:25:45.556653+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142545355845Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 867816,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v10"
+    },
+    {
+      "archive_sha256": "6ee3ed03e5e2023208f601c80ac0166992b486b7e3c0e0eca8f27b18e165f630",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:26:19.650373+00:00",
+      "created_at": "2026-11-05T14:26:15.198277+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142614997676Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 944700,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v11"
+    },
+    {
+      "archive_sha256": "8c2bc1835bb415e428713d25b7ae7f774524e3f8a663b487b90d48ed5b9c8b2a",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:26:40.811120+00:00",
+      "created_at": "2026-11-05T14:26:34.951954+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142634735321Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 1055109,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v12"
+    },
+    {
+      "archive_sha256": "cf58cba5f067bfdb20f2b6e3f6fdba42ab771c7ff38afbd2ad8f41d20605ae10",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:27:05.499545+00:00",
+      "created_at": "2026-11-05T14:27:01.149976+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142700871837Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 1123096,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v13"
+    },
+    {
+      "archive_sha256": "f080cefe19c6306aaab24215e99fd433e19992f13e809698e4ab426583fa4099",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:27:14.816461+00:00",
+      "created_at": "2026-11-05T14:27:10.845088+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142710575099Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 1176505,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v14"
+    },
+    {
+      "archive_sha256": "4639b20a2899572604bcbc71a49608eb5795f9c561c1cfbdfd1676fce677dad9",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:27:24.156512+00:00",
+      "created_at": "2026-11-05T14:27:20.132641+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142719885248Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 1251845,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v15"
+    },
+    {
+      "archive_sha256": "6d6a3184e41c7708f444e8501fac91e928d353d00778ef325b2a962d77a18945",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:27:43.781606+00:00",
+      "created_at": "2026-11-05T14:27:39.516129+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142739240918Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 1328635,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v16"
+    },
+    {
+      "archive_sha256": "5da45780facee14bef1f2880fb1994a6b89c97e1be25cc652d99d1ce65c48d50",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:28:08.413345+00:00",
+      "created_at": "2026-11-05T14:28:04.158740+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142803879255Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 1435590,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v17"
+    },
+    {
+      "archive_sha256": "720e0fe1e7c20a8101714760bf0f44af267e5f549928978bc4f512af312d8f30",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:28:18.054770+00:00",
+      "created_at": "2026-11-05T14:28:13.808908+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142813486418Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 1520161,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v18"
+    },
+    {
+      "archive_sha256": "455ec2b3e06e452022cdd247f226a7b27a4e363157ef7b983be2a96a4f5ac8ff",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:28:47.809287+00:00",
+      "created_at": "2026-11-05T14:28:43.575477+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142843149841Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 1614894,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v19"
+    },
+    {
+      "archive_sha256": "4e1201848dc9a49649b940ffdcefaf5349f5a17ba3166abdd7b3814af963b06b",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:28:57.583197+00:00",
+      "created_at": "2026-11-05T14:28:53.234375+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142852870353Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 1703451,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v20"
+    },
+    {
+      "archive_sha256": "923b7252e92c9232db1be85b7ab00efe048e0072420680d37fa365db86ec19da",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:29:47.497050+00:00",
+      "created_at": "2026-11-05T14:29:43.107423+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142942697194Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 1813710,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v21"
+    },
+    {
+      "archive_sha256": "b172912db005b763ed6f39354662a3e2112df5ff40f5bf8a2054ce834672f564",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:29:57.039114+00:00",
+      "created_at": "2026-11-05T14:29:52.963942+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T142952541670Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 1891916,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v22"
+    },
+    {
+      "archive_sha256": "a2e31d6ef3aeb46ae74c88b0fe7cd1ad904decbfe2b0e197ce0574067740a2df",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:30:21.758095+00:00",
+      "created_at": "2026-11-05T14:30:17.546149+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143017095631Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 1979034,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v23"
+    },
+    {
+      "archive_sha256": "d6aa0f5f00574db72a58498ea38df1de98e4ecbdd2a5d61cf852a22a92f3b9e6",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:30:31.885607+00:00",
+      "created_at": "2026-11-05T14:30:27.347980+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143026822827Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 2033921,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v24"
+    },
+    {
+      "archive_sha256": "4d10e49f7c0c998bec1ba24a7de2f654adbc2cb2652a0fc48e6fafd81f6a3ec6",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:30:41.772546+00:00",
+      "created_at": "2026-11-05T14:30:37.415718+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143036965727Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 2116419,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v25"
+    },
+    {
+      "archive_sha256": "f3fc5aea8e469c4a4fecb4e795a4414e6a9d5ddcf7eccc117d9aa66c6b6d6ded",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:30:56.568852+00:00",
+      "created_at": "2026-11-05T14:30:52.334514+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143051868359Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 2197215,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v26"
+    },
+    {
+      "archive_sha256": "95922b7e1cf64d848125bc9553fe3b729acd62705b340fc790d83b15dd5d21a7",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:31:16.402838+00:00",
+      "created_at": "2026-11-05T14:31:12.198917+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143111632372Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 2285079,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v27"
+    },
+    {
+      "archive_sha256": "c04437f22d8d9c5656b32390ea2afc615783d3421324dcf79da858f3afcb0d60",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:31:37.058866+00:00",
+      "created_at": "2026-11-05T14:31:31.986737+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143131461608Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 2413599,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v28"
+    },
+    {
+      "archive_sha256": "7d03f9b83de35f17b7a9a8d5c9d423ecb3b1b9ffb18feb5fdfd08e7391b95c1d",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:31:47.131115+00:00",
+      "created_at": "2026-11-05T14:31:42.766115+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143142155950Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 2529650,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v29"
+    },
+    {
+      "archive_sha256": "9fbc9ec0d154a4dbbe16c379ee34af5c428eec8ce0ecf6509225aa9affacbdf6",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:32:12.000735+00:00",
+      "created_at": "2026-11-05T14:32:07.773143+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143207222265Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 2646373,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v30"
+    },
+    {
+      "archive_sha256": "e7130b94faf9d879632dce11f2d7da3c8e902540068efda398fd44a681d13f12",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:32:21.792672+00:00",
+      "created_at": "2026-11-05T14:32:17.627609+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143217082814Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 2734261,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v31"
+    },
+    {
+      "archive_sha256": "4d7d0401710d7ae0d092cdb9379f5db88978c2f95c6aaa703ceaf724a65614ce",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:32:31.639647+00:00",
+      "created_at": "2026-11-05T14:32:27.416814+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143226843216Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 2814736,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v32"
+    },
+    {
+      "archive_sha256": "122d5337f4a3884771f8594962342a94f7f245b5b69050d81930d428ef3c4c72",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:32:52.125572+00:00",
+      "created_at": "2026-11-05T14:32:47.284063+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143246705958Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 2906948,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v33"
+    },
+    {
+      "archive_sha256": "1ed7dff6f36295be71f7109856f850998a04b51fce168569fe7da5ed52a41b43",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:33:37.534006+00:00",
+      "created_at": "2026-11-05T14:33:32.855153+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143332223985Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 3034450,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v34"
+    },
+    {
+      "archive_sha256": "dede20fab70a01d2f9cb048b58630f536cf688c99e182d3eea36f5bbca5069db",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:34:45.561688+00:00",
+      "created_at": "2026-11-05T14:34:38.343652+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143437684856Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 3241932,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v35"
+    },
+    {
+      "archive_sha256": "62678c0fd88b05f4095e34eb12342b0349fe963cc830b7b3ec7a5e6ef844edcc",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:35:20.795650+00:00",
+      "created_at": "2026-11-05T14:35:16.305007+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143515643852Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 3322309,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v36"
+    },
+    {
+      "archive_sha256": "5606f047f0ab7c012df158afad4b2d1e643fec80e5cde3ca1a11b9a3c39c55bd",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:36:15.788702+00:00",
+      "created_at": "2026-11-05T14:36:11.668686+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143610934794Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 3507755,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v37"
+    },
+    {
+      "archive_sha256": "e4ca4e85a8a20bdcb1c77f97f43bf1b60fb442f0a55d99454f147c0897e06890",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:36:31.500287+00:00",
+      "created_at": "2026-11-05T14:36:26.684974+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143625976209Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 3607608,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v38"
+    },
+    {
+      "archive_sha256": "25a69c6df164e2efbd80cdabb507bed5f4f7d329a9268714d10e40fd6304ee52",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:37:27.818783+00:00",
+      "created_at": "2026-11-05T14:37:22.429509+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143721631513Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 3708029,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v39"
+    },
+    {
+      "archive_sha256": "7cfdf576c2ac66de3bb9b582d13e63e3d70b79af7349b2aff3f7d1266913dbe0",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:38:13.054940+00:00",
+      "created_at": "2026-11-05T14:38:08.696571+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143807945837Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 3933588,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v40"
+    },
+    {
+      "archive_sha256": "87535ba9d5f5c646bd20e60f98b2c2f01c5ba74bbf0e6f4acb291733a84c94cb",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:39:04.110014+00:00",
+      "created_at": "2026-11-05T14:38:58.986434+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143858167132Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 4060602,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v41"
+    },
+    {
+      "archive_sha256": "04b4bd70a055ef802b8b644d7d0c96e7c3361b5f5546eee0f4a8ff8336793553",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:39:14.068280+00:00",
+      "created_at": "2026-11-05T14:39:09.970575+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143909179398Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 4079262,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v42"
+    },
+    {
+      "archive_sha256": "74328d2d59ea87d7ff7cd5ff69cf953393805b53de02029bf104b69892963785",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:39:24.521410+00:00",
+      "created_at": "2026-11-05T14:39:19.982937+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T143919136887Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 4167643,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v43"
+    },
+    {
+      "archive_sha256": "6f2e5c09992ae2b0c278f1662bd50c4999b1e4151226041582aab7be0ed48138",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:40:15.975971+00:00",
+      "created_at": "2026-11-05T14:40:10.939504+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144009938184Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 4395417,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v44"
+    },
+    {
+      "archive_sha256": "0f30e686d2d508f30aa66a14e621bac5d3bc5c16d5278a092e622b4c2e93f660",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:40:36.999079+00:00",
+      "created_at": "2026-11-05T14:40:31.909229+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144031068225Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 4509939,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v45"
+    },
+    {
+      "archive_sha256": "4df5a45bf847e26958473ea85670c78820dacac7bc8cc92623172fa6aa38e7e4",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:41:03.007798+00:00",
+      "created_at": "2026-11-05T14:40:58.051138+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144057053273Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 4616033,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v46"
+    },
+    {
+      "archive_sha256": "5d38b22b12c0b61083a35a7ff95a7d93794e1445243f1f75181aba4a288716db",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:41:44.489115+00:00",
+      "created_at": "2026-11-05T14:41:39.083846+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144138099393Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 4694587,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v47"
+    },
+    {
+      "archive_sha256": "1bb88a9101807e7ab2f75a54ccf17c839419808bb4ed2f29d0af3b91f4ef36bf",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:41:54.873119+00:00",
+      "created_at": "2026-11-05T14:41:50.440844+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144149533142Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 4742153,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v48"
+    },
+    {
+      "archive_sha256": "7c93ed21b1025cb741e8f61b624b842f588d9dcf1aed74d0b7d8e2ab47bb87ce",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:42:21.071599+00:00",
+      "created_at": "2026-11-05T14:42:16.314446+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144214949129Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 4831904,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v49"
+    },
+    {
+      "archive_sha256": "bfb30f1b123d98ea1fc897bdaeb138a1729c159eb87c25edf0cad63f2234476a",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:42:31.828295+00:00",
+      "created_at": "2026-11-05T14:42:27.055790+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144226110249Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 4920199,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v50"
+    },
+    {
+      "archive_sha256": "6a12ba7c464592222d939f947fd3632f4223953241b564f8142d18e1fa0bcc87",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:42:47.095063+00:00",
+      "created_at": "2026-11-05T14:42:42.994545+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144241882412Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 4995943,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v51"
+    },
+    {
+      "archive_sha256": "99522a5ce1de03b4218fa4b37e0031ebdf5d09abc68f19805a96e6610d00bd1d",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:42:57.813886+00:00",
+      "created_at": "2026-11-05T14:42:53.178904+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144252160356Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 5113892,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v52"
+    },
+    {
+      "archive_sha256": "8965c5f43f7ec7d4742f95942c59ed4ee54f16f694217863044d6adb75bbbdd8",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:43:18.623814+00:00",
+      "created_at": "2026-11-05T14:43:14.014585+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144312872391Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 5274519,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v53"
+    },
+    {
+      "archive_sha256": "074446552f35ed438d0e2918708551885ba4419fadbd26eff10194af1b110763",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:43:44.757481+00:00",
+      "created_at": "2026-11-05T14:43:39.846433+00:00",
+      "files": 43,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144338732304Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 5433533,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v54"
+    },
+    {
+      "archive_sha256": "55f4ce64f2d51e3247a6ddc68ff128f2a05ad944e89471461ebbe784393b4aa1",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:43:55.546690+00:00",
+      "created_at": "2026-11-05T14:43:50.985362+00:00",
+      "files": 44,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144349800064Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 5523085,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v55"
+    },
+    {
+      "archive_sha256": "50e7f338108cff0c4cd2bbf01293356f29d913ea6f8d52673fabe9dad3714ab1",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:44:27.190054+00:00",
+      "created_at": "2026-11-05T14:44:21.841695+00:00",
+      "files": 45,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144420619763Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 5628263,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v56"
+    },
+    {
+      "archive_sha256": "08591dff81259f10be27287d306eff842fd0b3a9f200eea6843cf53b8b1cc655",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:44:38.059648+00:00",
+      "created_at": "2026-11-05T14:44:33.413257+00:00",
+      "files": 47,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144432265273Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 5750833,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v57"
+    },
+    {
+      "archive_sha256": "ab9901fef1ae2d05fd0e922fce589f8c2a81d33322e448a3afacec7460a00d95",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:46:04.617550+00:00",
+      "created_at": "2026-11-05T14:45:59.487982+00:00",
+      "files": 47,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144558216783Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 5878695,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v58"
+    },
+    {
+      "archive_sha256": "3738a9f12012e544d3a862328fac099a2785ac4701ebb358a6d1e5672ef86fb2",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T14:46:18.290183+00:00",
+      "created_at": "2026-11-05T14:46:13.532064+00:00",
+      "files": 50,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T144612304690Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 5901652,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v59"
+    },
+    {
+      "archive_sha256": "6e9a98ce1c11433c2bbd95aa78fb9977e02ded4e57f03c669697a26309714fd9",
+      "cloud_state": "COMMITTED",
+      "cloud_verified_at": "2026-11-05T15:05:26.403392+00:00",
+      "created_at": "2026-11-05T15:05:21.004422+00:00",
+      "files": 51,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T150519733225Z.tar.gz",
+      "secret_scan": "passed",
+      "size_bytes": 5904063,
+      "sqlite_backups": 6,
+      "wandb_artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v60"
+    }
+  ],
+  "completed_at": "2026-11-05T14:46:09.651023+00:00",
+  "continuation_experiment_id": "literature-ablation-kimi-continuation-20261106",
+  "created_at": "2026-11-05T14:08:31.636699+00:00",
+  "cumulative_model_usd": "27.327621068",
+  "cumulative_prior_spend_usd": "5.669835768",
+  "current_provider_accounting_path": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/provider-accounting.json",
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "status": "verified"
+  },
+  "execution_backend": "local",
+  "final_analysis": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/final-analysis.json",
+  "final_artifact_repair": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/final-artifact-repair.json",
+  "final_data_verified": true,
+  "historical_search_status": "search_complete_validation_pending",
+  "id": "literature-ablation-kimi-full-20261105",
+  "latest_checkpoint": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/checkpoints/20261105T150519733225Z.tar.gz",
+  "latest_cloud_checkpoint": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-checkpoint:v60",
+  "local_root": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local",
+  "long_jobs_launched": true,
+  "maximum_new_model_spend_usd": 24,
+  "monitoring": "completed; monitor-kimi-genome-continuation deleted after final verification",
+  "monitoring_finished_at": "2026-11-05T15:06:39.580494+00:00",
+  "preflight": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/preflight.json",
+  "preflight_failed_provider_accounting": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/preflight-failed-provider-accounting.json",
+  "process": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/process.json",
+  "protocol": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/protocol.json",
+  "provider_accounting": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/provider-accounting.json",
+  "reference_registry_size": 4290,
+  "runs": [
+    {
+      "additional_deletions": 559,
+      "arm": "no-retrieval",
+      "artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-no-retrieval-seed-59-data:v1",
+      "artifact_verified": true,
+      "best_total_deletions": 1589,
+      "deleted_registry_pct": 37.03962703962704,
+      "local_path": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/application/runs/literature-ablation-kimi-full-20261105/search/literature-ablation-kimi-full-20261105-no-retrieval-seed-59",
+      "new_candidates": 40,
+      "passing_new_candidates": 30,
+      "runtime_seconds": 1374.7542053749785,
+      "settled_provider_spend_usd": "7.390658272",
+      "stop_reason": "model_budget",
+      "vecoli_validation": {
+        "basic_checks": "All accepted daughter transcript suppression and finite mass/time checks passed",
+        "experiment_id": "vecoli-kimi-20gen-3seed-20261105",
+        "numerical_recovery_generations_by_seed": {},
+        "original_generations_by_seed": {
+          "101": 20,
+          "211": 20,
+          "307": 20
+        }
+      },
+      "wandb_id": "8999b73a6f3b",
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/8999b73a6f3b"
+    },
+    {
+      "additional_deletions": 198,
+      "arm": "frozen-dossier",
+      "artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-frozen-dossier-seed-59-data:v1",
+      "artifact_verified": true,
+      "best_total_deletions": 1228,
+      "deleted_registry_pct": 28.624708624708624,
+      "local_path": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/application/runs/literature-ablation-kimi-full-20261105/search/literature-ablation-kimi-full-20261105-frozen-dossier-seed-59",
+      "new_candidates": 44,
+      "passing_new_candidates": 19,
+      "runtime_seconds": 1341.7690732907504,
+      "settled_provider_spend_usd": "7.19843214",
+      "stop_reason": "model_budget",
+      "vecoli_validation": {
+        "basic_checks": "All accepted daughter transcript suppression and finite mass/time checks passed",
+        "experiment_id": "vecoli-kimi-20gen-3seed-20261105",
+        "numerical_recovery_generations_by_seed": {
+          "101": 20
+        },
+        "original_generations_by_seed": {
+          "101": 6,
+          "211": 9,
+          "307": 20
+        }
+      },
+      "wandb_id": "50a4e7121847",
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/50a4e7121847"
+    },
+    {
+      "additional_deletions": 293,
+      "arm": "adaptive-literature",
+      "artifact": "mcclain/yggdrisil/literature-ablation-kimi-full-20261105-adaptive-literature-seed-59-data:v1",
+      "artifact_verified": true,
+      "best_total_deletions": 1323,
+      "deleted_registry_pct": 30.83916083916084,
+      "local_path": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/local/application/runs/literature-ablation-kimi-full-20261105/search/literature-ablation-kimi-full-20261105-adaptive-literature-seed-59",
+      "new_candidates": 30,
+      "passing_new_candidates": 22,
+      "runtime_seconds": 1471.6730571668595,
+      "settled_provider_spend_usd": "7.068694888",
+      "stop_reason": "model_budget",
+      "vecoli_validation": {
+        "basic_checks": "All accepted daughter transcript suppression and finite mass/time checks passed",
+        "experiment_id": "vecoli-kimi-20gen-3seed-20261105",
+        "numerical_recovery_generations_by_seed": {},
+        "original_generations_by_seed": {
+          "101": 20,
+          "211": 20,
+          "307": 20
+        }
+      },
+      "wandb_id": "1ec427c8fd93",
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/1ec427c8fd93"
+    }
+  ],
+  "runtime_source_snapshot": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/runtime-source-snapshot.json",
+  "s3_backup": {
+    "archives": [
+      "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/literature-ablation-kimi-full-20261105-no-retrieval-seed-59-data-v1/a2b827bb2046255e9bd75304f67b3ad2ce78cf95bf930b41f4d7a4b3c7c4a7f9.tar.gz",
+      "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/literature-ablation-kimi-full-20261105-frozen-dossier-seed-59-data-v1/4c8579ec740700ee7b926fa45ec57e18de1441b1cebe672ce05ef5170e2d3828.tar.gz",
+      "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/literature-ablation-kimi-full-20261105-adaptive-literature-seed-59-data-v1/4bb5ed33afb14ad6e17285d6697b0c8b9230b48bb715061e6a2d4e97700c4914.tar.gz",
+      "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/literature-ablation-kimi-full-20261105-analysis-v0/108b72c4b14d91ea11ebc7a2719a0d382c9cee9a39673f81a947dcd14b5fb3ea.tar.gz"
+    ],
+    "local_manifest": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-kimi-full-diagnostic-20261105/s3-backup.json",
+    "manifest_sha256": "85ef2e1aed1baa86acfc34ce465bbc2c52c2fc3abe614e714a01a686ebd737b6",
+    "manifest_uri": "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/manifests/85ef2e1aed1baa86acfc34ce465bbc2c52c2fc3abe614e714a01a686ebd737b6.json",
+    "status": "round_trip_verified",
+    "verified_at": "2026-11-05T17:32:39.708966+00:00"
+  },
+  "s3_migration": {
+    "group_indexes": {
+      "application/runs/literature-ablation-kimi-full-20261105": {
+        "bytes": 30869,
+        "sha256": "0830845f20ebe8f35d49b9024329fa241b83a78f6a302420f52a150583f024ee",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-0830845f20ebe8f35d49b9024329fa241b83a78f6a302420f52a150583f024ee.json",
+        "verified_at": "2026-11-05T22:50:56.624106+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "selected_job_indices": [
+    0,
+    1,
+    2
+  ],
+  "settled_provider_accounting": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/settled-provider-accounting.json",
+  "source_archive_sha256": "2c90daa449a148eca4744559972c6347b307f6a25bf7e48264efc130eeb07007",
+  "source_prompt_version": 22,
+  "source_snapshot": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/source-snapshot.json",
+  "starting_deleted_genes": 1030,
+  "status": "search_and_validation_complete_with_exceptions",
+  "supervisor_repair": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-full-20261105/supervisor-repair.json",
+  "total_model_usd": "21.657785300",
+  "validation_result": {
+    "analysis": {
+      "bytes": 307329,
+      "sha256": "81615e4479504b6c087fcec8788dd41b34c731027f30b4815695b6cb7ba9665f",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/analysis/81615e4479504b6c087fcec8788dd41b34c731027f30b4815695b6cb7ba9665f.json"
+    },
+    "completed_at": "2026-11-06T03:26:38.089374+00:00",
+    "experiment_id": "vecoli-kimi-20gen-3seed-20261105",
+    "interpretation": "Expression-knockout model evidence; original and patched protocols reported separately. Birth-mass drift and numerical warnings remain; twenty divisions do not establish laboratory viability or stable long-term growth.",
+    "original_lineages_at_20": 13,
+    "separately_recovered_lineages_at_20": 1,
+    "status": "completed_with_exceptions_verified",
+    "unresolved_lineages": [
+      {
+        "generations": 9,
+        "name": "frozen-dossier",
+        "reason": "GLP_UNBND model exception; no numerical recovery authorized",
+        "seed": 211
+      }
+    ],
+    "wandb": {
+      "artifact": "mcclain/yggdrisil/vecoli-kimi-20gen-3seed-20261105-final-analysis:v0",
+      "full_download_sha256_verified": true,
+      "run_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/v20final20261106",
+      "state": "COMMITTED"
+    }
+  }
+}

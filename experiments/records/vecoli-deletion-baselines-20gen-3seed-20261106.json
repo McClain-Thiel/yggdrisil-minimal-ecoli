@@ -1,0 +1,589 @@
+{
+  "absolute_stop": "2026-11-07T17:19:39.785015+00:00",
+  "analysis_plan": {
+    "comparison": "Match solver policy, seeds and medium to prior agent validation. Search efficiency comparisons require common roots and equal evaluation counts.",
+    "denominators": [
+      "4290-gene registry",
+      "1915 current functional genes",
+      "1197 shared functional genes"
+    ],
+    "interpretation": "MG1655 expression-knockout model evidence; does not physically shorten the chromosome or establish laboratory viability.",
+    "outcomes": [
+      "consecutive divisions",
+      "division times",
+      "birth/dry-mass trends",
+      "exact target-transcript suppression",
+      "finite outputs",
+      "solver-assisted cells",
+      "numerical warnings",
+      "nondivision versus model/infrastructure failure"
+    ],
+    "retain_all_lineages": true
+  },
+  "authorization": {
+    "approved_at": "2026-11-06T17:19:39.785015+00:00",
+    "credential_transfer_approved": true,
+    "experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106",
+    "hourly_usd": 0.8064,
+    "instance_id": "i-0e673348d39a6b805",
+    "manifest_sha256": "b7eb786a9517569a1920f41bd416376485ef94dd1972e3087478d4ee38f3edff",
+    "max_compute_usd": 19.3536,
+    "model_calls_allowed": false,
+    "paid_launch": true,
+    "protocol_sha256": "2dff7e711718572b8fd4c881beb79d93f8fabe1ba58f748b365a7c70f3c69c15",
+    "science_deadline": "2026-11-07T16:19:39.785015+00:00",
+    "science_deadline_unix": 1794068379.785015,
+    "scope": "10 frozen baseline genomes plus two controls, three seeds, 20 generations, one16vCPU worker;24h hard stop;W&B-only credential transfer over encrypted SSH;verified S3/W&B;monitoring and cleanup.",
+    "solver_policy_scope": "The unchanged v2 patch applies uniformly to ALL TWELVE genotypes. Prior protocol text saying five refers to the previous study; no scientific change.",
+    "stop_deadline": "2026-11-07T17:19:39.785015+00:00",
+    "stop_deadline_unix": 1794071979.785015,
+    "total_cap_usd": 30,
+    "user_authorization": "Approve up to $30"
+  },
+  "calibration_cell_simulations": 2,
+  "candidate_count": 10,
+  "checks": {
+    "checked_at": "2026-11-06T17:17:36.731893+00:00",
+    "offline_plan_tests": 7,
+    "remote_preflight": "Still required after cost approval and deployment; no worker launched.",
+    "scope": "Frozen genotype and control identities, complete seed coverage, rejection of changes/missing nominees/unverified parents, budget isolation, source hashes. No scientific execution.",
+    "source_files": {
+      "prepare-plan.py": "49820764fa5c5f8858aadbb3626336e0faf3cfeb5dfc3eb1b1d732f32ce25a04",
+      "publish-plan.py": "f0834d18ac778613aa864b12095896e07c85a84aeb3c6b20a6d8511b27006ca4",
+      "test_plan.py": "cdcd030a3ca4b5fc1ae87ee5586e86d218a3d0679cdc02229952c63896ddf2b1"
+    },
+    "status": "passed",
+    "test_exit_code": 0,
+    "test_result": "7 passed in 0.07s",
+    "verification_note": "Initial checks metadata was written before the test process returned; all seven checks have now independently finished with exit zero. Previous metadata and publication are retained."
+  },
+  "cleanup": {
+    "bytes": 1703,
+    "sha256": "fcea1163ecc577450d1bcf8f77af0689b6c1e1786e5559c3ee680f05fda6cd4e",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-cleanup/fcea1163ecc577450d1bcf8f77af0689b6c1e1786e5559c3ee680f05fda6cd4e.json"
+  },
+  "comparison_limits": "Baseline genomes were selected using the frozen search oracle. A claim of agent superiority requires explicit alignment of search budgets, starting genomes, model-gene denominators, validation settings and solver policy; these results alone do not establish the contribution of literature retrieval or a mechanism for early division.",
+  "control_count": 2,
+  "cost_proposal": {
+    "estimate_basis": "Scaled previous approximately 300-cell validation to 720 cells, same nine-cell concurrency; genotype runtime is uncertain.",
+    "estimated_wall_hours": [
+      10,
+      14
+    ],
+    "max_compute_usd": 19.3536,
+    "model_cost_usd": 0,
+    "pricing_record": "pricing-and-input-verification.json",
+    "storage_transfer_request_reserve_usd": 10.6464,
+    "total_cap_usd": 30,
+    "verified_hourly_usd": 0.8064
+  },
+  "created_at": "2026-11-06T17:16:29.619710+00:00",
+  "current_progress": {
+    "no_active_scientific_processes": true,
+    "original_workflow_statuses": {
+      "calibration": "completed",
+      "seed-101": "completed_with_nondivision",
+      "seed-211": "completed_with_nondivision",
+      "seed-307": "failed"
+    },
+    "status": "completed_verified",
+    "summary": {
+      "baseline_divisions": 30,
+      "baseline_lineages": 30,
+      "baseline_lineages_at_20": 0,
+      "baseline_terminal_reasons": {
+        "model_exception": 1,
+        "nondivision_max_duration": 29
+      },
+      "calibration_completed_cycles": 2,
+      "completed_cycles_excluding_calibration": 150,
+      "control_lineages_at_20": 6,
+      "exact_target_transcripts_absent_all_304_daughters": true,
+      "finite_mass_time_in_all_2020_current_history_files": true,
+      "lineages": 36,
+      "solver_assisted_completed_cells": 3,
+      "solver_fallback_events_all_cells": 33
+    }
+  },
+  "data_backup": {
+    "all_archive_members_independently_verified": true,
+    "all_changed_wandb_files_download_verified": true,
+    "all_final_wandb_downloads_verified": true,
+    "credentials_and_source_excluded": true,
+    "final_analysis_records": {
+      "archive-member-audit.json": {
+        "bytes": 1983030,
+        "sha256": "ae4ba5393f9b918c931103e1decc5a16a062ed3102e835e07f35eb8490f4f85d",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/ae4ba5393f9b918c931103e1decc5a16a062ed3102e835e07f35eb8490f4f85d.json"
+      },
+      "artifact-verification.json": {
+        "bytes": 7578,
+        "sha256": "24382a23cd40d04617b07214c075ddf5482b4a39f87adc4eda1ec49ab66e3202",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/24382a23cd40d04617b07214c075ddf5482b4a39f87adc4eda1ec49ab66e3202.json"
+      },
+      "artifact-verification.jsonl": {
+        "bytes": 1785024,
+        "sha256": "67ef91b41fd2d9839be55d805ff37d2a0cc3cc5aaec4a06113614c56a5707857",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/67ef91b41fd2d9839be55d805ff37d2a0cc3cc5aaec4a06113614c56a5707857.jsonl"
+      },
+      "checkpoint-archive-comparison.json": {
+        "bytes": 1900232,
+        "sha256": "1095c64b4d23263e9ea59c551fa10db2c403a36aec383f79b4faf24fe15895c9",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/1095c64b4d23263e9ea59c551fa10db2c403a36aec383f79b4faf24fe15895c9.json"
+      },
+      "final-analysis.json": {
+        "bytes": 349987,
+        "sha256": "ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70.json"
+      },
+      "final-backup-verification.json": {
+        "bytes": 11685,
+        "sha256": "e041a16420ad957836ae6db8c979e024f26f90588363ae3081dbd767e99c0a71",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/e041a16420ad957836ae6db8c979e024f26f90588363ae3081dbd767e99c0a71.json"
+      },
+      "final-index.json": {
+        "bytes": 1282866,
+        "sha256": "714bee672feb4271bf64858bf612354f73531ec1dce1dc1d0018e32b2941f894",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/714bee672feb4271bf64858bf612354f73531ec1dce1dc1d0018e32b2941f894.json"
+      },
+      "terminal-evidence.json": {
+        "bytes": 16021,
+        "sha256": "030ea6f5f139193bff2e6e9ae4ce4f597a33e6fffc426ac5a55ce62ff001aeb0",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/030ea6f5f139193bff2e6e9ae4ce4f597a33e6fffc426ac5a55ce62ff001aeb0.json"
+      },
+      "worker-before-cleanup.json": {
+        "bytes": 1651,
+        "sha256": "231e93565f338021f577957ccf6106a7aa61e0998c22509a491f190c7089b54a",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/231e93565f338021f577957ccf6106a7aa61e0998c22509a491f190c7089b54a.json"
+      }
+    },
+    "final_analysis_wandb_artifact": {
+      "all_files_download_sha256_verified": true,
+      "digest": "b30f1ac5f4f6bca95bf9d8b280f22a5f",
+      "id": "QXJ0aWZhY3Q6NDQzMzIwODE1MQ==",
+      "name": "mcclain/yggdrisil/vecoli-deletion-baselines-20gen-3seed-20261106-final-analysis:v0",
+      "run_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/vecoli-baselines-final-audit-20261107",
+      "state": "COMMITTED",
+      "version": "v0"
+    },
+    "final_archive": {
+      "bytes": 1883274600,
+      "sha256": "6227579eba5bbabbf3d52833b48fcc785f086126674a987dbb2e2179f2708e1c",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final/6227579eba5bbabbf3d52833b48fcc785f086126674a987dbb2e2179f2708e1c.tar.gz"
+    },
+    "final_checkpoint_artifacts": {
+      "calibration": {
+        "all_s3_full_get_and_wandb_downloads_sha256_verified": true,
+        "artifact": "mcclain/yggdrisil/vecoli-deletion-baselines-20gen-3seed-20261106-calibration-retry1-data:v4",
+        "bytes": 507018650,
+        "checkpoint": {
+          "bytes": 22566,
+          "sha256": "e953eecd50834531e5cc067b0d1104d96e33b9408f47a32dc263bb99ab08b2f0",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/calibration-retry1/checkpoints/e953eecd50834531e5cc067b0d1104d96e33b9408f47a32dc263bb99ab08b2f0.json"
+        },
+        "digest": "b08db04ed977af95946231503c0c00d6",
+        "members_matching_final_archive": 35,
+        "metadata_differences": [
+          {
+            "checkpoint_sha256": "8f7b0428f43a8163729d5f982eb8c45b9407c04415e7f7e0284b049b84d688d7",
+            "final_archive_sha256": "4cd6e6eb9d0a8d284323c99f88b8f268ea1facccae0227c53a85c0af20f70380",
+            "path": "runs/calibration/events.jsonl",
+            "reason": "Controller terminal checkpoint metadata is recorded before its own backup receipt is inserted."
+          },
+          {
+            "checkpoint_sha256": "c02fd4d247c8d1a772acfdaaf835610bc337bbe0ff29e5f390b7213cb0eb2c2b",
+            "final_archive_sha256": "b4a33c1de5022de8d6fdbdbd5c37f7565f956fdc7b9a537b61816e538eae8cd5",
+            "path": "runs/calibration/experiments.json",
+            "reason": "Controller terminal checkpoint metadata is recorded before its own backup receipt is inserted."
+          }
+        ],
+        "objects": 54,
+        "progress_sha256": "bd15f9d5e302884570322e16f0cda3d507eda9145c67ceb891668afdcb86e94a",
+        "state": "COMMITTED"
+      },
+      "seed-101": {
+        "all_s3_full_get_and_wandb_downloads_sha256_verified": true,
+        "artifact": "mcclain/yggdrisil/vecoli-deletion-baselines-20gen-3seed-20261106-seed-101-data:v60",
+        "bytes": 878524067,
+        "checkpoint": {
+          "bytes": 525218,
+          "sha256": "8251006dc5b6609e8fdce8a57fc9c27e4d39777d52f2b73bc551f647c03ee36f",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/seed-101/checkpoints/8251006dc5b6609e8fdce8a57fc9c27e4d39777d52f2b73bc551f647c03ee36f.json"
+        },
+        "digest": "d4fd2460d73c0be91c7005ea00610a56",
+        "members_matching_final_archive": 1035,
+        "metadata_differences": [
+          {
+            "checkpoint_sha256": "fca95f91bf2f87f42790aebac35692f0880dfd9928dab87771acc340f8845b7e",
+            "final_archive_sha256": "0d703cbef1bb3cf5c1f674f627aba6e67d88426d02ca1c8adbf819f144317c0a",
+            "path": "runs/seed-101/events.jsonl",
+            "reason": "Controller terminal checkpoint metadata is recorded before its own backup receipt is inserted."
+          },
+          {
+            "checkpoint_sha256": "e4170ca3cc0bcac954679dde3e73d62ec3bbaa7529474aa002b94c13ff043b79",
+            "final_archive_sha256": "025e8b7c553b80688b365a46b53a992f14e0eece9767cf98fcfd9bf114c89ef2",
+            "path": "runs/seed-101/experiments.json",
+            "reason": "Controller terminal checkpoint metadata is recorded before its own backup receipt is inserted."
+          }
+        ],
+        "objects": 1162,
+        "progress_sha256": "c99f75dd55c3b22ff00b1e182bacaa0b4425fafea53bc205255f7a97606b35a1",
+        "state": "COMMITTED"
+      },
+      "seed-211": {
+        "all_s3_full_get_and_wandb_downloads_sha256_verified": true,
+        "artifact": "mcclain/yggdrisil/vecoli-deletion-baselines-20gen-3seed-20261106-seed-211-data:v57",
+        "bytes": 890242170,
+        "checkpoint": {
+          "bytes": 548229,
+          "sha256": "70f418b7bc2296452fe6f7f3189a9f7646f6c9b5c970aa0bcc4e4dd9d23c8196",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/seed-211/checkpoints/70f418b7bc2296452fe6f7f3189a9f7646f6c9b5c970aa0bcc4e4dd9d23c8196.json"
+        },
+        "digest": "06b384e3e0188703ef28623baa4de03c",
+        "members_matching_final_archive": 1086,
+        "metadata_differences": [
+          {
+            "checkpoint_sha256": "fa213ff7c920698d85189dffe489cf8ba0bb8da0d8d037d5886108337bb6058d",
+            "final_archive_sha256": "8163833156c7bd55375b273395bc6009f10f9f871d8dc5a6bd3997ca9812276a",
+            "path": "runs/seed-211/events.jsonl",
+            "reason": "Controller terminal checkpoint metadata is recorded before its own backup receipt is inserted."
+          },
+          {
+            "checkpoint_sha256": "bd5d040140852de03eef617462af816c358d1888538dd52858c355ee059c32bb",
+            "final_archive_sha256": "b6b5906ef75dae270f858702000387855d26ebf14689435730b41e34c7693283",
+            "path": "runs/seed-211/experiments.json",
+            "reason": "Controller terminal checkpoint metadata is recorded before its own backup receipt is inserted."
+          }
+        ],
+        "objects": 1213,
+        "progress_sha256": "9bd742a1d5727293d77c28393ec86a09200945275641cd98f65b191f1e3ce86e",
+        "state": "COMMITTED"
+      },
+      "seed-307": {
+        "all_s3_full_get_and_wandb_downloads_sha256_verified": true,
+        "artifact": "mcclain/yggdrisil/vecoli-deletion-baselines-20gen-3seed-20261106-seed-307-data:v57",
+        "bytes": 881081279,
+        "checkpoint": {
+          "bytes": 537185,
+          "sha256": "6d973c1b22fd4b44852d65818b32f10c70181dfed670c952841ba75ffc78a2de",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/seed-307/checkpoints/6d973c1b22fd4b44852d65818b32f10c70181dfed670c952841ba75ffc78a2de.json"
+        },
+        "digest": "cb51cc8eb6b67e5588f3599ec8c3c70a",
+        "members_matching_final_archive": 1062,
+        "metadata_differences": [
+          {
+            "checkpoint_sha256": "c82e603b61a70e2156b080c1f0a276a0054bb06d398e49b488dac8aa3106908d",
+            "final_archive_sha256": "e0ab2e0144bf60e16bcb58ae734b9eee9e7d937650882e31e6390db0d8596f47",
+            "path": "runs/seed-307/events.jsonl",
+            "reason": "Controller terminal checkpoint metadata is recorded before its own backup receipt is inserted."
+          },
+          {
+            "checkpoint_sha256": "0076721af745d9c0baf08de134ad77b4ecea1f61ffd2775c2fc876fdf39d831e",
+            "final_archive_sha256": "9ac8cedf5504464203203ae8f25580ab6399de76ad15264daa450c52ab9dfa3c",
+            "path": "runs/seed-307/experiments.json",
+            "reason": "Controller terminal checkpoint metadata is recorded before its own backup receipt is inserted."
+          }
+        ],
+        "objects": 1189,
+        "progress_sha256": "70315cdaef32077469c90e66c259fee694e5eaa5d979780e4434ac560619a775",
+        "state": "COMMITTED"
+      }
+    },
+    "final_index": {
+      "bytes": 1282866,
+      "sha256": "714bee672feb4271bf64858bf612354f73531ec1dce1dc1d0018e32b2941f894",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final/714bee672feb4271bf64858bf612354f73531ec1dce1dc1d0018e32b2941f894.json"
+    },
+    "final_wandb_artifact": {
+      "archive": {
+        "bytes": 1883274600,
+        "sha256": "6227579eba5bbabbf3d52833b48fcc785f086126674a987dbb2e2179f2708e1c",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final/6227579eba5bbabbf3d52833b48fcc785f086126674a987dbb2e2179f2708e1c.tar.gz"
+      },
+      "digest": "b79909da614f65cce0217c3d6406c942",
+      "full_archive_and_index_download_sha256_verified": true,
+      "id": "QXJ0aWZhY3Q6NDQzMjUxMDE1Ng==",
+      "index": {
+        "bytes": 1282866,
+        "sha256": "714bee672feb4271bf64858bf612354f73531ec1dce1dc1d0018e32b2941f894"
+      },
+      "name": "mcclain/yggdrisil/vecoli-deletion-baselines-20gen-3seed-20261106-final-data:v0",
+      "state": "COMMITTED",
+      "version": "v0"
+    },
+    "full_s3_get_verified": true,
+    "launch_and_monitoring": {
+      "approval.json": {
+        "bytes": 1148,
+        "sha256": "fbdbf426c5c36e8323e74b02aefe88de1367d3d12634ac82be0c59e955a7e4ed",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/fbdbf426c5c36e8323e74b02aefe88de1367d3d12634ac82be0c59e955a7e4ed.json"
+      },
+      "credential-pattern-policy.json": {
+        "bytes": 20706,
+        "sha256": "aa6df6789cf013198d90f137152c0f13ef2d19328e348e323d5f3cb1e6fa37ec",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/aa6df6789cf013198d90f137152c0f13ef2d19328e348e323d5f3cb1e6fa37ec.json"
+      },
+      "deployment-manifest.json": {
+        "bytes": 11071,
+        "sha256": "2609bda2625a725c97302dfe3ae65af69fcc43d778680cd748920663807c74c2",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/2609bda2625a725c97302dfe3ae65af69fcc43d778680cd748920663807c74c2.json"
+      },
+      "monitor-instructions.json": {
+        "bytes": 4470,
+        "sha256": "8f56e71fdb85f1d53c0ac89ad3c1e8448ac4ab9ef40f78240ce2967790b5f6f9",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/8f56e71fdb85f1d53c0ac89ad3c1e8448ac4ab9ef40f78240ce2967790b5f6f9.json"
+      },
+      "remote/batch-progress.json": {
+        "bytes": 1724,
+        "sha256": "afc14b7bf66712aafe2a62d50c154b69f6826d1b81302bd55ac43b6b5c12c5ad",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/afc14b7bf66712aafe2a62d50c154b69f6826d1b81302bd55ac43b6b5c12c5ad.json"
+      },
+      "remote/knockout-audit/variant-knockout-audit.json": {
+        "bytes": 637503,
+        "sha256": "5c56de72bcd5242d26f3f63a5694afddb9796387b88f865df616624cd49f98e5",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/5c56de72bcd5242d26f3f63a5694afddb9796387b88f865df616624cd49f98e5.json"
+      },
+      "remote/launcher.json": {
+        "bytes": 329,
+        "sha256": "02cacd40f381849781530ab427e434a04be325eb317d329ae34b0b549a73f3dc",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/02cacd40f381849781530ab427e434a04be325eb317d329ae34b0b549a73f3dc.json"
+      },
+      "remote/monitoring-summary.json": {
+        "bytes": 19294,
+        "sha256": "10e1a54fafd25993a5caffc0d90e7b33b79d7661b80596ad186761d5192d3038",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/10e1a54fafd25993a5caffc0d90e7b33b79d7661b80596ad186761d5192d3038.json"
+      },
+      "remote/preflight.json": {
+        "bytes": 3460,
+        "sha256": "bf1a91096d9c3c221c8a0d978947ea38799aa22fc72728f2074b45a1a61cb1a9",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/bf1a91096d9c3c221c8a0d978947ea38799aa22fc72728f2074b45a1a61cb1a9.json"
+      },
+      "remote/prepared.json": {
+        "bytes": 27265,
+        "sha256": "b17e1869146099540b1e1b751ee5089abb639bdf12e2717420c2f024783fb066",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/b17e1869146099540b1e1b751ee5089abb639bdf12e2717420c2f024783fb066.json"
+      },
+      "remote/setup-attempt-backup.json": {
+        "bytes": 949,
+        "sha256": "8ddbb3baa4a735881fc35be881ca9ce24f7c8a496370596326d37e7c896baea5",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/8ddbb3baa4a735881fc35be881ca9ce24f7c8a496370596326d37e7c896baea5.json"
+      },
+      "remote/setup-repair.json": {
+        "bytes": 1632,
+        "sha256": "b27f4e7ae97e1ec1a877dce8ef7a19ad8f40fa4ce1749e65f5dbb27eee0f2c03",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/b27f4e7ae97e1ec1a877dce8ef7a19ad8f40fa4ce1749e65f5dbb27eee0f2c03.json"
+      },
+      "worker-launch.json": {
+        "bytes": 546,
+        "sha256": "fb94d0049a0fc575ef6c27afd2bbbbf61c53d55b21ccac993feb34f34b3aa299",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/fb94d0049a0fc575ef6c27afd2bbbbf61c53d55b21ccac993feb34f34b3aa299.json"
+      }
+    },
+    "records": {
+      "checks.json": {
+        "bytes": 958,
+        "sha256": "36ad1226c5686a8717f60a75aebb10907b389238a67c86ea8ea00a044e3867ab",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/36ad1226c5686a8717f60a75aebb10907b389238a67c86ea8ea00a044e3867ab.json"
+      },
+      "genotypes.json": {
+        "bytes": 291454,
+        "sha256": "41d3057653691956567c09ee10d003bfa8cfc42d5b38672257a13c7bdf06f2f0",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/41d3057653691956567c09ee10d003bfa8cfc42d5b38672257a13c7bdf06f2f0.json"
+      },
+      "manifest.json": {
+        "bytes": 898,
+        "sha256": "b7eb786a9517569a1920f41bd416376485ef94dd1972e3087478d4ee38f3edff",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/b7eb786a9517569a1920f41bd416376485ef94dd1972e3087478d4ee38f3edff.json"
+      },
+      "native-extension-build-reference.json": {
+        "bytes": 936,
+        "sha256": "e095524abfc6bf01e0d4be58fa14e6a4b270909cc2a2821aa9c876d16b1ab43b",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/e095524abfc6bf01e0d4be58fa14e6a4b270909cc2a2821aa9c876d16b1ab43b.json"
+      },
+      "pricing-and-input-verification.json": {
+        "bytes": 2323,
+        "sha256": "ff5bef63fae3fb7d78a6dda4283dec6aa1b9cd366e12c11e6f152aa65ef3739d",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/ff5bef63fae3fb7d78a6dda4283dec6aa1b9cd366e12c11e6f152aa65ef3739d.json"
+      },
+      "protocol.json": {
+        "bytes": 6297,
+        "sha256": "2dff7e711718572b8fd4c881beb79d93f8fabe1ba58f748b365a7c70f3c69c15",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/2dff7e711718572b8fd4c881beb79d93f8fabe1ba58f748b365a7c70f3c69c15.json"
+      },
+      "restore-plan.json": {
+        "bytes": 11213,
+        "sha256": "23aa3c7fe053bd9aeb3a9505ca0a939e98da204875d032c9e512d50cda6f47f9",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/23aa3c7fe053bd9aeb3a9505ca0a939e98da204875d032c9e512d50cda6f47f9.json"
+      },
+      "source-manifest.json": {
+        "bytes": 9363,
+        "sha256": "8ed9ecf2c7306927965768026937297a4c8c6be9922aa5bc746aa019ee54cb51",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/8ed9ecf2c7306927965768026937297a4c8c6be9922aa5bc746aa019ee54cb51.json"
+      }
+    },
+    "status": "verified_complete"
+  },
+  "deadline": "2026-11-07T16:19:39.785015+00:00",
+  "execution_backend": "remote_linux_only",
+  "final_analysis": {
+    "bytes": 349987,
+    "sha256": "ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70.json"
+  },
+  "final_results": {
+    "baseline_divisions": 30,
+    "baseline_lineages": 30,
+    "baseline_lineages_at_20": 0,
+    "baseline_terminal_reasons": {
+      "model_exception": 1,
+      "nondivision_max_duration": 29
+    },
+    "calibration_completed_cycles": 2,
+    "completed_cycles_excluding_calibration": 150,
+    "control_lineages_at_20": 6,
+    "exact_target_transcripts_absent_all_304_daughters": true,
+    "finite_mass_time_in_all_2020_current_history_files": true,
+    "lineages": 36,
+    "solver_assisted_completed_cells": 3,
+    "solver_fallback_events_all_cells": 33
+  },
+  "final_verification": {
+    "bytes": 11685,
+    "sha256": "e041a16420ad957836ae6db8c979e024f26f90588363ae3081dbd767e99c0a71",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/e041a16420ad957836ae6db8c979e024f26f90588363ae3081dbd767e99c0a71.json"
+  },
+  "finished_at": "2026-11-06T21:53:23.151842+00:00",
+  "frozen_genotypes": {
+    "bytes": 291454,
+    "sha256": "41d3057653691956567c09ee10d003bfa8cfc42d5b38672257a13c7bdf06f2f0",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/41d3057653691956567c09ee10d003bfa8cfc42d5b38672257a13c7bdf06f2f0.json"
+  },
+  "id": "vecoli-deletion-baselines-20gen-3seed-20261106",
+  "instance_id": "i-0e673348d39a6b805",
+  "interpretation": "All ten frozen baselines completed exactly one division per seed; 29 of 30 then reached the fixed 10800-second cell cap without a second division, and greedy-block-seed-29 with simulation seed307 instead raised InvalidBoundaryError. Both controls reached20 generations for all three seeds. These are expression-knockout model outcomes under one environment, not measurements of physical genome deletion or laboratory viability. No scientific repair or rerun was introduced after observing these results.",
+  "last_verified_at": "2026-11-07T00:23:37.224071+00:00",
+  "local_final_metadata": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-deletion-baselines-20gen-3seed-20261106/final",
+  "local_metadata": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-deletion-baselines-20gen-3seed-20261106",
+  "local_source_snapshot": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-deletion-baselines-20gen-3seed-20261106/source",
+  "maximum_cell_simulations": 720,
+  "monitor_instructions": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-deletion-baselines-20gen-3seed-20261106/monitor-instructions.json",
+  "parent_experiment_ids": [
+    "deletion-baselines-20261106",
+    "vecoli-kimi-continuation-20gen-3seed-20261106"
+  ],
+  "protocol": {
+    "bytes": 6297,
+    "sha256": "2dff7e711718572b8fd4c881beb79d93f8fabe1ba58f748b365a7c70f3c69c15",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/2dff7e711718572b8fd4c881beb79d93f8fabe1ba58f748b365a7c70f3c69c15.json"
+  },
+  "remote_execution_only": true,
+  "remote_root": "/home/ubuntu/yggdrisil-baseline-validation-20261106",
+  "reproducibility": {
+    "backup_recheck": {
+      "bytes": 68548,
+      "sha256": "8b6c6659255273002f8a455e94e375df98194a12dec3b2e3f6db54abf98fc111",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/catalogs/20261107/records/8b6c6659255273002f8a455e94e375df98194a12dec3b2e3f6db54abf98fc111.json"
+    },
+    "comparison": {
+      "bytes": 28622,
+      "sha256": "7bbb90b2cfc81f4f849c02e753d24ad8360421372e2f140c3b0278f0764d8c25",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/catalogs/20261107/records/7bbb90b2cfc81f4f849c02e753d24ad8360421372e2f140c3b0278f0764d8c25.json"
+    },
+    "comparison_local_path": "experiments/comparisons/agent-baselines-20261106.json",
+    "methods_index_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/blob/3a748e37da91122df62e0440e3bb3b6ce2f0489b/methods/20261106/README.md",
+    "scientific_status_unchanged": true,
+    "source_commit": "3a748e37da91122df62e0440e3bb3b6ce2f0489b",
+    "source_files": 116,
+    "source_manifest": {
+      "bytes": 95610,
+      "sha256": "931fd4a86f0d790102f4fcd414f23802314ae2d759eefa1a3fc1fd2f014d3a2d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/catalogs/20261107/records/931fd4a86f0d790102f4fcd414f23802314ae2d759eefa1a3fc1fd2f014d3a2d.json"
+    },
+    "source_manifest_path": "methods/20261106/manifest.json",
+    "source_publication_authorized": true,
+    "source_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/tree/3a748e37da91122df62e0440e3bb3b6ce2f0489b/methods/20261106/baseline-validation"
+  },
+  "scientific_status": "completed_with_nondivision_and_model_exception",
+  "seeds": [
+    101,
+    211,
+    307
+  ],
+  "solver_patch_sha256": "3a4a50fdc7b4d16277b7ce8d3cb76e2e2fd69132937a4d57cbb232b01a06592a",
+  "solver_policy": "The unchanged v2 patch applies uniformly to ALL TWELVE genotypes. Prior protocol text saying five refers to the previous study; no scientific change. Apply the documented v2 numerical recovery consistently to all five genotypes. Retry GLP_UNBND once with fresh basis, presolve and ordinary simplex refinement, unchanged LP/objective/constraints/tolerances; accept only identical LP hash, GLP_OPT and finite KKT relative residuals <=1e-7. Latch validation failure against outer retries. Log every fallback and distinguish patch-assisted cells from unassisted trajectories. No candidate substitutions or additional repairs after results.",
+  "source_verification": {
+    "bytes": 11071,
+    "sha256": "2609bda2625a725c97302dfe3ae65af69fcc43d778680cd748920663807c74c2",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/2609bda2625a725c97302dfe3ae65af69fcc43d778680cd748920663807c74c2.json"
+  },
+  "started_at": "2026-11-06T17:48:37.194005+00:00",
+  "status": "completed_verified",
+  "target_generations": 20,
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/04fdcb35d2a8",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/052a470b7fdc",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/0c2f7f0857d7",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/822687731b5b",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/vecoli-baselines-final-audit-20261107",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/vecoli-baselines-study-20261106-retry1"
+  ],
+  "worker": {
+    "approval_cap_usd": 30,
+    "cleanup_verified_at": "2026-11-07T00:23:15.014082+00:00",
+    "hourly_usd": 0.8064,
+    "instance_id": "i-0e673348d39a6b805",
+    "instance_type": "m7i.4xlarge",
+    "launch_time": "2026-11-06T17:19:41+00:00",
+    "max_parallel_cells": 9,
+    "previous_public_ip": "52.87.179.109",
+    "public_ip": "34.201.34.222",
+    "region": "us-east-1",
+    "remote_root": "/home/ubuntu/yggdrisil-baseline-validation-20261106",
+    "science_deadline": "2026-11-07T16:19:39.785015+00:00",
+    "status": "terminated",
+    "stop_deadline": "2026-11-07T17:19:39.785015+00:00",
+    "volume_id": "vol-023bdfb958cf0ad57",
+    "volume_status": "deleted"
+  },
+  "worker_cleanup": {
+    "absolute_deadline_unchanged": "2026-11-07T17:19:39.785015+00:00",
+    "cost": {
+      "approved_total_cap_usd": 30,
+      "bound_basis": "Conservatively counts the entire interval from original launch until independently observed stopped, including shutdown/restart gaps and stopped time. This is not an AWS bill. Storage and transfer charges are separate.",
+      "compute_upper_bound_usd": 5.5282991122239995,
+      "first_launch": "2026-11-06T17:19:41+00:00",
+      "instance_hourly_usd": 0.8064,
+      "observed_stopped_at": "2026-11-07T00:11:00.906751+00:00"
+    },
+    "delete_on_termination": true,
+    "experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106",
+    "instance_id": "i-0e673348d39a6b805",
+    "pre_cleanup_state": "stopped",
+    "requested_at": "2026-11-07T00:23:03.306722+00:00",
+    "scientific_deadline_unchanged": "2026-11-07T16:19:39.785015+00:00",
+    "shared_worker_id": "i-0cda00ffb3cacfc12",
+    "shared_worker_state": "running",
+    "status": "terminated_and_volume_deleted",
+    "termination_response": [
+      {
+        "CurrentState": {
+          "Code": 48,
+          "Name": "terminated"
+        },
+        "InstanceId": "i-0e673348d39a6b805",
+        "PreviousState": {
+          "Code": 80,
+          "Name": "stopped"
+        }
+      }
+    ],
+    "verified_at": "2026-11-07T00:23:15.014082+00:00",
+    "verified_data_receipt": {
+      "bytes": 3938,
+      "sha256": "f29cf9fdee26de0add8bfc71b5c76612a755600b031c97a2d5cf424f72d9e7b5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/f29cf9fdee26de0add8bfc71b5c76612a755600b031c97a2d5cf424f72d9e7b5.json"
+    },
+    "volume_encrypted": true,
+    "volume_id": "vol-023bdfb958cf0ad57"
+  }
+}

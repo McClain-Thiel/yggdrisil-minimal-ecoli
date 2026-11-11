@@ -1,0 +1,268 @@
+{
+  "agent": {
+    "bundle_size": 100,
+    "edison": false,
+    "max_actions": 2,
+    "max_cost_per_call_usd": "1.00",
+    "max_gene_inspections": 200,
+    "max_manager_output_tokens": 8000,
+    "max_model_requests": 12,
+    "max_output_tokens": 8000,
+    "max_tool_calls": 8,
+    "model": "moonshotai/kimi-k3.1-pro",
+    "open_set": {
+      "active_width": 12,
+      "parents_per_step": 1
+    },
+    "orchestration": "manager",
+    "reasoning_effort": "low",
+    "send_model_seed": false,
+    "temperature": null
+  },
+  "analysis": {
+    "coverage_note": "Freeze the exact mapping-file checksum before scoring; the existing five-process functional panel is not exhaustive model coverage.",
+    "denominators": {
+      "current_functional_panel": 1915,
+      "registry": 4290,
+      "shared_functional_panel": 1197
+    },
+    "interpretation": "Expression-knockout model evidence in one environment, not laboratory viability, physical DNA shortening, global minimality or proof of retrieval benefit.",
+    "primary_contrast": "No-retrieval agent versus greedy-block baseline: successful-run proportion and additional functional deletions, reported jointly. Other method and retrieval contrasts are secondary.",
+    "secondary": [
+      "Endpoint and failure counts for all five methods",
+      "Best feasible additional deletions at 25/50/100 attempted candidates, completed counts explicit",
+      "Feasible proposal rate, not whole-cell viability",
+      "Registry/current-functional/shared-functional deletion percentages",
+      "Per-run and per-success cost and runtime; undefined cost per success when none succeeds",
+      "Genotype overlap and duplicated nominations"
+    ],
+    "statistics": "Show every run, effect sizes and uncertainty; report binary endpoint intervals and exact comparisons where appropriate. Holm-adjust the declared family of secondary pairwise contrasts. Never treat genes, cells or simulation seeds as independent searches. Five runs per method is exploratory for modest differences; no significance-driven seed additions or stopping.",
+    "unit": "Independent search run; simulation seeds repeat its nominated genotype.",
+    "validation_rate_limit": "Only one finalist per run is validated. Do not infer viability of intermediate candidates or draw unmeasured whole-cell success-versus-evaluation curves."
+  },
+  "authorization": {
+    "approved_total_usd": null,
+    "paid_launch": false,
+    "preparation": true
+  },
+  "baseline_policy": {
+    "algorithm_version": "block-v1",
+    "block_sizes": [
+      100,
+      50,
+      25,
+      10,
+      5,
+      1
+    ],
+    "eligible_genes": "All undeleted genes in the same registry; essential annotations are not silently excluded.",
+    "greedy_neighborhood_size": 8,
+    "implementation_reference": "methods/20261106/baseline-search/application/src/yggdrisil_ecoli/policies.py"
+  },
+  "budget_proposal": {
+    "currency": "USD",
+    "expected_total_range_usd": [
+      300,
+      400
+    ],
+    "infrastructure_reserve_usd": 100,
+    "model_per_run_cap_usd": 30,
+    "price_status": "Historical planning estimate only. Refresh prices and obtain new approval before launch.",
+    "total_cap_usd": 550,
+    "total_model_cap_usd": 450
+  },
+  "evaluator_ids": {
+    "essentiality": "8939b4281ff028967f6a6f188a1e23a7d5128e9b174212f5cdd7f2cd65e1d1a5",
+    "fba": "583a179d05ef19c643fccf5fe00bc95a83b2123bdacf5c5df2669db97a17d466",
+    "genome_size": "1218f065b8ecd291f64800ed768e830b095083209eac483715227c888b4e3946",
+    "module_retention": "b5c46d84f805847ec8356af3ebac80f923867987be63ddbc0becd84d350e447a",
+    "resource_allocation": "a4592a05342c0b10b18cf1e158644aa3d825c05eb046f7e4349b355b246813d6"
+  },
+  "execution": {
+    "deadline_policy": "Freeze absolute study/job deadlines before dispatch. Resumes cannot reset budgets or deadlines.",
+    "instance_type_proposal": "m7i.4xlarge",
+    "max_parallel_cells": 9,
+    "max_parallel_searches": 4,
+    "maximum_worker_hours": 72,
+    "phase_overlap": false,
+    "platform": "remote_linux_only",
+    "provider_fallback_allowed": false,
+    "provider_route": null,
+    "shared_compute": "Leave pre-existing shared workers running.",
+    "shutdown_reserve_hours": 2
+  },
+  "experiment_id": "search-replication-20261109",
+  "growth_gates": {
+    "fba_growth_strictly_positive": true,
+    "rba_growth_floor_per_hour": 0.1
+  },
+  "input_restore_index": {
+    "sha256": "0830845f20ebe8f35d49b9024329fa241b83a78f6a302420f52a150583f024ee",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-0830845f20ebe8f35d49b9024329fa241b83a78f6a302420f52a150583f024ee.json"
+  },
+  "inputs": {
+    "fba_model": {
+      "path": "data/external/iML1515.json",
+      "sha256": "832e706681b60eeefce844348dd7ded1520b7f8d2c2d72d423e0b77cc473dc45"
+    },
+    "genes": {
+      "path": "data/processed/genes.parquet",
+      "sha256": "b2469b1112bb1f8ca5eab4ccc2952df3e67a61d1c683d4ac98ef16ac20f77d1b"
+    },
+    "modules": {
+      "path": "data/processed/kegg_modules.json",
+      "sha256": "27b3013a9c0dfcbc5734b066466307669a3c64d0fc1097a9dd6ae69030c115db"
+    },
+    "rba_manifest": {
+      "path": "data/external/rba_ecoli_k12_wt/rba_artifact_manifest.json",
+      "sha256": "80f69f9bb926455f1bb94a5bf7578ec31e7b42f224134c9ff09121feb1511793"
+    }
+  },
+  "launch_requirements": [
+    "New study-specific approval for current costs, scoped model keys, any credential transfer and scheduled monitoring.",
+    "Freeze provider route, exact deployed source, dependencies and functional-panel mapping checksum.",
+    "Restore and verify archived scientific inputs and the unchanged pre-search dossier on remote Linux.",
+    "Integrate terminal-report export into the remote runners; test partial failures, duplicates, candidate limits and resumes end to end.",
+    "Enforce literature cutoff on both retrieval paths, archive exact responses and verify isolated memories.",
+    "Remote launcher must enforce exclusive locks, concurrency, non-resetting model-key caps, absolute deadlines and verified checkpoints.",
+    "Test backup failure and bounded recovery on the frozen Linux deployment before paid search calls.",
+    "Freeze and verify all terminal nominations before validation; no finalist replacement or new scientific repairs."
+  ],
+  "literature": {
+    "cost_accounting": "Report original dossier-generation cost separately and amortized across its users; unknown historical cost remains unknown. Adaptive retrieval/model costs count against each run.",
+    "dossier_answer_sha256": "45655e67cda79cf86913e5b84d90d03fd3540978fa3e25a302908d49517b9ec7",
+    "dossier_source_task_id": "e71b4b18-c0a0-49b3-b232-18486c1c0526",
+    "information_boundary": "Both literature arms receive the same immutable pre-search dossier. No prior search plans, outcomes or validation feedback. No-retrieval retains ordinary annotations and scientific tools.",
+    "new_edison_jobs": 0,
+    "publication_cutoff": "2026-11-08",
+    "retrieval_reproducibility": "Enforce the cutoff on search and full-text fetch. Archive exact queries, responses, timestamps and citation IDs. Date filtering does not freeze a changing index; replay archived responses for exact audit."
+  },
+  "methods": [
+    "no_retrieval",
+    "frozen_dossier",
+    "adaptive_literature",
+    "randomized_block",
+    "greedy_block"
+  ],
+  "question": "How reliably do five search policies find further-reduced genomes that sustain the held-out 20-generation whole-cell endpoint under a common candidate budget?",
+  "replication": "Five independent fresh sessions per method, in five blocks with reproducibly randomized method order. Seed controls policy ordering, not guaranteed model API determinism. Historical experiments remain exploratory evidence.",
+  "reproducibility": {
+    "git": "Protocol, methods, source identities and compact summaries; no bulk data or credentials.",
+    "ledger": "Preparation is cataloged separately from verified historical results. Record approvals, worker, absolute deadlines, protocol/runtime/input hashes at launch; add exact verified S3/W&B references after uploads.",
+    "report_contract": "One terminal run-report.json per planned run, with ordered candidate/evaluator records, costs and failure reason. report-verification.json binds report/protocol hashes to verified S3 and W&B copies.",
+    "s3_wandb": "Closed-data snapshots/read-only SQLite backup, content-addressed archives, full S3 GET and W&B download verification before cleanup. Preserve every attempt; source stays code, not scientific data."
+  },
+  "required_versions": {
+    "RBApy": "3.0.3",
+    "RBAtools": "2.0.1",
+    "cobra": "0.32.1",
+    "google-adk": "2.13.0",
+    "litellm": "1.106.4",
+    "pandas": "2.3.3"
+  },
+  "schedule_seed": 20261109,
+  "schema_version": 1,
+  "search": {
+    "budget_definition": "At most 100 distinct new candidate genotypes, excluding the common root. Complete failed screens consume slots. Interrupted evaluations consume attempted slots and remain incomplete; never replace them silently or call 100 attempts 100 completed evaluations.",
+    "checkpoints": [
+      25,
+      50,
+      100
+    ],
+    "early_stop": "Keep every run and its best fully evaluated feasible improvement, including model-cap, deadline and failed runs. No replacement seeds or extra funding. Missing checkpoints remain missing. The compound-stop endpoint and the 100-complete-evaluations analysis are distinct.",
+    "fresh_sessions": true,
+    "max_steps": 750,
+    "max_wall_time_s": 21600,
+    "maximum_genes_per_action": 100,
+    "new_candidate_slots": 100,
+    "proposal_accounting": "Record proposed, duplicate, malformed, rejected and skipped proposals separately; model spend and time continue to count.",
+    "validation_feedback": false
+  },
+  "search_seeds": [
+    103,
+    227,
+    349,
+    461,
+    587
+  ],
+  "selection": {
+    "finalists_per_run": 1,
+    "freeze_all_before_validation": true,
+    "order": [
+      "additional_deletions_desc",
+      "fba_growth_desc",
+      "state_id_asc"
+    ],
+    "replacement_after_validation": false
+  },
+  "source_references": {
+    "agent_protocol": {
+      "path": "methods/20261106/agent-search/protocol.json",
+      "sha256": "25b2740cf3d2c764076548e80e5c86b9e334153da4c6ea6c8f3a5eeecd93881d"
+    },
+    "baseline_protocol": {
+      "path": "methods/20261106/baseline-search/protocol.json",
+      "sha256": "de7d54014ac461da86974ea0fc2123d1e3b08ec6f5a6939f561b057e6ab9d369"
+    },
+    "historical_methods_manifest": {
+      "path": "methods/20261106/manifest.json",
+      "sha256": "931fd4a86f0d790102f4fcd414f23802314ae2d759eefa1a3fc1fd2f014d3a2d"
+    },
+    "validation_protocol": {
+      "path": "methods/20261106/baseline-validation/protocol.json",
+      "sha256": "2dff7e711718572b8fd4c881beb79d93f8fabe1ba58f748b365a7c70f3c69c15"
+    }
+  },
+  "starting_genotype": {
+    "deletion_count": 1030,
+    "deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52",
+    "local_reference": {
+      "path": "runs/deletion-baselines-20261106/inputs/starting-genotype.json",
+      "sha256": "9cbb7c3b1073697196a41940b3a8e50a2c0794daa6f2965a0828851f27189632"
+    },
+    "name": "common-1030-deletion-root",
+    "reference": "NC_000913.3",
+    "registry_genes": 4290
+  },
+  "status": "draft_not_authorized",
+  "tracking": {
+    "entity": "mcclain",
+    "project": "yggdrisil",
+    "s3_prefix": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/",
+    "tags": [
+      "yggdrisil",
+      "replication",
+      "ablation",
+      "baseline"
+    ]
+  },
+  "validation": {
+    "calibration": "Two-generation MG1655 control, finite outputs and <=4 GiB peak RSS before batch dispatch.",
+    "controls": [
+      "MG1655",
+      "common-1030-deletion-root"
+    ],
+    "controls_policy": "Controls must pass in the same runtime/batch. Control failure makes the batch inconclusive pending operational diagnosis, not evidence of candidate nonviability.",
+    "deduplication": "Validate identical genotypes once per runtime/batch and map to every originating search. Shared trajectories are not independent observations.",
+    "failure_categories": [
+      "nondivision_max_duration",
+      "model_exception",
+      "deadline",
+      "infrastructure_failure"
+    ],
+    "followed_daughters": 1,
+    "generations": 20,
+    "max_cell_time_s": 10800,
+    "medium": "aerobic M9 glucose at 37 C",
+    "native_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+    "no_repairs_after_results": true,
+    "numerical_policy": "Use the existing strict v2 numerical patch uniformly. Unchanged LP/objective/constraints/tolerances; accept fallback only with identical LP, GLP_OPT and finite KKT relative residuals <=1e-7; latch failure against outer retries. Record every assisted cell.",
+    "primary_endpoint": "A further-reduced nominated genome reaches 20 generations in all three seeds with exact-knockout, finite-output and numerical-policy checks. Denominator includes all five assigned searches per method.",
+    "seeds": [
+      101,
+      211,
+      307
+    ],
+    "solver_patch_sha256": "3a4a50fdc7b4d16277b7ce8d3cb76e2e2fd69132937a4d57cbb232b01a06592a"
+  }
+}

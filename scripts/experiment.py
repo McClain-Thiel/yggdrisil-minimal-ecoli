@@ -6,6 +6,7 @@ app = marimo.App(width="medium")
 with app.setup:
     import json
     import sqlite3
+    import sys
     from contextlib import closing
     from datetime import datetime
     from importlib.metadata import distribution
@@ -90,7 +91,7 @@ def evaluators(genes, input_files, input_hashes):
 @app.cell
 def search_settings():
     seed = 17
-    bundle_size = 1  # Agent actions may contain 1..bundle_size genes (at most 20).
+    bundle_size = 1  # Agent actions may contain 1..bundle_size genes (at most 100).
     n_proposals = 2
     policy_kind = mo.ui.dropdown(
         ["random", "heuristic", "manager", "research", "closed-book"],
@@ -100,6 +101,9 @@ def search_settings():
     model_id = mo.ui.text(label="OpenRouter model ID (agents only)")
     zero_temperature = mo.ui.checkbox(label="Set temperature to zero (if supported)")
     allow_paid = mo.ui.checkbox(label="Enable paid model calls")
+    use_edison = mo.ui.checkbox(
+        label="Submit one background Edison query (research only; 13–20 min)"
+    )
     resume_graph = mo.ui.text(label="Resume graph (optional)")
     state_limit = mo.ui.number(value=10, start=1, step=1, label="State limit")
     start_search = mo.ui.run_button(label="Run search")
@@ -108,6 +112,7 @@ def search_settings():
             policy_kind,
             model_id,
             zero_temperature,
+            use_edison,
             resume_graph,
             state_limit,
             allow_paid,
@@ -124,6 +129,7 @@ def search_settings():
         seed,
         start_search,
         state_limit,
+        use_edison,
         zero_temperature,
     )
 
@@ -135,8 +141,13 @@ def policy_settings(
     n_proposals,
     policy_kind,
     seed,
+    use_edison,
     zero_temperature,
 ):
+    mo.stop(
+        use_edison.value and policy_kind.value != "research",
+        mo.md("Choose the research policy to enable Edison."),
+    )
     agent_config = None
     if policy_kind.value not in {"random", "heuristic"}:
         mo.stop(not model_id.value.strip(), mo.md("Enter a fixed OpenRouter model ID."))
@@ -150,6 +161,7 @@ def policy_settings(
             orchestration="recoverable"
             if policy_kind.value == "closed-book"
             else "manager",
+            edison=use_edison.value,
         )
     return (agent_config,)
 
@@ -176,6 +188,12 @@ def provenance(input_hashes, start_search):
         "framework": {
             "version": _framework.version,
             "revision": _install.get("vcs_info", {}).get("commit_id"),
+            "source_sha256": yg.stable_hash(
+                {
+                    str(_path.relative_to(Path(yg.__file__).parent)): file_sha256(_path)
+                    for _path in Path(yg.__file__).parent.rglob("*.py")
+                }
+            ),
         },
     }
     return (provenance,)
@@ -199,6 +217,12 @@ async def search(
     state_limit,
 ):
     mo.stop(not start_search.value, mo.md("Choose a policy below, then run."))
+    mo.stop(
+        sys.platform == "darwin",
+        mo.md(
+            "Experiment execution is remote-only. Open this notebook on Linux compute."
+        ),
+    )
     mo.stop(
         type(state_limit.value) is not int or state_limit.value <= 0,
         mo.md("Enter a positive whole-number state limit."),
@@ -289,6 +313,14 @@ def results(graph_path):
     _candidate = summary["deepest_viable_candidate"]
     mo.stop(_candidate is None, mo.md("No candidate passes both growth checks."))
     _evidence = _candidate["evaluations"]
+    if summary["literature_jobs"]:
+        mo.output.append(mo.ui.table(summary["literature_jobs"]))
+        if any(job["status"] != "success" for job in summary["literature_jobs"]):
+            mo.output.append(
+                mo.md(
+                    "Edison is still running remotely. Resume this graph later to collect its report."
+                )
+            )
     mo.vstack(
         [
             mo.md("""## Results

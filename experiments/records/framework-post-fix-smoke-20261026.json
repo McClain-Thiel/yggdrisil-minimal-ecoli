@@ -1,0 +1,36 @@
+{
+  "child_runs": [],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "framework-post-fix-smoke-20261026",
+  "kind": "historical_validation_or_pilot",
+  "local_root": "runs/framework-post-fix-smoke-20261026",
+  "records": [
+    "runs/framework-post-fix-smoke-20261026/graph.json",
+    "runs/framework-post-fix-smoke-20261026/graph.run.json",
+    "runs/framework-post-fix-smoke-20261026/summary.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/runs/framework-post-fix-smoke-20261026": {
+        "bytes": 1258,
+        "sha256": "8ad940b414bdc111fc09738cb4f26cae8e49ca54d5427c965327f38a25e0ceb3",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-8ad940b414bdc111fc09738cb4f26cae8e49ca54d5427c965327f38a25e0ceb3.json",
+        "verified_at": "2026-11-05T22:50:44.975623+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "historical_recorded",
+  "wandb_run_urls": []
+}

@@ -90,7 +90,16 @@ def _verify_file(path: str | Path, expected_hash: str, label: str) -> None:
 
 def _validate_manifest_provenance(manifest: dict[str, Any]) -> None:
     application = manifest.get("application")
-    if application is not None:
+    benchmark_inputs = manifest.get("benchmark_inputs")
+    if benchmark_inputs is not None:
+        if not isinstance(benchmark_inputs, dict) or not benchmark_inputs:
+            raise ValueError("benchmark_inputs must be a nonempty mapping")
+        if application is not None or "source_graphs" in manifest:
+            raise ValueError("benchmark inputs cannot replace search graph provenance")
+        for label, source in benchmark_inputs.items():
+            _verify_file(source["path"], source["sha256"], f"benchmark {label}")
+        sources = []
+    elif application is not None:
         _verify_file(
             application["selection_source_path"],
             application["selection_source_sha256"],

@@ -1,0 +1,1254 @@
+{
+  "analysis": {
+    "failures": "Retain every seed, failed gate, exception and deadline-censored run; never substitute a more favorable seed.",
+    "functional_mapping": {
+      "bytes": 635940,
+      "sha256": "159d79a9fb2b4b9c23165e14ea7074b58091126b8ef34c7e79f0d25205d941af",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/analysis/159d79a9fb2b4b9c23165e14ea7074b58091126b8ef34c7e79f0d25205d941af.json"
+    },
+    "historical_comparison": "Existing LLM arms each have one search seed and model-budget termination. Compare curves only over overlapping actual evaluation counts; a 500-state cap is not evidence that existing arms consumed 500 states. Continuations use inherited graphs and must be shown separately from common-root searches.",
+    "inference_limit": "Five baseline seeds quantify baseline variability, not LLM-method replication or a statistically established method advantage.",
+    "primary": "Additional jointly feasible deletions versus cumulative new evaluated states; final distributions across all five seeds.",
+    "secondary": [
+      "gene-registry deletion percentage",
+      "current functional-gene percentage",
+      "shared functional-gene percentage",
+      "FBA growth",
+      "essential-annotation overlap",
+      "module retention",
+      "wall time and cost"
+    ]
+  },
+  "authorization": {
+    "approved_at": "2026-11-06T15:48:07.043749+00:00",
+    "approved_budget_usd": 25,
+    "bundle_manifest_sha256": "9202ca6d735980682ed6853323eeff3e5efd25b2607bbdee711c1f267f87fd09",
+    "experiment_id": "deletion-baselines-20261106",
+    "instance_id": "i-0357352c1f7c337d2",
+    "model_calls_allowed": false,
+    "paid_launch": true,
+    "protocol_sha256": "de7d54014ac461da86974ea0fc2123d1e3b08ec6f5a6939f561b057e6ab9d369",
+    "region": "us-east-1",
+    "science_deadline_unix": 1794062887.043749,
+    "scope": "Ten frozen non-LLM baseline searches only; separate from prior continuation/validation.",
+    "stop_deadline_unix": 1794066487.043749,
+    "total_cap_usd": 25,
+    "user_authorization": "Approve up to $25; ten non-LLM baseline searches on one16vCPU AWS worker,24h hard stop, verified S3/W&B; only W&B tracking key over encrypted SSH."
+  },
+  "cleanup": {
+    "approval_cap_usd": 25,
+    "compute_cost_upper_bound_usd": 0.9953036934399999,
+    "cost_method": "Conservative uninterrupted instance time from original launch through termination; includes stopped periods. Storage/requests/transfers excluded; not a settled AWS bill.",
+    "instance_id": "i-0357352c1f7c337d2",
+    "new_model_calls": 0,
+    "requested_at": "2026-11-06T17:01:39.285690+00:00",
+    "shared_instance_id": "i-0cda00ffb3cacfc12",
+    "shared_instance_modified": false,
+    "shared_state_after": "running",
+    "shared_state_before": "running",
+    "status": "terminated_volume_deleted",
+    "verified_at": "2026-11-06T17:02:11.320060+00:00",
+    "verified_completion_records": {
+      "analysis_sha256": "0b2ed3ddc6005036f6058572e119674e9213737e58fe6d1da474dc0d2d919157",
+      "archive": {
+        "bytes": 63530,
+        "sha256": "a778ae09169187a4e01867e4180b375db928aaf896b30737d966235e016f725c",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion-records/a778ae09169187a4e01867e4180b375db928aaf896b30737d966235e016f725c.tar.gz"
+      },
+      "audit_sha256": "90e173e3faa95f0f07e0609efef20cdff7d7c83bba184cd0c991e3b1252289aa",
+      "configured_secrets_screened": true,
+      "full_s3_get_verified": true,
+      "index": {
+        "bytes": 7462,
+        "sha256": "cf51ad5d5076bbf34e3d6f6fd51827ba2d962b602b0af8218c3130262b632809",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion-records/cf51ad5d5076bbf34e3d6f6fd51827ba2d962b602b0af8218c3130262b632809.json"
+      },
+      "members": 36,
+      "nominations_sha256": "b333073f95f692a1575f93ebc341a6f75ff2766f894a81a5680a877d455ba275",
+      "published_at": "2026-11-06T16:59:39.338647+00:00",
+      "source_and_credentials_excluded": true,
+      "status": "verified",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-analysis:v1",
+      "wandb_download_verified": true,
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/baseline-final-analysis-20261106-retry1"
+    },
+    "verified_final_archive": {
+      "archive": {
+        "bytes": 87873574,
+        "sha256": "bec469356806eb4b3bd460af301780b51e05b9e81d9f3f2e2f92d9c6ec2e2822",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/final/bec469356806eb4b3bd460af301780b51e05b9e81d9f3f2e2f92d9c6ec2e2822.tar.gz"
+      },
+      "full_s3_get_verified": true,
+      "index": {
+        "bytes": 28941,
+        "sha256": "9f8ef5c0357f63fb997133bb47618352aad971891350b5a9b2c4eb48ba5e01a3",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/final/9f8ef5c0357f63fb997133bb47618352aad971891350b5a9b2c4eb48ba5e01a3.json"
+      },
+      "members": 141,
+      "status": "verified",
+      "verified_at": "2026-11-06T16:42:35.873317+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-final-data:v1",
+      "wandb_download_verified": true
+    },
+    "volume_id": "vol-0eeab643d0e3b6c01"
+  },
+  "cost": {
+    "approved_cap_usd": 25,
+    "basis": "Conservative uninterrupted instance time from original launch through termination; includes stopped periods. Storage/requests/transfers excluded; not a settled AWS bill.",
+    "compute_upper_bound_usd": 0.9953036934399999,
+    "model_cost_usd": 0,
+    "storage_requests_transfers": "Additional; final AWS bill not yet settled."
+  },
+  "cost_proposal": {
+    "maximum_approval_usd": 25,
+    "maximum_compute_usd": 19.3536,
+    "maximum_worker_hours": 24,
+    "on_demand_hourly_usd": 0.8064,
+    "pricing_basis": {
+      "checked_on": "2026-11-06",
+      "product": {
+        "description": "$0.8064 per On Demand Linux m7i.4xlarge Instance Hour",
+        "effective_date": "2026-11-01T00:00:00Z",
+        "sku": "NQPHP68K4VGS8SQ7",
+        "unit": "Hrs",
+        "usd": "0.8064000000"
+      },
+      "region": "us-east-1",
+      "source": "AWS Pricing GetProducts"
+    },
+    "runtime_estimate": "Unknown until measured; ten jobs, four at a time, each capped at six hours; worst-case three waves plus setup and archival within 24 hours. This is a cap, not a promised completion ETA.",
+    "storage_and_transfer_reserve_usd": 5.6464
+  },
+  "data_backup": {
+    "all_final_member_names_sizes_sha256_verified": true,
+    "completion_records": {
+      "analysis_sha256": "0b2ed3ddc6005036f6058572e119674e9213737e58fe6d1da474dc0d2d919157",
+      "archive": {
+        "bytes": 63530,
+        "sha256": "a778ae09169187a4e01867e4180b375db928aaf896b30737d966235e016f725c",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion-records/a778ae09169187a4e01867e4180b375db928aaf896b30737d966235e016f725c.tar.gz"
+      },
+      "audit_sha256": "90e173e3faa95f0f07e0609efef20cdff7d7c83bba184cd0c991e3b1252289aa",
+      "configured_secrets_screened": true,
+      "full_s3_get_verified": true,
+      "index": {
+        "bytes": 7462,
+        "sha256": "cf51ad5d5076bbf34e3d6f6fd51827ba2d962b602b0af8218c3130262b632809",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion-records/cf51ad5d5076bbf34e3d6f6fd51827ba2d962b602b0af8218c3130262b632809.json"
+      },
+      "members": 36,
+      "nominations_sha256": "b333073f95f692a1575f93ebc341a6f75ff2766f894a81a5680a877d455ba275",
+      "published_at": "2026-11-06T16:59:39.338647+00:00",
+      "source_and_credentials_excluded": true,
+      "status": "verified",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-analysis:v1",
+      "wandb_download_verified": true,
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/baseline-final-analysis-20261106-retry1"
+    },
+    "credentials_and_source_excluded": true,
+    "final_archive": {
+      "archive": {
+        "bytes": 87873574,
+        "sha256": "bec469356806eb4b3bd460af301780b51e05b9e81d9f3f2e2f92d9c6ec2e2822",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/final/bec469356806eb4b3bd460af301780b51e05b9e81d9f3f2e2f92d9c6ec2e2822.tar.gz"
+      },
+      "full_s3_get_verified": true,
+      "index": {
+        "bytes": 28941,
+        "sha256": "9f8ef5c0357f63fb997133bb47618352aad971891350b5a9b2c4eb48ba5e01a3",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/final/9f8ef5c0357f63fb997133bb47618352aad971891350b5a9b2c4eb48ba5e01a3.json"
+      },
+      "members": 141,
+      "status": "verified",
+      "verified_at": "2026-11-06T16:42:35.873317+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-final-data:v1",
+      "wandb_download_verified": true
+    },
+    "final_records": {
+      "analysis.json": {
+        "bytes": 55676,
+        "sha256": "0b2ed3ddc6005036f6058572e119674e9213737e58fe6d1da474dc0d2d919157",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/0b2ed3ddc6005036f6058572e119674e9213737e58fe6d1da474dc0d2d919157.json"
+      },
+      "audit.json": {
+        "bytes": 17048,
+        "sha256": "90e173e3faa95f0f07e0609efef20cdff7d7c83bba184cd0c991e3b1252289aa",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/90e173e3faa95f0f07e0609efef20cdff7d7c83bba184cd0c991e3b1252289aa.json"
+      },
+      "batch-progress.json": {
+        "bytes": 46808,
+        "sha256": "79a5ab695bcbe68bc0bb48156bbab4d76ec997f5b7eb122b265f32fef55598c4",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/79a5ab695bcbe68bc0bb48156bbab4d76ec997f5b7eb122b265f32fef55598c4.json"
+      },
+      "catalog.json": {
+        "bytes": 1068125,
+        "sha256": "ae7b3b521860c62224d8061ef2d488a2b2527986dbe708d3e27f6e0470fc9b53",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/ae7b3b521860c62224d8061ef2d488a2b2527986dbe708d3e27f6e0470fc9b53.json"
+      },
+      "cleanup.json": {
+        "bytes": 3025,
+        "sha256": "093224aebf84052f8226d091cb9a6174d7183cf5d0465b9ae5b77eef59a89260",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/093224aebf84052f8226d091cb9a6174d7183cf5d0465b9ae5b77eef59a89260.json"
+      },
+      "completion-record-publication.json": {
+        "bytes": 1343,
+        "sha256": "6761c358d337693c9ec873c32a66e1925a9d57f89260a8ea4bc72f6ccb83ce12",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/6761c358d337693c9ec873c32a66e1925a9d57f89260a8ea4bc72f6ccb83ce12.json"
+      },
+      "final-backup.json": {
+        "bytes": 859,
+        "sha256": "6c2cd075df0f3b5a231d1c8a8cfad16b64b1e6274b10f8adcea526dbbb4e46ef",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/6c2cd075df0f3b5a231d1c8a8cfad16b64b1e6274b10f8adcea526dbbb4e46ef.json"
+      },
+      "index.json": {
+        "bytes": 28941,
+        "sha256": "9f8ef5c0357f63fb997133bb47618352aad971891350b5a9b2c4eb48ba5e01a3",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/9f8ef5c0357f63fb997133bb47618352aad971891350b5a9b2c4eb48ba5e01a3.json"
+      },
+      "ledger-mirror-repair.json": {
+        "bytes": 819,
+        "sha256": "565f7b686e753edafcd48e9aa7b099797edc7815b587bbedf0971ca793f9b600",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/565f7b686e753edafcd48e9aa7b099797edc7815b587bbedf0971ca793f9b600.json"
+      },
+      "monitor-deletion.json": {
+        "bytes": 273,
+        "sha256": "930accb105901ce01f974ecf16f04a49ddc40f093dba8bd0496be8282e1b12b7",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/930accb105901ce01f974ecf16f04a49ddc40f093dba8bd0496be8282e1b12b7.json"
+      },
+      "nominations.json": {
+        "bytes": 263103,
+        "sha256": "b333073f95f692a1575f93ebc341a6f75ff2766f894a81a5680a877d455ba275",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/b333073f95f692a1575f93ebc341a6f75ff2766f894a81a5680a877d455ba275.json"
+      },
+      "operational-source-manifest.json": {
+        "bytes": 2818,
+        "sha256": "dcb0fa82255eccd3dcb5df406368fbd0f613189e00c3a8d8918fedcb8d65cc88",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/dcb0fa82255eccd3dcb5df406368fbd0f613189e00c3a8d8918fedcb8d65cc88.json"
+      },
+      "s3-member-audit.json": {
+        "bytes": 933,
+        "sha256": "2c4cad0173cf6eb5757f0f565d348662e53cf68f4f4bfe5a0697773ec3bb8b21",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/2c4cad0173cf6eb5757f0f565d348662e53cf68f4f4bfe5a0697773ec3bb8b21.json"
+      }
+    },
+    "full_s3_get_verified": true,
+    "full_wandb_download_verified": true,
+    "launch_records": {
+      "approval.json": {
+        "bytes": 697,
+        "sha256": "66e5ae5653721381e517ddd3a4312757fb69a723d61c1eda870cce079c24856a",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/66e5ae5653721381e517ddd3a4312757fb69a723d61c1eda870cce079c24856a.json"
+      },
+      "attempts/package-metadata-before-search/final-backup.json": {
+        "bytes": 854,
+        "sha256": "0843af2b321ab8ddca60b7e1e89379795e14858d1ba123e2ed9e6ae35c830fb1",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/0843af2b321ab8ddca60b7e1e89379795e14858d1ba123e2ed9e6ae35c830fb1.json"
+      },
+      "batch-progress.json": {
+        "bytes": 24365,
+        "sha256": "4b6d83630166f3b9d99b9ced75fbad2281c757844d6ce344eb5b2b537bd052b2",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/4b6d83630166f3b9d99b9ced75fbad2281c757844d6ce344eb5b2b537bd052b2.json"
+      },
+      "input-verification.json": {
+        "bytes": 4195,
+        "sha256": "107ed21bb91401033d5050bd65ccd721a27387dee1e52d767a7363c63be40496",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/107ed21bb91401033d5050bd65ccd721a27387dee1e52d767a7363c63be40496.json"
+      },
+      "launch-checks.json": {
+        "bytes": 772,
+        "sha256": "ef0153269cdaa50d237d3d29a88797d76013cf139d51f0abf525e153291e9f9e",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/ef0153269cdaa50d237d3d29a88797d76013cf139d51f0abf525e153291e9f9e.json"
+      },
+      "launch-pricing.json": {
+        "bytes": 131,
+        "sha256": "5c57838379708fac1164e3d18444786123e6693addc6f62f16d56aafd39950b9",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/5c57838379708fac1164e3d18444786123e6693addc6f62f16d56aafd39950b9.json"
+      },
+      "launcher.json": {
+        "bytes": 136,
+        "sha256": "5ef0e5a004a1d0b56c01236e2e461aef32af9d599d2e91eae8d2f95b00663d2c",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/5ef0e5a004a1d0b56c01236e2e461aef32af9d599d2e91eae8d2f95b00663d2c.json"
+      },
+      "metadata-repair.json": {
+        "bytes": 4429,
+        "sha256": "9262aedc06ca4fada6fd07169ef67c1ed2c774e867cfdb349954c02e6dc8586a",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/9262aedc06ca4fada6fd07169ef67c1ed2c774e867cfdb349954c02e6dc8586a.json"
+      },
+      "monitor-automation.json": {
+        "bytes": 322,
+        "sha256": "565a3f18c3ac88d6d5b2d38c6b02f350ed650829ed3603a5abe33ed6ee7b3954",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/565a3f18c3ac88d6d5b2d38c6b02f350ed650829ed3603a5abe33ed6ee7b3954.json"
+      },
+      "monitor-instructions.json": {
+        "bytes": 8580,
+        "sha256": "29260e2eccf946588781f50a9ec4d684accb19a084aa220077300f3fb0af34c7",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/29260e2eccf946588781f50a9ec4d684accb19a084aa220077300f3fb0af34c7.json"
+      },
+      "monitoring-summary.json": {
+        "bytes": 466727,
+        "sha256": "e298196ebea6a6f8601b809f7d0ee7ad637028af14b7e4d1681628bf0ae6193e",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/e298196ebea6a6f8601b809f7d0ee7ad637028af14b7e4d1681628bf0ae6193e.json"
+      },
+      "operational-source-manifest.json": {
+        "bytes": 2904,
+        "sha256": "f9b0c95dd94cf3772e32fdd26b8a3b70e4525e578fdeff80d1b73871c901f103",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/f9b0c95dd94cf3772e32fdd26b8a3b70e4525e578fdeff80d1b73871c901f103.json"
+      },
+      "preflight.json": {
+        "bytes": 14904,
+        "sha256": "59c15900116fb834bdb28bcfddd9123dfe1a07a9e9aa7c9d4047ba311125fa31",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/59c15900116fb834bdb28bcfddd9123dfe1a07a9e9aa7c9d4047ba311125fa31.json"
+      },
+      "runtime-constraints.txt": {
+        "bytes": 2764,
+        "sha256": "56aed0e3a2140adbebbc73b79ee51de7ad54c62c200376dc26243dc71758631e",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/56aed0e3a2140adbebbc73b79ee51de7ad54c62c200376dc26243dc71758631e.txt"
+      },
+      "runtime-reference-packages.json": {
+        "bytes": 3899,
+        "sha256": "d90c8a0f93b7e6ba0c27ffbf0bb7497f6cda9cf05fd8dde49d09a5f5880f0f24",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/d90c8a0f93b7e6ba0c27ffbf0bb7497f6cda9cf05fd8dde49d09a5f5880f0f24.json"
+      },
+      "startup-attempt-audit.json": {
+        "bytes": 1030,
+        "sha256": "8625a4ef4a5ae104254e84dec1b41f7e73b19bf7b4d36d46bd8b42ce5228724b",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/8625a4ef4a5ae104254e84dec1b41f7e73b19bf7b4d36d46bd8b42ce5228724b.json"
+      },
+      "worker-launch.json": {
+        "bytes": 553,
+        "sha256": "01cd7827030f817788b366c6f91320e4e55b0c3856de87d542434ca06f26a55d",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/01cd7827030f817788b366c6f91320e4e55b0c3856de87d542434ca06f26a55d.json"
+      }
+    },
+    "member_bytes": 485504322,
+    "member_count": 141,
+    "records": {
+      "catalog.json": {
+        "bytes": 2887,
+        "sha256": "df19d69542f445ff634216026f41c2d1be073466c727f913b4ab2ba2d045dcf5",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/df19d69542f445ff634216026f41c2d1be073466c727f913b4ab2ba2d045dcf5.json"
+      },
+      "checks.json": {
+        "bytes": 1731,
+        "sha256": "6468c1da2305725cb2679db52db41ae037715744fd49ec7381d113bb42517850",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/6468c1da2305725cb2679db52db41ae037715744fd49ec7381d113bb42517850.json"
+      },
+      "deployment.json": {
+        "bytes": 1489,
+        "sha256": "aca7cb5563e04b1c31a98ee8b8414d7e5acfef408b3dcc4114d4ea70bc9e1a00",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/aca7cb5563e04b1c31a98ee8b8414d7e5acfef408b3dcc4114d4ea70bc9e1a00.json"
+      },
+      "inputs/starting-genotype.json": {
+        "bytes": 13551,
+        "sha256": "9cbb7c3b1073697196a41940b3a8e50a2c0794daa6f2965a0828851f27189632",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/9cbb7c3b1073697196a41940b3a8e50a2c0794daa6f2965a0828851f27189632.json"
+      },
+      "jobs.json": {
+        "bytes": 2003,
+        "sha256": "7fe5b585ef3012ff19eed9d8ee091111b1bd6fa6fb43daaced638862747528e7",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/7fe5b585ef3012ff19eed9d8ee091111b1bd6fa6fb43daaced638862747528e7.json"
+      },
+      "manifest.json": {
+        "bytes": 709,
+        "sha256": "9202ca6d735980682ed6853323eeff3e5efd25b2607bbdee711c1f267f87fd09",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/9202ca6d735980682ed6853323eeff3e5efd25b2607bbdee711c1f267f87fd09.json"
+      },
+      "pricing.json": {
+        "bytes": 10852,
+        "sha256": "e8802c9189b71faa4f6d265769cdd3732b2474d6fbf9b097f42bccb84ac94098",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/e8802c9189b71faa4f6d265769cdd3732b2474d6fbf9b097f42bccb84ac94098.json"
+      },
+      "protocol.json": {
+        "bytes": 9810,
+        "sha256": "de7d54014ac461da86974ea0fc2123d1e3b08ec6f5a6939f561b057e6ab9d369",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/de7d54014ac461da86974ea0fc2123d1e3b08ec6f5a6939f561b057e6ab9d369.json"
+      },
+      "source-manifest.json": {
+        "bytes": 10049,
+        "sha256": "4064a70af5f4dbf84e8775d27f7f14fc0eb7b7e8b2b337e95491cb3ff10f4eea",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/4064a70af5f4dbf84e8775d27f7f14fc0eb7b7e8b2b337e95491cb3ff10f4eea.json"
+      }
+    },
+    "status": "completed_independently_verified",
+    "worker_graphs_compared": true
+  },
+  "evaluator_ids": {
+    "essentiality": "8939b4281ff028967f6a6f188a1e23a7d5128e9b174212f5cdd7f2cd65e1d1a5",
+    "fba": "583a179d05ef19c643fccf5fe00bc95a83b2123bdacf5c5df2669db97a17d466",
+    "genome_size": "1218f065b8ecd291f64800ed768e830b095083209eac483715227c888b4e3946",
+    "module_retention": "b5c46d84f805847ec8356af3ebac80f923867987be63ddbc0becd84d350e447a",
+    "resource_allocation": "a4592a05342c0b10b18cf1e158644aa3d825c05eb046f7e4349b355b246813d6"
+  },
+  "experiment_type": "non_llm_deletion_baselines",
+  "final_checkpoints": {
+    "deletion-baselines-20261106-greedy-block-seed-17": {
+      "archive": {
+        "bytes": 8185107,
+        "sha256": "472724b7086e0dc3fa48386d5931aa5cd9e50fbeab04d5262da593d217a1d4a3",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-17/archives/472724b7086e0dc3fa48386d5931aa5cd9e50fbeab04d5262da593d217a1d4a3.tar.gz"
+      },
+      "index": {
+        "bytes": 2704,
+        "sha256": "589b38969552883fb20eb412d9d4578b29e32972ca1b2b58c94557bec10a2ccf",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-17/indexes/589b38969552883fb20eb412d9d4578b29e32972ca1b2b58c94557bec10a2ccf.json"
+      },
+      "member_count": 15,
+      "status": "verified",
+      "verified_at": "2026-11-06T16:15:18.599249+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-greedy-block-seed-17-data:v32"
+    },
+    "deletion-baselines-20261106-greedy-block-seed-29": {
+      "archive": {
+        "bytes": 9868184,
+        "sha256": "d3734175fc6c0d478b66326371755402841a8c3d3683766623c1144bf0760757",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-29/archives/d3734175fc6c0d478b66326371755402841a8c3d3683766623c1144bf0760757.tar.gz"
+      },
+      "index": {
+        "bytes": 2704,
+        "sha256": "2a021ad65e2a33bb1d8b6dc65050f9a610ee521e3cf48cc11537e65e0aacf326",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-29/indexes/2a021ad65e2a33bb1d8b6dc65050f9a610ee521e3cf48cc11537e65e0aacf326.json"
+      },
+      "member_count": 15,
+      "status": "verified",
+      "verified_at": "2026-11-06T16:15:17.355186+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-greedy-block-seed-29-data:v32"
+    },
+    "deletion-baselines-20261106-greedy-block-seed-43": {
+      "archive": {
+        "bytes": 8024006,
+        "sha256": "d9ee83bfd0ef7aaf21caedaac419008c87921db886cf9dd18bfc53365bc8dd24",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-43/archives/d9ee83bfd0ef7aaf21caedaac419008c87921db886cf9dd18bfc53365bc8dd24.tar.gz"
+      },
+      "index": {
+        "bytes": 2704,
+        "sha256": "ffa453d7c38397402d6d88f7062738fd83a6aae5ddbc95ad7b52f89a4ff541e7",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-43/indexes/ffa453d7c38397402d6d88f7062738fd83a6aae5ddbc95ad7b52f89a4ff541e7.json"
+      },
+      "member_count": 15,
+      "status": "verified",
+      "verified_at": "2026-11-06T16:24:18.349328+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-greedy-block-seed-43-data:v32"
+    },
+    "deletion-baselines-20261106-greedy-block-seed-59": {
+      "archive": {
+        "bytes": 8633457,
+        "sha256": "faca012a2716b2b39ada2f5b18a8116ac1604a197d31003e4eb62d493d198b2f",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-59/archives/faca012a2716b2b39ada2f5b18a8116ac1604a197d31003e4eb62d493d198b2f.tar.gz"
+      },
+      "index": {
+        "bytes": 2704,
+        "sha256": "455dd27c368483945985d95e0e059df7c2db54ff81901424b964ee05bee8bddf",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-59/indexes/455dd27c368483945985d95e0e059df7c2db54ff81901424b964ee05bee8bddf.json"
+      },
+      "member_count": 15,
+      "status": "verified",
+      "verified_at": "2026-11-06T16:32:37.975882+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-greedy-block-seed-59-data:v32"
+    },
+    "deletion-baselines-20261106-greedy-block-seed-71": {
+      "archive": {
+        "bytes": 8193492,
+        "sha256": "62b1c8299bc77e8753c652e5f90e5e0023bb3bdfb570ef6eab6b7bc788b32d80",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-71/archives/62b1c8299bc77e8753c652e5f90e5e0023bb3bdfb570ef6eab6b7bc788b32d80.tar.gz"
+      },
+      "index": {
+        "bytes": 2704,
+        "sha256": "f4d37bed45adecf9e45b39c051dea368e8d3a1db1ea9da9732ebac9401f9dd85",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-71/indexes/f4d37bed45adecf9e45b39c051dea368e8d3a1db1ea9da9732ebac9401f9dd85.json"
+      },
+      "member_count": 15,
+      "status": "verified",
+      "verified_at": "2026-11-06T16:41:21.312888+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-greedy-block-seed-71-data:v32"
+    },
+    "deletion-baselines-20261106-randomized-block-seed-17": {
+      "archive": {
+        "bytes": 9286404,
+        "sha256": "89a367dc52c1aad36d75d4a295d1dbfe81d83551a2eaa7bd53ac6667ad522e0d",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-17/archives/89a367dc52c1aad36d75d4a295d1dbfe81d83551a2eaa7bd53ac6667ad522e0d.tar.gz"
+      },
+      "index": {
+        "bytes": 2713,
+        "sha256": "2d38ad6796cf959ba05dc7ccd5fb07a2129492dd5782d8d258f05155eb3760a8",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-17/indexes/2d38ad6796cf959ba05dc7ccd5fb07a2129492dd5782d8d258f05155eb3760a8.json"
+      },
+      "member_count": 15,
+      "status": "verified",
+      "verified_at": "2026-11-06T16:23:44.549506+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-randomized-block-seed-17-data:v50"
+    },
+    "deletion-baselines-20261106-randomized-block-seed-29": {
+      "archive": {
+        "bytes": 10338334,
+        "sha256": "05f193591b62e0fc0989513981e4053b566b02d0e6a88b3509b9faa8670f77c7",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-29/archives/05f193591b62e0fc0989513981e4053b566b02d0e6a88b3509b9faa8670f77c7.tar.gz"
+      },
+      "index": {
+        "bytes": 2714,
+        "sha256": "ccf505812dd3091a7236a53cf6d9a1e0533d3c27d629063171cf1342ff202e47",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-29/indexes/ccf505812dd3091a7236a53cf6d9a1e0533d3c27d629063171cf1342ff202e47.json"
+      },
+      "member_count": 15,
+      "status": "verified",
+      "verified_at": "2026-11-06T16:24:42.658156+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-randomized-block-seed-29-data:v50"
+    },
+    "deletion-baselines-20261106-randomized-block-seed-43": {
+      "archive": {
+        "bytes": 8565231,
+        "sha256": "f55ae02568ca0217eaffa97d6988380013eb260cc85fa3920b0c83c7aeaf1b22",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-43/archives/f55ae02568ca0217eaffa97d6988380013eb260cc85fa3920b0c83c7aeaf1b22.tar.gz"
+      },
+      "index": {
+        "bytes": 2713,
+        "sha256": "2b20d4750ba9408ea2ba2e61b5971533d76d0015dddbad2ed988ad4cfa740b5e",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-43/indexes/2b20d4750ba9408ea2ba2e61b5971533d76d0015dddbad2ed988ad4cfa740b5e.json"
+      },
+      "member_count": 15,
+      "status": "verified",
+      "verified_at": "2026-11-06T16:35:46.226156+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-randomized-block-seed-43-data:v51"
+    },
+    "deletion-baselines-20261106-randomized-block-seed-59": {
+      "archive": {
+        "bytes": 8228687,
+        "sha256": "d0489e438c621dc43845f819eedce8e4b569e4d1768e6e31cfd0f37cfce33ebf",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-59/archives/d0489e438c621dc43845f819eedce8e4b569e4d1768e6e31cfd0f37cfce33ebf.tar.gz"
+      },
+      "index": {
+        "bytes": 2713,
+        "sha256": "ad37a3ee1e31e485b225bef7f00905daf826ff12926b0b06196cb2bb9404646c",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-59/indexes/ad37a3ee1e31e485b225bef7f00905daf826ff12926b0b06196cb2bb9404646c.json"
+      },
+      "member_count": 15,
+      "status": "verified",
+      "verified_at": "2026-11-06T16:41:05.485865+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-randomized-block-seed-59-data:v50"
+    },
+    "deletion-baselines-20261106-randomized-block-seed-71": {
+      "archive": {
+        "bytes": 8488371,
+        "sha256": "22f1de3c9fa5d22db4e3271c0f342b4f3677afcef795142e7cb4ac5964d4783f",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-71/archives/22f1de3c9fa5d22db4e3271c0f342b4f3677afcef795142e7cb4ac5964d4783f.tar.gz"
+      },
+      "index": {
+        "bytes": 2713,
+        "sha256": "609ebc37b07d005230928913ddddb18644ec93868d8cca57524573e9a3d4cccf",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-71/indexes/609ebc37b07d005230928913ddddb18644ec93868d8cca57524573e9a3d4cccf.json"
+      },
+      "member_count": 15,
+      "status": "verified",
+      "verified_at": "2026-11-06T16:41:41.135035+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-randomized-block-seed-71-data:v50"
+    }
+  },
+  "frozen_inputs": {
+    "fba_model": {
+      "path": "data/external/iML1515.json",
+      "sha256": "832e706681b60eeefce844348dd7ded1520b7f8d2c2d72d423e0b77cc473dc45"
+    },
+    "genes": {
+      "path": "data/processed/genes.parquet",
+      "sha256": "b2469b1112bb1f8ca5eab4ccc2952df3e67a61d1c683d4ac98ef16ac20f77d1b"
+    },
+    "modules": {
+      "path": "data/processed/kegg_modules.json",
+      "sha256": "27b3013a9c0dfcbc5734b066466307669a3c64d0fc1097a9dd6ae69030c115db"
+    },
+    "rba_manifest": {
+      "path": "data/external/rba_ecoli_k12_wt/rba_artifact_manifest.json",
+      "sha256": "80f69f9bb926455f1bb94a5bf7578ec31e7b42f224134c9ff09121feb1511793"
+    }
+  },
+  "growth_gates": {
+    "fba_growth_strictly_positive": true,
+    "rba_growth_floor_per_hour": 0.1
+  },
+  "held_out_validation": {
+    "analysis": {
+      "bytes": 349987,
+      "sha256": "ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70.json"
+    },
+    "experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106",
+    "feedback_to_search": false,
+    "requested_followup": "Cost and approve validation separately, retaining the prior 20-generation, three-seed protocol and uniform numerical checks. No validation is launched by this search runner.",
+    "result_summary": {
+      "baseline_divisions": 30,
+      "baseline_lineages": 30,
+      "baseline_lineages_at_20": 0,
+      "baseline_terminal_reasons": {
+        "model_exception": 1,
+        "nondivision_max_duration": 29
+      },
+      "calibration_completed_cycles": 2,
+      "completed_cycles_excluding_calibration": 150,
+      "control_lineages_at_20": 6,
+      "exact_target_transcripts_absent_all_304_daughters": true,
+      "finite_mass_time_in_all_2020_current_history_files": true,
+      "lineages": 36,
+      "solver_assisted_completed_cells": 3,
+      "solver_fallback_events_all_cells": 33
+    },
+    "scientific_status": "completed_with_nondivision_and_model_exception",
+    "selection": "Nominate one final jointly feasible state per run using the frozen ordering; deduplicate exact genotypes. Report no improvement explicitly. Freeze the entire nomination list before any vEcoli results.",
+    "status": "completed_verified"
+  },
+  "id": "deletion-baselines-20261106",
+  "input_restore_index": {
+    "sha256": "0830845f20ebe8f35d49b9024329fa241b83a78f6a302420f52a150583f024ee",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-0830845f20ebe8f35d49b9024329fa241b83a78f6a302420f52a150583f024ee.json"
+  },
+  "jobs": 10,
+  "launch_checks": {
+    "bytes": 772,
+    "sha256": "ef0153269cdaa50d237d3d29a88797d76013cf139d51f0abf525e153291e9f9e",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/ef0153269cdaa50d237d3d29a88797d76013cf139d51f0abf525e153291e9f9e.json"
+  },
+  "launched_at": "2026-11-06T16:06:16.608830+00:00",
+  "local_metadata": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/deletion-baselines-20261106",
+  "local_source_snapshot": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/deletion-baselines-20261106/source",
+  "methods": [
+    "randomized_block",
+    "greedy_block"
+  ],
+  "monitoring": {
+    "automation_id": "monitor-deletion-baselines",
+    "deletion_receipt": {
+      "bytes": 273,
+      "sha256": "930accb105901ce01f974ecf16f04a49ddc40f093dba8bd0496be8282e1b12b7",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/930accb105901ce01f974ecf16f04a49ddc40f093dba8bd0496be8282e1b12b7.json"
+    },
+    "final_audit": {
+      "bytes": 17048,
+      "sha256": "90e173e3faa95f0f07e0609efef20cdff7d7c83bba184cd0c991e3b1252289aa",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/90e173e3faa95f0f07e0609efef20cdff7d7c83bba184cd0c991e3b1252289aa.json"
+    },
+    "instructions": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/deletion-baselines-20261106/monitor-instructions.json",
+    "last_verified_at": "2026-11-06T16:55:49.909752+00:00",
+    "snapshot": {
+      "bytes": 17048,
+      "sha256": "90e173e3faa95f0f07e0609efef20cdff7d7c83bba184cd0c991e3b1252289aa",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/90e173e3faa95f0f07e0609efef20cdff7d7c83bba184cd0c991e3b1252289aa.json"
+    },
+    "status": "deleted"
+  },
+  "new_evaluated_states_per_job": 500,
+  "nominations": {
+    "count": 10,
+    "record": {
+      "bytes": 263103,
+      "sha256": "b333073f95f692a1575f93ebc341a6f75ff2766f894a81a5680a877d455ba275",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/b333073f95f692a1575f93ebc341a6f75ff2766f894a81a5680a877d455ba275.json"
+    },
+    "selection_frozen": true,
+    "validation_analysis": {
+      "bytes": 349987,
+      "sha256": "ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70.json"
+    },
+    "validation_experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106",
+    "validation_status": "completed_verified"
+  },
+  "operational_sources": {
+    "bytes": 2818,
+    "sha256": "dcb0fa82255eccd3dcb5df406368fbd0f613189e00c3a8d8918fedcb8d65cc88",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/dcb0fa82255eccd3dcb5df406368fbd0f613189e00c3a8d8918fedcb8d65cc88.json"
+  },
+  "prepared_at": "2026-11-06T15:27:21.852464+00:00",
+  "remote_execution": {
+    "deadline_timer": "NEXT                        LEFT LAST                        PASSED UNIT                                 ACTIVATES\nSat 2026-11-07 15:48:07 UTC  23h Fri 2026-11-06 15:48:30 UTC      - yggdrisil-baseline-budget-stop.timer yggdrisil-baseline-budget-stop.service\n\n1 timers listed.\nPass --all to see loaded but inactive timers, too.\n",
+    "launched": true,
+    "max_concurrent_jobs": 4,
+    "metadata_repair": {
+      "bytes": 4429,
+      "sha256": "9262aedc06ca4fada6fd07169ef67c1ed2c774e867cfdb349954c02e6dc8586a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/9262aedc06ca4fada6fd07169ef67c1ed2c774e867cfdb349954c02e6dc8586a.json"
+    },
+    "policy": "remote_linux_only",
+    "remote_root": "/home/ubuntu/yggdrisil-baselines-20261106",
+    "supervisor": {
+      "alive": false,
+      "identity_matches": false,
+      "instance_id": "i-0357352c1f7c337d2",
+      "pid": 1509,
+      "start_ticks": "20307",
+      "started_at": "2026-11-06T16:06:16.012001+00:00"
+    },
+    "worker": {
+      "approved_cap_usd": 25,
+      "hourly_usd": 0.8064,
+      "instance_id": "i-0357352c1f7c337d2",
+      "last_verified_at": "2026-11-06T17:02:11.320060+00:00",
+      "launch_time": "2026-11-06T15:48:08+00:00",
+      "max_concurrent_jobs": 4,
+      "public_ip": null,
+      "region": "us-east-1",
+      "science_deadline": "2026-11-07T14:48:07.043749+00:00",
+      "source_bundle_sha256": "9202ca6d735980682ed6853323eeff3e5efd25b2607bbdee711c1f267f87fd09",
+      "status": "terminated",
+      "stop_deadline": "2026-11-07T15:48:07.043749+00:00",
+      "volume_id": "vol-0eeab643d0e3b6c01",
+      "volume_status": "deleted"
+    }
+  },
+  "reproducibility": {
+    "backup_recheck": {
+      "bytes": 68548,
+      "sha256": "8b6c6659255273002f8a455e94e375df98194a12dec3b2e3f6db54abf98fc111",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/catalogs/20261107/records/8b6c6659255273002f8a455e94e375df98194a12dec3b2e3f6db54abf98fc111.json"
+    },
+    "comparison": {
+      "bytes": 28622,
+      "sha256": "7bbb90b2cfc81f4f849c02e753d24ad8360421372e2f140c3b0278f0764d8c25",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/catalogs/20261107/records/7bbb90b2cfc81f4f849c02e753d24ad8360421372e2f140c3b0278f0764d8c25.json"
+    },
+    "comparison_local_path": "experiments/comparisons/agent-baselines-20261106.json",
+    "methods_index_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/blob/3a748e37da91122df62e0440e3bb3b6ce2f0489b/methods/20261106/README.md",
+    "scientific_status_unchanged": true,
+    "source_commit": "3a748e37da91122df62e0440e3bb3b6ce2f0489b",
+    "source_files": 101,
+    "source_manifest": {
+      "bytes": 95610,
+      "sha256": "931fd4a86f0d790102f4fcd414f23802314ae2d759eefa1a3fc1fd2f014d3a2d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/catalogs/20261107/records/931fd4a86f0d790102f4fcd414f23802314ae2d759eefa1a3fc1fd2f014d3a2d.json"
+    },
+    "source_manifest_path": "methods/20261106/manifest.json",
+    "source_publication_authorized": true,
+    "source_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/tree/3a748e37da91122df62e0440e3bb3b6ce2f0489b/methods/20261106/baseline-search"
+  },
+  "results": {
+    "bytes": 55676,
+    "sha256": "0b2ed3ddc6005036f6058572e119674e9213737e58fe6d1da474dc0d2d919157",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/0b2ed3ddc6005036f6058572e119674e9213737e58fe6d1da474dc0d2d919157.json"
+  },
+  "runs": [
+    {
+      "additional_deletions": 485,
+      "curves_recomputed_match": true,
+      "denominators": {
+        "current_functional": {
+          "deleted": 544,
+          "percent": 28.407310704960835,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1515,
+          "percent": 35.31468531468531,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 286,
+          "percent": 23.893065998329156,
+          "total": 1197
+        }
+      },
+      "essentiality": {
+        "n_ambiguous_deleted": 26,
+        "n_conditional_essential_deleted": 29,
+        "n_essential_deleted": 76,
+        "n_unknown_deleted": 55
+      },
+      "evaluations": 500,
+      "fba_growth_per_hour": 0.13065519223733785,
+      "finalist_recomputed_match": true,
+      "method": "randomized_block",
+      "module_retention": {
+        "n_broken": 38,
+        "n_complete": 74
+      },
+      "rba_growth_floor_per_hour": 0.1,
+      "result_sha256": "2dd79e7f8045d5e608510ac39667b0b9ebd1dd7709abd518438e9e51422887a2",
+      "run_id": "deletion-baselines-20261106-randomized-block-seed-17",
+      "seed": 17,
+      "state_id": "7f71008a74fc5364bb4c25ef9ff7d9e8fbf742f0a01e5f1b713482b016665555",
+      "stop_reason": "max_states",
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/4d8ccd748c0c00ee"
+    },
+    {
+      "additional_deletions": 475,
+      "curves_recomputed_match": true,
+      "denominators": {
+        "current_functional": {
+          "deleted": 546,
+          "percent": 28.511749347258487,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1505,
+          "percent": 35.08158508158508,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 287,
+          "percent": 23.976608187134502,
+          "total": 1197
+        }
+      },
+      "essentiality": {
+        "n_ambiguous_deleted": 29,
+        "n_conditional_essential_deleted": 27,
+        "n_essential_deleted": 78,
+        "n_unknown_deleted": 51
+      },
+      "evaluations": 500,
+      "fba_growth_per_hour": 0.1978155346203465,
+      "finalist_recomputed_match": true,
+      "method": "greedy_block",
+      "module_retention": {
+        "n_broken": 45,
+        "n_complete": 67
+      },
+      "rba_growth_floor_per_hour": 0.1,
+      "result_sha256": "5d31641e676aa66b1539e8889c4c9ca3a687b9463ec6d30f5c1481af71d0e0c1",
+      "run_id": "deletion-baselines-20261106-greedy-block-seed-17",
+      "seed": 17,
+      "state_id": "cd242a04960d1854f8363b9bccc4c7e46d557cf52d27e3134a6f675c79b8adec",
+      "stop_reason": "max_states",
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/89c8ee33174ebb2d"
+    },
+    {
+      "additional_deletions": 475,
+      "curves_recomputed_match": true,
+      "denominators": {
+        "current_functional": {
+          "deleted": 550,
+          "percent": 28.720626631853786,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1505,
+          "percent": 35.08158508158508,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 295,
+          "percent": 24.644945697577278,
+          "total": 1197
+        }
+      },
+      "essentiality": {
+        "n_ambiguous_deleted": 30,
+        "n_conditional_essential_deleted": 31,
+        "n_essential_deleted": 68,
+        "n_unknown_deleted": 53
+      },
+      "evaluations": 500,
+      "fba_growth_per_hour": 0.2833257132433468,
+      "finalist_recomputed_match": true,
+      "method": "greedy_block",
+      "module_retention": {
+        "n_broken": 40,
+        "n_complete": 72
+      },
+      "rba_growth_floor_per_hour": 0.1,
+      "result_sha256": "d091cfb6fd46ab143dc854f1936533efa6274c4e0f4ceebb9d1aa6ed0dc7270d",
+      "run_id": "deletion-baselines-20261106-greedy-block-seed-29",
+      "seed": 29,
+      "state_id": "902b9d3258e2838b816f1c48b7d95a8671a0ba18132baec324fa692093555649",
+      "stop_reason": "max_states",
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/80aaef1fb496be40"
+    },
+    {
+      "additional_deletions": 575,
+      "curves_recomputed_match": true,
+      "denominators": {
+        "current_functional": {
+          "deleted": 587,
+          "percent": 30.652741514360315,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1605,
+          "percent": 37.41258741258741,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 313,
+          "percent": 26.148705096073517,
+          "total": 1197
+        }
+      },
+      "essentiality": {
+        "n_ambiguous_deleted": 29,
+        "n_conditional_essential_deleted": 31,
+        "n_essential_deleted": 71,
+        "n_unknown_deleted": 59
+      },
+      "evaluations": 500,
+      "fba_growth_per_hour": 0.22435722931635702,
+      "finalist_recomputed_match": true,
+      "method": "randomized_block",
+      "module_retention": {
+        "n_broken": 43,
+        "n_complete": 69
+      },
+      "rba_growth_floor_per_hour": 0.1,
+      "result_sha256": "05968201fe14270adfd21c71c39f0e7f38f208343e570f48e9ed78256050fc69",
+      "run_id": "deletion-baselines-20261106-randomized-block-seed-29",
+      "seed": 29,
+      "state_id": "ea39c3af33a44bca7f301fcec86e3738c031d9b018082291177f17c13078967a",
+      "stop_reason": "max_states",
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/abaa1c49e943de3f"
+    },
+    {
+      "additional_deletions": 500,
+      "curves_recomputed_match": true,
+      "denominators": {
+        "current_functional": {
+          "deleted": 577,
+          "percent": 30.130548302872064,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1530,
+          "percent": 35.66433566433567,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 310,
+          "percent": 25.89807852965748,
+          "total": 1197
+        }
+      },
+      "essentiality": {
+        "n_ambiguous_deleted": 30,
+        "n_conditional_essential_deleted": 27,
+        "n_essential_deleted": 76,
+        "n_unknown_deleted": 56
+      },
+      "evaluations": 500,
+      "fba_growth_per_hour": 0.10360088972481056,
+      "finalist_recomputed_match": true,
+      "method": "randomized_block",
+      "module_retention": {
+        "n_broken": 43,
+        "n_complete": 69
+      },
+      "rba_growth_floor_per_hour": 0.1,
+      "result_sha256": "7df0d178ce212f4647b36112d68ce951d357aee6771941a595292929eca681da",
+      "run_id": "deletion-baselines-20261106-randomized-block-seed-43",
+      "seed": 43,
+      "state_id": "e4ad030a6bdf409ca1016661c54c4c2d6cd2c149a257f094b0c8d3485d6386a2",
+      "stop_reason": "max_states",
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/363c20a9c6199640"
+    },
+    {
+      "additional_deletions": 350,
+      "curves_recomputed_match": true,
+      "denominators": {
+        "current_functional": {
+          "deleted": 497,
+          "percent": 25.953002610966056,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1380,
+          "percent": 32.16783216783217,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 269,
+          "percent": 22.472848788638263,
+          "total": 1197
+        }
+      },
+      "essentiality": {
+        "n_ambiguous_deleted": 32,
+        "n_conditional_essential_deleted": 22,
+        "n_essential_deleted": 69,
+        "n_unknown_deleted": 45
+      },
+      "evaluations": 500,
+      "fba_growth_per_hour": 0.5395456767926408,
+      "finalist_recomputed_match": true,
+      "method": "greedy_block",
+      "module_retention": {
+        "n_broken": 39,
+        "n_complete": 73
+      },
+      "rba_growth_floor_per_hour": 0.1,
+      "result_sha256": "dec525defc9a2ff66984ac1939555b77b8bef3ef1f89bf69e85e1c92e04430e6",
+      "run_id": "deletion-baselines-20261106-greedy-block-seed-43",
+      "seed": 43,
+      "state_id": "94af7d1af94f9e18d9f0c1eac01ca765f54f48554260cecb63c460ea047f9ea7",
+      "stop_reason": "max_states",
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/8792411c421a032e"
+    },
+    {
+      "additional_deletions": 575,
+      "curves_recomputed_match": true,
+      "denominators": {
+        "current_functional": {
+          "deleted": 590,
+          "percent": 30.80939947780679,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1605,
+          "percent": 37.41258741258741,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 317,
+          "percent": 26.482873851294904,
+          "total": 1197
+        }
+      },
+      "essentiality": {
+        "n_ambiguous_deleted": 28,
+        "n_conditional_essential_deleted": 29,
+        "n_essential_deleted": 79,
+        "n_unknown_deleted": 67
+      },
+      "evaluations": 500,
+      "fba_growth_per_hour": 0.3706392199419988,
+      "finalist_recomputed_match": true,
+      "method": "greedy_block",
+      "module_retention": {
+        "n_broken": 45,
+        "n_complete": 67
+      },
+      "rba_growth_floor_per_hour": 0.1,
+      "result_sha256": "2b7392852890b5fb667cc92214858049459c0d6ad6b4ab701f0445b3b436128a",
+      "run_id": "deletion-baselines-20261106-greedy-block-seed-59",
+      "seed": 59,
+      "state_id": "ac15da5ff908b9e5e775ad6355bdf577c6e219e38689bb7beb6b317956c7dd4c",
+      "stop_reason": "max_states",
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/8d24112d55bc8f21"
+    },
+    {
+      "additional_deletions": 485,
+      "curves_recomputed_match": true,
+      "denominators": {
+        "current_functional": {
+          "deleted": 557,
+          "percent": 29.08616187989556,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1515,
+          "percent": 35.31468531468531,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 297,
+          "percent": 24.81203007518797,
+          "total": 1197
+        }
+      },
+      "essentiality": {
+        "n_ambiguous_deleted": 27,
+        "n_conditional_essential_deleted": 25,
+        "n_essential_deleted": 82,
+        "n_unknown_deleted": 53
+      },
+      "evaluations": 500,
+      "fba_growth_per_hour": 0.3037439177650143,
+      "finalist_recomputed_match": true,
+      "method": "randomized_block",
+      "module_retention": {
+        "n_broken": 32,
+        "n_complete": 80
+      },
+      "rba_growth_floor_per_hour": 0.1,
+      "result_sha256": "9909ddc3b9ad353bf0f231b2753ccc241a9bfdfbffc0773297012e2907f7fad5",
+      "run_id": "deletion-baselines-20261106-randomized-block-seed-59",
+      "seed": 59,
+      "state_id": "51baa6095b360c3488f1026f6794ebd96be7857def85e80faa0029938ee35ab2",
+      "stop_reason": "max_states",
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/1b935a41f4d88e88"
+    },
+    {
+      "additional_deletions": 575,
+      "curves_recomputed_match": true,
+      "denominators": {
+        "current_functional": {
+          "deleted": 591,
+          "percent": 30.861618798955615,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1605,
+          "percent": 37.41258741258741,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 319,
+          "percent": 26.649958228905597,
+          "total": 1197
+        }
+      },
+      "essentiality": {
+        "n_ambiguous_deleted": 25,
+        "n_conditional_essential_deleted": 30,
+        "n_essential_deleted": 73,
+        "n_unknown_deleted": 54
+      },
+      "evaluations": 500,
+      "fba_growth_per_hour": 0.2723088729153891,
+      "finalist_recomputed_match": true,
+      "method": "randomized_block",
+      "module_retention": {
+        "n_broken": 43,
+        "n_complete": 69
+      },
+      "rba_growth_floor_per_hour": 0.1,
+      "result_sha256": "6d78393d03c551635460ecdfeee2325d0d8d14c12e0ad3457ca008f4f3cb430f",
+      "run_id": "deletion-baselines-20261106-randomized-block-seed-71",
+      "seed": 71,
+      "state_id": "bba0c277fe28d6186e337663e536172e95b799b3a47479945e2f80a789500697",
+      "stop_reason": "max_states",
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/34398e9e5f3a6596"
+    },
+    {
+      "additional_deletions": 475,
+      "curves_recomputed_match": true,
+      "denominators": {
+        "current_functional": {
+          "deleted": 555,
+          "percent": 28.98172323759791,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1505,
+          "percent": 35.08158508158508,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 292,
+          "percent": 24.394319131161236,
+          "total": 1197
+        }
+      },
+      "essentiality": {
+        "n_ambiguous_deleted": 30,
+        "n_conditional_essential_deleted": 26,
+        "n_essential_deleted": 84,
+        "n_unknown_deleted": 51
+      },
+      "evaluations": 500,
+      "fba_growth_per_hour": 0.24969247729332142,
+      "finalist_recomputed_match": true,
+      "method": "greedy_block",
+      "module_retention": {
+        "n_broken": 45,
+        "n_complete": 67
+      },
+      "rba_growth_floor_per_hour": 0.1,
+      "result_sha256": "9dce4a2e4bb3be4b6d0e6a4c657f0cacbd07c5d8052120e026ffad52ec4c9101",
+      "run_id": "deletion-baselines-20261106-greedy-block-seed-71",
+      "seed": 71,
+      "state_id": "eacc211697bd876317e0d9cbdd450ef87faf9eca1eaac28e2a80caf0003a733d",
+      "stop_reason": "max_states",
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/5b01d50f633755cd"
+    }
+  ],
+  "science_completed_at": "2026-11-06T16:42:35.924294+00:00",
+  "seeds": [
+    17,
+    29,
+    43,
+    59,
+    71
+  ],
+  "starting_genotype": {
+    "deletion_count": 1030,
+    "deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52",
+    "name": "common-1030-deletion-root",
+    "provenance_experiment": "literature-ablation-kimi-full-20261105",
+    "reference": "NC_000913.3",
+    "registry_genes": 4290
+  },
+  "startup_attempt": {
+    "all_member_names_sizes_sha256_verified": true,
+    "archive": {
+      "bytes": 21079,
+      "sha256": "da02d3213847c186902662b7b7fee212b73aa57a4bb72d289f94dee3d1bada04",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/final/da02d3213847c186902662b7b7fee212b73aa57a4bb72d289f94dee3d1bada04.tar.gz"
+    },
+    "attempt": "package-metadata-before-search",
+    "full_s3_get_verified": true,
+    "index": {
+      "bytes": 8228,
+      "sha256": "4ced267c57e74c6568848442d6eee3caf3719a982bad7e088928edbba6d4d639",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/final/4ced267c57e74c6568848442d6eee3caf3719a982bad7e088928edbba6d4d639.json"
+    },
+    "members_verified": 41,
+    "outcome": "Rejected before scientific evaluation; package metadata repaired, original sources/configs/deadlines unchanged.",
+    "scientific_graphs": 0,
+    "status": "independently_verified",
+    "verified_at": "2026-11-06T16:12:14.680492+00:00",
+    "wandb_artifact": "mcclain/yggdrisil/deletion-baselines-20261106-final-data:v0",
+    "wandb_download_verified": true,
+    "wandb_state": "COMMITTED"
+  },
+  "status": "completed_verified",
+  "summary": {
+    "jobs_completed": 10,
+    "limitations": [
+      "Finite 500-evaluation budget, not convergence or a global minimum.",
+      "FBA/RBA growth gates are model screens, not vEcoli or laboratory viability.",
+      "No matched-budget LLM advantage is inferred from continuation endpoints; historical comparisons require common roots and overlapping actual evaluation counts."
+    ],
+    "method_summaries": {
+      "greedy_block": {
+        "current_functional": {
+          "max_percent": 30.80939947780679,
+          "mean_percent": 28.595300261096607,
+          "min_percent": 25.953002610966056,
+          "n": 5,
+          "sd_percent": 1.7360862870621199
+        },
+        "registry": {
+          "max_percent": 37.41258741258741,
+          "mean_percent": 34.96503496503497,
+          "min_percent": 32.16783216783217,
+          "n": 5,
+          "sd_percent": 1.8611561098684521
+        },
+        "shared_functional": {
+          "max_percent": 26.482873851294904,
+          "mean_percent": 24.394319131161236,
+          "min_percent": 22.472848788638263,
+          "n": 5,
+          "sd_percent": 1.4397400116636663
+        }
+      },
+      "randomized_block": {
+        "current_functional": {
+          "max_percent": 30.861618798955615,
+          "mean_percent": 29.827676240208877,
+          "min_percent": 28.407310704960835,
+          "n": 5,
+          "sd_percent": 1.049855133817461
+        },
+        "registry": {
+          "max_percent": 37.41258741258741,
+          "mean_percent": 36.22377622377623,
+          "min_percent": 35.31468531468531,
+          "n": 5,
+          "sd_percent": 1.094578730244653
+        },
+        "shared_functional": {
+          "max_percent": 26.649958228905597,
+          "mean_percent": 25.480367585630745,
+          "min_percent": 23.893065998329156,
+          "n": 5,
+          "sd_percent": 1.1130252794046973
+        }
+      }
+    },
+    "model_calls": 0,
+    "new_evaluated_states_total": 5000,
+    "search_failures": 0,
+    "unique_nominated_genotypes": 10
+  },
+  "tests": {
+    "deselected": 1,
+    "passed": 41,
+    "runtime": "frozen source, synthetic evaluators"
+  },
+  "updated_at": "2026-11-06T17:07:44.996062+00:00",
+  "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/baseline-study-20261106-metadata-retry1"
+}

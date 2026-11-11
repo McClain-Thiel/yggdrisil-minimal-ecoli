@@ -1,0 +1,900 @@
+{
+  "analysis_type": "Read-only join of independently verified final analyses; no new simulations.",
+  "comparison_id": "agent-baselines-20261106",
+  "genotypes": [
+    {
+      "deletion_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "denominators": {
+        "current_functional": {
+          "deleted": 0,
+          "percent": 0.0,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 0,
+          "percent": 0.0,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 0,
+          "percent": 0.0,
+          "total": 1197
+        }
+      },
+      "is_control": true,
+      "lineages": [
+        {
+          "generations_completed": 20,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "method": "control",
+      "name": "mg1655-control",
+      "search_experiment_id": null,
+      "search_seed": null,
+      "state_id": "e1c094af1688db37bd6af27237d63462b79d769e3dc494d3fff0cb030f674004",
+      "validation_experiment_id": "vecoli-kimi-continuation-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52",
+      "denominators": {
+        "current_functional": {
+          "deleted": 341,
+          "percent": 17.806788511749346,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1030,
+          "percent": 24.009324009324008,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 168,
+          "percent": 14.035087719298245,
+          "total": 1197
+        }
+      },
+      "is_control": true,
+      "lineages": [
+        {
+          "generations_completed": 20,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "method": "control",
+      "name": "starting-genome-control",
+      "search_experiment_id": null,
+      "search_seed": null,
+      "state_id": "11a12418d088502a6d28f143e2a1b98fdb308e592d1be3009748b7eed3480343",
+      "validation_experiment_id": "vecoli-kimi-continuation-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "de7acdab1746fcf5f77dbdbe8415fa696546c458e9756af0b86071432869b253",
+      "denominators": {
+        "current_functional": {
+          "deleted": 789,
+          "percent": 41.20104438642298,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1919,
+          "percent": 44.73193473193473,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 422,
+          "percent": 35.25480367585631,
+          "total": 1197
+        }
+      },
+      "is_control": false,
+      "lineages": [
+        {
+          "generations_completed": 20,
+          "seed": 101,
+          "solver_assisted_generations": [
+            5,
+            7
+          ],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 14,
+          "seed": 307,
+          "solver_assisted_generations": [
+            2
+          ],
+          "terminal_reason": "model_exception"
+        }
+      ],
+      "method": "agent_no_retrieval",
+      "name": "no-retrieval",
+      "search_experiment_id": "literature-ablation-kimi-continuation-20261106",
+      "search_seed": 59,
+      "state_id": "81134169f1246cb8d13b75c4afaff2739f594a399e52a761faa204765528f1ee",
+      "validation_experiment_id": "vecoli-kimi-continuation-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "b2898afa5d682112d94ea73a61ae1f7c30b374fe6c40484113718b57e046c5f7",
+      "denominators": {
+        "current_functional": {
+          "deleted": 666,
+          "percent": 34.778067885117494,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1765,
+          "percent": 41.142191142191145,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 357,
+          "percent": 29.82456140350877,
+          "total": 1197
+        }
+      },
+      "is_control": false,
+      "lineages": [
+        {
+          "generations_completed": 20,
+          "seed": 101,
+          "solver_assisted_generations": [
+            1,
+            2,
+            13,
+            15,
+            16
+          ],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "seed": 211,
+          "solver_assisted_generations": [
+            1,
+            2
+          ],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "seed": 307,
+          "solver_assisted_generations": [
+            1,
+            3,
+            5,
+            19,
+            20
+          ],
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "method": "agent_frozen_dossier",
+      "name": "frozen-dossier",
+      "search_experiment_id": "literature-ablation-kimi-continuation-20261106",
+      "search_seed": 59,
+      "state_id": "4bae4beed61920f371ee2739285a1411296c258fc1008b3c270183bad5331e5d",
+      "validation_experiment_id": "vecoli-kimi-continuation-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "cee6a0329125a00f297ea4cc8a9e4dd746d8de3e0daad9a0493ee60ca3b8c28a",
+      "denominators": {
+        "current_functional": {
+          "deleted": 664,
+          "percent": 34.67362924281984,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1823,
+          "percent": 42.494172494172496,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 373,
+          "percent": 31.161236424394318,
+          "total": 1197
+        }
+      },
+      "is_control": false,
+      "lineages": [
+        {
+          "generations_completed": 20,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "seed": 211,
+          "solver_assisted_generations": [
+            8,
+            10,
+            18
+          ],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "method": "agent_adaptive_literature",
+      "name": "adaptive-literature",
+      "search_experiment_id": "literature-ablation-kimi-continuation-20261106",
+      "search_seed": 59,
+      "state_id": "6cc663f9b95d6e34493b77c4c825cb19b0ed1162112954b31145e73168c956e5",
+      "validation_experiment_id": "vecoli-kimi-continuation-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "denominators": {
+        "current_functional": {
+          "deleted": 0,
+          "percent": 0.0,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 0,
+          "percent": 0.0,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 0,
+          "percent": 0.0,
+          "total": 1197
+        }
+      },
+      "is_control": true,
+      "lineages": [
+        {
+          "generations_completed": 20,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "method": "control",
+      "name": "mg1655-control",
+      "search_experiment_id": null,
+      "search_seed": null,
+      "state_id": "e1c094af1688db37bd6af27237d63462b79d769e3dc494d3fff0cb030f674004",
+      "validation_experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52",
+      "denominators": {
+        "current_functional": {
+          "deleted": 341,
+          "percent": 17.806788511749346,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1030,
+          "percent": 24.009324009324008,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 168,
+          "percent": 14.035087719298245,
+          "total": 1197
+        }
+      },
+      "is_control": true,
+      "lineages": [
+        {
+          "generations_completed": 20,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "generations_completed": 20,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "method": "control",
+      "name": "starting-genome-control",
+      "search_experiment_id": null,
+      "search_seed": null,
+      "state_id": "11a12418d088502a6d28f143e2a1b98fdb308e592d1be3009748b7eed3480343",
+      "validation_experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "ee96a3d6bb7bd1f06e7e09186d0226666cfc32d3ee0f8cdb1a1bf77ad9d499ce",
+      "denominators": {
+        "current_functional": {
+          "deleted": 557,
+          "percent": 29.08616187989556,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1515,
+          "percent": 35.31468531468531,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 297,
+          "percent": 24.81203007518797,
+          "total": 1197
+        }
+      },
+      "is_control": false,
+      "lineages": [
+        {
+          "generations_completed": 1,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "method": "randomized_block",
+      "name": "randomized-block-seed-59",
+      "search_experiment_id": "deletion-baselines-20261106",
+      "search_seed": 59,
+      "state_id": "51baa6095b360c3488f1026f6794ebd96be7857def85e80faa0029938ee35ab2",
+      "validation_experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "557aeceaae8cd76f37f0d315b8fd8f4f374cf0a945e4deb3478c5c9efb93db46",
+      "denominators": {
+        "current_functional": {
+          "deleted": 544,
+          "percent": 28.407310704960835,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1515,
+          "percent": 35.31468531468531,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 286,
+          "percent": 23.893065998329156,
+          "total": 1197
+        }
+      },
+      "is_control": false,
+      "lineages": [
+        {
+          "generations_completed": 1,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "method": "randomized_block",
+      "name": "randomized-block-seed-17",
+      "search_experiment_id": "deletion-baselines-20261106",
+      "search_seed": 17,
+      "state_id": "7f71008a74fc5364bb4c25ef9ff7d9e8fbf742f0a01e5f1b713482b016665555",
+      "validation_experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "1bd81c85ec79815bc46b2500add8d1d1787e9d14310baca9740980a90b784357",
+      "denominators": {
+        "current_functional": {
+          "deleted": 550,
+          "percent": 28.720626631853786,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1505,
+          "percent": 35.08158508158508,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 295,
+          "percent": 24.644945697577278,
+          "total": 1197
+        }
+      },
+      "is_control": false,
+      "lineages": [
+        {
+          "generations_completed": 1,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "model_exception"
+        }
+      ],
+      "method": "greedy_block",
+      "name": "greedy-block-seed-29",
+      "search_experiment_id": "deletion-baselines-20261106",
+      "search_seed": 29,
+      "state_id": "902b9d3258e2838b816f1c48b7d95a8671a0ba18132baec324fa692093555649",
+      "validation_experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "4fd5db2713ff420e5ad2030af7b8912d0a7d1b4050421c6973ce39f8cea37f02",
+      "denominators": {
+        "current_functional": {
+          "deleted": 497,
+          "percent": 25.953002610966056,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1380,
+          "percent": 32.16783216783217,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 269,
+          "percent": 22.472848788638263,
+          "total": 1197
+        }
+      },
+      "is_control": false,
+      "lineages": [
+        {
+          "generations_completed": 1,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "method": "greedy_block",
+      "name": "greedy-block-seed-43",
+      "search_experiment_id": "deletion-baselines-20261106",
+      "search_seed": 43,
+      "state_id": "94af7d1af94f9e18d9f0c1eac01ca765f54f48554260cecb63c460ea047f9ea7",
+      "validation_experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "7c377eea419bcff8495ebfc25e3315ba9f9c3769c61284d942753490fdfb3f25",
+      "denominators": {
+        "current_functional": {
+          "deleted": 590,
+          "percent": 30.80939947780679,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1605,
+          "percent": 37.41258741258741,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 317,
+          "percent": 26.482873851294904,
+          "total": 1197
+        }
+      },
+      "is_control": false,
+      "lineages": [
+        {
+          "generations_completed": 1,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "method": "greedy_block",
+      "name": "greedy-block-seed-59",
+      "search_experiment_id": "deletion-baselines-20261106",
+      "search_seed": 59,
+      "state_id": "ac15da5ff908b9e5e775ad6355bdf577c6e219e38689bb7beb6b317956c7dd4c",
+      "validation_experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "e37a1fc0cb5877113726a0a32b824c6da02361417a6597b23edb215daacba06d",
+      "denominators": {
+        "current_functional": {
+          "deleted": 591,
+          "percent": 30.861618798955615,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1605,
+          "percent": 37.41258741258741,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 319,
+          "percent": 26.649958228905597,
+          "total": 1197
+        }
+      },
+      "is_control": false,
+      "lineages": [
+        {
+          "generations_completed": 1,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "method": "randomized_block",
+      "name": "randomized-block-seed-71",
+      "search_experiment_id": "deletion-baselines-20261106",
+      "search_seed": 71,
+      "state_id": "bba0c277fe28d6186e337663e536172e95b799b3a47479945e2f80a789500697",
+      "validation_experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "5196ea9882135c8880454c5489f2794c899055dd227d8f25c1a43fee70a5c325",
+      "denominators": {
+        "current_functional": {
+          "deleted": 546,
+          "percent": 28.511749347258487,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1505,
+          "percent": 35.08158508158508,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 287,
+          "percent": 23.976608187134502,
+          "total": 1197
+        }
+      },
+      "is_control": false,
+      "lineages": [
+        {
+          "generations_completed": 1,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "method": "greedy_block",
+      "name": "greedy-block-seed-17",
+      "search_experiment_id": "deletion-baselines-20261106",
+      "search_seed": 17,
+      "state_id": "cd242a04960d1854f8363b9bccc4c7e46d557cf52d27e3134a6f675c79b8adec",
+      "validation_experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "c702b016e16b17d92f2afbe98cb3ff3446980bd71ce21df9858b922985dde345",
+      "denominators": {
+        "current_functional": {
+          "deleted": 577,
+          "percent": 30.130548302872064,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1530,
+          "percent": 35.66433566433567,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 310,
+          "percent": 25.89807852965748,
+          "total": 1197
+        }
+      },
+      "is_control": false,
+      "lineages": [
+        {
+          "generations_completed": 1,
+          "seed": 101,
+          "solver_assisted_generations": [
+            1
+          ],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 211,
+          "solver_assisted_generations": [
+            1
+          ],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 307,
+          "solver_assisted_generations": [
+            1
+          ],
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "method": "randomized_block",
+      "name": "randomized-block-seed-43",
+      "search_experiment_id": "deletion-baselines-20261106",
+      "search_seed": 43,
+      "state_id": "e4ad030a6bdf409ca1016661c54c4c2d6cd2c149a257f094b0c8d3485d6386a2",
+      "validation_experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "5ff55ea26957272f2d43b3c46f5b3132b8db96d48ca96a40d770fa98bc130b18",
+      "denominators": {
+        "current_functional": {
+          "deleted": 587,
+          "percent": 30.652741514360315,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1605,
+          "percent": 37.41258741258741,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 313,
+          "percent": 26.148705096073517,
+          "total": 1197
+        }
+      },
+      "is_control": false,
+      "lineages": [
+        {
+          "generations_completed": 1,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "method": "randomized_block",
+      "name": "randomized-block-seed-29",
+      "search_experiment_id": "deletion-baselines-20261106",
+      "search_seed": 29,
+      "state_id": "ea39c3af33a44bca7f301fcec86e3738c031d9b018082291177f17c13078967a",
+      "validation_experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106"
+    },
+    {
+      "deletion_set_sha256": "1ca35bca8998236c2f94e0bd29af942df3c8bc8327a7aabb1887303f63394569",
+      "denominators": {
+        "current_functional": {
+          "deleted": 555,
+          "percent": 28.98172323759791,
+          "total": 1915
+        },
+        "registry": {
+          "deleted": 1505,
+          "percent": 35.08158508158508,
+          "total": 4290
+        },
+        "shared_functional": {
+          "deleted": 292,
+          "percent": 24.394319131161236,
+          "total": 1197
+        }
+      },
+      "is_control": false,
+      "lineages": [
+        {
+          "generations_completed": 1,
+          "seed": 101,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 211,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "generations_completed": 1,
+          "seed": 307,
+          "solver_assisted_generations": [],
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "method": "greedy_block",
+      "name": "greedy-block-seed-71",
+      "search_experiment_id": "deletion-baselines-20261106",
+      "search_seed": 71,
+      "state_id": "eacc211697bd876317e0d9cbdd450ef87faf9eca1eaac28e2a80caf0003a733d",
+      "validation_experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106"
+    }
+  ],
+  "limitations": [
+    "Agent conditions each have one search seed and inherited search graphs; baselines have five search seeds per method from the common 1030-deletion root.",
+    "Simulation seeds repeat each genome; they are not independent genome-search replicates. Controls are repeated in both validation studies.",
+    "Baseline searches used 500 new evaluated states each; agent searches stopped on model budgets. This is not a matched-cost or matched-evaluation comparison.",
+    "Functional percentages use the same five-process accounting rule and 1915-gene current-model set; the shared historical panel contains 1197 genes.",
+    "Model exceptions remain separate from nondivision at the 10800-second simulated cell-time cap.",
+    "Expression-knockout projection in aerobic M9 glucose; no physical chromosome reduction or laboratory viability claim.",
+    "The same strict v2 numerical fallback policy applies to both validation studies; assisted generations remain explicitly marked.",
+    "These results do not independently establish a benefit from literature retrieval or a statistically replicated agent-method advantage."
+  ],
+  "methods_manifest": "methods/20261106/manifest.json",
+  "schema_version": 1,
+  "sources": {
+    "agent_validation": {
+      "bytes": 335097,
+      "sha256": "f7d0f0949eb9059bf25beb5e0ed62655467b7ec9f7f710216684ee64ff4c0abe",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/f7d0f0949eb9059bf25beb5e0ed62655467b7ec9f7f710216684ee64ff4c0abe.json"
+    },
+    "baseline_search": {
+      "bytes": 55676,
+      "sha256": "0b2ed3ddc6005036f6058572e119674e9213737e58fe6d1da474dc0d2d919157",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/0b2ed3ddc6005036f6058572e119674e9213737e58fe6d1da474dc0d2d919157.json"
+    },
+    "baseline_validation": {
+      "bytes": 349987,
+      "sha256": "ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70.json"
+    },
+    "functional_comparison": {
+      "bytes": 13177,
+      "sha256": "f76f8296dbb12c9f2ff79fc1b725ac8bc88ea5ec822d5fe66714d4602953e3e0",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/analysis/f76f8296dbb12c9f2ff79fc1b725ac8bc88ea5ec822d5fe66714d4602953e3e0.json"
+    }
+  },
+  "summary": {
+    "agent": {
+      "completed_divisions": 174,
+      "distinct_genotypes": 3,
+      "lineages": 9,
+      "lineages_at_20": 8,
+      "terminal_reasons": {
+        "model_exception": 1,
+        "reached_max_generations": 8
+      }
+    },
+    "baseline": {
+      "completed_divisions": 30,
+      "distinct_genotypes": 10,
+      "lineages": 30,
+      "lineages_at_20": 0,
+      "terminal_reasons": {
+        "model_exception": 1,
+        "nondivision_max_duration": 29
+      }
+    },
+    "controls": {
+      "completed_divisions": 240,
+      "distinct_genotypes": 2,
+      "lineages": 12,
+      "lineages_at_20": 12,
+      "terminal_reasons": {
+        "reached_max_generations": 12
+      }
+    }
+  }
+}

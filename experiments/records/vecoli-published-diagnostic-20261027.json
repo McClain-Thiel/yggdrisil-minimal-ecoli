@@ -1,0 +1,95 @@
+{
+  "backup_verification_report": "runs/vecoli-published-diagnostic-20261027/backup-verification-report.json",
+  "controller_pid": 20025,
+  "created_at": "2026-10-27T15:51:01.270699+00:00",
+  "data_backup": {
+    "closed_cell_data_files_verified": 342,
+    "completed_cell_cycles": 18,
+    "final_audit_download_verified": true,
+    "parent_artifact": "mcclain/yggdrisil/published-genome-benchmarks-20261027-data:v1",
+    "progress_sha256": "f83d3f7bedae04c0ef1e0a7a827512da5ecd332e8c519f90846b6f2e6fc111cb",
+    "scope": "Closed cell outputs; running cells are backed up after completion.",
+    "status": "verified",
+    "verification_report": "runs/vecoli-published-diagnostic-20261027/final-backup-verification.json",
+    "verified_at": "2026-10-27T16:58:05.785974+00:00",
+    "wandb_artifact": "mcclain/yggdrisil/vecoli-published-diagnostic-20261027-data:v21"
+  },
+  "error": null,
+  "events": "runs/vecoli-published-diagnostic-20261027/events.jsonl",
+  "failed_at": null,
+  "final_validation": "runs/vecoli-published-diagnostic-20261027/final-validation.json",
+  "finished_at": "2026-10-27T16:47:24.117084+00:00",
+  "id": "vecoli-published-diagnostic-20261027",
+  "kind": "published_genome_vecoli_diagnostic",
+  "lineage": {
+    "fail_at_max_duration": true,
+    "max_generations": 4,
+    "seed": 101,
+    "single_daughters": true
+  },
+  "local_root": "runs/vecoli-published-diagnostic-20261027",
+  "manifest": "runs/vecoli-published-diagnostic-20261027/manifest.json",
+  "model_budget_usd": 0,
+  "monitoring": {
+    "last_notification_at": "2026-10-27T16:57:59.241749+00:00",
+    "last_notification_kind": "completed_results",
+    "monitor_stop_reason": "Diagnostic and final artifact verification completed; no further simulations authorized."
+  },
+  "new_edison_jobs": 0,
+  "parent_experiment_ids": [
+    "published-genome-benchmarks-20261027",
+    "vecoli-lineage12-20261027-095332"
+  ],
+  "progress": "runs/vecoli-published-diagnostic-20261027/progress.json",
+  "purpose": "Four-generation vEcoli diagnostic of DGF-298 and D41c MG1655 coding-gene deletion projections, bypassing FBA/RBA selection explicitly to test model disagreement",
+  "results": "runs/vecoli-published-diagnostic-20261027/results.json",
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/vecoli-published-diagnostic-20261027": {
+        "bytes": 2116,
+        "sha256": "a39367b9a05d92a5c411c2f218e7ed39d2c461ca5b99902cf6fc7665ca3b1a49",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-a39367b9a05d92a5c411c2f218e7ed39d2c461ca5b99902cf6fc7665ca3b1a49.json",
+        "verified_at": "2026-11-05T22:51:21.641157+00:00"
+      },
+      "application/runs/vecoli-published-diagnostic-20261027": {
+        "bytes": 7170,
+        "sha256": "d278f2c56ed310af57649487ef7c09a73baef016cdbbb0c03b75c3787220e5df",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-d278f2c56ed310af57649487ef7c09a73baef016cdbbb0c03b75c3787220e5df.json",
+        "verified_at": "2026-11-05T22:51:09.230269+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "started_at": "2026-10-27T15:52:24.862039+00:00",
+  "status": "completed_with_nondivision",
+  "summary": {
+    "active_targeted_transcripts_detected": 0,
+    "finite_emitted_mass_time_values": 286768,
+    "generation_counts": {
+      "d41c-complete": 1,
+      "d41c-touched": 1,
+      "dgf298-complete": 4,
+      "dgf298-touched": 4,
+      "mg1655-control": 4,
+      "ms56-complete": 4
+    },
+    "native_strain_viability_established": false,
+    "native_workflow_exit_code": 1,
+    "nondivision_cell_cycles": 2,
+    "runtime_warnings": 614,
+    "successful_cell_cycles": 18,
+    "terminal_interpretation": "Completed diagnostic with D41c biological nondivision; no unresolved setup or orchestration failure."
+  },
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/814e15e0"
+  ],
+  "workflow_exit_code": 1,
+  "workflow_log": "runs/vecoli-published-diagnostic-20261027/workflow.log"
+}

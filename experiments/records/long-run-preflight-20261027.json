@@ -1,0 +1,55 @@
+{
+  "child_runs": [
+    {
+      "id": "panel",
+      "local_root": "runs/long-run-preflight-20261027/panel",
+      "records": {
+        "config": "runs/long-run-preflight-20261027/panel/config.json",
+        "graph": "runs/long-run-preflight-20261027/panel/graph.sqlite",
+        "summary": "runs/long-run-preflight-20261027/panel/summary.json"
+      }
+    }
+  ],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "long-run-preflight-20261027",
+  "kind": "historical_validation_or_pilot",
+  "local_root": "runs/long-run-preflight-20261027",
+  "records": [
+    "runs/long-run-preflight-20261027/MS56_Park_2014_supplement.json",
+    "runs/long-run-preflight-20261027/budget-check-progress.json",
+    "runs/long-run-preflight-20261027/diagnostic-spend.json",
+    "runs/long-run-preflight-20261027/root-feasibility.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/long-run-preflight-20261027": {
+        "bytes": 1240,
+        "sha256": "0a68b8afc9360222d0e08f5cfdca228e83f0745293c351f65dd9928dc6564665",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-0a68b8afc9360222d0e08f5cfdca228e83f0745293c351f65dd9928dc6564665.json",
+        "verified_at": "2026-11-05T22:51:19.437675+00:00"
+      },
+      "application/runs/long-run-preflight-20261027": {
+        "bytes": 1244,
+        "sha256": "e84ed5a5d2be69a873ea28146359467abce29ff36c72df14b97f68eab6936b0d",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-e84ed5a5d2be69a873ea28146359467abce29ff36c72df14b97f68eab6936b0d.json",
+        "verified_at": "2026-11-05T22:51:06.580950+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "historical_recorded",
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/eq0w70j8"
+  ]
+}

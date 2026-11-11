@@ -1,0 +1,74 @@
+{
+  "child_runs": [
+    {
+      "id": "1-mg1655-ordinary-seed-17",
+      "local_root": "runs/long-genomic-search-20261027-072322/1-mg1655-ordinary-seed-17",
+      "records": {
+        "agent_memory": "runs/long-genomic-search-20261027-072322/1-mg1655-ordinary-seed-17/agents.sqlite",
+        "config": "runs/long-genomic-search-20261027-072322/1-mg1655-ordinary-seed-17/config.json",
+        "graph": "runs/long-genomic-search-20261027-072322/1-mg1655-ordinary-seed-17/graph.sqlite",
+        "summary": "runs/long-genomic-search-20261027-072322/1-mg1655-ordinary-seed-17/summary.json"
+      }
+    },
+    {
+      "id": "2-ms56-ordinary-seed-17",
+      "local_root": "runs/long-genomic-search-20261027-072322/2-ms56-ordinary-seed-17",
+      "records": {
+        "agent_memory": "runs/long-genomic-search-20261027-072322/2-ms56-ordinary-seed-17/agents.sqlite",
+        "config": "runs/long-genomic-search-20261027-072322/2-ms56-ordinary-seed-17/config.json",
+        "graph": "runs/long-genomic-search-20261027-072322/2-ms56-ordinary-seed-17/graph.sqlite",
+        "summary": "runs/long-genomic-search-20261027-072322/2-ms56-ordinary-seed-17/summary.json"
+      }
+    },
+    {
+      "id": "3-ms56-cached-edison-seed-17",
+      "local_root": "runs/long-genomic-search-20261027-072322/3-ms56-cached-edison-seed-17",
+      "records": {
+        "config": "runs/long-genomic-search-20261027-072322/3-ms56-cached-edison-seed-17/config.json",
+        "edison_cache": "runs/long-genomic-search-20261027-072322/3-ms56-cached-edison-seed-17/edison.sqlite",
+        "graph": "runs/long-genomic-search-20261027-072322/3-ms56-cached-edison-seed-17/graph.sqlite"
+      }
+    }
+  ],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "long-genomic-search-20261027-072322",
+  "kind": "genomic_search",
+  "local_root": "runs/long-genomic-search-20261027-072322",
+  "records": [
+    "runs/long-genomic-search-20261027-072322/plan.json",
+    "runs/long-genomic-search-20261027-072322/summary.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/long-genomic-search-20261027-072322": {
+        "bytes": 1263,
+        "sha256": "11a71e8aa996e3e1b4bb985f9b8b8bd8b1fadf8e12fdabed2092d622145fe525",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-11a71e8aa996e3e1b4bb985f9b8b8bd8b1fadf8e12fdabed2092d622145fe525.json",
+        "verified_at": "2026-11-05T22:51:17.658083+00:00"
+      },
+      "application/runs/long-genomic-search-20261027-072322": {
+        "bytes": 1268,
+        "sha256": "d6ed42c235922148c5e0f758317f44e826d4f9e326bae86c1b2af7ade7f13785",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-d6ed42c235922148c5e0f758317f44e826d4f9e326bae86c1b2af7ade7f13785.json",
+        "verified_at": "2026-11-05T22:51:05.089925+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "historical_recorded",
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/0rnjidsn",
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/acdo0fck"
+  ]
+}

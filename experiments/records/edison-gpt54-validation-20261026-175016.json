@@ -1,0 +1,79 @@
+{
+  "child_runs": [
+    {
+      "id": "edison-seed-17",
+      "local_root": "runs/edison-gpt54-validation-20261026-175016/edison-seed-17",
+      "records": {
+        "config": "runs/edison-gpt54-validation-20261026-175016/edison-seed-17/config.json",
+        "graph": "runs/edison-gpt54-validation-20261026-175016/edison-seed-17/graph.sqlite",
+        "summary": "runs/edison-gpt54-validation-20261026-175016/edison-seed-17/summary.json"
+      }
+    },
+    {
+      "id": "edison-seed-18",
+      "local_root": "runs/edison-gpt54-validation-20261026-175016/edison-seed-18",
+      "records": {
+        "config": "runs/edison-gpt54-validation-20261026-175016/edison-seed-18/config.json",
+        "graph": "runs/edison-gpt54-validation-20261026-175016/edison-seed-18/graph.sqlite",
+        "summary": "runs/edison-gpt54-validation-20261026-175016/edison-seed-18/summary.json"
+      }
+    },
+    {
+      "id": "ordinary-seed-17",
+      "local_root": "runs/edison-gpt54-validation-20261026-175016/ordinary-seed-17",
+      "records": {
+        "config": "runs/edison-gpt54-validation-20261026-175016/ordinary-seed-17/config.json",
+        "graph": "runs/edison-gpt54-validation-20261026-175016/ordinary-seed-17/graph.sqlite",
+        "summary": "runs/edison-gpt54-validation-20261026-175016/ordinary-seed-17/summary.json"
+      }
+    },
+    {
+      "id": "ordinary-seed-18",
+      "local_root": "runs/edison-gpt54-validation-20261026-175016/ordinary-seed-18",
+      "records": {
+        "config": "runs/edison-gpt54-validation-20261026-175016/ordinary-seed-18/config.json",
+        "graph": "runs/edison-gpt54-validation-20261026-175016/ordinary-seed-18/graph.sqlite",
+        "summary": "runs/edison-gpt54-validation-20261026-175016/ordinary-seed-18/summary.json"
+      }
+    }
+  ],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "edison-gpt54-validation-20261026-175016",
+  "kind": "historical_validation_or_pilot",
+  "local_root": "runs/edison-gpt54-validation-20261026-175016",
+  "records": [
+    "runs/edison-gpt54-validation-20261026-175016/summary.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/edison-gpt54-validation-20261026-175016": {
+        "bytes": 1281,
+        "sha256": "ba6747ecaee79fa52990dabb1f1ceacd53f508a88bf74de16435b3c632b1a1aa",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-ba6747ecaee79fa52990dabb1f1ceacd53f508a88bf74de16435b3c632b1a1aa.json",
+        "verified_at": "2026-11-05T22:51:14.356827+00:00"
+      },
+      "application/runs/edison-gpt54-validation-20261026-175016": {
+        "bytes": 1280,
+        "sha256": "2a655d5b57f45026d4e534ba7aeef13d4a5b014109cc5bdd980256497cc8b5e7",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-2a655d5b57f45026d4e534ba7aeef13d4a5b014109cc5bdd980256497cc8b5e7.json",
+        "verified_at": "2026-11-05T22:50:44.247739+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "historical_recorded",
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/dy77qq8b"
+  ]
+}

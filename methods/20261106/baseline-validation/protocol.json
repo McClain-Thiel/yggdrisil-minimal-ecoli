@@ -1,0 +1,137 @@
+{
+  "additional_calibration_cells": 2,
+  "analysis": {
+    "comparison": "Match solver policy, seeds and medium to prior agent validation. Search efficiency comparisons require common roots and equal evaluation counts.",
+    "denominators": [
+      "4290-gene registry",
+      "1915 current functional genes",
+      "1197 shared functional genes"
+    ],
+    "interpretation": "MG1655 expression-knockout model evidence; does not physically shorten the chromosome or establish laboratory viability.",
+    "outcomes": [
+      "consecutive divisions",
+      "division times",
+      "birth/dry-mass trends",
+      "exact target-transcript suppression",
+      "finite outputs",
+      "solver-assisted cells",
+      "numerical warnings",
+      "nondivision versus model/infrastructure failure"
+    ],
+    "retain_all_lineages": true
+  },
+  "authorization": {
+    "approved_budget_usd": null,
+    "credential_transfer": "Pending approval: W&B tracking key only over encrypted SSH; owner-only permissions; excluded from backups.",
+    "model_calls_allowed": false,
+    "paid_launch": false,
+    "preparation": true
+  },
+  "baseline_lineages": 30,
+  "calibration": {
+    "full_dispatch_requires_pass": true,
+    "generations": 2,
+    "genotype": "mg1655-control",
+    "max_peak_rss_bytes": 4294967296,
+    "require_finite_output": true,
+    "seed": 101
+  },
+  "control_lineages": 6,
+  "cost_proposal": {
+    "estimate_basis": "Scaled previous approximately 300-cell validation to 720 cells, same nine-cell concurrency; genotype runtime is uncertain.",
+    "estimated_wall_hours": [
+      10,
+      14
+    ],
+    "max_compute_usd": 19.3536,
+    "model_cost_usd": 0,
+    "pricing_record": "pricing-and-input-verification.json",
+    "storage_transfer_request_reserve_usd": 10.6464,
+    "total_cap_usd": 30,
+    "verified_hourly_usd": 0.8064
+  },
+  "execution": {
+    "deadlines": "Set once from actual launch time; reserve last hour for preservation. Never reset on retry.",
+    "encrypted_scratch_gib": 200,
+    "instance_type": "m7i.4xlarge",
+    "max_parallel_cells_per_workflow": 3,
+    "max_parallel_cells_total": 9,
+    "max_worker_hours": 24,
+    "memory_gib": 64,
+    "native_threads_per_cell": 1,
+    "platform": "remote_linux_only",
+    "region": "us-east-1",
+    "remote_root": "/home/ubuntu/yggdrisil-baseline-validation-20261106",
+    "science_hours": 23,
+    "scratch_type": "gp3",
+    "seed_workflows": 3,
+    "shared_worker": "Leave all preexisting shared compute unchanged.",
+    "vcpus": 16,
+    "worker_id": null
+  },
+  "experiment_id": "vecoli-deletion-baselines-20gen-3seed-20261106",
+  "generations": 20,
+  "maximum_full_cell_simulations": 720,
+  "native_runtime": {
+    "container_digest": null,
+    "git_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+    "nextflow": "25.10.4",
+    "python": "3.12.12"
+  },
+  "parent_experiment_ids": [
+    "deletion-baselines-20261106",
+    "vecoli-kimi-continuation-20gen-3seed-20261106"
+  ],
+  "preservation": {
+    "checkpoint": "Closed cells only; full S3 GET SHA256 plus committed W&B artifact download verification; halt on backup failure.",
+    "cleanup": "Stop by hard deadline. Preserve disk on verification failure; terminate only dedicated worker and delete volume after independent final member audit.",
+    "credentials": "Screen all locally configured historical secrets before metadata publication. Transfer only W&B tracking credential; remote scans all configured credentials. No source archives as data.",
+    "ledger": "Update experiments.json and working migration ledger with exact immutable S3/W&B refs, source hashes, failures, statuses and costs."
+  },
+  "remote_preflight_required": [
+    "Verify exact restored input and source hashes",
+    "Build native extensions using pinned native runtime without modifying scientific source",
+    "Run exact-knockout audit on all 12 genotypes before dispatch",
+    "Run offline controller, solver and backup integrity checks",
+    "Verify bucket ownership, public-access blocks and W&B data round trips",
+    "Verify persistent hard shutdown timer, process identities and exclusive locks"
+  ],
+  "schema_version": 1,
+  "scientific_conditions": {
+    "exact_expression_knockouts": true,
+    "interpretation": "Longer model diagnostic, not laboratory viability or a calibrated predictive endpoint.",
+    "max_cell_simulated_seconds": 10800,
+    "medium": "aerobic M9 glucose",
+    "new_linux_lineages_from_generation_one": true,
+    "no_candidate_substitution": true
+  },
+  "seeds": [
+    101,
+    211,
+    307
+  ],
+  "selection": {
+    "baseline_genotypes": 10,
+    "candidate_substitutions": false,
+    "control_genotypes": 2,
+    "feedback_to_search": false,
+    "frozen_at": "2026-11-06T16:42:35.924294+00:00",
+    "reference": {
+      "bytes": 263103,
+      "sha256": "b333073f95f692a1575f93ebc341a6f75ff2766f894a81a5680a877d455ba275",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/b333073f95f692a1575f93ebc341a6f75ff2766f894a81a5680a877d455ba275.json"
+    },
+    "rule": "Nominate one final jointly feasible state per run using the frozen ordering; deduplicate exact genotypes. Report no improvement explicitly. Freeze the entire nomination list before any vEcoli results."
+  },
+  "single_daughters": true,
+  "solver_patch_sha256": "3a4a50fdc7b4d16277b7ce8d3cb76e2e2fd69132937a4d57cbb232b01a06592a",
+  "solver_policy": "Apply the documented v2 numerical recovery consistently to all five genotypes. Retry GLP_UNBND once with fresh basis, presolve and ordinary simplex refinement, unchanged LP/objective/constraints/tolerances; accept only identical LP hash, GLP_OPT and finite KKT relative residuals <=1e-7. Latch validation failure against outer retries. Log every fallback and distinguish patch-assisted cells from unassisted trajectories. No candidate substitutions or additional repairs after results.",
+  "status": "prepared_pending_cost_approval",
+  "tracking": {
+    "entity": "mcclain",
+    "monitor": "Use approved scheduled monitoring; notify only completion, new failures, actionable stalls or required user action.",
+    "project": "yggdrisil",
+    "s3_bucket": "phd-research-storage-1758274488",
+    "s3_prefix": "yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/"
+  }
+}

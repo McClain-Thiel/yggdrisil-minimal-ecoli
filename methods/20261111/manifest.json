@@ -1,0 +1,1025 @@
+{
+  "deployments": {
+    "primary": {
+      "files": {
+        "application/scripts/baseline_depth_extension.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/baseline_depth_extension.py",
+          "sha256": "45a1427af3db83fad195d2b724bf5080eaacd31634043033766928f6de010aeb"
+        },
+        "application/scripts/baseline_depth_logging_recovery.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/baseline_depth_logging_recovery.py",
+          "sha256": "29dbd1bac5e4a8304e4040496d275191dd27affd75c878e3b2f353905d40a84b"
+        },
+        "application/scripts/close_depth_search.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/close_depth_search.py",
+          "sha256": "65a78b3ce9dcef1a93d44ce79dac010343454abec8967d36b9fe7bd4311351be"
+        },
+        "application/scripts/collect_search_replication.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/collect_search_replication.py",
+          "sha256": "5f05697a81cd621bf7c5088ecca90006d335b92858b025ea97da084ad4ee72a8"
+        },
+        "application/scripts/depth_matched_validation.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/depth_matched_validation.py",
+          "sha256": "2461e448d404e38e18a70db3046c0df0f527450a8da10ef82c0786cb4a8f55c5"
+        },
+        "application/scripts/parallel_replication_validation.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/parallel_replication_validation.py",
+          "sha256": "30a2db89a7e2c1f91c084c004c7b297f4330bab61997ac6a8c1ee56c3ff20f40"
+        },
+        "application/scripts/plan_search_replication.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/plan_search_replication.py",
+          "sha256": "d621867ae0d61aeadb6c442c81e4d64f5eb1f71acbba8c54dc315a353dc73748"
+        },
+        "application/scripts/prepare_replication_validation.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/prepare_replication_validation.py",
+          "sha256": "fa9932b9140979b5075145f3cc4eb574db4038c9a770381821ead23e7fb09fb4"
+        },
+        "application/scripts/run_replication_validation_shard.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/run_replication_validation_shard.py",
+          "sha256": "a867aac3c1ec94a74eddfc950312bb1c89c452ce644da6bb8e463499133ee4c9"
+        },
+        "application/scripts/run_search_replication.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/run_search_replication.py",
+          "sha256": "2a107149ec7c1bf13354bb15056cee8963139278f0dc722a66419733febbbffe"
+        },
+        "application/scripts/select_depth_matched_baselines.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/select_depth_matched_baselines.py",
+          "sha256": "0af7ea617a3625a7c3aebd8f7fcbec19867865e2afeef9effe61fdefc35acbb0"
+        },
+        "application/scripts/supervise_baseline_depth_parallel.py": {
+          "git_path": "methods/20261111/runtime/search/parallel-supervisor.py",
+          "sha256": "23cbe82fcb1af26d7e37d1732f4055f48c749e30a45317e37b6218dce6c67c7a"
+        },
+        "application/scripts/supervise_search_replication.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/supervise_search_replication.py",
+          "sha256": "5aa2279a6918e0aa7b3be80ca90db4aca8c69dd495dfe8f6588ada2370eb1840"
+        },
+        "application/scripts/track_vecoli_experiment.py": {
+          "git_path": "methods/20261109/runtime/scripts/track_vecoli_experiment.py",
+          "sha256": "070453b8aba72197f642aa28598313a8afd4e047eb537d89028c4da883fc5b86"
+        },
+        "application/src/yggdrisil_ecoli/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/__init__.py",
+          "sha256": "3ab38fbdf0a27e476eced9adcaeb2575788f51cfbe45fa6bc104e4fc1805b195"
+        },
+        "application/src/yggdrisil_ecoli/actions.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/actions.py",
+          "sha256": "4cad97fa1ce6b7f5492403750208493b5bdd9c86794c16dd63976f4af1600421"
+        },
+        "application/src/yggdrisil_ecoli/agent_policy.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/agent_policy.py",
+          "sha256": "ad88a81a0e3f1448f8a904f434a7bc15990f18b52730313b7d5554c721520664"
+        },
+        "application/src/yggdrisil_ecoli/analysis.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/analysis.py",
+          "sha256": "0d58536aa349ff36724b167e4042d3041f8983b859cf8b663c42b7d681758f59"
+        },
+        "application/src/yggdrisil_ecoli/baseline_storage.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/baseline_storage.py",
+          "sha256": "779327ae0c8b88be6b4d2f73b8d1a5eb69988e3a602e1def34d5903a487497ee"
+        },
+        "application/src/yggdrisil_ecoli/constants.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/constants.py",
+          "sha256": "0c8d2736fe8931cae09d59d3b82df9a70411f94a32da99f9969b42608c5404d7"
+        },
+        "application/src/yggdrisil_ecoli/data/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/__init__.py",
+          "sha256": "2254a3c984f8d9c59563269424072ebea2343fcfd8f6182a26223ac5c5ffa568"
+        },
+        "application/src/yggdrisil_ecoli/data/audit.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/audit.py",
+          "sha256": "13e26b3bbb9de96bf5535c1c8914d2ed876935cb8692de116596c10be090c3b4"
+        },
+        "application/src/yggdrisil_ecoli/data/crosswalks.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/crosswalks.py",
+          "sha256": "153e6198a2f270447a1c746eb92bea5a403a5e93a5896f0f2f59aa77dd83d252"
+        },
+        "application/src/yggdrisil_ecoli/data/errors.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/errors.py",
+          "sha256": "532f64fe7f2ac1718cb7edf2690c36d0e31ae8ffa7ac9b515485e1052df01ad7"
+        },
+        "application/src/yggdrisil_ecoli/data/essentiality.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/essentiality.py",
+          "sha256": "795db089d3b345e82d1539d44c398ad1349fb80b90df50b3a0da3e0151c3813a"
+        },
+        "application/src/yggdrisil_ecoli/data/evidence.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/evidence.py",
+          "sha256": "d840d3cdafb01407a08eaaa964488dbf984e2ca1eac97823573f348a38591dd4"
+        },
+        "application/src/yggdrisil_ecoli/data/gff.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/gff.py",
+          "sha256": "51b18287c809d779bd41c7373000b444be1abc6d30f729f4c005bdf9cf29ffa2"
+        },
+        "application/src/yggdrisil_ecoli/data/io.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/io.py",
+          "sha256": "f0b9b122369a306487821ddb728ce7a79e5a2e6e2772ce6178a6828a85aec76d"
+        },
+        "application/src/yggdrisil_ecoli/data/kegg_modules.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/kegg_modules.py",
+          "sha256": "dd16c468ebef6adea5fc663159e5d07fe9d8d94e00066220905cfe67cac6204d"
+        },
+        "application/src/yggdrisil_ecoli/data/reduced_genomes.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/reduced_genomes.py",
+          "sha256": "3598d60c19176fabff9b9ab19a36d1c9f398936e1166efcebe02a1fda2daa700"
+        },
+        "application/src/yggdrisil_ecoli/data/registry.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/registry.py",
+          "sha256": "d6f2e6f2f0e24608d6057d2d1184d6044d4238aa1a2e4ca31b1b1335a5d10dd0"
+        },
+        "application/src/yggdrisil_ecoli/data/sources.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/sources.py",
+          "sha256": "0505d75cec7bd3e2f79ae4f28e7ca66198ac2209bdd67f9918139af0d2d34c00"
+        },
+        "application/src/yggdrisil_ecoli/module_build.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/module_build.py",
+          "sha256": "0128f0d6b44ccee3fc605fdc8f15c6afa95300e3f1572004fe753c91fee1b8f1"
+        },
+        "application/src/yggdrisil_ecoli/open_set.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/open_set.py",
+          "sha256": "15358439a2b2d804bbe0a7f71be90fc8a41265a322c98ae77c2e8baf436048d6"
+        },
+        "application/src/yggdrisil_ecoli/policies.py": {
+          "git_path": "methods/20261109/runtime/src/yggdrisil_ecoli/policies.py",
+          "sha256": "6e3244a27fc70676a7cda46a6d4583141868f2b90d5700a04581decaaaa7a0d2"
+        },
+        "application/src/yggdrisil_ecoli/problem.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/problem.py",
+          "sha256": "e14df3ffab001a3921747b37f345ba449e35d7cfe5be377ec47f2c2e6d24ab01"
+        },
+        "application/src/yggdrisil_ecoli/py.typed": {
+          "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/src/yggdrisil_ecoli/rba_build.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/rba_build.py",
+          "sha256": "e92133d11b803499abad2eb6373e58f9dbb91475b1bf42e77988aecd0fb9e5ec"
+        },
+        "application/src/yggdrisil_ecoli/research.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/research.py",
+          "sha256": "b7c70552cbc58787c10a0482b3bc0f95e33eb2f6a3fee7da7da7f1bdfa021b8e"
+        },
+        "application/src/yggdrisil_ecoli/resources/vecoli_multi_gene_knockout.py.txt": {
+          "sha256": "c0349912868fd8a7fc8c6dfc8c9aea826d77a93761c3f6b6d866e7a6192624c4",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/src/yggdrisil_ecoli/scorers/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/__init__.py",
+          "sha256": "d1dbfb067fbc419ea27fcaf4fb91a5d786df53ef42ba77ded96292e01aa5d5eb"
+        },
+        "application/src/yggdrisil_ecoli/scorers/base.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/base.py",
+          "sha256": "67351b375ee3d10def6db31b28ce52b631f8d63ad823c4802f23531205ba49f9"
+        },
+        "application/src/yggdrisil_ecoli/scorers/essentiality.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/essentiality.py",
+          "sha256": "ce2378a584ab7a4137dc81730ddede5280be39d153efeec4a78574b4d97c96aa"
+        },
+        "application/src/yggdrisil_ecoli/scorers/fba.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/fba.py",
+          "sha256": "723dde7d81d92d805333c1d62b44a88277f058b1382e2d6cf38c310d7af34606"
+        },
+        "application/src/yggdrisil_ecoli/scorers/modules.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/modules.py",
+          "sha256": "c70b3cfffdf4b7d158d280728f497615473b9f734102686bc06f9bbd04ebda8f"
+        },
+        "application/src/yggdrisil_ecoli/scorers/rba.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/rba.py",
+          "sha256": "c8a687c6063d27082998c1e545a65184ffb80266b1d85a40e33b33c410418a05"
+        },
+        "application/src/yggdrisil_ecoli/scorers/size.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/size.py",
+          "sha256": "9baee885434050b10efc125bd0e01164c5d88abc37ba4a817822a8740cabdf60"
+        },
+        "application/src/yggdrisil_ecoli/state.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/state.py",
+          "sha256": "654d080d8e8fac791c7c3970bc828cd3d4695ca214545921d60a311a760cbabf"
+        },
+        "application/src/yggdrisil_ecoli/tools/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/tools/__init__.py",
+          "sha256": "6b23e66a99e373258b883844549c3adcaa143c1a12d618a5c1ecfc5006b21e42"
+        },
+        "application/src/yggdrisil_ecoli/tools/edison.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/tools/edison.py",
+          "sha256": "667a38f459f1304f27ad8b90004c8d795b549de61583566c433495d769c8b875"
+        },
+        "application/src/yggdrisil_ecoli/tools/genes.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/tools/genes.py",
+          "sha256": "d564e738c15f9b69e2a2a798d544d71cc8931d245bf3be009faef3523fc2a02d"
+        },
+        "application/src/yggdrisil_ecoli/tools/literature.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/tools/literature.py",
+          "sha256": "60cb9f8e9d57869f55591a934fac96fb545f9d889bd9a8316c7bd5b0bfb55241"
+        },
+        "application/src/yggdrisil_ecoli/vecoli.py": {
+          "git_path": "methods/20261106/agent-validation/validation-application/src/yggdrisil_ecoli/vecoli.py",
+          "sha256": "e80140e228f033b889731a706e4f1fe32028c5105912500340bbb7543d026dd9"
+        },
+        "application/src/yggdrisil_ecoli/vecoli_results.py": {
+          "git_path": "methods/20261106/agent-validation/validation-application/src/yggdrisil_ecoli/vecoli_results.py",
+          "sha256": "2e6113965b27b2c1996f770776d090f09af54c3e2aaf838e573baed055972900"
+        },
+        "application/tests/test_baseline_depth_extension.py": {
+          "git_path": "methods/20261111/runtime/search/application/tests/test_baseline_depth_extension.py",
+          "sha256": "35c2f43002098e16eb857774945471d62f4822417288f464dd265cfb17becf45"
+        },
+        "application/tests/test_depth_matched_selection.py": {
+          "git_path": "methods/20261111/runtime/primary/application/tests/test_depth_matched_selection.py",
+          "sha256": "18f7806d788a6917dff03297858c12a02d971b5a6089c4d62e786d41091c2b7c"
+        },
+        "application/tests/test_depth_matched_validation.py": {
+          "git_path": "methods/20261111/runtime/primary/application/tests/test_depth_matched_validation.py",
+          "sha256": "9f28c344d88575586f76dec759b3dd0ba7816d3d922d4fbc51bb104bad5b2915"
+        },
+        "application/tests/test_search_replication.py": {
+          "git_path": "methods/20261111/runtime/primary/application/tests/test_search_replication.py",
+          "sha256": "72818192a2878faff55a7df04aa1a540d38a63074cb2c73893aa856c51bf5038"
+        },
+        "credential-pattern-policy.json": {
+          "sha256": "aa6df6789cf013198d90f137152c0f13ef2d19328e348e323d5f3cb1e6fa37ec",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "early-stop-authorization.json": {
+          "sha256": "ed5c2838b1147991091066b91a7b593fa0eae85350969140206b41f9280d7896",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "operations/audit-knockouts.py": {
+          "git_path": "methods/20261106/agent-validation/validation/audit-knockouts.py",
+          "sha256": "dcad3d440b03df777f5fddb311511793b95820c7064452cc6769238e4c236da3"
+        },
+        "plan.json": {
+          "sha256": "6d936433f1bee15ff3b537056c5eff7fbf8420ffe3c235b4543c8c23671242b2",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "reference-nominations.json": {
+          "sha256": "ddb1eb0233e5a918c402db26bcb8c1d2f4844b850dfde337b56f92af4892b1a5",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "resource-approval.json": {
+          "sha256": "0408f1b94d020e33b0258b40e05b848e3cd28079ad3bb644a91e0ca9e7bf7d91",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "selection-amendment.json": {
+          "sha256": "1fe6c567a15745d00fdd4317c6c5d593b4901d5bdc18a312e0aeb09e0fd9c904",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        }
+      },
+      "path": "methods/20261111/primary-deployment-manifest.json",
+      "sha256": "79b216cdb87998bbc1e6fb748cc16286f890d98d4d85d24048ad3371cb39f3ea"
+    },
+    "search": {
+      "files": {
+        "application/README.md": {
+          "sha256": "c00cb12c4cc537f67989f3b44fdf08f506b860cc9a2abb26c0fb029f298713fe",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/benchmarks/search_replication.json": {
+          "sha256": "a1a05eadea03f81496cb34e28ad29c66f824da125eea7f7f359ebc366840286a",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/methods/20261106/agent-search/protocol.json": {
+          "sha256": "25b2740cf3d2c764076548e80e5c86b9e334153da4c6ea6c8f3a5eeecd93881d",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/methods/20261106/baseline-search/protocol.json": {
+          "sha256": "de7d54014ac461da86974ea0fc2123d1e3b08ec6f5a6939f561b057e6ab9d369",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/methods/20261106/baseline-validation/protocol.json": {
+          "sha256": "2dff7e711718572b8fd4c881beb79d93f8fabe1ba58f748b365a7c70f3c69c15",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/methods/20261106/manifest.json": {
+          "sha256": "931fd4a86f0d790102f4fcd414f23802314ae2d759eefa1a3fc1fd2f014d3a2d",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/methods/20261109/runtime-manifest.json": {
+          "sha256": "a38282ff0d28cb29af5c004538babe90b9066758b1379e378c978dfdc6d29aec",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/pyproject.toml": {
+          "git_path": "methods/20261106/baseline-search/application/pyproject.toml",
+          "sha256": "cf2c181384977e0fdac2b1311090468614252fde90de9d2712c2468f972eba1d"
+        },
+        "application/runs/deletion-baselines-20261106/inputs/starting-genotype.json": {
+          "sha256": "9cbb7c3b1073697196a41940b3a8e50a2c0794daa6f2965a0828851f27189632",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/runs/search-replication-20261109/inputs/starting-genotype.json": {
+          "sha256": "1953c7886440956cf0a1f16d158f4d12f81bb29e73dc1f54a2f44cc55a39e7a2",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/runs/search-replication-20261109/parallel-validation/finalization/active-protocol.json": {
+          "sha256": "b124207d0719256a57e41f30270f33ef36c250b7be3fd11dbb01e6d6257b7740",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/runs/search-replication-20261109/parallel-validation/finalization/catalog/nominations.json": {
+          "sha256": "ddb1eb0233e5a918c402db26bcb8c1d2f4844b850dfde337b56f92af4892b1a5",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/scripts/baseline_depth_extension.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/baseline_depth_extension.py",
+          "sha256": "45a1427af3db83fad195d2b724bf5080eaacd31634043033766928f6de010aeb"
+        },
+        "application/scripts/baseline_depth_logging_recovery.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/baseline_depth_logging_recovery.py",
+          "sha256": "29dbd1bac5e4a8304e4040496d275191dd27affd75c878e3b2f353905d40a84b"
+        },
+        "application/scripts/build_agent_baseline_comparison.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/build_agent_baseline_comparison.py",
+          "sha256": "e744436f861e608774fae9b65bac8b75040784656bd9b0713b01d67f368a6350"
+        },
+        "application/scripts/calibrate_published_genomes.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/calibrate_published_genomes.py",
+          "sha256": "bfa95451416f418d87a5e5f82ef84ffe0d9f9fcb71b5dcb264af5ce58fbacd23"
+        },
+        "application/scripts/calibrate_resource_gate.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/calibrate_resource_gate.py",
+          "sha256": "debe0b0a3f8f784aa3a079f0315c62e5518ffd3b7d1d62af47d0f6f41eacd0e3"
+        },
+        "application/scripts/collect_deletion_baselines.py": {
+          "git_path": "methods/20261106/baseline-search/application/scripts/collect_deletion_baselines.py",
+          "sha256": "c01074a36e1f1a8bfe18adb4a797a9b7f6483292067b3459b950219625f112cd"
+        },
+        "application/scripts/collect_search_replication.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/collect_search_replication.py",
+          "sha256": "a3ccddd1f6f0d5e3687601e5a71e8f23761bba4ff011cdc03a6493d0f41b4c8e"
+        },
+        "application/scripts/experiment.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/experiment.py",
+          "sha256": "bd02ac123c4516e41918a9ebd46a8f1263873cccda29a8fabdad88c0a00b0d8f"
+        },
+        "application/scripts/export_experiment_ledger.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/export_experiment_ledger.py",
+          "sha256": "d0fbade2e964fc5b1ea1aa9d240a2a1f7be2d2c2ff85137fe1276bf472fe4eea"
+        },
+        "application/scripts/plan_deletion_baselines.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/plan_deletion_baselines.py",
+          "sha256": "6dbb4a7012995e14ba507302585caf7f5b2ea03138196415ef62bbab249ceff6"
+        },
+        "application/scripts/plan_literature_ablation.py": {
+          "git_path": "methods/20261106/agent-search/application/scripts/plan_literature_ablation.py",
+          "sha256": "b80bb69da0f6b0db4dd61efb0600204effb4b069313beaae4a1cf318226a9dfb"
+        },
+        "application/scripts/plan_search_replication.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/plan_search_replication.py",
+          "sha256": "d621867ae0d61aeadb6c442c81e4d64f5eb1f71acbba8c54dc315a353dc73748"
+        },
+        "application/scripts/prepare_data.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/prepare_data.py",
+          "sha256": "7ff768a7faeb73976d546c0d058ad7aa494215bceaa4780026a011540c20b14a"
+        },
+        "application/scripts/prepare_replication_validation.py": {
+          "git_path": "methods/20261109/runtime/scripts/prepare_replication_validation.py",
+          "sha256": "e14fe4c492d27e091c1eb9205d797490e083b189df344bff681ef2cbf5e65bc9"
+        },
+        "application/scripts/prepare_vecoli_finalists.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/prepare_vecoli_finalists.py",
+          "sha256": "cb1cba5a61c4fc13037871289d6da262aaedfc62002867653c49a2537a10195b"
+        },
+        "application/scripts/run_deletion_baseline.py": {
+          "git_path": "methods/20261106/baseline-search/application/scripts/run_deletion_baseline.py",
+          "sha256": "3c041d35b01e91382d13e854ce5fb3004c1a4179c7f20bc7e8f73aa6f239e9e9"
+        },
+        "application/scripts/run_literature_ablation.py": {
+          "git_path": "methods/20261106/agent-search/application/scripts/run_literature_ablation.py",
+          "sha256": "508ceaebcaff71a14b3dd7fb4e320d3d974afa6f6cacd7a67264d8aa4c0bbeb8"
+        },
+        "application/scripts/run_search_replication.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/run_search_replication.py",
+          "sha256": "2a107149ec7c1bf13354bb15056cee8963139278f0dc722a66419733febbbffe"
+        },
+        "application/scripts/summarize_vecoli_finalists.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/summarize_vecoli_finalists.py",
+          "sha256": "02b4baebcd51f948a962e50a142108a2aaceb808d65a7d24e74fbf105cfe0dbc"
+        },
+        "application/scripts/supervise_search_replication.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/supervise_search_replication.py",
+          "sha256": "5aa2279a6918e0aa7b3be80ca90db4aca8c69dd495dfe8f6588ada2370eb1840"
+        },
+        "application/scripts/track_vecoli_experiment.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/track_vecoli_experiment.py",
+          "sha256": "ef6d0fbbd3c8bf7b5f1451b0788f20a6c4794b1a9fe5fae89c0e6237d103dccb"
+        },
+        "application/src/yggdrisil_ecoli/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/__init__.py",
+          "sha256": "3ab38fbdf0a27e476eced9adcaeb2575788f51cfbe45fa6bc104e4fc1805b195"
+        },
+        "application/src/yggdrisil_ecoli/actions.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/actions.py",
+          "sha256": "4cad97fa1ce6b7f5492403750208493b5bdd9c86794c16dd63976f4af1600421"
+        },
+        "application/src/yggdrisil_ecoli/agent_policy.py": {
+          "git_path": "methods/20261109/runtime/src/yggdrisil_ecoli/agent_policy.py",
+          "sha256": "8ceb1fa2e7b0047f3516ff4f2cd1a8fcc8c28cdafe7eec4749a44abeceea4231"
+        },
+        "application/src/yggdrisil_ecoli/analysis.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/analysis.py",
+          "sha256": "0d58536aa349ff36724b167e4042d3041f8983b859cf8b663c42b7d681758f59"
+        },
+        "application/src/yggdrisil_ecoli/baseline_storage.py": {
+          "git_path": "methods/20261111/runtime/search/application/src/yggdrisil_ecoli/baseline_storage.py",
+          "sha256": "75ae2a7a098ce3444f80c717bd92b8ebb1be7ccd9b31c8b3510b4b02d814d3d2"
+        },
+        "application/src/yggdrisil_ecoli/constants.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/constants.py",
+          "sha256": "0c8d2736fe8931cae09d59d3b82df9a70411f94a32da99f9969b42608c5404d7"
+        },
+        "application/src/yggdrisil_ecoli/data/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/__init__.py",
+          "sha256": "2254a3c984f8d9c59563269424072ebea2343fcfd8f6182a26223ac5c5ffa568"
+        },
+        "application/src/yggdrisil_ecoli/data/audit.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/audit.py",
+          "sha256": "13e26b3bbb9de96bf5535c1c8914d2ed876935cb8692de116596c10be090c3b4"
+        },
+        "application/src/yggdrisil_ecoli/data/crosswalks.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/crosswalks.py",
+          "sha256": "153e6198a2f270447a1c746eb92bea5a403a5e93a5896f0f2f59aa77dd83d252"
+        },
+        "application/src/yggdrisil_ecoli/data/errors.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/errors.py",
+          "sha256": "532f64fe7f2ac1718cb7edf2690c36d0e31ae8ffa7ac9b515485e1052df01ad7"
+        },
+        "application/src/yggdrisil_ecoli/data/essentiality.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/essentiality.py",
+          "sha256": "795db089d3b345e82d1539d44c398ad1349fb80b90df50b3a0da3e0151c3813a"
+        },
+        "application/src/yggdrisil_ecoli/data/evidence.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/evidence.py",
+          "sha256": "d840d3cdafb01407a08eaaa964488dbf984e2ca1eac97823573f348a38591dd4"
+        },
+        "application/src/yggdrisil_ecoli/data/gff.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/gff.py",
+          "sha256": "51b18287c809d779bd41c7373000b444be1abc6d30f729f4c005bdf9cf29ffa2"
+        },
+        "application/src/yggdrisil_ecoli/data/io.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/io.py",
+          "sha256": "f0b9b122369a306487821ddb728ce7a79e5a2e6e2772ce6178a6828a85aec76d"
+        },
+        "application/src/yggdrisil_ecoli/data/kegg_modules.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/kegg_modules.py",
+          "sha256": "dd16c468ebef6adea5fc663159e5d07fe9d8d94e00066220905cfe67cac6204d"
+        },
+        "application/src/yggdrisil_ecoli/data/reduced_genomes.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/reduced_genomes.py",
+          "sha256": "3598d60c19176fabff9b9ab19a36d1c9f398936e1166efcebe02a1fda2daa700"
+        },
+        "application/src/yggdrisil_ecoli/data/registry.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/registry.py",
+          "sha256": "d6f2e6f2f0e24608d6057d2d1184d6044d4238aa1a2e4ca31b1b1335a5d10dd0"
+        },
+        "application/src/yggdrisil_ecoli/data/sources.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/sources.py",
+          "sha256": "0505d75cec7bd3e2f79ae4f28e7ca66198ac2209bdd67f9918139af0d2d34c00"
+        },
+        "application/src/yggdrisil_ecoli/module_build.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/module_build.py",
+          "sha256": "0128f0d6b44ccee3fc605fdc8f15c6afa95300e3f1572004fe753c91fee1b8f1"
+        },
+        "application/src/yggdrisil_ecoli/open_set.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/open_set.py",
+          "sha256": "15358439a2b2d804bbe0a7f71be90fc8a41265a322c98ae77c2e8baf436048d6"
+        },
+        "application/src/yggdrisil_ecoli/policies.py": {
+          "git_path": "methods/20261109/runtime/src/yggdrisil_ecoli/policies.py",
+          "sha256": "6e3244a27fc70676a7cda46a6d4583141868f2b90d5700a04581decaaaa7a0d2"
+        },
+        "application/src/yggdrisil_ecoli/problem.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/problem.py",
+          "sha256": "e14df3ffab001a3921747b37f345ba449e35d7cfe5be377ec47f2c2e6d24ab01"
+        },
+        "application/src/yggdrisil_ecoli/py.typed": {
+          "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/src/yggdrisil_ecoli/rba_build.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/rba_build.py",
+          "sha256": "e92133d11b803499abad2eb6373e58f9dbb91475b1bf42e77988aecd0fb9e5ec"
+        },
+        "application/src/yggdrisil_ecoli/research.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/research.py",
+          "sha256": "b7c70552cbc58787c10a0482b3bc0f95e33eb2f6a3fee7da7da7f1bdfa021b8e"
+        },
+        "application/src/yggdrisil_ecoli/resources/vecoli_multi_gene_knockout.py.txt": {
+          "sha256": "c0349912868fd8a7fc8c6dfc8c9aea826d77a93761c3f6b6d866e7a6192624c4",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/src/yggdrisil_ecoli/scorers/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/__init__.py",
+          "sha256": "d1dbfb067fbc419ea27fcaf4fb91a5d786df53ef42ba77ded96292e01aa5d5eb"
+        },
+        "application/src/yggdrisil_ecoli/scorers/base.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/base.py",
+          "sha256": "67351b375ee3d10def6db31b28ce52b631f8d63ad823c4802f23531205ba49f9"
+        },
+        "application/src/yggdrisil_ecoli/scorers/essentiality.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/essentiality.py",
+          "sha256": "ce2378a584ab7a4137dc81730ddede5280be39d153efeec4a78574b4d97c96aa"
+        },
+        "application/src/yggdrisil_ecoli/scorers/fba.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/fba.py",
+          "sha256": "723dde7d81d92d805333c1d62b44a88277f058b1382e2d6cf38c310d7af34606"
+        },
+        "application/src/yggdrisil_ecoli/scorers/modules.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/modules.py",
+          "sha256": "c70b3cfffdf4b7d158d280728f497615473b9f734102686bc06f9bbd04ebda8f"
+        },
+        "application/src/yggdrisil_ecoli/scorers/rba.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/rba.py",
+          "sha256": "c8a687c6063d27082998c1e545a65184ffb80266b1d85a40e33b33c410418a05"
+        },
+        "application/src/yggdrisil_ecoli/scorers/size.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/size.py",
+          "sha256": "9baee885434050b10efc125bd0e01164c5d88abc37ba4a817822a8740cabdf60"
+        },
+        "application/src/yggdrisil_ecoli/state.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/state.py",
+          "sha256": "654d080d8e8fac791c7c3970bc828cd3d4695ca214545921d60a311a760cbabf"
+        },
+        "application/src/yggdrisil_ecoli/tools/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/tools/__init__.py",
+          "sha256": "6b23e66a99e373258b883844549c3adcaa143c1a12d618a5c1ecfc5006b21e42"
+        },
+        "application/src/yggdrisil_ecoli/tools/edison.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/tools/edison.py",
+          "sha256": "667a38f459f1304f27ad8b90004c8d795b549de61583566c433495d769c8b875"
+        },
+        "application/src/yggdrisil_ecoli/tools/genes.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/tools/genes.py",
+          "sha256": "d564e738c15f9b69e2a2a798d544d71cc8931d245bf3be009faef3523fc2a02d"
+        },
+        "application/src/yggdrisil_ecoli/tools/literature.py": {
+          "git_path": "methods/20261109/runtime/src/yggdrisil_ecoli/tools/literature.py",
+          "sha256": "f612fedc07ea8342444e63bec1c9f052120d3ee199687930dac11299b9f28d5f"
+        },
+        "application/src/yggdrisil_ecoli/vecoli.py": {
+          "git_path": "methods/20261106/baseline-search/application/src/yggdrisil_ecoli/vecoli.py",
+          "sha256": "b49acd7e2096ae8f6b928164fb9ce95472ee839f814319e2f1d36f8263d1e0f7"
+        },
+        "application/src/yggdrisil_ecoli/vecoli_results.py": {
+          "git_path": "methods/20261106/baseline-search/application/src/yggdrisil_ecoli/vecoli_results.py",
+          "sha256": "302e9955b04caa8fb4eda1fc34b4a1d0de106074f1fd6d02f548e9e4a0a48679"
+        },
+        "application/tests/test_baseline_depth_extension.py": {
+          "git_path": "methods/20261111/runtime/search/application/tests/test_baseline_depth_extension.py",
+          "sha256": "35c2f43002098e16eb857774945471d62f4822417288f464dd265cfb17becf45"
+        },
+        "application/tests/test_baseline_depth_logging_recovery.py": {
+          "git_path": "methods/20261111/runtime/search/application/tests/test_baseline_depth_logging_recovery.py",
+          "sha256": "e4c7fc52245efe5b46a68701064e7be3b30bfd71aaecb9dc9d228b003021614d"
+        },
+        "application/tests/test_baseline_depth_parallel.py": {
+          "git_path": "methods/20261111/runtime/search/application/tests/test_baseline_depth_parallel.py",
+          "sha256": "adff3d2424a214b62f0dc46288d68adbd536df5368eca6aa41712d7a9bcf9619"
+        },
+        "application/tests/test_replication_backups.py": {
+          "git_path": "methods/20261111/runtime/search/application/tests/test_replication_backups.py",
+          "sha256": "e7506b79a5abf56184ee3f382f57e48731b1d9fc25c427ff1516aa082ee35ead"
+        },
+        "application/tests/test_replication_launch.py": {
+          "git_path": "methods/20261111/runtime/search/application/tests/test_replication_launch.py",
+          "sha256": "d92bae4c6a550e0d6df9708453dab58d00cdb83bd9b716d78bfee71156f79134"
+        },
+        "application/tests/test_search_replication.py": {
+          "git_path": "methods/20261111/runtime/search/application/tests/test_search_replication.py",
+          "sha256": "c379e527741e3f857dce1f190fbbd7fc9f44ae5d93268a225eaed8c30a272158"
+        },
+        "framework/README.md": {
+          "sha256": "20f96694bc2cbe8067043e72e11f02b098c47dc532504912b048fb8c6292a91d",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "framework/pyproject.toml": {
+          "git_path": "methods/20261106/baseline-validation/framework/pyproject.toml",
+          "sha256": "1ba725f874b4fbe49f89b967be65d8b4d9756e7d58bebd874c204dc0323f32d3"
+        },
+        "framework/src/yggdrisil/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/__init__.py",
+          "sha256": "9c826203273bffefa6ecc4b387c18c99df0d966c0e8c1dc1b1a990f3aba92b88"
+        },
+        "framework/src/yggdrisil/__main__.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/__main__.py",
+          "sha256": "e49dba5690aff4564649ed9ec4b2906730f576ff2fb2bd3a418048ac53768e52"
+        },
+        "framework/src/yggdrisil/agents/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/agents/__init__.py",
+          "sha256": "b47d9df0dfdeacf94ca7c25e505622d118f628e08132aae0320276631b02358a"
+        },
+        "framework/src/yggdrisil/agents/adk.py": {
+          "git_path": "methods/20261111/runtime/search/framework/src/yggdrisil/agents/adk.py",
+          "sha256": "f3383b8ee1717c6e188070632752a015b79ab596d8b551d0b5dbdc938e333e13"
+        },
+        "framework/src/yggdrisil/agents/navigator_explorer.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/agents/navigator_explorer.py",
+          "sha256": "7be4828e0279301e6337a20144da133f23dfed1ae47140408ab70fb28269471e"
+        },
+        "framework/src/yggdrisil/agents/tools.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/agents/tools.py",
+          "sha256": "917172e6344c6c2a268373ed807ee0dbfa4387d7684f195980bbd1ee4c29ade8"
+        },
+        "framework/src/yggdrisil/cache.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/cache.py",
+          "sha256": "facfeb3b7a4364b9a3aec2e207e8ce257ff93a0e4f5b03b7dd21e11e652b04b0"
+        },
+        "framework/src/yggdrisil/cli.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/cli.py",
+          "sha256": "6362e672762d1393f082011c912e2cc99b39b185d37928b14fb924e6c8c3c616"
+        },
+        "framework/src/yggdrisil/evaluation.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/evaluation.py",
+          "sha256": "d1f8dae529bf7e837cff8cc083580d6d12f1af6eb7a547d3db73f49ed7316d03"
+        },
+        "framework/src/yggdrisil/exceptions.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/exceptions.py",
+          "sha256": "f8ff992194bdbf253397f3208dc460cdfd99f3d6efbfb1f1931ae370a977926f"
+        },
+        "framework/src/yggdrisil/graph/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/graph/__init__.py",
+          "sha256": "36c754afb1598eccfceccc32f42750bc84edde2ff8865272a8ab11727b7f860c"
+        },
+        "framework/src/yggdrisil/graph/base.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/graph/base.py",
+          "sha256": "e57307b44e055535e66773935f2b63c07cf7144c6be35f082eb3b49a046d7247"
+        },
+        "framework/src/yggdrisil/graph/export.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/graph/export.py",
+          "sha256": "f31bff770fc5822bfe1f43d4113f21dd5824efc0ee638ad0719d11385a05c762"
+        },
+        "framework/src/yggdrisil/graph/sqlite.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/graph/sqlite.py",
+          "sha256": "06677c0091ec95bbe9ca438417c41f90480cee87c3260455622f9c551bc7d500"
+        },
+        "framework/src/yggdrisil/limits.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/limits.py",
+          "sha256": "849c2f504ed2789fc8bdb7da237051ac32cff9a89c391fb053fd5e544586bf72"
+        },
+        "framework/src/yggdrisil/memory.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/memory.py",
+          "sha256": "b39e33dec6620f0470cc7142f21572bc03842f5d9491c5ed28c6d4b15fbffb4d"
+        },
+        "framework/src/yggdrisil/objective.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/objective.py",
+          "sha256": "eb140f89b1d66d6567b99fb50d018b4d0f89530212185c3063798c9e3fccecaf"
+        },
+        "framework/src/yggdrisil/policies/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/policies/__init__.py",
+          "sha256": "841a7a16fcca5999ea05c74e1af1fc0be9c6838a56c0a83e5147f4325e69ea51"
+        },
+        "framework/src/yggdrisil/policies/best_first.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/policies/best_first.py",
+          "sha256": "f5c42d92fb36279ef6ad4aecb72293e21bfed0e639b12861b717e083a938448a"
+        },
+        "framework/src/yggdrisil/policies/random.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/policies/random.py",
+          "sha256": "da8f57bdbd72d30eba771ab8f261f85e84cafcbd1dd194d766e532a8648d0860"
+        },
+        "framework/src/yggdrisil/policy.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/policy.py",
+          "sha256": "e52ad846d1371a2a20176f139609803c9bf3ece9b8c5df692d34fbc2bd41812f"
+        },
+        "framework/src/yggdrisil/problem.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/problem.py",
+          "sha256": "e1b5e9dce100dc0ec0a926c2c5ce822f42b5ebd447cb58e1991c22c631e7be26"
+        },
+        "framework/src/yggdrisil/py.typed": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "framework/src/yggdrisil/runner.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/runner.py",
+          "sha256": "2df4ad7257f1866c4e7063dcdadf6d2e094254ea76772d06f48df6828e426ce9"
+        },
+        "framework/src/yggdrisil/serialize.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/serialize.py",
+          "sha256": "4b45f33bded2eff30c3619064bfce9a75162945a4c0b18144718de463db24abd"
+        },
+        "framework/src/yggdrisil/types.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/types.py",
+          "sha256": "d38557b6ea43fecf72c689e8a23e0946b1668c64909d96c738a69b4bc7f94bf0"
+        },
+        "framework/src/yggdrisil/viewer.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/viewer.py",
+          "sha256": "7833b2b9195125d92d8144d88cb7dc8c03ebff6b604f747a51f8766b16836eab"
+        },
+        "framework/src/yggdrisil/web/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/framework/src/yggdrisil/web/__init__.py",
+          "sha256": "d398e700bf05197dee44c8e49830a8201cc9ba57062f1bfd3bdb49a720aef8a9"
+        },
+        "operations/finish-runtime.sh": {
+          "git_path": "methods/20261111/runtime/search/operations/finish-runtime.sh",
+          "sha256": "899b71213cb1493dd979920394fb6101e76ca1df31270c7017209c829a3aad73"
+        },
+        "operations/preflight.py": {
+          "git_path": "methods/20261111/runtime/search/operations/preflight.py",
+          "sha256": "eba29b67564e19151b1e9bf1a6b0557ae9956ef4c4f6a0c8598a743848f83739"
+        },
+        "operations/restore-inputs.py": {
+          "git_path": "methods/20261111/runtime/search/operations/restore-inputs.py",
+          "sha256": "2285f7aa16e120f50cf6953763e6d24091e876858c5a94c5eead53317426ebc6"
+        },
+        "operations/start.py": {
+          "git_path": "methods/20261111/runtime/search/operations/start.py",
+          "sha256": "00e0fb91b8a5b94eb9ab6a45435014e9161a924d27bbace8d4a58741d7796cfd"
+        },
+        "parallel-supervisor.py": {
+          "git_path": "methods/20261111/runtime/search/parallel-supervisor.py",
+          "sha256": "23cbe82fcb1af26d7e37d1732f4055f48c749e30a45317e37b6218dce6c67c7a"
+        },
+        "runtime-constraints.txt": {
+          "sha256": "56aed0e3a2140adbebbc73b79ee51de7ad54c62c200376dc26243dc71758631e",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "runtime-overrides.txt": {
+          "sha256": "06d28d69e958deafb09f0a44fcae9b548f15e4debc14ebc39aad5f0934856fbf",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        }
+      },
+      "path": "methods/20261111/search-deployment-manifest.json",
+      "sha256": "9b27a662ada5510da70fd3b8cf1322591e30105dd0ec67b3766db646bf3c9961"
+    },
+    "secondary": {
+      "files": {
+        "application/scripts/baseline_depth_extension.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/baseline_depth_extension.py",
+          "sha256": "45a1427af3db83fad195d2b724bf5080eaacd31634043033766928f6de010aeb"
+        },
+        "application/scripts/baseline_depth_logging_recovery.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/baseline_depth_logging_recovery.py",
+          "sha256": "29dbd1bac5e4a8304e4040496d275191dd27affd75c878e3b2f353905d40a84b"
+        },
+        "application/scripts/close_depth_search.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/close_depth_search.py",
+          "sha256": "65a78b3ce9dcef1a93d44ce79dac010343454abec8967d36b9fe7bd4311351be"
+        },
+        "application/scripts/collect_search_replication.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/collect_search_replication.py",
+          "sha256": "5f05697a81cd621bf7c5088ecca90006d335b92858b025ea97da084ad4ee72a8"
+        },
+        "application/scripts/depth_matched_validation.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/depth_matched_validation.py",
+          "sha256": "2461e448d404e38e18a70db3046c0df0f527450a8da10ef82c0786cb4a8f55c5"
+        },
+        "application/scripts/parallel_replication_validation.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/parallel_replication_validation.py",
+          "sha256": "30a2db89a7e2c1f91c084c004c7b297f4330bab61997ac6a8c1ee56c3ff20f40"
+        },
+        "application/scripts/plan_search_replication.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/plan_search_replication.py",
+          "sha256": "d621867ae0d61aeadb6c442c81e4d64f5eb1f71acbba8c54dc315a353dc73748"
+        },
+        "application/scripts/prepare_replication_validation.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/prepare_replication_validation.py",
+          "sha256": "fa9932b9140979b5075145f3cc4eb574db4038c9a770381821ead23e7fb09fb4"
+        },
+        "application/scripts/run_replication_validation_shard.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/run_replication_validation_shard.py",
+          "sha256": "a867aac3c1ec94a74eddfc950312bb1c89c452ce644da6bb8e463499133ee4c9"
+        },
+        "application/scripts/run_search_replication.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/run_search_replication.py",
+          "sha256": "2a107149ec7c1bf13354bb15056cee8963139278f0dc722a66419733febbbffe"
+        },
+        "application/scripts/select_depth_matched_baselines.py": {
+          "git_path": "methods/20261111/runtime/primary/application/scripts/select_depth_matched_baselines.py",
+          "sha256": "0af7ea617a3625a7c3aebd8f7fcbec19867865e2afeef9effe61fdefc35acbb0"
+        },
+        "application/scripts/supervise_baseline_depth_parallel.py": {
+          "git_path": "methods/20261111/runtime/search/parallel-supervisor.py",
+          "sha256": "23cbe82fcb1af26d7e37d1732f4055f48c749e30a45317e37b6218dce6c67c7a"
+        },
+        "application/scripts/supervise_search_replication.py": {
+          "git_path": "methods/20261111/runtime/search/application/scripts/supervise_search_replication.py",
+          "sha256": "5aa2279a6918e0aa7b3be80ca90db4aca8c69dd495dfe8f6588ada2370eb1840"
+        },
+        "application/scripts/track_vecoli_experiment.py": {
+          "git_path": "methods/20261109/runtime/scripts/track_vecoli_experiment.py",
+          "sha256": "070453b8aba72197f642aa28598313a8afd4e047eb537d89028c4da883fc5b86"
+        },
+        "application/src/yggdrisil_ecoli/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/__init__.py",
+          "sha256": "3ab38fbdf0a27e476eced9adcaeb2575788f51cfbe45fa6bc104e4fc1805b195"
+        },
+        "application/src/yggdrisil_ecoli/actions.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/actions.py",
+          "sha256": "4cad97fa1ce6b7f5492403750208493b5bdd9c86794c16dd63976f4af1600421"
+        },
+        "application/src/yggdrisil_ecoli/agent_policy.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/agent_policy.py",
+          "sha256": "ad88a81a0e3f1448f8a904f434a7bc15990f18b52730313b7d5554c721520664"
+        },
+        "application/src/yggdrisil_ecoli/analysis.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/analysis.py",
+          "sha256": "0d58536aa349ff36724b167e4042d3041f8983b859cf8b663c42b7d681758f59"
+        },
+        "application/src/yggdrisil_ecoli/baseline_storage.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/baseline_storage.py",
+          "sha256": "779327ae0c8b88be6b4d2f73b8d1a5eb69988e3a602e1def34d5903a487497ee"
+        },
+        "application/src/yggdrisil_ecoli/constants.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/constants.py",
+          "sha256": "0c8d2736fe8931cae09d59d3b82df9a70411f94a32da99f9969b42608c5404d7"
+        },
+        "application/src/yggdrisil_ecoli/data/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/__init__.py",
+          "sha256": "2254a3c984f8d9c59563269424072ebea2343fcfd8f6182a26223ac5c5ffa568"
+        },
+        "application/src/yggdrisil_ecoli/data/audit.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/audit.py",
+          "sha256": "13e26b3bbb9de96bf5535c1c8914d2ed876935cb8692de116596c10be090c3b4"
+        },
+        "application/src/yggdrisil_ecoli/data/crosswalks.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/crosswalks.py",
+          "sha256": "153e6198a2f270447a1c746eb92bea5a403a5e93a5896f0f2f59aa77dd83d252"
+        },
+        "application/src/yggdrisil_ecoli/data/errors.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/errors.py",
+          "sha256": "532f64fe7f2ac1718cb7edf2690c36d0e31ae8ffa7ac9b515485e1052df01ad7"
+        },
+        "application/src/yggdrisil_ecoli/data/essentiality.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/essentiality.py",
+          "sha256": "795db089d3b345e82d1539d44c398ad1349fb80b90df50b3a0da3e0151c3813a"
+        },
+        "application/src/yggdrisil_ecoli/data/evidence.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/evidence.py",
+          "sha256": "d840d3cdafb01407a08eaaa964488dbf984e2ca1eac97823573f348a38591dd4"
+        },
+        "application/src/yggdrisil_ecoli/data/gff.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/gff.py",
+          "sha256": "51b18287c809d779bd41c7373000b444be1abc6d30f729f4c005bdf9cf29ffa2"
+        },
+        "application/src/yggdrisil_ecoli/data/io.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/io.py",
+          "sha256": "f0b9b122369a306487821ddb728ce7a79e5a2e6e2772ce6178a6828a85aec76d"
+        },
+        "application/src/yggdrisil_ecoli/data/kegg_modules.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/kegg_modules.py",
+          "sha256": "dd16c468ebef6adea5fc663159e5d07fe9d8d94e00066220905cfe67cac6204d"
+        },
+        "application/src/yggdrisil_ecoli/data/reduced_genomes.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/reduced_genomes.py",
+          "sha256": "3598d60c19176fabff9b9ab19a36d1c9f398936e1166efcebe02a1fda2daa700"
+        },
+        "application/src/yggdrisil_ecoli/data/registry.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/registry.py",
+          "sha256": "d6f2e6f2f0e24608d6057d2d1184d6044d4238aa1a2e4ca31b1b1335a5d10dd0"
+        },
+        "application/src/yggdrisil_ecoli/data/sources.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/data/sources.py",
+          "sha256": "0505d75cec7bd3e2f79ae4f28e7ca66198ac2209bdd67f9918139af0d2d34c00"
+        },
+        "application/src/yggdrisil_ecoli/module_build.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/module_build.py",
+          "sha256": "0128f0d6b44ccee3fc605fdc8f15c6afa95300e3f1572004fe753c91fee1b8f1"
+        },
+        "application/src/yggdrisil_ecoli/open_set.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/open_set.py",
+          "sha256": "15358439a2b2d804bbe0a7f71be90fc8a41265a322c98ae77c2e8baf436048d6"
+        },
+        "application/src/yggdrisil_ecoli/policies.py": {
+          "git_path": "methods/20261109/runtime/src/yggdrisil_ecoli/policies.py",
+          "sha256": "6e3244a27fc70676a7cda46a6d4583141868f2b90d5700a04581decaaaa7a0d2"
+        },
+        "application/src/yggdrisil_ecoli/problem.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/problem.py",
+          "sha256": "e14df3ffab001a3921747b37f345ba449e35d7cfe5be377ec47f2c2e6d24ab01"
+        },
+        "application/src/yggdrisil_ecoli/py.typed": {
+          "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/src/yggdrisil_ecoli/rba_build.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/rba_build.py",
+          "sha256": "e92133d11b803499abad2eb6373e58f9dbb91475b1bf42e77988aecd0fb9e5ec"
+        },
+        "application/src/yggdrisil_ecoli/research.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/research.py",
+          "sha256": "b7c70552cbc58787c10a0482b3bc0f95e33eb2f6a3fee7da7da7f1bdfa021b8e"
+        },
+        "application/src/yggdrisil_ecoli/resources/vecoli_multi_gene_knockout.py.txt": {
+          "sha256": "c0349912868fd8a7fc8c6dfc8c9aea826d77a93761c3f6b6d866e7a6192624c4",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "application/src/yggdrisil_ecoli/scorers/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/__init__.py",
+          "sha256": "d1dbfb067fbc419ea27fcaf4fb91a5d786df53ef42ba77ded96292e01aa5d5eb"
+        },
+        "application/src/yggdrisil_ecoli/scorers/base.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/base.py",
+          "sha256": "67351b375ee3d10def6db31b28ce52b631f8d63ad823c4802f23531205ba49f9"
+        },
+        "application/src/yggdrisil_ecoli/scorers/essentiality.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/essentiality.py",
+          "sha256": "ce2378a584ab7a4137dc81730ddede5280be39d153efeec4a78574b4d97c96aa"
+        },
+        "application/src/yggdrisil_ecoli/scorers/fba.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/fba.py",
+          "sha256": "723dde7d81d92d805333c1d62b44a88277f058b1382e2d6cf38c310d7af34606"
+        },
+        "application/src/yggdrisil_ecoli/scorers/modules.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/modules.py",
+          "sha256": "c70b3cfffdf4b7d158d280728f497615473b9f734102686bc06f9bbd04ebda8f"
+        },
+        "application/src/yggdrisil_ecoli/scorers/rba.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/rba.py",
+          "sha256": "c8a687c6063d27082998c1e545a65184ffb80266b1d85a40e33b33c410418a05"
+        },
+        "application/src/yggdrisil_ecoli/scorers/size.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/scorers/size.py",
+          "sha256": "9baee885434050b10efc125bd0e01164c5d88abc37ba4a817822a8740cabdf60"
+        },
+        "application/src/yggdrisil_ecoli/state.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/state.py",
+          "sha256": "654d080d8e8fac791c7c3970bc828cd3d4695ca214545921d60a311a760cbabf"
+        },
+        "application/src/yggdrisil_ecoli/tools/__init__.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/tools/__init__.py",
+          "sha256": "6b23e66a99e373258b883844549c3adcaa143c1a12d618a5c1ecfc5006b21e42"
+        },
+        "application/src/yggdrisil_ecoli/tools/edison.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/tools/edison.py",
+          "sha256": "667a38f459f1304f27ad8b90004c8d795b549de61583566c433495d769c8b875"
+        },
+        "application/src/yggdrisil_ecoli/tools/genes.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/tools/genes.py",
+          "sha256": "d564e738c15f9b69e2a2a798d544d71cc8931d245bf3be009faef3523fc2a02d"
+        },
+        "application/src/yggdrisil_ecoli/tools/literature.py": {
+          "git_path": "methods/20261106/baseline-validation/application/src/yggdrisil_ecoli/tools/literature.py",
+          "sha256": "60cb9f8e9d57869f55591a934fac96fb545f9d889bd9a8316c7bd5b0bfb55241"
+        },
+        "application/src/yggdrisil_ecoli/vecoli.py": {
+          "git_path": "methods/20261106/agent-validation/validation-application/src/yggdrisil_ecoli/vecoli.py",
+          "sha256": "e80140e228f033b889731a706e4f1fe32028c5105912500340bbb7543d026dd9"
+        },
+        "application/src/yggdrisil_ecoli/vecoli_results.py": {
+          "git_path": "methods/20261106/agent-validation/validation-application/src/yggdrisil_ecoli/vecoli_results.py",
+          "sha256": "2e6113965b27b2c1996f770776d090f09af54c3e2aaf838e573baed055972900"
+        },
+        "application/tests/test_baseline_depth_extension.py": {
+          "git_path": "methods/20261111/runtime/search/application/tests/test_baseline_depth_extension.py",
+          "sha256": "35c2f43002098e16eb857774945471d62f4822417288f464dd265cfb17becf45"
+        },
+        "application/tests/test_depth_matched_selection.py": {
+          "git_path": "methods/20261111/runtime/primary/application/tests/test_depth_matched_selection.py",
+          "sha256": "18f7806d788a6917dff03297858c12a02d971b5a6089c4d62e786d41091c2b7c"
+        },
+        "application/tests/test_depth_matched_validation.py": {
+          "git_path": "methods/20261111/runtime/primary/application/tests/test_depth_matched_validation.py",
+          "sha256": "9f28c344d88575586f76dec759b3dd0ba7816d3d922d4fbc51bb104bad5b2915"
+        },
+        "application/tests/test_search_replication.py": {
+          "git_path": "methods/20261111/runtime/primary/application/tests/test_search_replication.py",
+          "sha256": "72818192a2878faff55a7df04aa1a540d38a63074cb2c73893aa856c51bf5038"
+        },
+        "credential-pattern-policy.json": {
+          "sha256": "aa6df6789cf013198d90f137152c0f13ef2d19328e348e323d5f3cb1e6fa37ec",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "early-stop-authorization.json": {
+          "sha256": "ed5c2838b1147991091066b91a7b593fa0eae85350969140206b41f9280d7896",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "operations/audit-knockouts.py": {
+          "git_path": "methods/20261106/agent-validation/validation/audit-knockouts.py",
+          "sha256": "dcad3d440b03df777f5fddb311511793b95820c7064452cc6769238e4c236da3"
+        },
+        "plan.json": {
+          "sha256": "6d936433f1bee15ff3b537056c5eff7fbf8420ffe3c235b4543c8c23671242b2",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "reference-nominations.json": {
+          "sha256": "ddb1eb0233e5a918c402db26bcb8c1d2f4844b850dfde337b56f92af4892b1a5",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "resource-approval.json": {
+          "sha256": "0408f1b94d020e33b0258b40e05b848e3cd28079ad3bb644a91e0ca9e7bf7d91",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        },
+        "selection-amendment.json": {
+          "sha256": "1fe6c567a15745d00fdd4317c6c5d593b4901d5bdc18a312e0aeb09e0fd9c904",
+          "storage": "Input/configuration identity; inspect frozen deployment manifest and private data catalog. Not a source-code snapshot."
+        }
+      },
+      "path": "methods/20261111/secondary-deployment-manifest.json",
+      "sha256": "79b216cdb87998bbc1e6fb748cc16286f890d98d4d85d24048ad3371cb39f3ea"
+    }
+  },
+  "local_frozen_file_sha256": {
+    "analysis/yggdrisil-audit-final-checkpoint-deltas.py": "b6253ba60ecb65548518a8414c71a08f888886dcd333282af6b52b7046711f0a",
+    "analysis/yggdrisil-audit-matched-final-local.py": "5e020a3e9f1075443f1f690befa000075d77a7b0fcc1f72efb922e931f8525be",
+    "analysis/yggdrisil-audit-secondary-final.py": "398dd727585100d54654ded6626866a434a3ef733e6ed9e1e1c30cb3820f90a0",
+    "analysis/yggdrisil-summarize-matched-final.py": "30181de01e41dba1607b4e06f3184398efd741d8116a8a28c0ae20aa948667b1",
+    "analysis/yggdrisil-verify-pinned-matched-checkpoints.py": "fb8adb73afd606cd5bbc1d326bc16f941c6caf3b93abba48b62637d2fd238d43",
+    "early-stop-authorization.json": "ed5c2838b1147991091066b91a7b593fa0eae85350969140206b41f9280d7896",
+    "search-protocol.json": "52fedddd3408317c00f6e7ff700c1a267072c394d136f040b418e33d4b5e8fef",
+    "selection-amendment.json": "1fe6c567a15745d00fdd4317c6c5d593b4901d5bdc18a312e0aeb09e0fd9c904",
+    "validation-plan.json": "6d936433f1bee15ff3b537056c5eff7fbf8420ffe3c235b4543c8c23671242b2"
+  },
+  "native_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+  "numerical_patch": "methods/20261106/baseline-validation/solver-recovery-v2.patch",
+  "schema_version": 1,
+  "scope": "Exact executed bytes and original frozen manifests. Duplicate sources reuse an earlier Git snapshot with the identical SHA256. Remote science only; snapshots are not instructions to launch workloads.",
+  "studies": [
+    "baseline-depth-extension-20261110",
+    "vecoli-depth-matched-20261111"
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "experiment_id": "vecoli-kimi-20gen-3seed-20261105",
+  "status": "completed_with_exceptions_verified",
+  "execution_policy": "Remote Linux only, including controller. No Mac compute.",
+  "parent_experiment_id": "vecoli-kimi-full-diagnostic-20261105",
+  "generations": 20,
+  "seeds": [
+    101,
+    211,
+    307
+  ],
+  "single_daughters": true,
+  "maximum_cell_simulations": 300,
+  "lineages": 15,
+  "genotypes": [
+    {
+      "name": "mg1655-control",
+      "variant_index": 0,
+      "state_id": "e1c094af1688db37bd6af27237d63462b79d769e3dc494d3fff0cb030f674004",
+      "deletion_count": 0,
+      "deletion_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "name": "starting-genome-control",
+      "variant_index": 1,
+      "state_id": "11a12418d088502a6d28f143e2a1b98fdb308e592d1be3009748b7eed3480343",
+      "deletion_count": 1030,
+      "deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52"
+    },
+    {
+      "name": "no-retrieval",
+      "variant_index": 2,
+      "state_id": "05d781cd7050e63b3524e64a284023883504e3f363d914d634ac739208db2477",
+      "deletion_count": 1589,
+      "deletion_set_sha256": "80a2713fdfafd02665cc034d9979e4f54cbce8010763ae3fb60b3d0dafdb579f"
+    },
+    {
+      "name": "frozen-dossier",
+      "variant_index": 3,
+      "state_id": "ec6e4d3e973b20f52d5f64e5848cfa0dddd4a19e8ae5e7c55e6a2888b27a8a97",
+      "deletion_count": 1228,
+      "deletion_set_sha256": "3405712823efdb2afd55a54ebf125b6700eeeb06122b597fc45d6990230d6928"
+    },
+    {
+      "name": "adaptive-literature",
+      "variant_index": 4,
+      "state_id": "e8b788ca08fe2ee21c921840003486f1de5c23d8608d61f3a8563acaa713171b",
+      "deletion_count": 1323,
+      "deletion_set_sha256": "e13b2a7bbbe71c634fe38901eab792896c928d2598a8c29eb683a76da536fa88"
+    }
+  ],
+  "scientific_conditions": {
+    "medium": "aerobic M9 glucose",
+    "max_cell_simulated_seconds": 10800,
+    "exact_expression_knockouts": true,
+    "no_candidate_substitution": true,
+    "new_linux_lineages_from_generation_one": true,
+    "interpretation": "Longer model diagnostic, not laboratory viability or a calibrated predictive endpoint."
+  },
+  "native_runtime": {
+    "git_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+    "python": "3.12.12",
+    "nextflow": "25.10.4",
+    "container_digest": null
+  },
+  "input_archives": [
+    {
+      "s3_uri": "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/vecoli-kimi-full-diagnostic-20261105-inputs-v0/9e01ed0650d2de9f9f9f7b80856c71d34d27b013e1f4046aff450e80b8dfdb4b.tar.gz",
+      "sha256": "9e01ed0650d2de9f9f9f7b80856c71d34d27b013e1f4046aff450e80b8dfdb4b",
+      "wandb_artifact": "mcclain/yggdrisil/vecoli-kimi-full-diagnostic-20261105-inputs:v0"
+    }
+  ],
+  "proposed_backend": "Native Nextflow local executor on one dedicated remote Linux EC2 CPU worker; three separate seed workflows",
+  "fallback_backend": "Nextflow local executor on a remote Linux EC2 CPU worker",
+  "pending": [],
+  "cost_reference": {
+    "region": "us-east-1",
+    "checked_on": "2026-11-05",
+    "source": "AWS Pricing GetProducts, Linux Shared OnDemand",
+    "m7i.4xlarge_usd_hour": 0.8064,
+    "c7i.4xlarge_usd_hour": 0.714,
+    "r7i.4xlarge_usd_hour": 1.0584,
+    "g6.4xlarge_usd_hour": 1.3232,
+    "cost_scenario": "A m7i.4xlarge for 24 hours costs $19.3536 for the VM only; not a runtime prediction or authorization."
+  },
+  "authorization": {
+    "preparation": true,
+    "launch": true,
+    "model_api_calls": false,
+    "new_edison_jobs": false,
+    "budget_usd": 30,
+    "approved_at": "2026-11-05T21:16:28.137565+00:00",
+    "approval": "User explicitly approved up to $30 in this chat."
+  },
+  "launch_proposal": {
+    "prepared_at": "2026-11-05T21:12:39.866367+00:00",
+    "region": "us-east-1",
+    "instance_type": "m7i.4xlarge",
+    "vcpus": 16,
+    "memory_gib": 64,
+    "root_volume_gib": 200,
+    "root_volume_type": "gp3",
+    "encrypted": true,
+    "ami": "ami-0d6dd9e8265d48906",
+    "max_instance_hours": 24,
+    "verified_instance_usd_per_hour": 0.8064,
+    "maximum_vm_cost_usd": 19.3536,
+    "requested_total_cap_usd": 30,
+    "shutdown": "Stop after completion or wall-time cap; terminate only after final S3 verification. Preserve disk if backup fails.",
+    "parallelism": "Separate seed workflows; bounded aggregate cell concurrency after initial MG1655 Linux control.",
+    "data_destination": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/",
+    "status": "completed_worker_terminated"
+  },
+  "execution_backend": "Native Nextflow local executor on one dedicated remote Linux EC2 CPU worker; three separate seed workflows",
+  "operational_record": "runs/storage-migration-20261105/remote-validation",
+  "paper_endpoint_note": "This is an exploratory diagnostic; calibrated predictive thresholds and multi-seed endpoint design for the paper remain separate.",
+  "calibration_result": {
+    "divisions": 2,
+    "peak_rss_bytes": 1377865728,
+    "status": "passed",
+    "cell_wall_minutes": [
+      5.3724,
+      5.9561166666666665
+    ],
+    "division_simulated_minutes": [
+      36.75,
+      44.93333333333333
+    ]
+  },
+  "completion": {
+    "completed_at": "2026-11-06T03:26:38.089374+00:00",
+    "analysis": {
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/analysis/81615e4479504b6c087fcec8788dd41b34c731027f30b4815695b6cb7ba9665f.json",
+      "sha256": "81615e4479504b6c087fcec8788dd41b34c731027f30b4815695b6cb7ba9665f",
+      "bytes": 307329
+    },
+    "resource_cleanup": {
+      "experiment_id": "vecoli-kimi-20gen-3seed-20261105",
+      "instance_id": "i-0c5c019cddd5be31f",
+      "volume_id": "vol-06160116242244b5f",
+      "authorized_budget_usd": 30,
+      "region": "us-east-1",
+      "verification_record": {
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-20gen-3seed-20261105/verification/b3d2acee7f15e05200fca5b897261ed9b584eba02c95f584fe688dd9251e3c65.json",
+        "sha256": "b3d2acee7f15e05200fca5b897261ed9b584eba02c95f584fe688dd9251e3c65",
+        "bytes": 6305
+      },
+      "requested_at": "2026-11-06T03:45:41.727479+00:00",
+      "initial_launch_time": "2026-11-05T21:16:43+00:00",
+      "hourly_instance_price_usd": 0.8064,
+      "preexisting_shared_running_instances": [
+        "i-0cda00ffb3cacfc12"
+      ],
+      "instance_state": "terminated",
+      "volume_deleted": true,
+      "confirmed_at": "2026-11-06T03:46:21.390667+00:00",
+      "shared_instances_unchanged": true,
+      "credential_copy_removed_with_deleted_volume": true,
+      "wall_hours_upper_bound": 6.4939974075,
+      "estimated_instance_cost_upper_bound_usd": 5.236759509408,
+      "cost_note": "Conservative elapsed-time VM estimate includes the brief stopped interval; not a settled bill. Storage, requests and transfers are additional within the approved $30 cap."
+    },
+    "original_lineages_at_20": 13,
+    "separately_recovered_lineages_at_20": 1
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "status": "passed",
+  "checked_at": "2026-11-06T08:35:17.815899+00:00",
+  "offline_validation_tests": 28,
+  "solver_tests_log": "validation-solver-tests.log",
+  "original_native": {
+    "git_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+    "origin": "https://github.com/CovertLab/vEcoli.git",
+    "uv_lock_sha256": "3115727471eabd133f75b6943b069a18db814fc0876e26a3af96da24c59c06f8",
+    "nextflow_version": "25.10.4"
+  },
+  "patched_native": {
+    "git_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+    "origin": "/home/ubuntu/yggdrisil-continuation-20261106/native",
+    "uv_lock_sha256": "3115727471eabd133f75b6943b069a18db814fc0876e26a3af96da24c59c06f8",
+    "nextflow_version": "25.10.4"
+  },
+  "input_archive_sha256": "9e01ed0650d2de9f9f9f7b80856c71d34d27b013e1f4046aff450e80b8dfdb4b",
+  "files": {
+    "yggdrisil-prepare-continuation-validation.py": "4017d46d29b20312760099d27d3e11e2f05ccc0ebc7622a8cc3057c2c8e73768",
+    "yggdrisil-continuation-validation-supervisor.py": "c77da00e56ceb27c649eb662bc7ab77318ba6ec3f4186f53be4ea9fdbbf9fa66",
+    "validation-application/scripts/track_vecoli_experiment.py": "0011d13431d4a892f1cf73150b10d5c066e05b7a046fedf091f621d0b5ca7fa9",
+    "validation-application/src/yggdrisil_ecoli/vecoli.py": "e80140e228f033b889731a706e4f1fe32028c5105912500340bbb7543d026dd9",
+    "validation-application/src/yggdrisil_ecoli/vecoli_results.py": "2e6113965b27b2c1996f770776d090f09af54c3e2aaf838e573baed055972900",
+    "validation/audit-knockouts.py": "dcad3d440b03df777f5fddb311511793b95820c7064452cc6769238e4c236da3",
+    "solver-recovery-v2.patch": "3a4a50fdc7b4d16277b7ce8d3cb76e2e2fd69132937a4d57cbb232b01a06592a",
+    "validation-tests-final.log": "61d16cd899b64fa0c569f7f879a45f818af46c27c3e6a077183d06e4aa55a553",
+    "validation-solver-tests.log": "781803090602bb823b623dcae93e92247ffd74584f990525f92cbc690e246524",
+    "native-validated/wholecell/utils/_build_sequences.cpython-312-x86_64-linux-gnu.so": "f9f389cc027516126eadd6eebae8c55854656b74efc5e538e19162a283ecd802",
+    "native-validated/wholecell/utils/_fastsums.cpython-312-x86_64-linux-gnu.so": "7f7aac49be900e4b11bcfc892ef41c0d137106dcbc4b1eb8b19a5865a8005213",
+    "native-validated/wholecell/utils/mc_complexation.cpython-312-x86_64-linux-gnu.so": "0e3a3ff4d1e6808dc72a966fa0589a954a921057647d205c723545e74403f212"
+  },
+  "exact_knockout_audit": "Required after fixed final candidate selection, before calibration or full cells",
+  "runtime": "remote Linux only",
+  "science_deadline": "2026-11-06T18:19:57+00:00",
+  "operational_repair": {
+    "repaired_at": "2026-11-06T09:25:42.399322+00:00",
+    "cause": "SQLite connection context managers left backup handles open; frozen selector correctly rejected WAL/SHM sidecars.",
+    "change": "Explicitly close both handles, checkpoint backup WAL and convert backup to DELETE journal mode before strict frozen selection.",
+    "before_sha256": "6e518fa0f30510ffd9651e5a7249f7058c97a7b6875fd8813df22841da63b72d",
+    "after_sha256": "4017d46d29b20312760099d27d3e11e2f05ccc0ebc7622a8cc3057c2c8e73768",
+    "failed_attempt": "/home/ubuntu/yggdrisil-continuation-20261106/attempts/sqlite-snapshot-preparation",
+    "original_final_index_uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/final/9e94d545a43cc64c320c5d58d73582e35295540ccbc2235e773c3516094ab612.json",
+    "scientific_changes": false,
+    "offline_regression_checks": [
+      "WAL rows preserved",
+      "immutable backup readable",
+      "zero backup sidecars",
+      "repeat backup all rows"
+    ],
+    "deadlines_unchanged": true
+  },
+  "native_extension_repair": {
+    "checked_at": "2026-11-06T09:32:42.167625+00:00",
+    "native_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+    "tracked_source_unchanged": true,
+    "build_dependencies": [
+      "setuptools==80.10.2",
+      "wheel==0.46.3",
+      "Cython==3.1.2",
+      "numpy==2.2.6"
+    ],
+    "isolated_offline_build": true,
+    "runtime_dependencies_unchanged": true,
+    "extension_files": {
+      "wholecell/utils/_build_sequences.cpython-312-x86_64-linux-gnu.so": "f9f389cc027516126eadd6eebae8c55854656b74efc5e538e19162a283ecd802",
+      "wholecell/utils/_fastsums.cpython-312-x86_64-linux-gnu.so": "7f7aac49be900e4b11bcfc892ef41c0d137106dcbc4b1eb8b19a5865a8005213",
+      "wholecell/utils/mc_complexation.cpython-312-x86_64-linux-gnu.so": "0e3a3ff4d1e6808dc72a966fa0589a954a921057647d205c723545e74403f212"
+    },
+    "checks": [
+      "all three Cython modules import",
+      "original frozen simData loads"
+    ],
+    "budget_deadline_restored": "2026-11-06T19:49:57Z"
+  },
+  "preparation_smoke": {
+    "checked_at": "2026-11-06T09:34:02.122572+00:00",
+    "status": "passed",
+    "genotypes": [
+      {
+        "name": "mg1655-control",
+        "state_id": "e1c094af1688db37bd6af27237d63462b79d769e3dc494d3fff0cb030f674004",
+        "deletion_count": 0,
+        "deletion_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "name": "starting-genome-control",
+        "state_id": "11a12418d088502a6d28f143e2a1b98fdb308e592d1be3009748b7eed3480343",
+        "deletion_count": 1030,
+        "deletion_set_sha256": "b664b262257e40b80d1b55e6a27d3962f528706580e9eb7e3f81d6dbcdcaec52"
+      },
+      {
+        "name": "no-retrieval",
+        "state_id": "81134169f1246cb8d13b75c4afaff2739f594a399e52a761faa204765528f1ee",
+        "deletion_count": 1919,
+        "deletion_set_sha256": "de7acdab1746fcf5f77dbdbe8415fa696546c458e9756af0b86071432869b253"
+      },
+      {
+        "name": "frozen-dossier",
+        "state_id": "4bae4beed61920f371ee2739285a1411296c258fc1008b3c270183bad5331e5d",
+        "deletion_count": 1765,
+        "deletion_set_sha256": "b2898afa5d682112d94ea73a61ae1f7c30b374fe6c40484113718b57e046c5f7"
+      },
+      {
+        "name": "adaptive-literature",
+        "state_id": "6cc663f9b95d6e34493b77c4c825cb19b0ed1162112954b31145e73168c956e5",
+        "deletion_count": 1823,
+        "deletion_set_sha256": "cee6a0329125a00f297ea4cc8a9e4dd746d8de3e0daad9a0493ee60ca3b8c28a"
+      }
+    ],
+    "manifest_sha256": {
+      "runs/calibration/manifest.json": "71f6017fe164482629465aecb133190e03d241fbac86f9b0edc3d7978577ad92",
+      "runs/seed-101/manifest.json": "1d3b1de202003e1856ef2b3417b340a346a0308c95ba5e0c9417b720ff01e58b",
+      "runs/seed-211/manifest.json": "3772e2f5b3d5647201cf39f8b29cc6fdc49a8a57dea97254750bf484ca9229c0",
+      "runs/seed-307/manifest.json": "64fcd339441706fdfd1db6d8849a2942d0e3f05826a1a8ce42ac6b83a9135676"
+    },
+    "checks": [
+      "exact frozen finalist equality",
+      "exact native knockout audit",
+      "four manifests created before any simulation"
+    ],
+    "prepared_source_sha256": "4017d46d29b20312760099d27d3e11e2f05ccc0ebc7622a8cc3057c2c8e73768"
+  }
+}

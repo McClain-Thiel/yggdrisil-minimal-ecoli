@@ -1,0 +1,80 @@
+{
+  "child_runs": [
+    {
+      "id": "edison-seed-17",
+      "local_root": "runs/edison-validation-20261026-174413/edison-seed-17",
+      "records": {
+        "config": "runs/edison-validation-20261026-174413/edison-seed-17/config.json",
+        "graph": "runs/edison-validation-20261026-174413/edison-seed-17/graph.sqlite",
+        "summary": "runs/edison-validation-20261026-174413/edison-seed-17/summary.json"
+      }
+    },
+    {
+      "id": "edison-seed-18",
+      "local_root": "runs/edison-validation-20261026-174413/edison-seed-18",
+      "records": {
+        "config": "runs/edison-validation-20261026-174413/edison-seed-18/config.json",
+        "graph": "runs/edison-validation-20261026-174413/edison-seed-18/graph.sqlite",
+        "summary": "runs/edison-validation-20261026-174413/edison-seed-18/summary.json"
+      }
+    },
+    {
+      "id": "ordinary-seed-17",
+      "local_root": "runs/edison-validation-20261026-174413/ordinary-seed-17",
+      "records": {
+        "config": "runs/edison-validation-20261026-174413/ordinary-seed-17/config.json",
+        "graph": "runs/edison-validation-20261026-174413/ordinary-seed-17/graph.sqlite",
+        "summary": "runs/edison-validation-20261026-174413/ordinary-seed-17/summary.json"
+      }
+    },
+    {
+      "id": "ordinary-seed-18",
+      "local_root": "runs/edison-validation-20261026-174413/ordinary-seed-18",
+      "records": {
+        "config": "runs/edison-validation-20261026-174413/ordinary-seed-18/config.json",
+        "graph": "runs/edison-validation-20261026-174413/ordinary-seed-18/graph.sqlite",
+        "summary": "runs/edison-validation-20261026-174413/ordinary-seed-18/summary.json"
+      }
+    }
+  ],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "edison-validation-20261026-174413",
+  "kind": "historical_validation_or_pilot",
+  "local_root": "runs/edison-validation-20261026-174413",
+  "records": [
+    "runs/edison-validation-20261026-174413/summary.json",
+    "runs/edison-validation-20261026-174413/superseded.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/edison-validation-20261026-174413": {
+        "bytes": 1262,
+        "sha256": "37fee120c6b8342255d8c397288d717e74168db66383e5dad88da29bc74c4b9a",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-37fee120c6b8342255d8c397288d717e74168db66383e5dad88da29bc74c4b9a.json",
+        "verified_at": "2026-11-05T22:51:14.719532+00:00"
+      },
+      "application/runs/edison-validation-20261026-174413": {
+        "bytes": 1262,
+        "sha256": "447336d36935efa74a6585a907e8b7c542746658add94a77d2085e67502f4941",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-447336d36935efa74a6585a907e8b7c542746658add94a77d2085e67502f4941.json",
+        "verified_at": "2026-11-05T22:50:44.613439+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "superseded",
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/h0uigfeq"
+  ]
+}

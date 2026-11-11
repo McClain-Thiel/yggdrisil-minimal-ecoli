@@ -1,0 +1,126 @@
+{
+  "all_keys_disabled": true,
+  "analysis": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-bounded-20261105/smoke-analysis.json",
+  "authorization": "runs/literature-ablation-kimi-bounded-20261105/authorization.json",
+  "batch_progress": {
+    "original_started_at_unix": 1793884126.6938019,
+    "results": [
+      {
+        "elapsed_s": 60.2073609828949,
+        "job_index": 1,
+        "returncode": 0,
+        "stage": "smoke"
+      }
+    ],
+    "resumed_at": "2026-11-05T13:13:55.139297+00:00",
+    "stage": "smoke",
+    "status": "smoke_complete"
+  },
+  "checkpoints": [
+    {
+      "archive_sha256": "4f38c56057c0cb00eda2015c88f6e06bf3be3b1107271bfa80848331721b7b83",
+      "captured_from": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-bounded-20261105/local/checkpoints/20261105T131221Z.tar.gz",
+      "created_at": "2026-11-05T13:12:21.860866+00:00",
+      "files": 22,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-bounded-20261105/checkpoints/20261105T131221Z.tar.gz",
+      "local_extracted": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-bounded-20261105/checkpoints/20261105T131221Z",
+      "secret_scan": "passed",
+      "size_bytes": 62914,
+      "sqlite_backups": 2,
+      "sqlite_quick_check": "passed",
+      "verified_at": "2026-11-05T13:12:21.873188+00:00"
+    },
+    {
+      "archive_sha256": "cc1cde1184dce82bef3f0bb61077818f3906d440fb26552d294eda049cfe17f4",
+      "captured_from": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-bounded-20261105/local/checkpoints/20261105T131713Z.tar.gz",
+      "created_at": "2026-11-05T13:17:13.174169+00:00",
+      "files": 27,
+      "local_archive": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-bounded-20261105/checkpoints/20261105T131713Z.tar.gz",
+      "local_extracted": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-bounded-20261105/checkpoints/20261105T131713Z",
+      "secret_scan": "passed",
+      "size_bytes": 146697,
+      "sqlite_backups": 2,
+      "sqlite_quick_check": "passed",
+      "verified_at": "2026-11-05T13:17:13.191751+00:00"
+    }
+  ],
+  "code_prompt_version": 21,
+  "created_at": "2026-11-05T13:05:02.878953+00:00",
+  "cumulative_model_usd": "4.808795016",
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "status": "verified"
+  },
+  "environment_repair": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-bounded-20261105/environment-repair.json",
+  "execution_backend": "local",
+  "execution_override": "runs/literature-ablation-kimi-bounded-20261105/local/execution-override.json",
+  "finalists": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-bounded-20261105/finalists.json",
+  "id": "literature-ablation-kimi-bounded-20261105",
+  "latest_checkpoint": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-bounded-20261105/checkpoints/20261105T131713Z.tar.gz",
+  "launched_at": "2026-11-05T13:08:46.666376+00:00",
+  "local_root": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-bounded-20261105/local",
+  "long_jobs_launched": false,
+  "model_usd": "0.489090672",
+  "prior_spend_usd": "4.319704344",
+  "process": "runs/literature-ablation-kimi-bounded-20261105/process.json",
+  "protocol": "runs/literature-ablation-kimi-bounded-20261105/protocol.json",
+  "provider_accounting": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/literature-ablation-kimi-bounded-20261105/provider-accounting.json",
+  "remote_root": "/home/ubuntu/yggdrisil-literature-kimi-bounded-20261105",
+  "results": [
+    {
+      "artifact": "mcclain/yggdrisil/literature-ablation-kimi-bounded-20261105-smoke-frozen-dossier-seed-59-data:v2",
+      "artifact_digest": "8ba2e32116fd98d06a132fb7727e0d88",
+      "artifact_files": [
+        "agents.sqlite",
+        "config.json",
+        "failure.json",
+        "graph.sqlite",
+        "launch.json",
+        "progress.json",
+        "result.json",
+        "tracking.json"
+      ],
+      "artifact_state": "COMMITTED",
+      "run_id": "literature-ablation-kimi-bounded-20261105-smoke-frozen-dossier-seed-59",
+      "summary": {
+        "additional_deletions": 65,
+        "best_total_genes_deleted": 1095,
+        "new_states": 2,
+        "provider_spend_usd": 0.489090672,
+        "states": 3,
+        "status": "completed",
+        "stop_reason": "max_states",
+        "trace_billed_usd": 0.489090672,
+        "valid_new_candidates": 2
+      },
+      "summary_verified": true,
+      "wandb_url": "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/d8a6dc343baa"
+    }
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/runs/literature-ablation-kimi-bounded-20261105": {
+        "bytes": 1289,
+        "sha256": "bead035ad0b43bbda863585ce70b94a8e91fb48d50e6f4e55f14e5c3e1caf6ca",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-bead035ad0b43bbda863585ce70b94a8e91fb48d50e6f4e55f14e5c3e1caf6ca.json",
+        "verified_at": "2026-11-05T22:50:55.413471+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "selected_job_indices": [
+    1
+  ],
+  "status": "smoke_complete",
+  "unlaunched_job_indices": [
+    0,
+    2
+  ]
+}

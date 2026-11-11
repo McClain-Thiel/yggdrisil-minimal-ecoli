@@ -119,3 +119,20 @@ async def test_repeated_scoring_does_not_mutate_base_model(
     assert repeated.metrics["growth_rate"] == pytest.approx(
         original.metrics["growth_rate"]
     )
+
+
+async def test_published_glycolaldehyde_diagnostic_does_not_relax_production_gate(
+    scorer: FBAScorer,
+) -> None:
+    from scripts.calibrate_published_genomes import fba_diagnostics
+
+    deleted = frozenset({"b0870", "b1415", "b0268", "b0269", "b4297", "b4298"})
+    bounds = [r.bounds for r in scorer.model.reactions]
+    medium = scorer.model.medium
+    diagnostic = fba_diagnostics(scorer, deleted)
+    assert diagnostic["tests"]["m9"]["growth_rate_h"] == 0
+    assert diagnostic["tests"]["m9_with_sink"]["growth_rate_h"] > 0.8
+    assert (await scorer.evaluate(GenomeState(deleted))).metrics["growth_rate"] == 0
+    assert [r.bounds for r in scorer.model.reactions] == bounds
+    assert scorer.model.medium == medium
+    assert "SK_gcald_c" not in scorer.model.reactions

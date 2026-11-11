@@ -1,0 +1,356 @@
+import marimo
+
+__generated_with = "0.25.2"
+app = marimo.App(width="medium")
+
+with app.setup:
+    import json
+    import sqlite3
+    import sys
+    from contextlib import closing
+    from datetime import datetime
+    from importlib.metadata import distribution
+    from pathlib import Path
+
+    import marimo as mo
+    import yggdrisil as yg
+    from yggdrisil.serialize import loads
+
+    import yggdrisil_ecoli
+    from yggdrisil_ecoli.agent_policy import AgentSearchConfig, make_agent_policy
+    from yggdrisil_ecoli.analysis import summarize_run
+    from yggdrisil_ecoli.data.evidence import load_genes
+    from yggdrisil_ecoli.data.io import file_sha256
+    from yggdrisil_ecoli.policies import (
+        deletion_sampler,
+        make_heuristic_policy,
+        viability_eligibility,
+    )
+    from yggdrisil_ecoli.problem import EcoliProblem
+    from yggdrisil_ecoli.scorers.base import active_evaluator_ids
+    from yggdrisil_ecoli.scorers.essentiality import EssentialityScorer
+    from yggdrisil_ecoli.scorers.fba import FBAScorer
+    from yggdrisil_ecoli.scorers.modules import ModuleEvaluator
+    from yggdrisil_ecoli.scorers.rba import RBAScorer
+    from yggdrisil_ecoli.scorers.size import GenomeSizeScorer
+
+
+@app.cell
+def introduction():
+    mo.md("""
+    # Minimal *E. coli*
+
+    Load the gene table, define five pieces of evidence, choose a policy, and run
+    Yggdrisil. The experiment is below; reusable biological calculations live in
+    `src/yggdrisil_ecoli`. Candidates need positive FBA growth and RBA feasibility
+    at 0.1/h. Essentiality and modules guide ranking. Edit a policy, then click Run.
+    """)
+    return
+
+
+@app.cell
+def data_settings():
+    data_folder = mo.ui.text(value="data", label="Prepared dataset folder")
+    load_data = mo.ui.run_button(label="Load prepared data")
+    mo.vstack([data_folder, load_data])
+    return data_folder, load_data
+
+
+@app.cell
+def load(data_folder, load_data):
+    mo.stop(not load_data.value, mo.md("Load the prepared data to begin."))
+    data_dir = Path(data_folder.value).expanduser()
+    input_files = {
+        "genes": data_dir / "processed/genes.parquet",
+        "modules": data_dir / "processed/kegg_modules.json",
+        "model": data_dir / "external/iML1515.json",
+        "rba_manifest": (
+            data_dir / "external/rba_ecoli_k12_wt/rba_artifact_manifest.json"
+        ),
+    }
+    input_hashes = {name: file_sha256(path) for name, path in input_files.items()}
+    genes = load_genes(input_files["genes"])
+    genes.head(10)
+    return genes, input_files, input_hashes
+
+
+@app.cell
+def evaluators(genes, input_files, input_hashes):
+    module_evaluator = ModuleEvaluator.from_json(input_files["modules"], genes)
+    evaluators = [
+        GenomeSizeScorer(genes),
+        EssentialityScorer(genes=genes, artifact_hash=input_hashes["genes"]),
+        module_evaluator,
+        FBAScorer(genes=genes, model_path=input_files["model"]),
+        RBAScorer(genes=genes, artifact_dir=input_files["rba_manifest"].parent),
+    ]
+    evaluator_ids = active_evaluator_ids(evaluators)
+    return evaluator_ids, evaluators, module_evaluator
+
+
+@app.cell
+def search_settings():
+    seed = 17
+    bundle_size = 1  # Agent actions may contain 1..bundle_size genes (at most 100).
+    n_proposals = 2
+    policy_kind = mo.ui.dropdown(
+        ["random", "heuristic", "manager", "research", "closed-book"],
+        value="random",
+        label="Search policy",
+    )
+    model_id = mo.ui.text(label="OpenRouter model ID (agents only)")
+    zero_temperature = mo.ui.checkbox(label="Set temperature to zero (if supported)")
+    allow_paid = mo.ui.checkbox(label="Enable paid model calls")
+    use_edison = mo.ui.checkbox(
+        label="Submit one background Edison query (research only; 13–20 min)"
+    )
+    resume_graph = mo.ui.text(label="Resume graph (optional)")
+    state_limit = mo.ui.number(value=10, start=1, step=1, label="State limit")
+    start_search = mo.ui.run_button(label="Run search")
+    mo.vstack(
+        [
+            policy_kind,
+            model_id,
+            zero_temperature,
+            use_edison,
+            resume_graph,
+            state_limit,
+            allow_paid,
+            start_search,
+        ]
+    )
+    return (
+        allow_paid,
+        bundle_size,
+        model_id,
+        n_proposals,
+        policy_kind,
+        resume_graph,
+        seed,
+        start_search,
+        state_limit,
+        use_edison,
+        zero_temperature,
+    )
+
+
+@app.cell
+def policy_settings(
+    bundle_size,
+    model_id,
+    n_proposals,
+    policy_kind,
+    seed,
+    use_edison,
+    zero_temperature,
+):
+    mo.stop(
+        use_edison.value and policy_kind.value != "research",
+        mo.md("Choose the research policy to enable Edison."),
+    )
+    agent_config = None
+    if policy_kind.value not in {"random", "heuristic"}:
+        mo.stop(not model_id.value.strip(), mo.md("Enter a fixed OpenRouter model ID."))
+        agent_config = AgentSearchConfig(
+            model=model_id.value.strip(),
+            seed=seed,
+            temperature=0.0 if zero_temperature.value else None,
+            bundle_size=bundle_size,
+            max_actions=n_proposals,
+            mode="tool-rich" if policy_kind.value == "manager" else policy_kind.value,
+            orchestration="recoverable"
+            if policy_kind.value == "closed-book"
+            else "manager",
+            edison=use_edison.value,
+        )
+    return (agent_config,)
+
+
+@app.cell
+def provenance(input_hashes, start_search):
+    mo.stop(not start_search.value)
+    # Record the exact inputs and code alongside every experiment.
+    _package = Path(yggdrisil_ecoli.__file__).parent
+    _framework = distribution("yggdrisil")
+    _install = json.loads(_framework.read_text("direct_url.json") or "{}")
+    provenance = {
+        "inputs": input_hashes,
+        "application": {
+            "version": yggdrisil_ecoli.__version__,
+            "source_sha256": yg.stable_hash(
+                {
+                    str(_path.relative_to(_package)): file_sha256(_path)
+                    for _path in _package.rglob("*.py")
+                }
+            ),
+            "notebook_sha256": file_sha256(Path(__file__)),
+        },
+        "framework": {
+            "version": _framework.version,
+            "revision": _install.get("vcs_info", {}).get("commit_id"),
+            "source_sha256": yg.stable_hash(
+                {
+                    str(_path.relative_to(Path(yg.__file__).parent)): file_sha256(_path)
+                    for _path in Path(yg.__file__).parent.rglob("*.py")
+                }
+            ),
+        },
+    }
+    return (provenance,)
+
+
+@app.cell
+async def search(
+    agent_config,
+    allow_paid,
+    bundle_size,
+    evaluator_ids,
+    evaluators,
+    genes,
+    module_evaluator,
+    n_proposals,
+    policy_kind,
+    provenance,
+    resume_graph,
+    seed,
+    start_search,
+    state_limit,
+):
+    mo.stop(not start_search.value, mo.md("Choose a policy below, then run."))
+    mo.stop(
+        sys.platform == "darwin",
+        mo.md("Experiment execution is remote-only. Open this notebook on Linux compute."),
+    )
+    mo.stop(
+        type(state_limit.value) is not int or state_limit.value <= 0,
+        mo.md("Enter a positive whole-number state limit."),
+    )
+    mo.stop(
+        agent_config is not None and not allow_paid.value,
+        mo.md("Enable paid model calls before running an agent policy."),
+    )
+    if agent_config is not None and (
+        agent_config.bundle_size != bundle_size
+        or agent_config.max_actions != n_proposals
+    ):
+        raise ValueError("agent and experiment action limits must match")
+    _metadata = {
+        **provenance,
+        "evaluators": evaluator_ids,
+        "policy": policy_kind.value,
+        "seed": seed,
+        "bundle_size": bundle_size,
+        "n_proposals": n_proposals,
+        "agent": agent_config.metadata(genes) if agent_config else None,
+    }
+    _previous = None
+    if resume_graph.value.strip():
+        graph_path = Path(resume_graph.value.strip())
+        # Validate without opening the graph for writes or calling a model.
+        with closing(
+            sqlite3.connect(f"{graph_path.resolve().as_uri()}?mode=ro", uri=True)
+        ) as _db:
+            _previous = _db.execute(
+                "SELECT run_id, metadata_json FROM runs ORDER BY updated_at DESC LIMIT 1"
+            ).fetchone()
+        mo.stop(_previous is None, mo.md("This graph has no saved run."))
+        _stored = loads(_previous[1])
+        _changed = [
+            key for key, value in _metadata.items() if _stored.get(key) != value
+        ]
+        mo.stop(bool(_changed), mo.md("Resume settings differ: " + ", ".join(_changed)))
+    else:
+        graph_path = (
+            Path("runs") / f"experiment-{seed}-{datetime.now():%Y%m%d-%H%M%S-%f}.sqlite"
+        )
+        graph_path.parent.mkdir(exist_ok=True)
+        graph_path.touch(exist_ok=False)
+    with yg.SQLiteStateGraph(graph_path) as _graph:
+        _run_id = _previous[0] if _previous else graph_path.stem
+        if agent_config is not None:
+            policy = make_agent_policy(
+                genes=genes,
+                modules=module_evaluator,
+                config=agent_config,
+                evaluator_ids=evaluator_ids,
+                graph=_graph.readonly(),
+                run_id=_run_id,
+            )
+        elif policy_kind.value == "heuristic":
+            policy = make_heuristic_policy(
+                genes=genes,
+                evaluator_ids=evaluator_ids,
+                bundle_size=bundle_size,
+                n_proposals=n_proposals,
+                seed=seed,
+            )
+        else:
+            policy = yg.RandomPolicy(
+                deletion_sampler(genes, bundle_size=bundle_size),
+                seed=seed,
+                n_proposals=n_proposals,
+                eligible=viability_eligibility(evaluator_ids),
+            )
+        run = await yg.Runner(
+            EcoliProblem(genes, max_genes_per_action=bundle_size),
+            policy,
+            _graph,
+            yg.RunLimits(max_states=state_limit.value, max_steps=state_limit.value),
+            evaluators=yg.EvaluatorSuite(evaluators, concurrent=True),
+            run_id=_run_id,
+            resume=_previous is not None,
+            metadata=_metadata,
+        ).run()
+    mo.md(f"{run.unique_states} states saved to `{graph_path}`.")
+    return (graph_path,)
+
+
+@app.cell
+def results(graph_path):
+    summary = summarize_run(graph_path)
+    _candidate = summary["deepest_viable_candidate"]
+    mo.stop(_candidate is None, mo.md("No candidate passes both growth checks."))
+    _evidence = _candidate["evaluations"]
+    if summary["literature_jobs"]:
+        mo.output.append(mo.ui.table(summary["literature_jobs"]))
+        if any(job["status"] != "success" for job in summary["literature_jobs"]):
+            mo.output.append(
+                mo.md("Edison is still running remotely. Resume this graph later to collect its report.")
+            )
+    mo.vstack(
+        [
+            mo.md("""## Results
+
+    Largest deletion set with positive FBA growth and RBA feasibility at 0.1/h.
+    Essentiality and modules guide ranking; they do not exclude candidates.
+    Missing evidence stays unknown, and strain viability is unproven.
+    """),
+            mo.ui.table(
+                [
+                    {
+                        "Genes deleted": _candidate["genes_deleted"],
+                        "FBA growth (1/h)": _candidate["growth_rate"],
+                        "RBA feasible at 0.1/h": _evidence["resource_allocation"][
+                            "feasible_at_growth_floor"
+                        ],
+                        "Modules retained": _evidence["module_retention"]["n_complete"],
+                        "Essential genes deleted": _evidence["essentiality"][
+                            "n_essential_deleted"
+                        ],
+                        "FBA unmodeled deletions": _candidate["coverage"]["fba"][
+                            "deleted_genes_unmodeled"
+                        ],
+                        "RBA unmodeled deletions": _candidate["coverage"][
+                            "resource_allocation"
+                        ]["deleted_genes_unmodeled"],
+                    }
+                ]
+            ),
+            mo.md("Deleted genes: " + ", ".join(_candidate["deleted_gene_ids"])),
+        ]
+    )
+    return
+
+
+if __name__ == "__main__":
+    app.run()

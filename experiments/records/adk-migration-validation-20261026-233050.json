@@ -1,0 +1,71 @@
+{
+  "child_runs": [
+    {
+      "id": "edison-seed-17",
+      "local_root": "runs/adk-migration-validation-20261026-233050/edison-seed-17",
+      "records": {
+        "agent_memory": "runs/adk-migration-validation-20261026-233050/edison-seed-17/agents.sqlite",
+        "config": "runs/adk-migration-validation-20261026-233050/edison-seed-17/config.json",
+        "graph": "runs/adk-migration-validation-20261026-233050/edison-seed-17/graph.sqlite",
+        "summary": "runs/adk-migration-validation-20261026-233050/edison-seed-17/summary.json"
+      }
+    },
+    {
+      "id": "make24",
+      "local_root": "runs/adk-migration-validation-20261026-233050/make24",
+      "records": {
+        "graph": "runs/adk-migration-validation-20261026-233050/make24/graph.sqlite",
+        "summary": "runs/adk-migration-validation-20261026-233050/make24/summary.json"
+      }
+    },
+    {
+      "id": "ordinary-seed-17",
+      "local_root": "runs/adk-migration-validation-20261026-233050/ordinary-seed-17",
+      "records": {
+        "agent_memory": "runs/adk-migration-validation-20261026-233050/ordinary-seed-17/agents.sqlite",
+        "config": "runs/adk-migration-validation-20261026-233050/ordinary-seed-17/config.json",
+        "graph": "runs/adk-migration-validation-20261026-233050/ordinary-seed-17/graph.sqlite",
+        "summary": "runs/adk-migration-validation-20261026-233050/ordinary-seed-17/summary.json"
+      }
+    }
+  ],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "adk-migration-validation-20261026-233050",
+  "kind": "historical_validation_or_pilot",
+  "local_root": "runs/adk-migration-validation-20261026-233050",
+  "records": [
+    "runs/adk-migration-validation-20261026-233050/summary.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/adk-migration-validation-20261026-233050": {
+        "bytes": 1283,
+        "sha256": "e68e733ca5425bfe5722996ffe74c03b2247a80762ca4210e46a69fb1a0446a2",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-e68e733ca5425bfe5722996ffe74c03b2247a80762ca4210e46a69fb1a0446a2.json",
+        "verified_at": "2026-11-05T22:51:12.530095+00:00"
+      },
+      "application/runs/adk-migration-validation-20261026-233050": {
+        "bytes": 1283,
+        "sha256": "dbbc0487655e6e8458319d6c8dad3dea1583d2f80f081bbcc23b289293261473",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-dbbc0487655e6e8458319d6c8dad3dea1583d2f80f081bbcc23b289293261473.json",
+        "verified_at": "2026-11-05T22:50:41.696736+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "historical_recorded",
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/x8ybwbr6"
+  ]
+}

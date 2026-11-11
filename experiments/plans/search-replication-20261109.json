@@ -1,0 +1,685 @@
+{
+  "active_protocol": {
+    "bytes": 13763,
+    "sha256": "b124207d0719256a57e41f30270f33ef36c250b7be3fd11dbb01e6d6257b7740",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/launch-metadata/b124207d0719256a57e41f30270f33ef36c250b7be3fd11dbb01e6d6257b7740.json"
+  },
+  "active_runtime": {
+    "bytes": 22281,
+    "sha256": "fdd84c781852611d4615535cde5c675882e7f2c110f2339cb9ca46e0fad2c459",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/monitoring/fdd84c781852611d4615535cde5c675882e7f2c110f2339cb9ca46e0fad2c459.json"
+  },
+  "authorization": {
+    "bytes": 2372,
+    "sha256": "4da20c9653803ba3f83c4cc67b554d086c37516d235e05e9b13805495ef7388f",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/monitoring/4da20c9653803ba3f83c4cc67b554d086c37516d235e05e9b13805495ef7388f.json"
+  },
+  "budget": {
+    "approved_total_usd": 550,
+    "estimated_total_usd": [
+      300,
+      400
+    ],
+    "pricing_status": "verified_before_launch",
+    "proposed_cap_usd": 550
+  },
+  "cleanup": {
+    "bytes": 1315,
+    "full_get_verified": true,
+    "sha256": "82183bbc432645ddbda9c18a8255f44b91c1f14986e8495483ee03183331d806",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/82183bbc432645ddbda9c18a8255f44b91c1f14986e8495483ee03183331d806.json"
+  },
+  "created_on": "2026-11-09",
+  "current_operational_recovery": {
+    "bytes": 118869,
+    "sha256": "3cf87906c6fb8aabd473f46a6e8f61a674e960fc6882a879ff5c8bcc30c48841",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/launch-metadata/3cf87906c6fb8aabd473f46a6e8f61a674e960fc6882a879ff5c8bcc30c48841.json"
+  },
+  "current_results": {
+    "data_index": {
+      "bytes": 59210,
+      "full_get_verified": true,
+      "sha256": "80e353967e811262e317268b17be467d9c80aa24762863ba02d8fcd298392dad",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/80e353967e811262e317268b17be467d9c80aa24762863ba02d8fcd298392dad.json"
+    },
+    "final_summary": {
+      "bytes": 123816,
+      "full_get_verified": true,
+      "sha256": "f70b6a2dc78416bc2c2bd49503470c17a9c24c999402dbd81c6e69bbe3458da2",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/final/f70b6a2dc78416bc2c2bd49503470c17a9c24c999402dbd81c6e69bbe3458da2.json"
+    },
+    "search_terminal_summary": {
+      "bytes": 67270,
+      "sha256": "501dcf44fcb69c79330f4c6bcbc161bdf8a550616d96ca82f7e80258f4d84410",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/501dcf44fcb69c79330f4c6bcbc161bdf8a550616d96ca82f7e80258f4d84410.json"
+    },
+    "validation": {
+      "bytes": 10193,
+      "sha256": "3945f100469bc7ec3cf759ac1973c8c6b3a7522da04bee4b64204442cadd34a1",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/operational-recovery/3945f100469bc7ec3cf759ac1973c8c6b3a7522da04bee4b64204442cadd34a1.json"
+    }
+  },
+  "current_status": "completed_with_exceptions_verified",
+  "current_status_verification": {
+    "bytes": 37886,
+    "sha256": "61a4f54501121707ae2b03263e44cb6a812ef435800f0c9fc9d6d700607f7563",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/status/61a4f54501121707ae2b03263e44cb6a812ef435800f0c9fc9d6d700607f7563.json"
+  },
+  "deferred_recovery": {
+    "additional_model_spend_allocated_usd": 0,
+    "current_dispatch_and_automatic_validation_unchanged": true,
+    "deadline_extension_authorized": false,
+    "existing_compute_reserve_is_not_model_budget": true,
+    "launch_authorized_now": false,
+    "new_budget_requires_costed_approval": true,
+    "original_equal_budget_results_retained": true,
+    "recorded_at": "2026-11-10T00:27:13.308146+00:00",
+    "report_repaired_or_higher_budget_continuations_separately": true,
+    "runs": {
+      "search-replication-20261109-adaptive-literature-seed-103": {
+        "last_reported_evaluations": 49,
+        "next_action": "Diagnose malformed structured output; test a bounded repair offline before a separately labelled continuation from the saved graph and session.",
+        "original_status": "failed",
+        "resume_and_provenance_members": [
+          {
+            "bytes": 7360512,
+            "path": "agents.sqlite",
+            "sha256": "fbc5be6ed1629d4739d14805b6002fa3f0026e72e8f7edbb6aa38822b1ffbf56"
+          },
+          {
+            "bytes": 10776576,
+            "path": "graph.sqlite",
+            "sha256": "becf2e228e5bae680ed680308016c73fd74fa54c0554258ed599559a8e445a20"
+          },
+          {
+            "bytes": 1464,
+            "path": "model-usage.json",
+            "sha256": "a77099a08e344a6a0856783bca2701dec240a4f09c5fc932b353130670573c71"
+          },
+          {
+            "bytes": 1205694,
+            "path": "run-report.json",
+            "sha256": "24e1811c57811e99a86d4c2257114ec2eb582d92a3e501fe6dffa15a6c0682fe"
+          },
+          {
+            "bytes": 598,
+            "path": "terminal.json",
+            "sha256": "c1be28dad867018e937be445d4e68fe9c550400487d4bc4d58c36b6ebb020af2"
+          }
+        ],
+        "verification_record": {
+          "bytes": 62798,
+          "sha256": "72b17fe367d859b67d996297b9618402e962204347ae9f29f350241de8b9ad7e",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/monitor/checks/72b17fe367d859b67d996297b9618402e962204347ae9f29f350241de8b9ad7e.json"
+        },
+        "verified_checkpoint": {
+          "archive": {
+            "bytes": 3622008,
+            "sha256": "e95e051866ff7d162cd2f9c0a958b40d7bc1fc82301c1e36bf354b9dd1969407",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-adaptive-literature-seed-103-service-resume2/archives/e95e051866ff7d162cd2f9c0a958b40d7bc1fc82301c1e36bf354b9dd1969407.tar.gz"
+          },
+          "full_get_verified": true,
+          "index": {
+            "bytes": 12644,
+            "sha256": "0197653d7dec4967443aa2ede50b424307847da97079eceb83eeff4094a64be5",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-adaptive-literature-seed-103-service-resume2/indexes/0197653d7dec4967443aa2ede50b424307847da97079eceb83eeff4094a64be5.json"
+          },
+          "member_count": 63,
+          "status": "verified",
+          "verified_at": "2026-11-09T18:47:49.298652+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-adaptive-literature-seed-103-service-resume2-data:v5",
+          "wandb_download_verified": true
+        }
+      },
+      "search-replication-20261109-adaptive-literature-seed-227": {
+        "last_reported_evaluations": 78,
+        "next_action": "Estimate the additional model budget for the remaining evaluations before proposing a separately labelled continuation.",
+        "original_status": "model_budget",
+        "resume_and_provenance_members": [
+          {
+            "bytes": 20664320,
+            "path": "agents.sqlite",
+            "sha256": "511f9ab30e963ecb0db73f7d42dbd5cbe17293dad47c5ce7f3039b9d0ec74f3b"
+          },
+          {
+            "bytes": 24559616,
+            "path": "graph.sqlite",
+            "sha256": "35fe890cd52f3977a1298992336b520e56eaa80a09b7c5e3adf8e27e8d83c3c8"
+          },
+          {
+            "bytes": 1439,
+            "path": "model-usage.json",
+            "sha256": "be8de6af0e6c4fc064c60b2be64adff2302bb5e989015ee1c856d33427d96ac9"
+          },
+          {
+            "bytes": 2086785,
+            "path": "run-report.json",
+            "sha256": "443604a9a809ca846af06a82a03c3c2eccec071f211a653a9ceb0b9bcb30c27c"
+          },
+          {
+            "bytes": 272,
+            "path": "terminal.json",
+            "sha256": "c4a50caa4a7751c147ea679b8ccae05c384876e3a341d6338c84b097b827db23"
+          }
+        ],
+        "verification_record": {
+          "bytes": 62798,
+          "sha256": "72b17fe367d859b67d996297b9618402e962204347ae9f29f350241de8b9ad7e",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/monitor/checks/72b17fe367d859b67d996297b9618402e962204347ae9f29f350241de8b9ad7e.json"
+        },
+        "verified_checkpoint": {
+          "archive": {
+            "bytes": 8606156,
+            "sha256": "2cbad489ec5c6535446ee4c24154acdab82d53d34d82fce670172bbb33af784d",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-adaptive-literature-seed-227-service-resume2/archives/2cbad489ec5c6535446ee4c24154acdab82d53d34d82fce670172bbb33af784d.tar.gz"
+          },
+          "full_get_verified": true,
+          "index": {
+            "bytes": 16883,
+            "sha256": "dce4ca2fe386bde2d14ea17979332036c2c93120ab3474242f8569ed6355650e",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/search-replication-20261109-adaptive-literature-seed-227-service-resume2/indexes/dce4ca2fe386bde2d14ea17979332036c2c93120ab3474242f8569ed6355650e.json"
+          },
+          "member_count": 82,
+          "status": "verified",
+          "verified_at": "2026-11-10T00:14:06.452693+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-adaptive-literature-seed-227-service-resume2-data:v70",
+          "wandb_download_verified": true
+        }
+      }
+    },
+    "status": "deferred_until_current_batch_and_validation_finish",
+    "user_direction": "Prioritize the ongoing batch; later diagnose and resume the model-format failure from its saved checkpoint and consider additional model budget to finish the budget-limited search.",
+    "verified_record": {
+      "bytes": 6180,
+      "sha256": "7ae7084ffcbbcfbf45937d25892f440711976bcc5a0b3bb6365689fc313c8e54",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/planned-recovery/7ae7084ffcbbcfbf45937d25892f440711976bcc5a0b3bb6365689fc313c8e54.json"
+    }
+  },
+  "github_publication": {
+    "branch": "codex/literature-ablation-pilot",
+    "methods_and_results_commit": "d9efbd8315612bb104e06c94dfc8ccbf11271beb",
+    "pull_request": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/pull/9",
+    "repository": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli",
+    "scope": "Screened methods and compact results; full data private in S3/W&B.",
+    "visibility": "public"
+  },
+  "graph_export_command": "python -m scripts.collect_search_replication --bundle <bundle> --graph <closed-graph.sqlite> --job-index <index> --terminal <terminal-status.json> --output <run-report.json>",
+  "id": "search-replication-20261109",
+  "implementation": {
+    "deployed_runtime_and_provider_pin": "verified",
+    "endpoint_classification": "implemented",
+    "literature_cutoff_enforcement": "implemented_and_tested",
+    "offline_protocol_planner": "implemented",
+    "paid_launch": "authorized_and_running",
+    "read_only_graph_export": "implemented",
+    "remote_execution_integration": "running_on_dedicated_linux_worker",
+    "verified_report_collector_and_finalist_freeze": "implemented"
+  },
+  "launch_ready": true,
+  "launch_requirements": [
+    "New study-specific approval for current costs, scoped model keys, any credential transfer and scheduled monitoring.",
+    "Freeze provider route, exact deployed source, dependencies and functional-panel mapping checksum.",
+    "Restore and verify archived scientific inputs and the unchanged pre-search dossier on remote Linux.",
+    "Integrate terminal-report export into the remote runners; test partial failures, duplicates, candidate limits and resumes end to end.",
+    "Enforce literature cutoff on both retrieval paths, archive exact responses and verify isolated memories.",
+    "Remote launcher must enforce exclusive locks, concurrency, non-resetting model-key caps, absolute deadlines and verified checkpoints.",
+    "Test backup failure and bounded recovery on the frozen Linux deployment before paid search calls.",
+    "Freeze and verify all terminal nominations before validation; no finalist replacement or new scientific repairs."
+  ],
+  "launch_requirements_status": "Satisfied for paid dispatch; final nominations and validation checks remain enforced runtime gates.",
+  "ledger_record": "../records/search-replication-20261109.json",
+  "monitoring_cron_verification": {
+    "bytes": 1213,
+    "sha256": "69109fd478c0cf5e412608053020002ba4ea3d2a4a43f2a1d5f31b3bf7ee2ab2",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/monitoring/69109fd478c0cf5e412608053020002ba4ea3d2a4a43f2a1d5f31b3bf7ee2ab2.json"
+  },
+  "monitoring_interval_amendment": {
+    "bytes": 1136,
+    "sha256": "0b254d4fb385cae35827f62b32f699961c1bd4a5a3f0f784ffc55b8a1245db31",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/monitoring/0b254d4fb385cae35827f62b32f699961c1bd4a5a3f0f784ffc55b8a1245db31.json"
+  },
+  "nomination_command": "python -m scripts.collect_search_replication --bundle <bundle> --output <new-nominations.json>",
+  "parallel_validation": {
+    "budgets": {
+      "additional_cap_usd": 100,
+      "additional_maximum_vm_usd": 77.4144,
+      "additional_model_budget_usd": 0,
+      "additional_storage_and_transfer_reserve_usd": 22.5856,
+      "science_deadline_unix": 1794437112.335,
+      "stop_deadline_unix": 1794444312.335
+    },
+    "calibration": "Three technical MG1655 two-generation controls; auto-dispatch each assigned 22-genotype full-seed workflow only after finite outputs, two divisions and peak RSS <=4GiB.",
+    "checks": {
+      "actual_resume_guard_passed_on_all_three_workers": true,
+      "initial_s3_and_wandb_objects_independently_download_hash_verified_on_all_workers": true,
+      "local_subtests_passed": 7,
+      "local_tests_passed": 27,
+      "real_controller_s3_preflight_manifests": 7,
+      "remote_safety_tests_per_worker": 12,
+      "source_and_scientific_inputs_unchanged": true,
+      "uncached_wandb_roundtrip_verified": true
+    },
+    "controls": 2,
+    "credentials": {
+      "approval": {
+        "bytes": 924,
+        "sha256": "937f40fee94fd36f6d52c25c7d9a5aa33cd5e44538f85d4f6260e7056648c446",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/937f40fee94fd36f6d52c25c7d9a5aa33cd5e44538f85d4f6260e7056648c446.json"
+      },
+      "historical_auto_review_rejection_resolved_by_explicit_destination_specific_approval": true,
+      "owner_only_and_excluded_from_backups": true,
+      "scope": "W&B tracking key only on the two added workers",
+      "status": "explicitly_approved_transferred_and_verified"
+    },
+    "data_prefix": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/wandb-repair2/metadata-resume3/",
+    "distinct_finalists": 20,
+    "final_preservation": {
+      "all_shards_independently_verified": true,
+      "archive": {
+        "bytes": 228316204,
+        "sha256": "4ddb4c070374a601a3eff3a4ee38635908beab6ac87a2c7339a25922d2267dee",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/coordinator/final/4ddb4c070374a601a3eff3a4ee38635908beab6ac87a2c7339a25922d2267dee.tar.gz"
+      },
+      "full_s3_get_verified": true,
+      "index": {
+        "bytes": 38171,
+        "sha256": "0370fdf887e6270fc2db05f95d684079f020d701f5b6e2fbe059b3be4096f228",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/coordinator/final/0370fdf887e6270fc2db05f95d684079f020d701f5b6e2fbe059b3be4096f228.json"
+      },
+      "members": 148,
+      "shard_archives": {
+        "101": {
+          "archive": {
+            "bytes": 228320117,
+            "sha256": "1f68c2fadaaaa83a648f877ab34944d7c39894e802257c95bc5f0ac6bcc7a353",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/worker-101-backup-retry1/final/1f68c2fadaaaa83a648f877ab34944d7c39894e802257c95bc5f0ac6bcc7a353.tar.gz"
+          },
+          "full_s3_get_verified": true,
+          "index": {
+            "bytes": 37834,
+            "sha256": "b9481095d586af1b4ae6bc268c0126e51b10719373f41f4f73ff8f57f7eadcd3",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/worker-101-backup-retry1/final/b9481095d586af1b4ae6bc268c0126e51b10719373f41f4f73ff8f57f7eadcd3.json"
+          },
+          "members": 146,
+          "status": "verified",
+          "verified_at": "2026-11-10T10:23:05.015741+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-validation-worker-101-backup-retry1-final-data:v0",
+          "wandb_download_verified": true
+        },
+        "211": {
+          "archive": {
+            "bytes": 226229826,
+            "sha256": "8e497635d8def5b53e3bae12c27eb3f1e4ae16ad017affc25b0e18cfdaf44771",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/worker-211-backup-retry1/final/8e497635d8def5b53e3bae12c27eb3f1e4ae16ad017affc25b0e18cfdaf44771.tar.gz"
+          },
+          "full_s3_get_verified": true,
+          "index": {
+            "bytes": 33945,
+            "sha256": "44903edf8814b9dfafcfde60a92af5da79237b482c6ad2ea057e75143a618648",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/worker-211-backup-retry1/final/44903edf8814b9dfafcfde60a92af5da79237b482c6ad2ea057e75143a618648.json"
+          },
+          "members": 136,
+          "status": "verified",
+          "verified_at": "2026-11-10T10:17:49.183477+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-validation-worker-211-backup-retry1-final-data:v0",
+          "wandb_download_verified": true
+        },
+        "307": {
+          "archive": {
+            "bytes": 226208947,
+            "sha256": "417c481433e7efdc27addce6e92917099e45e8f3e273f3c51a54839565922358",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/worker-307-backup-retry1/final/417c481433e7efdc27addce6e92917099e45e8f3e273f3c51a54839565922358.tar.gz"
+          },
+          "full_s3_get_verified": true,
+          "index": {
+            "bytes": 33945,
+            "sha256": "545ac4190c0e719c1619139fa649271aa66bf8546ff44992ec831da82afc83c3",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/worker-307-backup-retry1/final/545ac4190c0e719c1619139fa649271aa66bf8546ff44992ec831da82afc83c3.json"
+          },
+          "members": 136,
+          "status": "verified",
+          "verified_at": "2026-11-10T10:18:41.545672+00:00",
+          "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-validation-worker-307-backup-retry1-final-data:v0",
+          "wandb_download_verified": true
+        }
+      },
+      "status": "verified",
+      "verified_at": "2026-11-10T10:25:29.895755+00:00",
+      "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-validation-backup-retry1-final-data:v0",
+      "wandb_download_verified": true
+    },
+    "latest_failure": {
+      "bytes": 6885,
+      "sha256": "e0d82bd8921ab55699045299d5864fa8c608344e2c8ae8b30cae774e07029ac6",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/e0d82bd8921ab55699045299d5864fa8c608344e2c8ae8b30cae774e07029ac6.json"
+    },
+    "live_snapshots": {
+      "101": {
+        "checked_at_unix": 1794309502.4951909,
+        "verified_record": {
+          "bytes": 34910,
+          "sha256": "734e72bf6a5d573999a553f753537470d507bc5a5bf9ba436c48ed837efb1fa7",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/operational-recovery/734e72bf6a5d573999a553f753537470d507bc5a5bf9ba436c48ed837efb1fa7.json"
+        },
+        "workflows": {
+          "calibration-worker-101": {
+            "checkpoint": {
+              "bytes": 28972,
+              "sha256": "43ccc558cbddffe072320ee063e98f7819780c3c0457162db398f6bc43138255",
+              "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/calibration/101/checkpoints/43ccc558cbddffe072320ee063e98f7819780c3c0457162db398f6bc43138255.json"
+            },
+            "completed_cell_cycles": 2,
+            "status": "completed",
+            "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-validation-calibration-worker-101-backup-retry1-data:v8"
+          },
+          "seed-101": {
+            "checkpoint": {
+              "bytes": 14080,
+              "sha256": "a0989228593ca2a4604a2e98d9705113c3dda35c68e9ea53ebda08b716b52fea",
+              "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/seed-101/checkpoints/a0989228593ca2a4604a2e98d9705113c3dda35c68e9ea53ebda08b716b52fea.json"
+            },
+            "completed_cell_cycles": 0,
+            "status": "running",
+            "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-validation-seed-101-data:v5"
+          }
+        }
+      },
+      "211": {
+        "checked_at_unix": 1794309502.0829368,
+        "verified_record": {
+          "bytes": 9103,
+          "sha256": "5a08ffad11d365cfb841739e3f6879f9dc52086e936f6e7c8397983574ffc211",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/operational-recovery/5a08ffad11d365cfb841739e3f6879f9dc52086e936f6e7c8397983574ffc211.json"
+        },
+        "workflows": {
+          "calibration-worker-211": {
+            "checkpoint": {
+              "bytes": 26044,
+              "sha256": "5136608a12abd1478dc9ff5d7b23dd674b52ca93633c6f9808c71cb7e7f5f951",
+              "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/calibration/211/checkpoints/5136608a12abd1478dc9ff5d7b23dd674b52ca93633c6f9808c71cb7e7f5f951.json"
+            },
+            "completed_cell_cycles": 1,
+            "status": "running",
+            "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-validation-calibration-worker-211-backup-retry1-data:v8"
+          },
+          "seed-211": {
+            "checkpoint": null,
+            "completed_cell_cycles": 0,
+            "status": "prepared",
+            "wandb_artifact": null
+          }
+        }
+      },
+      "307": {
+        "checked_at_unix": 1794309502.121027,
+        "verified_record": {
+          "bytes": 9102,
+          "sha256": "ef89a429fc27146fd1208b59a967428e44a59bf48897bfd72b9728db226c3f7b",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/operational-recovery/ef89a429fc27146fd1208b59a967428e44a59bf48897bfd72b9728db226c3f7b.json"
+        },
+        "workflows": {
+          "calibration-worker-307": {
+            "checkpoint": {
+              "bytes": 25532,
+              "sha256": "c8260c4f564df52e1cddc04494e41b355d4579d184e023435020585acff5682b",
+              "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/validation/parallel/backup-retry1/calibration/307/checkpoints/c8260c4f564df52e1cddc04494e41b355d4579d184e023435020585acff5682b.json"
+            },
+            "completed_cell_cycles": 1,
+            "status": "running",
+            "wandb_artifact": "mcclain/yggdrisil/search-replication-20261109-validation-calibration-worker-307-backup-retry1-data:v8"
+          },
+          "seed-307": {
+            "checkpoint": null,
+            "completed_cell_cycles": 0,
+            "status": "prepared",
+            "wandb_artifact": null
+          }
+        }
+      }
+    },
+    "maximum_cells_per_worker": 8,
+    "maximum_simultaneous_cells": 24,
+    "proofs": {
+      "approval": {
+        "bytes": 3220,
+        "sha256": "3ad91d6a10d55e846482ced71325be7bc2f710aef8358977fd5bc1d3b7875600",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/3ad91d6a10d55e846482ced71325be7bc2f710aef8358977fd5bc1d3b7875600.json"
+      },
+      "assignments": {
+        "bytes": 7885,
+        "sha256": "fe66f31b4bb940225465a37d45e72b952e37d0757773b07b17e92b7eef4a0136",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/fe66f31b4bb940225465a37d45e72b952e37d0757773b07b17e92b7eef4a0136.json"
+      },
+      "controller_preflight": {
+        "bytes": 3142,
+        "sha256": "d14cc77ad7b9ce2b9cc6f3be56ca0e7ba4bb2a99492f4a3c360128e8c6f38ee8",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/d14cc77ad7b9ce2b9cc6f3be56ca0e7ba4bb2a99492f4a3c360128e8c6f38ee8.json"
+      },
+      "deployment": {
+        "bytes": 5361,
+        "sha256": "d9f0013d5a9de19d25ed6582caa7533b014867e4c59fc986443202bc546e9dc6",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/d9f0013d5a9de19d25ed6582caa7533b014867e4c59fc986443202bc546e9dc6.json"
+      },
+      "nominations_verification": {
+        "bytes": 1037,
+        "sha256": "eb1bf53d6531fd012b8b90aac24a0cc6640e8060fed5ac2d1ad6ce978e7465be",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/eb1bf53d6531fd012b8b90aac24a0cc6640e8060fed5ac2d1ad6ce978e7465be.json"
+      },
+      "parent_state": {
+        "bytes": 217515,
+        "sha256": "a24fc7ca8915ac52dc73be47f2f7481e0021108f4744bce5456ad7ab01aa1cdb",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/a24fc7ca8915ac52dc73be47f2f7481e0021108f4744bce5456ad7ab01aa1cdb.json"
+      },
+      "plan": {
+        "bytes": 2652,
+        "sha256": "1d5d506ab323de25495f7197dcd06f7913b92283a302cedfbd213490c890d07f",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/1d5d506ab323de25495f7197dcd06f7913b92283a302cedfbd213490c890d07f.json"
+      },
+      "recovery": {
+        "bytes": 12174,
+        "sha256": "9923d783989732b6efde9ee03323c51eb4b2a2b8d5aac0a74149e7d1c70db91e",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/9923d783989732b6efde9ee03323c51eb4b2a2b8d5aac0a74149e7d1c70db91e.json"
+      },
+      "runtime": {
+        "bytes": 23938,
+        "sha256": "7de9ba1c1edfc3eec905454bcb7714ad556232a2c11df4a1eef951193c8f8b25",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/7de9ba1c1edfc3eec905454bcb7714ad556232a2c11df4a1eef951193c8f8b25.json"
+      },
+      "search_terminal_summary": {
+        "bytes": 67270,
+        "sha256": "501dcf44fcb69c79330f4c6bcbc161bdf8a550616d96ca82f7e80258f4d84410",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/501dcf44fcb69c79330f4c6bcbc161bdf8a550616d96ca82f7e80258f4d84410.json"
+      },
+      "tracking_approval": {
+        "bytes": 924,
+        "sha256": "937f40fee94fd36f6d52c25c7d9a5aa33cd5e44538f85d4f6260e7056648c446",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/937f40fee94fd36f6d52c25c7d9a5aa33cd5e44538f85d4f6260e7056648c446.json"
+      },
+      "worker_101_failed_setup_preservation": {
+        "bytes": 11100,
+        "sha256": "18b03897fc2d21ffc3441f61e7c47b2c1a796598bcad0db111a22868801daae5",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/18b03897fc2d21ffc3441f61e7c47b2c1a796598bcad0db111a22868801daae5.json"
+      },
+      "worker_101_snapshot": {
+        "bytes": 7801,
+        "sha256": "05cb0e46ccc71af6e021e0a023f48f21369e745c82d0c8e239f2e63bdfa65286",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/05cb0e46ccc71af6e021e0a023f48f21369e745c82d0c8e239f2e63bdfa65286.json"
+      },
+      "worker_211_failed_setup_preservation": {
+        "bytes": 2625,
+        "sha256": "c5f2bec8a99adf98fc8addbb61a4ac83e4084aea91610c06af1c075d61136b8a",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/c5f2bec8a99adf98fc8addbb61a4ac83e4084aea91610c06af1c075d61136b8a.json"
+      },
+      "worker_211_runtime_preflight": {
+        "bytes": 2631,
+        "sha256": "df1fba8b16242c8b810150de67f53f2cb84c2b8f8f5650387e51c85c95aae57d",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/df1fba8b16242c8b810150de67f53f2cb84c2b8f8f5650387e51c85c95aae57d.json"
+      },
+      "worker_211_snapshot": {
+        "bytes": 4400,
+        "sha256": "be6e623ba5fcabc64890c8432d1a5a58ef57ab1c14fb1920c13c9ac2b95b9fb3",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/be6e623ba5fcabc64890c8432d1a5a58ef57ab1c14fb1920c13c9ac2b95b9fb3.json"
+      },
+      "worker_211_tracking_verified": {
+        "bytes": 1542,
+        "sha256": "27eeba4680a5ee874674ca526b47505a369d7de2a28bd3452a7442ce5f4d4625",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/27eeba4680a5ee874674ca526b47505a369d7de2a28bd3452a7442ce5f4d4625.json"
+      },
+      "worker_307_failed_setup_preservation": {
+        "bytes": 2625,
+        "sha256": "fe2d69c729465c969a0cd7677c07068aa06e5cc0ca7ed7214c634bc18e4cf68a",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/fe2d69c729465c969a0cd7677c07068aa06e5cc0ca7ed7214c634bc18e4cf68a.json"
+      },
+      "worker_307_runtime_preflight": {
+        "bytes": 2630,
+        "sha256": "84f6c4ae341166e788fda0b3e8d0b2e983f8c0b0b2d585e96721ba056dd06ebc",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/84f6c4ae341166e788fda0b3e8d0b2e983f8c0b0b2d585e96721ba056dd06ebc.json"
+      },
+      "worker_307_snapshot": {
+        "bytes": 4399,
+        "sha256": "036b001eff10b91f462d95ca5036f463c628ea4ad4bf99728d45f5dde6ec28d5",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/036b001eff10b91f462d95ca5036f463c628ea4ad4bf99728d45f5dde6ec28d5.json"
+      },
+      "worker_307_tracking_verified": {
+        "bytes": 1542,
+        "sha256": "5e2d29bba9d9574932f18afaead0ac312a0bdee8624e9d3b81d30d45242ffc0d",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/parallel-validation/5e2d29bba9d9574932f18afaead0ac312a0bdee8624e9d3b81d30d45242ffc0d.json"
+      }
+    },
+    "recorded_at": "2026-11-10T10:14:28.584058+00:00",
+    "resource_plan": {
+      "bytes": 2759,
+      "sha256": "bcb59216509f1a45ca4c8dc011e216fc3e4870315432252ec94911aac00d50ec",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/operational-recovery/bcb59216509f1a45ca4c8dc011e216fc3e4870315432252ec94911aac00d50ec.json"
+    },
+    "scientific_lineages": 66,
+    "scientific_protocol_unchanged": true,
+    "scripts": {
+      "scripts/parallel_replication_validation.py": "5c9fa1527a1ed649fa49fc6bbda03c1126a91dbba3656f89963f30e3b88308d1",
+      "scripts/run_replication_validation_shard.py": "bc6aef705652fa01943526ddd4cced33f89b65e6373689b41c926c6f925f56d5",
+      "scripts/track_vecoli_experiment.py": "070453b8aba72197f642aa28598313a8afd4e047eb537d89028c4da883fc5b86",
+      "tests/test_parallel_replication_validation.py": "9e09cfa341129e36e2637951f5d75755a797e91d0da97a918ddc8ac3b0f9a723"
+    },
+    "shared_worker_untouched": "i-0cda00ffb3cacfc12",
+    "status": "validation_running",
+    "verified_record": {
+      "bytes": 10193,
+      "sha256": "3945f100469bc7ec3cf759ac1973c8c6b3a7522da04bee4b64204442cadd34a1",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/operational-recovery/3945f100469bc7ec3cf759ac1973c8c6b3a7522da04bee4b64204442cadd34a1.json"
+    },
+    "workers": [
+      {
+        "disk_retained": true,
+        "ec2_state": "running",
+        "existing_worker": true,
+        "instance_id": "i-04d4e7538fba19284",
+        "observed_at": "2026-11-10T11:21:25.839314+00:00",
+        "private_ip": "172.31.94.132",
+        "public_ip": "3.84.58.155",
+        "scientific_status": "running",
+        "seed": 101,
+        "state": "running"
+      },
+      {
+        "disk_retained": true,
+        "ec2_state": "running",
+        "existing_worker": false,
+        "instance_id": "i-034bf3f60559b41a8",
+        "launch_time": "2026-11-10T00:45:14+00:00",
+        "observed_at": "2026-11-10T11:21:25.839314+00:00",
+        "private_ip": "172.31.91.230",
+        "public_ip": "44.211.254.176",
+        "scientific_status": "running",
+        "seed": 211,
+        "state": "running",
+        "volume_ids": [
+          "vol-0ebf04f7f4ed1e818"
+        ]
+      },
+      {
+        "disk_retained": true,
+        "ec2_state": "running",
+        "existing_worker": false,
+        "instance_id": "i-0a5eb398d6a7068a7",
+        "launch_time": "2026-11-10T00:45:14+00:00",
+        "observed_at": "2026-11-10T11:21:25.839314+00:00",
+        "private_ip": "172.31.86.108",
+        "public_ip": "44.211.76.224",
+        "scientific_status": "running",
+        "seed": 307,
+        "state": "running",
+        "volume_ids": [
+          "vol-087114bed2fab0a2b"
+        ]
+      }
+    ]
+  },
+  "preparation_checks": {
+    "cloud_resources_created": 0,
+    "model_api_calls": 0,
+    "offline_tests_passed": 18,
+    "ruff": "passed",
+    "scientific_runs": 0
+  },
+  "prepared_bundle": {
+    "manifest_sha256": "60540fddb7f4ab6ea3105e68614cbdd3b66c7de08a8a71aaae62ff4f6bbaf1fe",
+    "path": "runs/search-replication-20261109",
+    "protocol_sha256": "c71743f23fb6fd56f0caada37ace6304b9bc1540b8a73fd5318c377da9395bb5"
+  },
+  "protocol": {
+    "path": "benchmarks/search_replication.json",
+    "sha256": "4d97c618ae25ce0ce1a273fd4c0a6dad9524b3b49bd9e3099464c28520c98256"
+  },
+  "rebuild_command": "python -m scripts.plan_search_replication --output /path/to/new-bundle",
+  "record_type": "study_execution_reference",
+  "scientific_execution_started": true,
+  "status": "validation_running",
+  "storage": {
+    "git_commit": null,
+    "ledger_backup": {
+      "bytes": 841793,
+      "sha256": "909aaea36b039ed5dfb844bc4f63da0492e046dce71bbac293d817dc5d7a3418",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/catalog/ledger/909aaea36b039ed5dfb844bc4f63da0492e046dce71bbac293d817dc5d7a3418.json"
+    },
+    "new_s3_uploads": true,
+    "new_wandb_runs": true,
+    "note": "Working ledger and 63 compact records are updated. Full scientific data remain private in S3/W&B; source snapshots remain local and on the worker. No new Git commit or push performed.",
+    "planned_s3_prefix": "s3://phd-research-storage-1758274488/yggdrisil/experiments/search-replication-20261109/"
+  },
+  "test_command": "python -m unittest discover -s tests -p test_search_replication.py -v",
+  "tools": {
+    "scripts/collect_search_replication.py": "63050d6d59b96baf2579f4f3f823ff219525000c547c0531257b427b35c00ea7",
+    "scripts/plan_search_replication.py": "eaee51cb84aa191498e44a5e56f448a9f40b5ce05c6ce0cdf17288334f03dcdf",
+    "tests/test_search_replication.py": "c379e527741e3f857dce1f190fbbd7fc9f44ae5d93268a225eaed8c30a272158"
+  },
+  "verify_command": "python -m scripts.plan_search_replication --verify runs/search-replication-20261109",
+  "worker": {
+    "cleanup_policy": "Stop retains encrypted disk. Terminate/delete only after independent full final S3/W&B verification.",
+    "delete_on_termination": false,
+    "encrypted": true,
+    "hourly_usd": 0.8064,
+    "instance_id": "i-04d4e7538fba19284",
+    "instance_type": "m7i.4xlarge",
+    "launch_time": "2026-11-09T13:39:42+00:00",
+    "public_ip": "44.212.10.139",
+    "region": "us-east-1",
+    "remote_root": "/home/ubuntu/yggdrisil-replication-20261109",
+    "science_deadline": "2026-11-12T11:39:41+00:00",
+    "shared_worker_untouched": "i-0cda00ffb3cacfc12",
+    "status": "running",
+    "stop_deadline": "2026-11-12T13:39:41+00:00",
+    "total_cap_usd": 550,
+    "volume_gib": 200,
+    "volume_ids": [
+      "vol-0eaa093c7b8a10d58"
+    ]
+  },
+  "workload": {
+    "agent_runs": 15,
+    "calibration_cell_cycles": 2,
+    "maximum_new_candidates": 2500,
+    "maximum_validation_cell_cycles": 1620,
+    "maximum_validation_lineages": 81,
+    "search_runs": 25
+  }
+}

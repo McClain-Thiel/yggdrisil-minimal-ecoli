@@ -1,0 +1,1853 @@
+{
+  "approval": {
+    "absolute_stop": "2026-11-12T00:30:22+00:00",
+    "approved": true,
+    "approved_at": "2026-11-11T00:30:22.611655+00:00",
+    "approved_cap_usd": 100,
+    "credentials": "Use only existing private W&B tracking credentials already on these two workers; no management/model keys or new credential destinations.",
+    "data_preservation": "Private S3 and committed W&B verified before launch and after each closed cell; independent final full archive/member verification before any disk deletion. Keep shared compute running.",
+    "experiment_id": "vecoli-depth-matched-20261111",
+    "maximum_compute_hours_per_worker": 24,
+    "maximum_compute_usd": 38.7072,
+    "maximum_disk_24h_usd": 1.066667,
+    "maximum_workers": 2,
+    "model_calls_allowed": false,
+    "new_instances": 0,
+    "original_search_budget_and_deadlines_unchanged": true,
+    "paid_launch": true,
+    "price_source": {
+      "effective_date": "2026-11-01T00:00:00Z",
+      "sku": "NQPHP68K4VGS8SQ7",
+      "source": "AWS Price List API",
+      "usd_per_hour": 0.8064
+    },
+    "public_ipv4_24h_estimate_usd": 0.24,
+    "science_deadline": "2026-11-11T22:30:22+00:00",
+    "science_deadline_unix": 1794436222.0,
+    "scope": "Up to ten depth-matched baseline genomes plus MG1655 and common1030 controls, each with seeds101/211/307 and20generations. Reuse two existing workers; max8cells per worker,16 total. Search must finish and verified genomes must be frozen before science. No agent search/model calls, no new scientific solver repairs. Existing agent outcomes remain separate for comparison.",
+    "stop_deadline_unix": 1794443422.0,
+    "storage_transfer_reserve_usd": 59.986133,
+    "user_authorization": "ill go ahead and approve up to 100 on aws for that just kick it off when its ready then make sure we have good comperable runs between thr 4 plus control mehtods and make a graphic of those results",
+    "workers": [
+      {
+        "cleanup_gate": "Independent full archive/member S3/W&B verification before termination or disk deletion.",
+        "combined_cap_usd": 25,
+        "delete_on_termination": false,
+        "encrypted": true,
+        "hourly_usd": 0.8064,
+        "instance_id": "i-05b12ad155a4aff74",
+        "instance_type": "m7i.4xlarge",
+        "launch_time": "2026-11-10T21:29:03+00:00",
+        "logging_recovery": true,
+        "maximum_parallel_cells": 8,
+        "public_ip": "98.93.169.254",
+        "region": "us-east-1",
+        "remote_root": "/home/ubuntu/yggdrisil-baseline-depth-20261110",
+        "role": "primary",
+        "science_deadline": "2026-11-11T07:29:01+00:00",
+        "shared_worker_untouched": "i-0cda00ffb3cacfc12",
+        "state": "running",
+        "stop_deadline": "2026-11-11T09:29:01+00:00",
+        "total_cap_usd": 25,
+        "validation_remote_root": "/home/ubuntu/yggdrisil-depth-matched-20261111",
+        "validation_seeds": [
+          101,
+          211
+        ],
+        "volume_gib": 200,
+        "volume_ids": [
+          "vol-06ffb8dd4182f3e4f"
+        ]
+      },
+      {
+        "cleanup_gate": "Independent S3/W&B full archives plus indexed-member verification before volume deletion.",
+        "combined_cap_usd": 25,
+        "delete_on_termination": false,
+        "encrypted": true,
+        "hourly_usd": 0.8064,
+        "instance_id": "i-05bece33af7a6cbb2",
+        "instance_type": "m7i.4xlarge",
+        "launch_time": "2026-11-10T21:56:21+00:00",
+        "maximum_parallel_cells": 8,
+        "public_ip": "3.88.66.174",
+        "region": "us-east-1",
+        "remote_root": "/home/ubuntu/yggdrisil-baseline-depth-20261110",
+        "role": "secondary",
+        "science_deadline": "2026-11-11T07:29:01+00:00",
+        "state": "running",
+        "stop_deadline": "2026-11-11T09:29:01+00:00",
+        "validation_remote_root": "/home/ubuntu/yggdrisil-depth-matched-20261111",
+        "validation_seeds": [
+          307
+        ],
+        "volume_gib": 200,
+        "volume_ids": [
+          "vol-06f1de0a618b98c9f"
+        ]
+      }
+    ]
+  },
+  "cleanup": {
+    "experiment_id": "vecoli-depth-matched-20261111",
+    "published_ledger": {
+      "bytes": 3290459,
+      "full_get_verified": true,
+      "sha256": "217c2a33dc0e5dc18422fa9156c967874b08aaaefc4b55d6ad8a9a7a9514ef42",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/217c2a33dc0e5dc18422fa9156c967874b08aaaefc4b55d6ad8a9a7a9514ef42.json",
+      "verified_at": "2026-11-11T06:18:39.811104+00:00"
+    },
+    "record": {
+      "bytes": 2595,
+      "full_get_verified": true,
+      "sha256": "9e59a7a61d0c2f24ff40245dd90990dd4195c3fac31c231ddb53365f84c5e688",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/9e59a7a61d0c2f24ff40245dd90990dd4195c3fac31c231ddb53365f84c5e688.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "requested_at": "2026-11-11T06:21:42.782860+00:00",
+    "shared_worker": "i-0cda00ffb3cacfc12",
+    "shared_worker_state": "running",
+    "status": "terminated_and_volumes_deleted",
+    "termination_response": [
+      {
+        "CurrentState": {
+          "Code": 48,
+          "Name": "terminated"
+        },
+        "InstanceId": "i-05b12ad155a4aff74",
+        "PreviousState": {
+          "Code": 80,
+          "Name": "stopped"
+        }
+      },
+      {
+        "CurrentState": {
+          "Code": 48,
+          "Name": "terminated"
+        },
+        "InstanceId": "i-05bece33af7a6cbb2",
+        "PreviousState": {
+          "Code": 80,
+          "Name": "stopped"
+        }
+      }
+    ],
+    "verified_at": "2026-11-11T06:21:59.674001+00:00",
+    "workers": {
+      "primary": {
+        "after": "terminated",
+        "archive_verification": {
+          "bytes": 1429,
+          "full_get_verified": true,
+          "sha256": "7c6199f83b1a4e7c1577997b82908c2381862ef6231a458e0958df840b19c439",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/7c6199f83b1a4e7c1577997b82908c2381862ef6231a458e0958df840b19c439.json",
+          "verified_at": "2026-11-11T06:18:39.811104+00:00"
+        },
+        "before": "stopped",
+        "delete_on_termination_confirmed": true,
+        "device": "/dev/sda1",
+        "instance_id": "i-05b12ad155a4aff74",
+        "volume_absence_verified": true,
+        "volume_id": "vol-06ffb8dd4182f3e4f"
+      },
+      "secondary": {
+        "after": "terminated",
+        "archive_verification": {
+          "bytes": 1277,
+          "full_get_verified": true,
+          "sha256": "1db3bbd681b52a51d41486878ebe1a761b4bfc1eac9eb894231bce26008b47bb",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/1db3bbd681b52a51d41486878ebe1a761b4bfc1eac9eb894231bce26008b47bb.json",
+          "verified_at": "2026-11-11T06:18:39.811104+00:00"
+        },
+        "before": "stopped",
+        "delete_on_termination_confirmed": true,
+        "device": "/dev/sda1",
+        "instance_id": "i-05bece33af7a6cbb2",
+        "volume_absence_verified": true,
+        "volume_id": "vol-06f1de0a618b98c9f"
+      }
+    }
+  },
+  "created_at": "2026-11-11T00:33:52.261138+00:00",
+  "final_preservation": {
+    "all_310_closed_daughter_hashes_in_verified_final_archives": true,
+    "at": "2026-11-11T06:18:07.407110+00:00",
+    "checkpoint_coverage": {
+      "seed-101": {
+        "checkpoint_entries": 1136,
+        "final_artifact": "mcclain/yggdrisil/vecoli-depth-matched-20261111-seed-101-data:v55",
+        "other_checkpoint_entries_preserved_and_verified_separately": 127,
+        "same_content_in_final_archive": 1009
+      },
+      "seed-211": {
+        "checkpoint_entries": 1172,
+        "final_artifact": "mcclain/yggdrisil/vecoli-depth-matched-20261111-seed-211-data:v62",
+        "other_checkpoint_entries_preserved_and_verified_separately": 127,
+        "same_content_in_final_archive": 1045
+      },
+      "seed-307": {
+        "checkpoint_entries": 1189,
+        "final_artifact": "mcclain/yggdrisil/vecoli-depth-matched-20261111-seed-307-data:v56",
+        "other_checkpoint_entries_preserved_and_verified_separately": 131,
+        "same_content_in_final_archive": 1058
+      }
+    },
+    "cleanup": "worker-cleanup.json",
+    "cleanup_gate": "Passed before resource removal; both dedicated instances terminated and both verified volumes absent.",
+    "cleanup_verified_at": "2026-11-11T06:21:59.675831+00:00",
+    "compressed_archive_bytes": 4244046370,
+    "cost": {
+      "actual_bill_reconciled": false,
+      "bound_basis": "Entire original-launch-to-independently-observed-stop interval for both workers, including downtime. Covers both search and validation; not an AWS bill. Storage, IPv4 and transfers are separate.",
+      "conservative_combined_vm_upper_bound_usd": 13.4098,
+      "search_cap_usd": 25,
+      "validation_cap_usd": 100
+    },
+    "deadlines": {
+      "absolute_stop": "2026-11-12T00:30:22Z",
+      "science": "2026-11-11T22:30:22Z"
+    },
+    "experiment_id": "vecoli-depth-matched-20261111",
+    "final_archives": {
+      "primary": {
+        "at_unix": 1794377807.8222249,
+        "audited_worker_instance": "i-05b12ad155a4aff74",
+        "every_indexed_member_verified": true,
+        "full_s3_get_verified": true,
+        "member_auditor_sha256": "30a2db89a7e2c1f91c084c004c7b297f4330bab61997ac6a8c1ee56c3ff20f40",
+        "member_bytes": 12412424510,
+        "members": 2537,
+        "method_sha256": "5e020a3e9f1075443f1f690befa000075d77a7b0fcc1f72efb922e931f8525be",
+        "no_scientific_execution": true,
+        "receipt": {
+          "archive": {
+            "bytes": 2517228977,
+            "sha256": "4e2bd39ee4c398629ec452f820ddc480c4555f95aa99ac21a964e2cd1bb1cdba",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/primary/final/4e2bd39ee4c398629ec452f820ddc480c4555f95aa99ac21a964e2cd1bb1cdba.tar.gz"
+          },
+          "index": {
+            "bytes": 760644,
+            "sha256": "c23c7f963c5983ed9963f6c624cd6e1aa6bf40d52c58c43ec1e3e70311310327",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/primary/final/c23c7f963c5983ed9963f6c624cd6e1aa6bf40d52c58c43ec1e3e70311310327.json"
+          },
+          "wandb_artifact": "mcclain/yggdrisil/primary-final:v0"
+        },
+        "status": "verified",
+        "verification_host": "Mac archival I/O only",
+        "wandb_artifact_id": "QXJ0aWZhY3Q6NDUzMDIwNTI0Nw==",
+        "wandb_digest": "f46423714fa5d2a527b02d53fb09f5b6",
+        "wandb_state": "COMMITTED",
+        "wandb_uncached_download_verified": true,
+        "wandb_version": "v0"
+      },
+      "secondary": {
+        "at_unix": 1794374114.4379742,
+        "audit_launcher_sha256": "398dd727585100d54654ded6626866a434a3ef733e6ed9e1e1c30cb3820f90a0",
+        "audited_worker_instance": "i-05bece33af7a6cbb2",
+        "every_indexed_member_verified": true,
+        "full_s3_get_verified": true,
+        "members": 1350,
+        "method_sha256": "2461e448d404e38e18a70db3046c0df0f527450a8da10ef82c0786cb4a8f55c5",
+        "no_scientific_execution": true,
+        "receipt": {
+          "archive": {
+            "bytes": 1726817393,
+            "sha256": "a8fe64739fc4b3479cd2fffcf95654652b8f992d12cc695e20c354356d5151f6",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/secondary/final/a8fe64739fc4b3479cd2fffcf95654652b8f992d12cc695e20c354356d5151f6.tar.gz"
+          },
+          "index": {
+            "bytes": 403417,
+            "sha256": "a726d539f963bd744d8562c780410e452b901a49bc7a8c168fd4d4b3c6cae183",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/secondary/final/a726d539f963bd744d8562c780410e452b901a49bc7a8c168fd4d4b3c6cae183.json"
+          },
+          "wandb_artifact": "mcclain/yggdrisil/secondary-final:v0"
+        },
+        "status": "verified",
+        "verification_host_instance": "i-05b12ad155a4aff74",
+        "wandb_state": "COMMITTED",
+        "wandb_uncached_download_verified": true
+      }
+    },
+    "final_checkpoint_proof": "final-checkpoint-independent-verification.json",
+    "record": {
+      "bytes": 5499,
+      "full_get_verified": true,
+      "sha256": "d49f3574d30a46f583d5c6d3b2ab74889321b6aa9af4494a29e6a9a2dc426de6",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/d49f3574d30a46f583d5c6d3b2ab74889321b6aa9af4494a29e6a9a2dc426de6.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "scientific_execution": "Remote Linux only; this final audit used local archival I/O and compact metadata plotting, with no simulation or model calls.",
+    "search_status": "completed_with_user_stopped_searches_verified",
+    "source_integrity_scope": "Frozen deployed source hashes were checked live at 05:01 UTC; no claim of a new stopped-disk source scan. Frozen scientific inputs, initial failures and search closure records remain preserved.",
+    "status": "verified_and_cleaned",
+    "stopping_amendment": "Four searches reached their evaluation budget; six user-stopped; 1405-deletion shortfall retained; no outcome-based substitution.",
+    "total_archive_members": 3887
+  },
+  "final_results": {
+    "figure": {
+      "bytes": 276342,
+      "full_get_verified": true,
+      "sha256": "80cf0c4b92cbb5994ef8b55b3f29e2eb928a1563aaddcea9834128e5b6e85993",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/80cf0c4b92cbb5994ef8b55b3f29e2eb928a1563aaddcea9834128e5b6e85993.png",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "interpretation": [
+      "Nondivision means no next division within the preset 10800 simulated seconds, not demonstrated cell death.",
+      "Numerical/model exceptions remain inconclusive for biological viability; no repairs or reruns were performed.",
+      "Original agent results are reused unchanged; baseline selection and stopping were exploratory amendments, not an equal-budget superiority test.",
+      "Greedy349 and randomized349 are the same genotype and share three trajectories; they are not independent validation replicates.",
+      "The 1405-deletion greedy227 shortfall is retained. Other baseline nominees have1705\u20131720 total deletions.",
+      "Counts include the common1030 deletions. Percentages use4290 registry genes, not a model-gene denominator.",
+      "Twenty model generations are computational evidence, not laboratory viability."
+    ],
+    "method_summary": {
+      "adaptive_literature": {
+        "all_three_reached20": 4,
+        "assigned_searches": 5,
+        "terminal_counts": {
+          "model_exception": 2,
+          "nondivision_max_duration": 1,
+          "reached_max_generations": 12
+        }
+      },
+      "frozen_dossier": {
+        "all_three_reached20": 2,
+        "assigned_searches": 5,
+        "terminal_counts": {
+          "model_exception": 5,
+          "nondivision_max_duration": 2,
+          "reached_max_generations": 8
+        }
+      },
+      "greedy_block": {
+        "all_three_reached20": 0,
+        "assigned_searches": 5,
+        "terminal_counts": {
+          "model_exception": 2,
+          "nondivision_max_duration": 13
+        }
+      },
+      "no_retrieval": {
+        "all_three_reached20": 2,
+        "assigned_searches": 5,
+        "terminal_counts": {
+          "model_exception": 5,
+          "nondivision_max_duration": 4,
+          "reached_max_generations": 6
+        }
+      },
+      "randomized_block": {
+        "all_three_reached20": 0,
+        "assigned_searches": 5,
+        "terminal_counts": {
+          "model_exception": 2,
+          "nondivision_max_duration": 13
+        }
+      }
+    },
+    "pdf": {
+      "bytes": 29632,
+      "full_get_verified": true,
+      "sha256": "cfc941bf11a8362794cbe2bb15c9a4fe305965121d023fce325ff99138c5d53a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/cfc941bf11a8362794cbe2bb15c9a4fe305965121d023fce325ff99138c5d53a.pdf",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "record": {
+      "bytes": 89745,
+      "full_get_verified": true,
+      "sha256": "be6b779d3e42c79e71f96b02185bb4d6592af1b8278335b1dd8fb0318faed467",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/be6b779d3e42c79e71f96b02185bb4d6592af1b8278335b1dd8fb0318faed467.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "science_finished_at": "2026-11-11T05:22:21.864104+00:00",
+    "table": {
+      "bytes": 16794,
+      "full_get_verified": true,
+      "sha256": "4c9f1a2c1c70998b223344112c88203c22367b699a2869cd251f2ab4608b6acd",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/4c9f1a2c1c70998b223344112c88203c22367b699a2869cd251f2ab4608b6acd.csv",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "totals": {
+      "active_cells": 0,
+      "active_workers": 0,
+      "baseline_terminal_counts": {
+        "model_exception": 4,
+        "nondivision_max_duration": 23
+      },
+      "completed_divisions": 155,
+      "controls_at20": 6,
+      "lineages_at20": 6,
+      "physical_baseline_lineages": 27
+    }
+  },
+  "hourly_progress": {
+    "at": "2026-11-11T06:23:41.890063+00:00",
+    "eta": {
+      "cleanup": "terminated_and_volumes_deleted",
+      "preservation": "verified",
+      "science": "finished"
+    },
+    "record": {
+      "bytes": 89745,
+      "full_get_verified": true,
+      "sha256": "be6b779d3e42c79e71f96b02185bb4d6592af1b8278335b1dd8fb0318faed467",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/be6b779d3e42c79e71f96b02185bb4d6592af1b8278335b1dd8fb0318faed467.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "science_finished_at": "2026-11-11T05:22:21.864104+00:00",
+    "totals": {
+      "active_cells": 0,
+      "active_workers": 0,
+      "baseline_terminal_counts": {
+        "model_exception": 4,
+        "nondivision_max_duration": 23
+      },
+      "completed_divisions": 155,
+      "controls_at20": 6,
+      "lineages_at20": 6,
+      "physical_baseline_lineages": 27
+    }
+  },
+  "hourly_report_id": "hourly-matched-validation-health-report",
+  "hourly_report_status": "deleted_after_verified_completion",
+  "id": "vecoli-depth-matched-20261111",
+  "independent_checkpoint_verification": {
+    "primary": {
+      "checked_at_unix": 1794373543.3631432,
+      "status": "verified_available_checkpoints",
+      "workflows": {
+        "calibration-primary": {
+          "all_indexed_files_verified": true,
+          "bytes": 2234241899,
+          "catalog_status": "completed",
+          "checkpoint": {
+            "bytes": 21439,
+            "sha256": "d15ea1c6fe07700778cc8f6efff9cb001affa369b979d900aa66c554bf6aa7b8",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/calibration-primary/checkpoints/d15ea1c6fe07700778cc8f6efff9cb001affa369b979d900aa66c554bf6aa7b8.json"
+          },
+          "files": 54,
+          "full_s3_get_verified": true,
+          "snapshot_is_immutable": true,
+          "verification_host_role": "primary",
+          "verification_status": "verified",
+          "verified_at_unix": 1794373590.1983862,
+          "wandb_artifact": "mcclain/yggdrisil/vecoli-depth-matched-20261111-calibration-primary-data:v4",
+          "wandb_state": "COMMITTED",
+          "wandb_uncached_download_verified": true
+        },
+        "seed-101": {
+          "all_indexed_files_verified": true,
+          "bytes": 2581363798,
+          "catalog_status": "running",
+          "checkpoint": {
+            "bytes": 445287,
+            "sha256": "d34e0aa0d9bc8245aded18ba230e7b80cce5890a7fdac3546edc3b5c14317e75",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/seed-101/checkpoints/d34e0aa0d9bc8245aded18ba230e7b80cce5890a7fdac3546edc3b5c14317e75.json"
+          },
+          "files": 1053,
+          "full_s3_get_verified": true,
+          "snapshot_is_immutable": true,
+          "verification_host_role": "primary",
+          "verification_status": "verified",
+          "verified_at_unix": 1794373714.784125,
+          "wandb_artifact": "mcclain/yggdrisil/vecoli-depth-matched-20261111-seed-101-data:v49",
+          "wandb_state": "COMMITTED",
+          "wandb_uncached_download_verified": true
+        },
+        "seed-211": {
+          "all_indexed_files_verified": true,
+          "bytes": 2585477434,
+          "catalog_status": "running",
+          "checkpoint": {
+            "bytes": 452952,
+            "sha256": "76b23f6f0f364cd7eaba709bab41b38bf606a82b8e02eee05e9120073ec1dc68",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/seed-211/checkpoints/76b23f6f0f364cd7eaba709bab41b38bf606a82b8e02eee05e9120073ec1dc68.json"
+          },
+          "files": 1071,
+          "full_s3_get_verified": true,
+          "snapshot_is_immutable": true,
+          "verification_host_role": "primary",
+          "verification_status": "verified",
+          "verified_at_unix": 1794373837.24543,
+          "wandb_artifact": "mcclain/yggdrisil/vecoli-depth-matched-20261111-seed-211-data:v55",
+          "wandb_state": "COMMITTED",
+          "wandb_uncached_download_verified": true
+        }
+      }
+    },
+    "secondary": {
+      "checked_at_unix": 1794373543.3631432,
+      "status": "verified_available_checkpoints",
+      "workflows": {
+        "calibration-secondary": {
+          "all_indexed_files_verified": true,
+          "bytes": 2234242597,
+          "catalog_status": "completed",
+          "checkpoint": {
+            "bytes": 21581,
+            "sha256": "b60b2c00c13f1ccf635a3c4b09bafb69dfb365f671d62777a80737fdd90bdf2a",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/calibration-secondary/checkpoints/b60b2c00c13f1ccf635a3c4b09bafb69dfb365f671d62777a80737fdd90bdf2a.json"
+          },
+          "files": 54,
+          "full_s3_get_verified": true,
+          "snapshot_is_immutable": true,
+          "verification_host_role": "primary",
+          "verification_status": "verified",
+          "verified_at_unix": 1794373898.1754613,
+          "wandb_artifact": "mcclain/yggdrisil/vecoli-depth-matched-20261111-calibration-secondary-data:v4",
+          "wandb_state": "COMMITTED",
+          "wandb_uncached_download_verified": true
+        },
+        "seed-307": {
+          "all_indexed_files_verified": true,
+          "bytes": 2591908555,
+          "catalog_status": "failed",
+          "checkpoint": {
+            "bytes": 503911,
+            "sha256": "407afdd080adb8c0f4a04efeda7c6e73995a9840186812d0dc5ba488802dd493",
+            "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/seed-307/checkpoints/407afdd080adb8c0f4a04efeda7c6e73995a9840186812d0dc5ba488802dd493.json"
+          },
+          "files": 1189,
+          "full_s3_get_verified": true,
+          "snapshot_is_immutable": true,
+          "verification_host_role": "primary",
+          "verification_status": "verified",
+          "verified_at_unix": 1794374028.9849072,
+          "wandb_artifact": "mcclain/yggdrisil/vecoli-depth-matched-20261111-seed-307-data:v56",
+          "wandb_state": "COMMITTED",
+          "wandb_uncached_download_verified": true
+        }
+      }
+    }
+  },
+  "independent_final_archive_verification": {
+    "primary": {
+      "at_unix": 1794377807.8222249,
+      "audited_worker_instance": "i-05b12ad155a4aff74",
+      "every_indexed_member_verified": true,
+      "full_s3_get_verified": true,
+      "member_auditor_sha256": "30a2db89a7e2c1f91c084c004c7b297f4330bab61997ac6a8c1ee56c3ff20f40",
+      "member_bytes": 12412424510,
+      "members": 2537,
+      "method_sha256": "5e020a3e9f1075443f1f690befa000075d77a7b0fcc1f72efb922e931f8525be",
+      "no_scientific_execution": true,
+      "receipt": {
+        "archive": {
+          "bytes": 2517228977,
+          "sha256": "4e2bd39ee4c398629ec452f820ddc480c4555f95aa99ac21a964e2cd1bb1cdba",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/primary/final/4e2bd39ee4c398629ec452f820ddc480c4555f95aa99ac21a964e2cd1bb1cdba.tar.gz"
+        },
+        "index": {
+          "bytes": 760644,
+          "sha256": "c23c7f963c5983ed9963f6c624cd6e1aa6bf40d52c58c43ec1e3e70311310327",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/primary/final/c23c7f963c5983ed9963f6c624cd6e1aa6bf40d52c58c43ec1e3e70311310327.json"
+        },
+        "wandb_artifact": "mcclain/yggdrisil/primary-final:v0"
+      },
+      "status": "verified",
+      "verification_host": "Mac archival I/O only",
+      "wandb_artifact_id": "QXJ0aWZhY3Q6NDUzMDIwNTI0Nw==",
+      "wandb_digest": "f46423714fa5d2a527b02d53fb09f5b6",
+      "wandb_state": "COMMITTED",
+      "wandb_uncached_download_verified": true,
+      "wandb_version": "v0"
+    },
+    "secondary": {
+      "at_unix": 1794374114.4379742,
+      "audit_launcher_sha256": "398dd727585100d54654ded6626866a434a3ef733e6ed9e1e1c30cb3820f90a0",
+      "audited_worker_instance": "i-05bece33af7a6cbb2",
+      "every_indexed_member_verified": true,
+      "full_s3_get_verified": true,
+      "members": 1350,
+      "method_sha256": "2461e448d404e38e18a70db3046c0df0f527450a8da10ef82c0786cb4a8f55c5",
+      "no_scientific_execution": true,
+      "receipt": {
+        "archive": {
+          "bytes": 1726817393,
+          "sha256": "a8fe64739fc4b3479cd2fffcf95654652b8f992d12cc695e20c354356d5151f6",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/secondary/final/a8fe64739fc4b3479cd2fffcf95654652b8f992d12cc695e20c354356d5151f6.tar.gz"
+        },
+        "index": {
+          "bytes": 403417,
+          "sha256": "a726d539f963bd744d8562c780410e452b901a49bc7a8c168fd4d4b3c6cae183",
+          "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/secondary/final/a726d539f963bd744d8562c780410e452b901a49bc7a8c168fd4d4b3c6cae183.json"
+        },
+        "wandb_artifact": "mcclain/yggdrisil/secondary-final:v0"
+      },
+      "status": "verified",
+      "verification_host_instance": "i-05b12ad155a4aff74",
+      "wandb_state": "COMMITTED",
+      "wandb_uncached_download_verified": true
+    }
+  },
+  "interpretation": "Exploratory depth-targeted comparison: 23 of 27 unique baseline trajectories ended without another division within the fixed cell cap, four ended with model/numerical exceptions, and all six control trajectories reached 20 generations. Original agent outcomes are reused unchanged. These data do not establish laboratory viability, universal method superiority, or equal-realized-budget advantage.",
+  "kind": "exploratory_depth_matched_baseline_whole_cell_validation",
+  "last_live_worker_health": {
+    "primary": {
+      "record": {
+        "bytes": 1056635,
+        "full_get_verified": true,
+        "sha256": "eecbf496f3bb8e8cc78027860ce52f4174fa77d638039a2e28f84681fabeed6e",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/eecbf496f3bb8e8cc78027860ce52f4174fa77d638039a2e28f84681fabeed6e.json",
+        "verified_at": "2026-11-11T06:23:41.890063+00:00"
+      },
+      "scope": "Historical last running snapshot; final results and cleanup are authoritative."
+    },
+    "secondary": {
+      "record": {
+        "bytes": 632609,
+        "full_get_verified": true,
+        "sha256": "88f4b6e8a4aefc686440470f3206aa56166280aa45376d6fa156e65176a91657",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/88f4b6e8a4aefc686440470f3206aa56166280aa45376d6fa156e65176a91657.json",
+        "verified_at": "2026-11-11T06:23:41.890063+00:00"
+      },
+      "scope": "Historical last running snapshot; final results and cleanup are authoritative."
+    }
+  },
+  "last_live_worker_health_scope": "Historical running snapshots; current lifecycle and final status are recorded separately.",
+  "latest_health_observation": {
+    "all_final_data_independently_verified": true,
+    "at": "2026-11-11T06:23:40.572873+00:00",
+    "cleanup": "worker-cleanup.json",
+    "eta": {
+      "cleanup": "completed",
+      "preservation": "verified",
+      "science": "finished at 2026-11-11T05:22:21Z"
+    },
+    "final_preservation": "final-preservation.json",
+    "hourly_report": "deleted_after_verified_completion",
+    "instances": [
+      {
+        "instance_id": "i-05bece33af7a6cbb2",
+        "public_ip": null,
+        "state": "terminated",
+        "volumes": [
+          {
+            "AttachTime": "2026-11-10 21:56:22+00:00",
+            "DeleteOnTermination": false,
+            "EbsCardIndex": 0,
+            "Status": "attached",
+            "VolumeId": "vol-06f1de0a618b98c9f"
+          }
+        ],
+        "volumes_deleted_and_absence_verified": true
+      },
+      {
+        "instance_id": "i-05b12ad155a4aff74",
+        "public_ip": null,
+        "state": "terminated",
+        "volumes": [
+          {
+            "AttachTime": "2026-11-10 21:29:04+00:00",
+            "DeleteOnTermination": false,
+            "EbsCardIndex": 0,
+            "Status": "attached",
+            "VolumeId": "vol-06ffb8dd4182f3e4f"
+          }
+        ],
+        "volumes_deleted_and_absence_verified": true
+      }
+    ],
+    "record": {
+      "bytes": 1607,
+      "full_get_verified": true,
+      "sha256": "e640282a4f5ed30d81785eab531dde1a9878b6719eb29d0398214715ad08e51f",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/e640282a4f5ed30d81785eab531dde1a9878b6719eb29d0398214715ad08e51f.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "science_finished_at": "2026-11-11T05:22:21.864104+00:00",
+    "status": "completed_with_exceptions_verified",
+    "totals": {
+      "active_cells": 0,
+      "active_workers": 0,
+      "baseline_terminal_counts": {
+        "model_exception": 4,
+        "nondivision_max_duration": 23
+      },
+      "completed_divisions": 155,
+      "controls_at20": 6,
+      "lineages_at20": 6,
+      "physical_baseline_lineages": 27
+    }
+  },
+  "local_root": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-depth-matched-20261111",
+  "methods": {
+    "close_depth_search": {
+      "path": "scripts/close_depth_search.py",
+      "sha256": "65a78b3ce9dcef1a93d44ce79dac010343454abec8967d36b9fe7bd4311351be"
+    },
+    "collector": {
+      "path": "scripts/collect_search_replication.py",
+      "sha256": "5f05697a81cd621bf7c5088ecca90006d335b92858b025ea97da084ad4ee72a8"
+    },
+    "depth_matched_validation": {
+      "path": "scripts/depth_matched_validation.py",
+      "sha256": "2461e448d404e38e18a70db3046c0df0f527450a8da10ef82c0786cb4a8f55c5"
+    },
+    "prepare_replication_validation": {
+      "path": "scripts/prepare_replication_validation.py",
+      "sha256": "fa9932b9140979b5075145f3cc4eb574db4038c9a770381821ead23e7fb09fb4"
+    },
+    "selector": {
+      "path": "scripts/select_depth_matched_baselines.py",
+      "sha256": "0af7ea617a3625a7c3aebd8f7fcbec19867865e2afeef9effe61fdefc35acbb0"
+    }
+  },
+  "model_exception_records": {
+    "current_all_exceptions": {
+      "bytes": 7918,
+      "full_get_verified": true,
+      "sha256": "8cc0c2b5e5058ee91a68aa80c27d747d099249192bab5bf0d3e308e2bf2936df",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/8cc0c2b5e5058ee91a68aa80c27d747d099249192bab5bf0d3e308e2bf2936df.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "seed307_randomized_search587": {
+      "bytes": 2425,
+      "full_get_verified": true,
+      "sha256": "22063f5ff492cd4dc94f3329934108003430ff20e7f0a822d122a31ddb511ca5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/22063f5ff492cd4dc94f3329934108003430ff20e7f0a822d122a31ddb511ca5.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    }
+  },
+  "plan": {
+    "comparison_figure": {
+      "baseline_series": [
+        "Greedy",
+        "Randomized"
+      ],
+      "controls": "MG1655 and common1030 shown as distinct references",
+      "headings": [
+        "No retrieval",
+        "Frozen dossier",
+        "Adaptive literature",
+        "Baselines"
+      ],
+      "no_new_results_imputed": true,
+      "old_agent_results_reused_with_explicit_study_labels": true,
+      "panels": [
+        "Deletion count with target1720 and starting1030 reference",
+        "Generations reached for each of three simulation seeds; separate nondivision/solver/infrastructure markers",
+        "Fraction of five assigned searches with all three lineages reaching20; show exact n and missing/error cases"
+      ],
+      "primary_unit": "Independent search seed; simulation seeds are within-genome replicates"
+    },
+    "experiment_id": "vecoli-depth-matched-20261111",
+    "launch_gates": [
+      "All ten search attempts terminal or explicitly deadline-closed; complete and failed attempts preserved",
+      "Unrestricted endpoint catalog frozen and backed up",
+      "Matched selection reproducible from fully verified reports and amendment; all source links retained",
+      "Knockout mapping audited; frozen native source and solver checks; no biological changes",
+      "S3/W&B upload plus independent uncached download checks",
+      "Calibration passes on each worker; absolute budget timer active",
+      "No duplicate controllers or live original search parent shutdown conflicts"
+    ],
+    "maximum_divisions_excluding_calibration": 720,
+    "maximum_lineages_including_controls": 36,
+    "maximum_parallel_cells": 16,
+    "maximum_unique_candidates": 10,
+    "native_environment": "Pinned native commit and exact strict numerical patch from completed replication; Python3.12.12 and Nextflow25.10.4. Technical two-generation MG1655 calibration on each worker.",
+    "parent_search": "baseline-depth-extension-20261110",
+    "reference_agent_study": "search-replication-20261109",
+    "selection_amendment_sha256": "1fe6c567a15745d00fdd4317c6c5d593b4901d5bdc18a312e0aeb09e0fd9c904",
+    "status": "approved_preparing_waiting_search",
+    "validation": {
+      "calibration": "Two-generation MG1655 control, finite outputs and <=4 GiB peak RSS before batch dispatch.",
+      "controls": [
+        "MG1655",
+        "common-1030-deletion-root"
+      ],
+      "controls_policy": "Controls must pass in the same runtime/batch. Control failure makes the batch inconclusive pending operational diagnosis, not evidence of candidate nonviability.",
+      "deduplication": "Validate identical genotypes once per runtime/batch and map to every originating search. Shared trajectories are not independent observations.",
+      "failure_categories": [
+        "nondivision_max_duration",
+        "model_exception",
+        "deadline",
+        "infrastructure_failure"
+      ],
+      "followed_daughters": 1,
+      "generations": 20,
+      "max_cell_time_s": 10800,
+      "medium": "aerobic M9 glucose at 37 C",
+      "native_commit": "b2078bd8e226c5d319bb9ddaa10a1f2f1fcfdbbc",
+      "no_repairs_after_results": true,
+      "numerical_policy": "Use the existing strict v2 numerical patch uniformly. Unchanged LP/objective/constraints/tolerances; accept fallback only with identical LP, GLP_OPT and finite KKT relative residuals <=1e-7; latch failure against outer retries. Record every assisted cell.",
+      "primary_endpoint": "A further-reduced nominated genome reaches 20 generations in all three seeds with exact-knockout, finite-output and numerical-policy checks. Denominator includes all five assigned searches per method.",
+      "seeds": [
+        101,
+        211,
+        307
+      ],
+      "solver_patch_sha256": "3a4a50fdc7b4d16277b7ce8d3cb76e2e2fd69132937a4d57cbb232b01a06592a"
+    },
+    "worker_allocation": {
+      "primary": {
+        "maximum_cells_per_workflow": 4,
+        "seeds": [
+          101,
+          211
+        ]
+      },
+      "secondary": {
+        "maximum_cells_per_workflow": 8,
+        "seeds": [
+          307
+        ]
+      }
+    }
+  },
+  "preflight_operational_recovery": {
+    "cause": "validation/credential-pattern-policy.json was a symlink; backup guard rejected it before any cells launched.",
+    "correction": "Identical regular-file copy, SHA256 aa6df6789cf013198d90f137152c0f13ef2d19328e348e323d5f3cb1e6fa37ec; full credential scanning and scientific inputs unchanged.",
+    "original_failure": "ValueError: Unsafe study backup member",
+    "preserved_attempt_path": "attempts/preflight-policy-link",
+    "record": {
+      "bytes": 1693,
+      "full_get_verified": true,
+      "sha256": "a422d71b78ff1299f96670ad60a1a18a689d831ff0941d37a5eabecd19cddd99",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/a422d71b78ff1299f96670ad60a1a18a689d831ff0941d37a5eabecd19cddd99.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "restart_from": "Already-frozen and prepared inputs; no scientific reexecution."
+  },
+  "publication": {
+    "artifacts": {
+      "availability_check": {
+        "bytes": 13972,
+        "full_get_verified": true,
+        "sha256": "12390a86ef9c05346b0e78191ccf08fa43c0c85809ce469f865994f49383d1c6",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/12390a86ef9c05346b0e78191ccf08fa43c0c85809ce469f865994f49383d1c6.json",
+        "verified_at": "2026-11-11T09:51:05.622876+00:00"
+      },
+      "experiments/comparisons/depth-matched-20261111.csv": {
+        "bytes": 16794,
+        "full_get_verified": true,
+        "sha256": "4c9f1a2c1c70998b223344112c88203c22367b699a2869cd251f2ab4608b6acd",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/4c9f1a2c1c70998b223344112c88203c22367b699a2869cd251f2ab4608b6acd.csv",
+        "verified_at": "2026-11-11T09:51:05.622876+00:00"
+      },
+      "experiments/comparisons/depth-matched-20261111.json": {
+        "bytes": 92250,
+        "full_get_verified": true,
+        "sha256": "79b77329c643f5d799fe67fc85ab40d3c2a6212fd1bd18c49e382f78ca1adf3e",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/79b77329c643f5d799fe67fc85ab40d3c2a6212fd1bd18c49e382f78ca1adf3e.json",
+        "verified_at": "2026-11-11T09:51:05.622876+00:00"
+      },
+      "experiments/comparisons/depth-matched-data-index-20261111.json": {
+        "bytes": 56344,
+        "full_get_verified": true,
+        "sha256": "c5098f1f78e522750dcce9e3cad9160b86b8413a1e41b80adbb994ad1ed7292e",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/c5098f1f78e522750dcce9e3cad9160b86b8413a1e41b80adbb994ad1ed7292e.json",
+        "verified_at": "2026-11-11T09:51:05.622876+00:00"
+      },
+      "experiments/figures/depth-matched-20261111.pdf": {
+        "bytes": 29632,
+        "full_get_verified": true,
+        "sha256": "cfc941bf11a8362794cbe2bb15c9a4fe305965121d023fce325ff99138c5d53a",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/cfc941bf11a8362794cbe2bb15c9a4fe305965121d023fce325ff99138c5d53a.pdf",
+        "verified_at": "2026-11-11T09:51:05.622876+00:00"
+      },
+      "experiments/figures/depth-matched-20261111.png": {
+        "bytes": 276342,
+        "full_get_verified": true,
+        "sha256": "80cf0c4b92cbb5994ef8b55b3f29e2eb928a1563aaddcea9834128e5b6e85993",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/80cf0c4b92cbb5994ef8b55b3f29e2eb928a1563aaddcea9834128e5b6e85993.png",
+        "verified_at": "2026-11-11T09:51:05.622876+00:00"
+      }
+    },
+    "at": "2026-11-11T09:51:05.622876+00:00",
+    "branch": "codex/literature-ablation-pilot",
+    "compact_results": {
+      "bytes": 92250,
+      "full_get_verified": true,
+      "sha256": "79b77329c643f5d799fe67fc85ab40d3c2a6212fd1bd18c49e382f78ca1adf3e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/79b77329c643f5d799fe67fc85ab40d3c2a6212fd1bd18c49e382f78ca1adf3e.json",
+      "verified_at": "2026-11-11T09:51:05.622876+00:00"
+    },
+    "data_catalog": {
+      "bytes": 56344,
+      "full_get_verified": true,
+      "sha256": "c5098f1f78e522750dcce9e3cad9160b86b8413a1e41b80adbb994ad1ed7292e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/c5098f1f78e522750dcce9e3cad9160b86b8413a1e41b80adbb994ad1ed7292e.json",
+      "verified_at": "2026-11-11T09:51:05.622876+00:00"
+    },
+    "git": {
+      "at": "2026-11-11T09:53:25.527532+00:00",
+      "branch": "codex/literature-ablation-pilot",
+      "catalog_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/blob/0271a3faddc44638b9dbeca1d564dc68a75c1e39/experiments/comparisons/depth-matched-data-index-20261111.json",
+      "commit_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/commit/0271a3faddc44638b9dbeca1d564dc68a75c1e39",
+      "figure_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/blob/0271a3faddc44638b9dbeca1d564dc68a75c1e39/experiments/figures/depth-matched-20261111.png",
+      "github_remote_head_verified": true,
+      "methods_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/blob/0271a3faddc44638b9dbeca1d564dc68a75c1e39/methods/20261111/README.md",
+      "png_sha256": "80cf0c4b92cbb5994ef8b55b3f29e2eb928a1563aaddcea9834128e5b6e85993",
+      "portable_figure_rebuild": "PNG byte-identical to the archived original",
+      "public_payload": "Screened source, compact metadata and figures only; no credentials or bulk data.",
+      "pull_request": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/pull/9",
+      "results_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/blob/0271a3faddc44638b9dbeca1d564dc68a75c1e39/experiments/README.md",
+      "source_results_commit": "0271a3faddc44638b9dbeca1d564dc68a75c1e39",
+      "status": "published_verified",
+      "tests": {
+        "lossless_ledger_restore": "passed",
+        "pytest_passed": 55,
+        "ruff": "passed",
+        "subtests_passed": 52
+      },
+      "verification": "GitHub PR head API and git ls-remote matched the pushed commit."
+    },
+    "git_status": "published_verified",
+    "method_manifest": {
+      "path": "methods/20261111/manifest.json",
+      "sha256": "009509d5a026c3edd7da17468fd0738cc0491328b5f311206f45225c6a609579"
+    },
+    "methods_path": "methods/20261111/README.md",
+    "previous_full_ledger": {
+      "bytes": 3299248,
+      "full_get_verified": true,
+      "sha256": "5311459170f1bb146c24daedd463c9837ee93cee3448e3ddc8d93702e2c91e37",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/5311459170f1bb146c24daedd463c9837ee93cee3448e3ddc8d93702e2c91e37.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "repository": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli"
+  },
+  "records": {
+    "checkpoint-audit-plan-20261111T050538Z.json": {
+      "bytes": 7441,
+      "full_get_verified": true,
+      "sha256": "914d7bcf5a2c54946214f5364ec18a22a2546c488dde737f62a5c67db4c3d6ea",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/914d7bcf5a2c54946214f5364ec18a22a2546c488dde737f62a5c67db4c3d6ea.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "checkpoint-audit-result-20261111T050538Z.json": {
+      "bytes": 5255,
+      "full_get_verified": true,
+      "sha256": "388b0aedb9e6d4e2945b7d8ad0b3a1239581c13a09044b44893cdc17348a6c8f",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/388b0aedb9e6d4e2945b7d8ad0b3a1239581c13a09044b44893cdc17348a6c8f.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "checks.json": {
+      "bytes": 3192,
+      "full_get_verified": true,
+      "sha256": "ba16bfc399b788b342ff57bffa26a7cc4b9fe44f013c47ebefc97f437d9561a3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/ba16bfc399b788b342ff57bffa26a7cc4b9fe44f013c47ebefc97f437d9561a3.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "comparison-outcomes.csv": {
+      "bytes": 16794,
+      "full_get_verified": true,
+      "sha256": "4c9f1a2c1c70998b223344112c88203c22367b699a2869cd251f2ab4608b6acd",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/4c9f1a2c1c70998b223344112c88203c22367b699a2869cd251f2ab4608b6acd.csv",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "deployment-manifest.json": {
+      "bytes": 7986,
+      "full_get_verified": true,
+      "sha256": "a98b7f97c4a4ee3447febca3ad3164d50fee6b503d33d2511a4e7f26cfdc9ca0",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/a98b7f97c4a4ee3447febca3ad3164d50fee6b503d33d2511a4e7f26cfdc9ca0.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "early-stop-authorization.json": {
+      "bytes": 1551,
+      "full_get_verified": true,
+      "sha256": "ed5c2838b1147991091066b91a7b593fa0eae85350969140206b41f9280d7896",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/ed5c2838b1147991091066b91a7b593fa0eae85350969140206b41f9280d7896.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "early-stop-candidate-inspection.json": {
+      "bytes": 6895,
+      "full_get_verified": true,
+      "sha256": "c7116e48bd0bf4f7de427bc51d06bf8e5dbeb2ad93da2ee34ff9d17128947c6a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/c7116e48bd0bf4f7de427bc51d06bf8e5dbeb2ad93da2ee34ff9d17128947c6a.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "early-stop-requested.json": {
+      "bytes": 435,
+      "full_get_verified": true,
+      "sha256": "0a2c497e21b6fdcee55fa145667f80fd8d7cc5bf7f98e2f766ff8a6c0272971f",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/0a2c497e21b6fdcee55fa145667f80fd8d7cc5bf7f98e2f766ff8a6c0272971f.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "final-checkpoint-independent-verification.json": {
+      "bytes": 1149700,
+      "full_get_verified": true,
+      "sha256": "e4db9a4d7903eb40dcdd4abb314d5214f0047559c5beca7a22f17a78339ef878",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/e4db9a4d7903eb40dcdd4abb314d5214f0047559c5beca7a22f17a78339ef878.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "final-checkpoint-metadata.json": {
+      "bytes": 1773947,
+      "full_get_verified": true,
+      "sha256": "60b282c74b3b028b9fa5d48ddd421e3591ca35c0f42ed8d6096aef13144d7fd5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/60b282c74b3b028b9fa5d48ddd421e3591ca35c0f42ed8d6096aef13144d7fd5.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "final-outcome-summary.json": {
+      "bytes": 89745,
+      "full_get_verified": true,
+      "sha256": "be6b779d3e42c79e71f96b02185bb4d6592af1b8278335b1dd8fb0318faed467",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/be6b779d3e42c79e71f96b02185bb4d6592af1b8278335b1dd8fb0318faed467.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "final-preservation.json": {
+      "bytes": 5499,
+      "full_get_verified": true,
+      "sha256": "d49f3574d30a46f583d5c6d3b2ab74889321b6aa9af4494a29e6a9a2dc426de6",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/d49f3574d30a46f583d5c6d3b2ab74889321b6aa9af4494a29e6a9a2dc426de6.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "handoff-launch.json": {
+      "bytes": 2646,
+      "full_get_verified": true,
+      "sha256": "b46ce42fe0a7cbfbe5ccc84df0168af7a6b3c2d96b850b23b9288a2d5b4f1969",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/b46ce42fe0a7cbfbe5ccc84df0168af7a6b3c2d96b850b23b9288a2d5b4f1969.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "health-20261111T012318Z.json": {
+      "bytes": 3661,
+      "full_get_verified": true,
+      "sha256": "85c2779463d943fb304060fd057824666ee3b23e517e33176831c8c6d2d531bf",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/85c2779463d943fb304060fd057824666ee3b23e517e33176831c8c6d2d531bf.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "health-20261111T013150Z.json": {
+      "bytes": 6265,
+      "full_get_verified": true,
+      "sha256": "f44f9a512b9aba579f272e3082f61c082ddcf0405bdeca507c43714a00f686aa",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/f44f9a512b9aba579f272e3082f61c082ddcf0405bdeca507c43714a00f686aa.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "health-20261111T014811Z.json": {
+      "bytes": 3209,
+      "full_get_verified": true,
+      "sha256": "6c8006b16b3f19e5883c206d9fa26802f436594a993d4b04e0c971246bccd2ff",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/6c8006b16b3f19e5883c206d9fa26802f436594a993d4b04e0c971246bccd2ff.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "health-20261111T015721Z.json": {
+      "bytes": 4053,
+      "full_get_verified": true,
+      "sha256": "12a0020050ef2ced59c781efe1941c45becda70f9ae7184f037b5c5179634377",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/12a0020050ef2ced59c781efe1941c45becda70f9ae7184f037b5c5179634377.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "health-20261111T020516Z.json": {
+      "bytes": 4055,
+      "full_get_verified": true,
+      "sha256": "aabb95f11aa77b0769bda6d1af32a853a1eb889836e3d486ff13e58f1e17c94c",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/aabb95f11aa77b0769bda6d1af32a853a1eb889836e3d486ff13e58f1e17c94c.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "health-20261111T030049Z.json": {
+      "bytes": 11371,
+      "full_get_verified": true,
+      "sha256": "7fd66a2278db3123a0636cf55f2731399fff154a402a7645143e45c999e436c8",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/7fd66a2278db3123a0636cf55f2731399fff154a402a7645143e45c999e436c8.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "health-20261111T040705Z.json": {
+      "bytes": 10817,
+      "full_get_verified": true,
+      "sha256": "afbc834834f7f823d7895bac6e7d2dbec342405d28bc14d5adeaf6e86d6cbfe8",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/afbc834834f7f823d7895bac6e7d2dbec342405d28bc14d5adeaf6e86d6cbfe8.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "health-20261111T050741Z.json": {
+      "bytes": 10676,
+      "full_get_verified": true,
+      "sha256": "7fce701dbd9679690472cfa7d2a44ea43b4d633f46d3e2600820563ca747e9f1",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/7fce701dbd9679690472cfa7d2a44ea43b4d633f46d3e2600820563ca747e9f1.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "health-20261111T051917Z.json": {
+      "bytes": 10676,
+      "full_get_verified": true,
+      "sha256": "7fce701dbd9679690472cfa7d2a44ea43b4d633f46d3e2600820563ca747e9f1",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/7fce701dbd9679690472cfa7d2a44ea43b4d633f46d3e2600820563ca747e9f1.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "health-latest.json": {
+      "bytes": 10676,
+      "full_get_verified": true,
+      "sha256": "7fce701dbd9679690472cfa7d2a44ea43b4d633f46d3e2600820563ca747e9f1",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/7fce701dbd9679690472cfa7d2a44ea43b4d633f46d3e2600820563ca747e9f1.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "hourly-snapshot-verification-20261111T020059Z.json": {
+      "bytes": 3036,
+      "full_get_verified": true,
+      "sha256": "ea16bc9a2122c0b07bbeb7d0e4ac7724a219d1903e9b46e4402b93a76d397aa1",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/ea16bc9a2122c0b07bbeb7d0e4ac7724a219d1903e9b46e4402b93a76d397aa1.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "hourly-snapshot-verification-20261111T020447Z.json": {
+      "bytes": 5513,
+      "full_get_verified": true,
+      "sha256": "ef9c856f038f940afd4228d07fc3bb705aead1a1e3338bf991ea21af04f66fd9",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/ef9c856f038f940afd4228d07fc3bb705aead1a1e3338bf991ea21af04f66fd9.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "hourly-snapshot-verification-20261111T025452Z.json": {
+      "bytes": 28219,
+      "full_get_verified": true,
+      "sha256": "4e7e1ee8877d996688b12b4d82ea20cfea248911b9813f8043993962bb4212e5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/4e7e1ee8877d996688b12b4d82ea20cfea248911b9813f8043993962bb4212e5.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "hourly-snapshot-verification-20261111T040415Z.json": {
+      "bytes": 38243,
+      "full_get_verified": true,
+      "sha256": "caa46d5c5ab1d44ca30f4ba0cbd351b3cbd0263bc55ab64e84c30fe23bc1a1fe",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/caa46d5c5ab1d44ca30f4ba0cbd351b3cbd0263bc55ab64e84c30fe23bc1a1fe.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "hourly-snapshot-verification-20261111T050124Z.json": {
+      "bytes": 37958,
+      "full_get_verified": true,
+      "sha256": "d4ebff9392145a844499e0678adce164234ebc872a0bce4763999f74517e61bc",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/d4ebff9392145a844499e0678adce164234ebc872a0bce4763999f74517e61bc.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "hourly-snapshot-verification.json": {
+      "bytes": 37958,
+      "full_get_verified": true,
+      "sha256": "d4ebff9392145a844499e0678adce164234ebc872a0bce4763999f74517e61bc",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/d4ebff9392145a844499e0678adce164234ebc872a0bce4763999f74517e61bc.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "matched-comparison.pdf": {
+      "bytes": 29632,
+      "full_get_verified": true,
+      "sha256": "cfc941bf11a8362794cbe2bb15c9a4fe305965121d023fce325ff99138c5d53a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/cfc941bf11a8362794cbe2bb15c9a4fe305965121d023fce325ff99138c5d53a.pdf",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "matched-comparison.png": {
+      "bytes": 276342,
+      "full_get_verified": true,
+      "sha256": "80cf0c4b92cbb5994ef8b55b3f29e2eb928a1563aaddcea9834128e5b6e85993",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/80cf0c4b92cbb5994ef8b55b3f29e2eb928a1563aaddcea9834128e5b6e85993.png",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "matched-nominations.json": {
+      "bytes": 646848,
+      "full_get_verified": true,
+      "sha256": "672568e925e36606f0d8fcf5df396ae8c139eb9ea44d3042c46c1b7c003ccce3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/672568e925e36606f0d8fcf5df396ae8c139eb9ea44d3042c46c1b7c003ccce3.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "model-exception-seed307-randomized587.json": {
+      "bytes": 2425,
+      "full_get_verified": true,
+      "sha256": "22063f5ff492cd4dc94f3329934108003430ff20e7f0a822d122a31ddb511ca5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/22063f5ff492cd4dc94f3329934108003430ff20e7f0a822d122a31ddb511ca5.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "model-exceptions-20261111T040415Z.json": {
+      "bytes": 7918,
+      "full_get_verified": true,
+      "sha256": "4012d722ec60e4254965ed7c8a0d9ec6f82a8e3aa3ded4de20139521181c1e0a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/4012d722ec60e4254965ed7c8a0d9ec6f82a8e3aa3ded4de20139521181c1e0a.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "model-exceptions-20261111T050124Z.json": {
+      "bytes": 7918,
+      "full_get_verified": true,
+      "sha256": "8cc0c2b5e5058ee91a68aa80c27d747d099249192bab5bf0d3e308e2bf2936df",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/8cc0c2b5e5058ee91a68aa80c27d747d099249192bab5bf0d3e308e2bf2936df.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "model-exceptions-latest.json": {
+      "bytes": 7918,
+      "full_get_verified": true,
+      "sha256": "8cc0c2b5e5058ee91a68aa80c27d747d099249192bab5bf0d3e308e2bf2936df",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/8cc0c2b5e5058ee91a68aa80c27d747d099249192bab5bf0d3e308e2bf2936df.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "monitor-completion.json": {
+      "bytes": 365,
+      "full_get_verified": true,
+      "sha256": "670ab682a1037da3d0551fdac8bc7ad7eeef54c29f60ff54fae3fd68d6eb9f76",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/670ab682a1037da3d0551fdac8bc7ad7eeef54c29f60ff54fae3fd68d6eb9f76.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "monitor-instructions.json": {
+      "bytes": 5744,
+      "full_get_verified": true,
+      "sha256": "4a8f02a29ff1718f3daa9023bf4db0fabf77c201aae7505cb2e6c7897986da60",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/4a8f02a29ff1718f3daa9023bf4db0fabf77c201aae7505cb2e6c7897986da60.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "native-prepare-launch.json": {
+      "bytes": 1857,
+      "full_get_verified": true,
+      "sha256": "8f124bf16191df4f051fa79e64c5611c0fcc78dc85dbd50188ade7ca0bc25f43",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/8f124bf16191df4f051fa79e64c5611c0fcc78dc85dbd50188ade7ca0bc25f43.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "operation.json": {
+      "bytes": 1486,
+      "full_get_verified": true,
+      "sha256": "cfc9bdef7395c708d735b35430e863e43941215b3c74102d9af66d9299b955bd",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/cfc9bdef7395c708d735b35430e863e43941215b3c74102d9af66d9299b955bd.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "plan.json": {
+      "bytes": 3935,
+      "full_get_verified": true,
+      "sha256": "6d936433f1bee15ff3b537056c5eff7fbf8420ffe3c235b4543c8c23671242b2",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/6d936433f1bee15ff3b537056c5eff7fbf8420ffe3c235b4543c8c23671242b2.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "pre-cleanup-worker-inspection.json": {
+      "bytes": 3574,
+      "full_get_verified": true,
+      "sha256": "a1bc73aa72cfe723b3c58c7e0b43ee6e87c4c110b007434b45e10a12dd357ca0",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/a1bc73aa72cfe723b3c58c7e0b43ee6e87c4c110b007434b45e10a12dd357ca0.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "preflight-policy-recovery.json": {
+      "bytes": 1693,
+      "full_get_verified": true,
+      "sha256": "a422d71b78ff1299f96670ad60a1a18a689d831ff0941d37a5eabecd19cddd99",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/a422d71b78ff1299f96670ad60a1a18a689d831ff0941d37a5eabecd19cddd99.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "preparation-worker-restart.json": {
+      "bytes": 819,
+      "full_get_verified": true,
+      "sha256": "702a2683127a9090abbd2bb13bbb95ae0ded1b67b6fd667efd0d10f778e1fba1",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/702a2683127a9090abbd2bb13bbb95ae0ded1b67b6fd667efd0d10f778e1fba1.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-attempts--preflight-policy-link--deployment-manifest.json": {
+      "bytes": 8491,
+      "full_get_verified": true,
+      "sha256": "8523ab4b937d7b1649a60f39a8f2f4444e8f9480566a597c5bb5a9a44ccec032",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/8523ab4b937d7b1649a60f39a8f2f4444e8f9480566a597c5bb5a9a44ccec032.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-attempts--preflight-policy-link--handoff-progress.json": {
+      "bytes": 34069,
+      "full_get_verified": true,
+      "sha256": "8c0fdfd0078ba3d5d6f5ea10250a71ff467428c96c7c6ab8088215e0f3065ed0",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/8c0fdfd0078ba3d5d6f5ea10250a71ff467428c96c7c6ab8088215e0f3065ed0.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-attempts--preflight-policy-link--policy-copy-proof.json": {
+      "bytes": 473,
+      "full_get_verified": true,
+      "sha256": "b3a24806252076c55e00c9444d8f555c566dbc7351f71dcf50e87888ce6936d2",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/b3a24806252076c55e00c9444d8f555c566dbc7351f71dcf50e87888ce6936d2.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-bundle--matched-nominations-verification.json": {
+      "bytes": 1040,
+      "full_get_verified": true,
+      "sha256": "d7881e1a30310be7de802d4c146a12eb9e87b4d0bdb1c9e7e967593a5ee7e8b5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/d7881e1a30310be7de802d4c146a12eb9e87b4d0bdb1c9e7e967593a5ee7e8b5.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-deployment-manifest.json": {
+      "bytes": 8535,
+      "full_get_verified": true,
+      "sha256": "79b216cdb87998bbc1e6fb748cc16286f890d98d4d85d24048ad3371cb39f3ea",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/79b216cdb87998bbc1e6fb748cc16286f890d98d4d85d24048ad3371cb39f3ea.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-early-stop-final-verification.json": {
+      "bytes": 1363,
+      "full_get_verified": true,
+      "sha256": "446b83d7ccfa9eb6b69de9c883f3ee857a4fe4e7ef1eed8f18b4ec18f8a30b8b",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/446b83d7ccfa9eb6b69de9c883f3ee857a4fe4e7ef1eed8f18b4ec18f8a30b8b.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-early-stop-original-verification.json": {
+      "bytes": 1482,
+      "full_get_verified": true,
+      "sha256": "d965af801c9a561c4bed75cea8734e703dc87af058b25e6ad4537668df8dde2a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/d965af801c9a561c4bed75cea8734e703dc87af058b25e6ad4537668df8dde2a.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-early-stop-worker-verification.json": {
+      "bytes": 9806,
+      "full_get_verified": true,
+      "sha256": "83f463d6d745143ff151899af25ce3ba19c2e5205634a6ea5793e12cecf190a0",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/83f463d6d745143ff151899af25ce3ba19c2e5205634a6ea5793e12cecf190a0.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-final-compact-metadata.json": {
+      "bytes": 7431807,
+      "full_get_verified": true,
+      "sha256": "c4d6853961d965623db43ccb3c6c9878e7e8b81893195fe5aea2ca88952d8e4f",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/c4d6853961d965623db43ccb3c6c9878e7e8b81893195fe5aea2ca88952d8e4f.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-final-independent-verification.json": {
+      "bytes": 1429,
+      "full_get_verified": true,
+      "sha256": "7c6199f83b1a4e7c1577997b82908c2381862ef6231a458e0958df840b19c439",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/7c6199f83b1a4e7c1577997b82908c2381862ef6231a458e0958df840b19c439.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-final-index.json": {
+      "bytes": 760644,
+      "full_get_verified": true,
+      "sha256": "c23c7f963c5983ed9963f6c624cd6e1aa6bf40d52c58c43ec1e3e70311310327",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/c23c7f963c5983ed9963f6c624cd6e1aa6bf40d52c58c43ec1e3e70311310327.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-health-latest.json": {
+      "bytes": 1056635,
+      "full_get_verified": true,
+      "sha256": "eecbf496f3bb8e8cc78027860ce52f4174fa77d638039a2e28f84681fabeed6e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/eecbf496f3bb8e8cc78027860ce52f4174fa77d638039a2e28f84681fabeed6e.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-independent-checkpoint-verification.json": {
+      "bytes": 2737,
+      "full_get_verified": true,
+      "sha256": "09f7802c16bcdeacb6a3f8c93e59706b78a58b08dc22cef05d0a787ba68c85d8",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/09f7802c16bcdeacb6a3f8c93e59706b78a58b08dc22cef05d0a787ba68c85d8.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "primary-native-ready.json": {
+      "bytes": 315,
+      "full_get_verified": true,
+      "sha256": "ad59785d0249ac810554d55a40e44a61438a864091f764783c743cfb019ba8cc",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/ad59785d0249ac810554d55a40e44a61438a864091f764783c743cfb019ba8cc.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "reference-nominations.json": {
+      "bytes": 1477375,
+      "full_get_verified": true,
+      "sha256": "ddb1eb0233e5a918c402db26bcb8c1d2f4844b850dfde337b56f92af4892b1a5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/ddb1eb0233e5a918c402db26bcb8c1d2f4844b850dfde337b56f92af4892b1a5.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "report-final-observation.json": {
+      "bytes": 1607,
+      "full_get_verified": true,
+      "sha256": "e640282a4f5ed30d81785eab531dde1a9878b6719eb29d0398214715ad08e51f",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/e640282a4f5ed30d81785eab531dde1a9878b6719eb29d0398214715ad08e51f.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "report-observation-before-completion.json": {
+      "bytes": 1059898,
+      "full_get_verified": true,
+      "sha256": "ae0cf56a7ca74517c9969b5ef167f780609c0f31df73fe6ed0ac0c50f725636e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/ae0cf56a7ca74517c9969b5ef167f780609c0f31df73fe6ed0ac0c50f725636e.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "resource-approval.json": {
+      "bytes": 3835,
+      "full_get_verified": true,
+      "sha256": "0408f1b94d020e33b0258b40e05b848e3cd28079ad3bb644a91e0ca9e7bf7d91",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/0408f1b94d020e33b0258b40e05b848e3cd28079ad3bb644a91e0ca9e7bf7d91.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "runtime-locks-and-exceptions-20261111T025558Z.json": {
+      "bytes": 1290,
+      "full_get_verified": true,
+      "sha256": "0e03e06051d1d09eaed2f3d6d71fb4546ad137c916e50244bd3baba39cc30565",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/0e03e06051d1d09eaed2f3d6d71fb4546ad137c916e50244bd3baba39cc30565.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "runtime-locks-and-exceptions-20261111T040547Z.json": {
+      "bytes": 5192,
+      "full_get_verified": true,
+      "sha256": "37742296946369b7ee765f16138b2a6a30543e56b0849711722bee81a55f2688",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/37742296946369b7ee765f16138b2a6a30543e56b0849711722bee81a55f2688.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "runtime-locks-and-exceptions-20261111T050213Z.json": {
+      "bytes": 4738,
+      "full_get_verified": true,
+      "sha256": "d055dd8aef304439917b5cbfa548d101f88ae648e1463ed160f95b8e670d4cb7",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/d055dd8aef304439917b5cbfa548d101f88ae648e1463ed160f95b8e670d4cb7.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "runtime-locks-and-exceptions-latest.json": {
+      "bytes": 4738,
+      "full_get_verified": true,
+      "sha256": "d055dd8aef304439917b5cbfa548d101f88ae648e1463ed160f95b8e670d4cb7",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/d055dd8aef304439917b5cbfa548d101f88ae648e1463ed160f95b8e670d4cb7.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "search-closure-launch.json": {
+      "bytes": 576,
+      "full_get_verified": true,
+      "sha256": "7f63e1baab019c37ac5fd5959be75080bae134cf5f982d578cecf729df912b26",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/7f63e1baab019c37ac5fd5959be75080bae134cf5f982d578cecf729df912b26.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "search-monitor-instructions.json": {
+      "bytes": 28247,
+      "full_get_verified": true,
+      "sha256": "8253012168c11cfcf908c73f2ab6417d1cdaac53d17bd083d1b741270a8151c9",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/8253012168c11cfcf908c73f2ab6417d1cdaac53d17bd083d1b741270a8151c9.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "search-operation.json": {
+      "bytes": 31602,
+      "full_get_verified": true,
+      "sha256": "a17b3d447de65180f9ba33e7ec856ab87bf039f53b5ec1c6d7faa5dfd89f3595",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/a17b3d447de65180f9ba33e7ec856ab87bf039f53b5ec1c6d7faa5dfd89f3595.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "secondary-attempts--preflight-policy-link--deployment-manifest.json": {
+      "bytes": 8491,
+      "full_get_verified": true,
+      "sha256": "8523ab4b937d7b1649a60f39a8f2f4444e8f9480566a597c5bb5a9a44ccec032",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/8523ab4b937d7b1649a60f39a8f2f4444e8f9480566a597c5bb5a9a44ccec032.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "secondary-attempts--preflight-policy-link--handoff-progress.json": {
+      "bytes": 33461,
+      "full_get_verified": true,
+      "sha256": "328b404779255dee6f81d406f442dfa0cd0175b58c1292bf66480c6cb08e8202",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/328b404779255dee6f81d406f442dfa0cd0175b58c1292bf66480c6cb08e8202.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "secondary-attempts--preflight-policy-link--policy-copy-proof.json": {
+      "bytes": 473,
+      "full_get_verified": true,
+      "sha256": "b3a24806252076c55e00c9444d8f555c566dbc7351f71dcf50e87888ce6936d2",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/b3a24806252076c55e00c9444d8f555c566dbc7351f71dcf50e87888ce6936d2.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "secondary-bundle--matched-nominations-verification.json": {
+      "bytes": 1040,
+      "full_get_verified": true,
+      "sha256": "d7881e1a30310be7de802d4c146a12eb9e87b4d0bdb1c9e7e967593a5ee7e8b5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/d7881e1a30310be7de802d4c146a12eb9e87b4d0bdb1c9e7e967593a5ee7e8b5.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "secondary-deployment-manifest.json": {
+      "bytes": 8535,
+      "full_get_verified": true,
+      "sha256": "79b216cdb87998bbc1e6fb748cc16286f890d98d4d85d24048ad3371cb39f3ea",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/79b216cdb87998bbc1e6fb748cc16286f890d98d4d85d24048ad3371cb39f3ea.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "secondary-early-stop-original-verification.json": {
+      "bytes": 1439,
+      "full_get_verified": true,
+      "sha256": "659225f9c17ac2f66bdfa9c0d40829becbff09429bbdac0b6a69e9312066cf28",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/659225f9c17ac2f66bdfa9c0d40829becbff09429bbdac0b6a69e9312066cf28.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "secondary-early-stop-worker-verification.json": {
+      "bytes": 9795,
+      "full_get_verified": true,
+      "sha256": "41f9bcdec2feb27a426d2c2c603d6cea4d69c49f43949f913e281fb7d4a3f3a3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/41f9bcdec2feb27a426d2c2c603d6cea4d69c49f43949f913e281fb7d4a3f3a3.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "secondary-final-discovery.json": {
+      "bytes": 779,
+      "full_get_verified": true,
+      "sha256": "33455721066d9f236cd4b010f2429c113d79ffd558f8e9d158e4b19eb4692de1",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/33455721066d9f236cd4b010f2429c113d79ffd558f8e9d158e4b19eb4692de1.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "secondary-final-independent-verification.json": {
+      "bytes": 1277,
+      "full_get_verified": true,
+      "sha256": "1db3bbd681b52a51d41486878ebe1a761b4bfc1eac9eb894231bce26008b47bb",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/1db3bbd681b52a51d41486878ebe1a761b4bfc1eac9eb894231bce26008b47bb.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "secondary-final-index.json": {
+      "bytes": 403417,
+      "full_get_verified": true,
+      "sha256": "a726d539f963bd744d8562c780410e452b901a49bc7a8c168fd4d4b3c6cae183",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/a726d539f963bd744d8562c780410e452b901a49bc7a8c168fd4d4b3c6cae183.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "secondary-health-latest.json": {
+      "bytes": 632609,
+      "full_get_verified": true,
+      "sha256": "88f4b6e8a4aefc686440470f3206aa56166280aa45376d6fa156e65176a91657",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/88f4b6e8a4aefc686440470f3206aa56166280aa45376d6fa156e65176a91657.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "secondary-independent-checkpoint-verification.json": {
+      "bytes": 1879,
+      "full_get_verified": true,
+      "sha256": "d93f40f0b0709d71caf575c16016f1c7252422052641deffd4fc8b4a72efd4c0",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/d93f40f0b0709d71caf575c16016f1c7252422052641deffd4fc8b4a72efd4c0.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "secondary-native-ready.json": {
+      "bytes": 315,
+      "full_get_verified": true,
+      "sha256": "3ca6c9a207fee0a8f920844057ab5d040c237673e315f450a7222d83ad968127",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/3ca6c9a207fee0a8f920844057ab5d040c237673e315f450a7222d83ad968127.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "selection-amendment.json": {
+      "bytes": 6186,
+      "full_get_verified": true,
+      "sha256": "1fe6c567a15745d00fdd4317c6c5d593b4901d5bdc18a312e0aeb09e0fd9c904",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/1fe6c567a15745d00fdd4317c6c5d593b4901d5bdc18a312e0aeb09e0fd9c904.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "selection-ready.json": {
+      "bytes": 1208,
+      "full_get_verified": true,
+      "sha256": "57b4d5fffffcbf533c55f4646695740f2e5b48b51a9bb7a8ad6fddef861d2e31",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/57b4d5fffffcbf533c55f4646695740f2e5b48b51a9bb7a8ad6fddef861d2e31.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "staging-verification.json": {
+      "bytes": 1081,
+      "full_get_verified": true,
+      "sha256": "90ee96c6490a8d1967ac67eaa693ba2ecc9af72bca9e284e4820074b6ebe1f14",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/90ee96c6490a8d1967ac67eaa693ba2ecc9af72bca9e284e4820074b6ebe1f14.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "validation-restart.json": {
+      "bytes": 2854,
+      "full_get_verified": true,
+      "sha256": "8d5d2819aba5109957a8827bfc10671efe40401a3c9b6e4e5fd58e834ac57480",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/8d5d2819aba5109957a8827bfc10671efe40401a3c9b6e4e5fd58e834ac57480.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "worker-and-final-backup-status.json": {
+      "bytes": 1653,
+      "full_get_verified": true,
+      "sha256": "9788041a1a885af483885e82e7ea267bff03e500afba07a286e9dd147cd166a8",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/9788041a1a885af483885e82e7ea267bff03e500afba07a286e9dd147cd166a8.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "worker-cleanup-attempt1.json": {
+      "bytes": 2094,
+      "full_get_verified": true,
+      "sha256": "08e8bc23b9ad42e930a9c0b2643380099006142ddc7a2b1aca0997464e971106",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/08e8bc23b9ad42e930a9c0b2643380099006142ddc7a2b1aca0997464e971106.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "worker-cleanup.json": {
+      "bytes": 2595,
+      "full_get_verified": true,
+      "sha256": "9e59a7a61d0c2f24ff40245dd90990dd4195c3fac31c231ddb53365f84c5e688",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/9e59a7a61d0c2f24ff40245dd90990dd4195c3fac31c231ddb53365f84c5e688.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "worker-state-20261111T060136Z.json": {
+      "bytes": 1863,
+      "full_get_verified": true,
+      "sha256": "45ab61fb083e93c6ece82ed2a8ce5715b7d18bb86d50aea63c3981deb41f38ef",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/45ab61fb083e93c6ece82ed2a8ce5715b7d18bb86d50aea63c3981deb41f38ef.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    },
+    "workers-live.json": {
+      "bytes": 2285,
+      "full_get_verified": true,
+      "sha256": "38fa6badb26d99d31057e946b2a8165e4e9b2ccbd918d521ea6debfd52bc44c3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/38fa6badb26d99d31057e946b2a8165e4e9b2ccbd918d521ea6debfd52bc44c3.json",
+      "verified_at": "2026-11-11T06:23:41.890063+00:00"
+    }
+  },
+  "scientific_execution_started": true,
+  "selected_panel": {
+    "controls": 2,
+    "lineages": 33,
+    "runs": [
+      {
+        "genes_deleted": 1720,
+        "method": "greedy_block",
+        "run_id": "baseline-depth-extension-20261110-greedy-block-seed-103",
+        "seed": 103,
+        "shortfall": 0,
+        "state_id": "c1b435d5e57facd24fff760afe07250755712d77e497f16a583c42da171ec4f8",
+        "status": "completed"
+      },
+      {
+        "genes_deleted": 1705,
+        "method": "randomized_block",
+        "run_id": "baseline-depth-extension-20261110-randomized-block-seed-103",
+        "seed": 103,
+        "shortfall": 15,
+        "state_id": "a00af77b7087c60ae11e3828c0dcc14c84017c21b10271b7b34732d1263d8faf",
+        "status": "user_stopped"
+      },
+      {
+        "genes_deleted": 1405,
+        "method": "greedy_block",
+        "run_id": "baseline-depth-extension-20261110-greedy-block-seed-227",
+        "seed": 227,
+        "shortfall": 315,
+        "state_id": "1e85144f2dca0b0e1a9af3fb955cb4f81eade8a53f002efcf4bbfa10d26eb453",
+        "status": "user_stopped"
+      },
+      {
+        "genes_deleted": 1715,
+        "method": "randomized_block",
+        "run_id": "baseline-depth-extension-20261110-randomized-block-seed-227",
+        "seed": 227,
+        "shortfall": 5,
+        "state_id": "0877e61be9493a1288017a511b505cb08a85ef92f0e5f267ef64e410df100691",
+        "status": "user_stopped"
+      },
+      {
+        "genes_deleted": 1715,
+        "method": "randomized_block",
+        "run_id": "baseline-depth-extension-20261110-randomized-block-seed-349",
+        "seed": 349,
+        "shortfall": 5,
+        "state_id": "8667363765837ac0bfbd4069bed4615f0b9d1970db6c7bf1b4f5f5f27df220c3",
+        "status": "user_stopped"
+      },
+      {
+        "genes_deleted": 1715,
+        "method": "greedy_block",
+        "run_id": "baseline-depth-extension-20261110-greedy-block-seed-349",
+        "seed": 349,
+        "shortfall": 5,
+        "state_id": "8667363765837ac0bfbd4069bed4615f0b9d1970db6c7bf1b4f5f5f27df220c3",
+        "status": "completed"
+      },
+      {
+        "genes_deleted": 1705,
+        "method": "greedy_block",
+        "run_id": "baseline-depth-extension-20261110-greedy-block-seed-461",
+        "seed": 461,
+        "shortfall": 15,
+        "state_id": "90ae933ae0172a107b89f5cdc44b93fcfb61b68e2ed19f5a55d51f4512948903",
+        "status": "completed"
+      },
+      {
+        "genes_deleted": 1705,
+        "method": "randomized_block",
+        "run_id": "baseline-depth-extension-20261110-randomized-block-seed-461",
+        "seed": 461,
+        "shortfall": 15,
+        "state_id": "3858ba44ec74ff307bd4983f94a73dee60bac8691b070b1f40e7f9b203bbb4d6",
+        "status": "user_stopped"
+      },
+      {
+        "genes_deleted": 1715,
+        "method": "greedy_block",
+        "run_id": "baseline-depth-extension-20261110-greedy-block-seed-587",
+        "seed": 587,
+        "shortfall": 5,
+        "state_id": "b2fa9470a255de6d647809120bf28d7571a910ad9a8d31ce108115837ec17f02",
+        "status": "completed"
+      },
+      {
+        "genes_deleted": 1715,
+        "method": "randomized_block",
+        "run_id": "baseline-depth-extension-20261110-randomized-block-seed-587",
+        "seed": 587,
+        "shortfall": 5,
+        "state_id": "6f7d1aaeeb3ce0882a89f883048038e08b809a105699a6ef7ee2e29c256c44e8",
+        "status": "user_stopped"
+      }
+    ],
+    "unique_baseline_genomes": 9
+  },
+  "selection": {
+    "created_at": "2026-11-11T00:30:22.611655+00:00",
+    "deeper_endpoints_retained": true,
+    "experiment_id": "vecoli-depth-matched-20261111",
+    "historical_search_protocol_unchanged": true,
+    "maximum_baseline_nominees": 10,
+    "search_experiment_id": "baseline-depth-extension-20261110",
+    "selection": {
+      "cohort": [
+        {
+          "genes_deleted": 1468,
+          "method": "adaptive_literature",
+          "run_id": "search-replication-20261109-adaptive-literature-seed-103",
+          "search_status": "failed",
+          "seed": 103,
+          "state_id": "42260b9dbb915f6654b82ad4b22b05f5158e94a080f5caf9d54adae1dcb0eaaa"
+        },
+        {
+          "genes_deleted": 1622,
+          "method": "adaptive_literature",
+          "run_id": "search-replication-20261109-adaptive-literature-seed-227",
+          "search_status": "model_budget",
+          "seed": 227,
+          "state_id": "528c93aa82c4ae8001fd5f51eeb2bececeed8b50ee4ce57e1541c0958c5ca0dd"
+        },
+        {
+          "genes_deleted": 1898,
+          "method": "adaptive_literature",
+          "run_id": "search-replication-20261109-adaptive-literature-seed-349",
+          "search_status": "completed",
+          "seed": 349,
+          "state_id": "e79d4769780fbbbc28988e5fa9ab5416ab7f86d6ed3d1bd024e6f883d311f6f2"
+        },
+        {
+          "genes_deleted": 1053,
+          "method": "adaptive_literature",
+          "run_id": "search-replication-20261109-adaptive-literature-seed-461",
+          "search_status": "failed",
+          "seed": 461,
+          "state_id": "4e0b1535f5707b381dfc929419c61ee9d8c0d981541849e00abd35081717baa9"
+        },
+        {
+          "genes_deleted": 1281,
+          "method": "adaptive_literature",
+          "run_id": "search-replication-20261109-adaptive-literature-seed-587",
+          "search_status": "failed",
+          "seed": 587,
+          "state_id": "af857a40162fac386ffb7a5203695f51144fe750eda13a80e0b7f841f9f14123"
+        },
+        {
+          "genes_deleted": 1859,
+          "method": "frozen_dossier",
+          "run_id": "search-replication-20261109-frozen-dossier-seed-103",
+          "search_status": "completed",
+          "seed": 103,
+          "state_id": "9b878eb67ecfddd9f1d9ce07de1260e611d64f164f144d89464132687c42044e"
+        },
+        {
+          "genes_deleted": 1699,
+          "method": "frozen_dossier",
+          "run_id": "search-replication-20261109-frozen-dossier-seed-227",
+          "search_status": "completed",
+          "seed": 227,
+          "state_id": "774ad1ac8cb374606dbf5b7ef3f7729810fe72bd428dd3166a50166b854f3ff2"
+        },
+        {
+          "genes_deleted": 1534,
+          "method": "frozen_dossier",
+          "run_id": "search-replication-20261109-frozen-dossier-seed-349",
+          "search_status": "completed",
+          "seed": 349,
+          "state_id": "961cca126fe01df9e432bf35849fc7474e5bec402a15c214bd8f796df185808d"
+        },
+        {
+          "genes_deleted": 2025,
+          "method": "frozen_dossier",
+          "run_id": "search-replication-20261109-frozen-dossier-seed-461",
+          "search_status": "completed",
+          "seed": 461,
+          "state_id": "3a6130176f4242b83775ec3dd4748c6a8643073f93113daa9ab6f6531d85771e"
+        },
+        {
+          "genes_deleted": 1745,
+          "method": "frozen_dossier",
+          "run_id": "search-replication-20261109-frozen-dossier-seed-587",
+          "search_status": "completed",
+          "seed": 587,
+          "state_id": "16b2aa91844de8041390b8b72c2f0a6d780dd73ef83f9f72e4921df3795a0cec"
+        },
+        {
+          "genes_deleted": 1562,
+          "method": "no_retrieval",
+          "run_id": "search-replication-20261109-no-retrieval-seed-103",
+          "search_status": "completed",
+          "seed": 103,
+          "state_id": "23948ccdbdc63c593163b3a016fef9ae06b86f66a0ce75d47aee4dd5bb888198"
+        },
+        {
+          "genes_deleted": 2318,
+          "method": "no_retrieval",
+          "run_id": "search-replication-20261109-no-retrieval-seed-227",
+          "search_status": "completed",
+          "seed": 227,
+          "state_id": "eabc96e1c0cc223820f530f43188aa0f4113ad3516d89d7758fafd6158f85bba"
+        },
+        {
+          "genes_deleted": 1996,
+          "method": "no_retrieval",
+          "run_id": "search-replication-20261109-no-retrieval-seed-349",
+          "search_status": "completed",
+          "seed": 349,
+          "state_id": "c7710bb29df0f762cb1cd139e0614c158978badae17a89ed11e461cae6746f5b"
+        },
+        {
+          "genes_deleted": 1813,
+          "method": "no_retrieval",
+          "run_id": "search-replication-20261109-no-retrieval-seed-461",
+          "search_status": "completed",
+          "seed": 461,
+          "state_id": "21269ea10c74667151dd87ec0a39eb4dd6ab312a23ff3f0b580c127dc7cab65a"
+        },
+        {
+          "genes_deleted": 1933,
+          "method": "no_retrieval",
+          "run_id": "search-replication-20261109-no-retrieval-seed-587",
+          "search_status": "completed",
+          "seed": 587,
+          "state_id": "e19de6c5b5a7932492425da48f15b9039535601c8845ee06a41d453158a13294"
+        }
+      ],
+      "common_root_deletions": 1030,
+      "deduplication": "Validate identical genotypes once and retain every source-run link; shared outcomes are not independent replicates.",
+      "maximum_total_deletions": 1720,
+      "missing_or_shallower_run": "Retain the run in the denominator; report the exact shortfall or missing nominee. Never synthesize a genotype or replace after validation.",
+      "reference_count": 15,
+      "reference_experiment_id": "search-replication-20261109",
+      "reference_mean_total_deletions": 1720.4,
+      "reference_nominations_sha256": "ddb1eb0233e5a918c402db26bcb8c1d2f4844b850dfde337b56f92af4892b1a5",
+      "reference_total_deletions": 25806,
+      "registry_genes": 4290,
+      "rule": "One deepest fully evaluated growth-gate-passing candidate at or below the integer floor of the mean total deletions across all fifteen original agent finalists; ties by higher finite FBA growth then ascending state_id.",
+      "whole_cell_outcomes_used": false
+    },
+    "status": "selection_frozen_before_new_validation",
+    "timing": "Exploratory amendment after observing baseline deletion depth, before any new whole-cell outcome; not part of the original equal-budget comparison.",
+    "user_request": "Aim for the mean or a bit less than the other modes; then validate with vEcoli."
+  },
+  "status": "completed_with_exceptions_verified",
+  "updated_at": "2026-11-11T09:53:25.527532+00:00",
+  "worker_lifecycle": {
+    "at": "2026-11-11T05:10:43.288339+00:00",
+    "instances": [
+      {
+        "instance_id": "i-05bece33af7a6cbb2",
+        "public_ip": "44.203.122.208",
+        "state": "running",
+        "volumes": [
+          {
+            "delete_on_termination": false,
+            "volume_id": "vol-06f1de0a618b98c9f"
+          }
+        ]
+      },
+      {
+        "instance_id": "i-05b12ad155a4aff74",
+        "public_ip": "13.222.218.175",
+        "state": "running",
+        "volumes": [
+          {
+            "delete_on_termination": false,
+            "volume_id": "vol-06ffb8dd4182f3e4f"
+          }
+        ]
+      }
+    ],
+    "latest_ec2_check": {
+      "at": "2026-11-11T06:21:59.674001+00:00",
+      "instances": [
+        {
+          "instance_id": "i-05b12ad155a4aff74",
+          "state": "terminated",
+          "volume_absence_verified": true,
+          "volume_id": "vol-06ffb8dd4182f3e4f"
+        },
+        {
+          "instance_id": "i-05bece33af7a6cbb2",
+          "state": "terminated",
+          "volume_absence_verified": true,
+          "volume_id": "vol-06f1de0a618b98c9f"
+        }
+      ]
+    },
+    "secondary_final_objects": [
+      {
+        "bytes": 403417,
+        "key": "yggdrisil/experiments/vecoli-depth-matched-20261111/secondary/final/a726d539f963bd744d8562c780410e452b901a49bc7a8c168fd4d4b3c6cae183.json",
+        "last_modified": "2026-11-11T05:06:13+00:00"
+      },
+      {
+        "bytes": 1726817393,
+        "key": "yggdrisil/experiments/vecoli-depth-matched-20261111/secondary/final/a8fe64739fc4b3479cd2fffcf95654652b8f992d12cc695e20c354356d5151f6.tar.gz",
+        "last_modified": "2026-11-11T05:05:33+00:00"
+      }
+    ],
+    "ssh_result": "Secondary rejected SSH with System is going down; no restart attempted."
+  }
+}

@@ -1,0 +1,1202 @@
+{
+  "all_public_access_blocks_enabled": true,
+  "bucket_owner_verified": true,
+  "experiment_ids": [
+    "literature-ablation-kimi-continuation-20261106",
+    "vecoli-kimi-continuation-20gen-3seed-20261106",
+    "deletion-baselines-20261106",
+    "vecoli-deletion-baselines-20gen-3seed-20261106"
+  ],
+  "full_get_metadata_objects": 124,
+  "objects": [
+    {
+      "bytes": 1911485,
+      "checked_at": "2026-11-07T00:39:10.006601+00:00",
+      "encryption": "AES256",
+      "sha256": "4bb5ed33afb14ad6e17285d6697b0c8b9230b48bb715061e6a2d4e97700c4914",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/literature-ablation-kimi-full-20261105-adaptive-literature-seed-59-data-v1/4bb5ed33afb14ad6e17285d6697b0c8b9230b48bb715061e6a2d4e97700c4914.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 1991508,
+      "checked_at": "2026-11-07T00:39:10.475912+00:00",
+      "encryption": "AES256",
+      "sha256": "4c8579ec740700ee7b926fa45ec57e18de1441b1cebe672ce05ef5170e2d3828",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/literature-ablation-kimi-full-20261105-frozen-dossier-seed-59-data-v1/4c8579ec740700ee7b926fa45ec57e18de1441b1cebe672ce05ef5170e2d3828.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 1955866,
+      "checked_at": "2026-11-07T00:39:10.388205+00:00",
+      "encryption": "AES256",
+      "sha256": "a2b827bb2046255e9bd75304f67b3ad2ce78cf95bf930b41f4d7a4b3c7c4a7f9",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/archives/20261105/literature-ablation-kimi-full-20261105-no-retrieval-seed-59-data-v1/a2b827bb2046255e9bd75304f67b3ad2ce78cf95bf930b41f4d7a4b3c7c4a7f9.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 8185107,
+      "checked_at": "2026-11-07T00:39:10.410882+00:00",
+      "encryption": "AES256",
+      "sha256": "472724b7086e0dc3fa48386d5931aa5cd9e50fbeab04d5262da593d217a1d4a3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-17/archives/472724b7086e0dc3fa48386d5931aa5cd9e50fbeab04d5262da593d217a1d4a3.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 2704,
+      "checked_at": "2026-11-07T00:39:10.418359+00:00",
+      "encryption": "AES256",
+      "sha256": "589b38969552883fb20eb412d9d4578b29e32972ca1b2b58c94557bec10a2ccf",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-17/indexes/589b38969552883fb20eb412d9d4578b29e32972ca1b2b58c94557bec10a2ccf.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 9868184,
+      "checked_at": "2026-11-07T00:39:10.427818+00:00",
+      "encryption": "AES256",
+      "sha256": "d3734175fc6c0d478b66326371755402841a8c3d3683766623c1144bf0760757",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-29/archives/d3734175fc6c0d478b66326371755402841a8c3d3683766623c1144bf0760757.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 2704,
+      "checked_at": "2026-11-07T00:39:10.420233+00:00",
+      "encryption": "AES256",
+      "sha256": "2a021ad65e2a33bb1d8b6dc65050f9a610ee521e3cf48cc11537e65e0aacf326",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-29/indexes/2a021ad65e2a33bb1d8b6dc65050f9a610ee521e3cf48cc11537e65e0aacf326.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 8024006,
+      "checked_at": "2026-11-07T00:39:10.422260+00:00",
+      "encryption": "AES256",
+      "sha256": "d9ee83bfd0ef7aaf21caedaac419008c87921db886cf9dd18bfc53365bc8dd24",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-43/archives/d9ee83bfd0ef7aaf21caedaac419008c87921db886cf9dd18bfc53365bc8dd24.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 2704,
+      "checked_at": "2026-11-07T00:39:10.123384+00:00",
+      "encryption": "AES256",
+      "sha256": "ffa453d7c38397402d6d88f7062738fd83a6aae5ddbc95ad7b52f89a4ff541e7",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-43/indexes/ffa453d7c38397402d6d88f7062738fd83a6aae5ddbc95ad7b52f89a4ff541e7.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 8633457,
+      "checked_at": "2026-11-07T00:39:10.413529+00:00",
+      "encryption": "AES256",
+      "sha256": "faca012a2716b2b39ada2f5b18a8116ac1604a197d31003e4eb62d493d198b2f",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-59/archives/faca012a2716b2b39ada2f5b18a8116ac1604a197d31003e4eb62d493d198b2f.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 2704,
+      "checked_at": "2026-11-07T00:39:10.509451+00:00",
+      "encryption": "AES256",
+      "sha256": "455dd27c368483945985d95e0e059df7c2db54ff81901424b964ee05bee8bddf",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-59/indexes/455dd27c368483945985d95e0e059df7c2db54ff81901424b964ee05bee8bddf.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 8193492,
+      "checked_at": "2026-11-07T00:39:10.526907+00:00",
+      "encryption": "AES256",
+      "sha256": "62b1c8299bc77e8753c652e5f90e5e0023bb3bdfb570ef6eab6b7bc788b32d80",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-71/archives/62b1c8299bc77e8753c652e5f90e5e0023bb3bdfb570ef6eab6b7bc788b32d80.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 2704,
+      "checked_at": "2026-11-07T00:39:10.541091+00:00",
+      "encryption": "AES256",
+      "sha256": "f4d37bed45adecf9e45b39c051dea368e8d3a1db1ea9da9732ebac9401f9dd85",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-greedy-block-seed-71/indexes/f4d37bed45adecf9e45b39c051dea368e8d3a1db1ea9da9732ebac9401f9dd85.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 9286404,
+      "checked_at": "2026-11-07T00:39:10.559254+00:00",
+      "encryption": "AES256",
+      "sha256": "89a367dc52c1aad36d75d4a295d1dbfe81d83551a2eaa7bd53ac6667ad522e0d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-17/archives/89a367dc52c1aad36d75d4a295d1dbfe81d83551a2eaa7bd53ac6667ad522e0d.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 2713,
+      "checked_at": "2026-11-07T00:39:10.544695+00:00",
+      "encryption": "AES256",
+      "sha256": "2d38ad6796cf959ba05dc7ccd5fb07a2129492dd5782d8d258f05155eb3760a8",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-17/indexes/2d38ad6796cf959ba05dc7ccd5fb07a2129492dd5782d8d258f05155eb3760a8.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 10338334,
+      "checked_at": "2026-11-07T00:39:10.626979+00:00",
+      "encryption": "AES256",
+      "sha256": "05f193591b62e0fc0989513981e4053b566b02d0e6a88b3509b9faa8670f77c7",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-29/archives/05f193591b62e0fc0989513981e4053b566b02d0e6a88b3509b9faa8670f77c7.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 2714,
+      "checked_at": "2026-11-07T00:39:10.659367+00:00",
+      "encryption": "AES256",
+      "sha256": "ccf505812dd3091a7236a53cf6d9a1e0533d3c27d629063171cf1342ff202e47",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-29/indexes/ccf505812dd3091a7236a53cf6d9a1e0533d3c27d629063171cf1342ff202e47.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 8565231,
+      "checked_at": "2026-11-07T00:39:10.668149+00:00",
+      "encryption": "AES256",
+      "sha256": "f55ae02568ca0217eaffa97d6988380013eb260cc85fa3920b0c83c7aeaf1b22",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-43/archives/f55ae02568ca0217eaffa97d6988380013eb260cc85fa3920b0c83c7aeaf1b22.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 2713,
+      "checked_at": "2026-11-07T00:39:10.667458+00:00",
+      "encryption": "AES256",
+      "sha256": "2b20d4750ba9408ea2ba2e61b5971533d76d0015dddbad2ed988ad4cfa740b5e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-43/indexes/2b20d4750ba9408ea2ba2e61b5971533d76d0015dddbad2ed988ad4cfa740b5e.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 8228687,
+      "checked_at": "2026-11-07T00:39:10.675192+00:00",
+      "encryption": "AES256",
+      "sha256": "d0489e438c621dc43845f819eedce8e4b569e4d1768e6e31cfd0f37cfce33ebf",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-59/archives/d0489e438c621dc43845f819eedce8e4b569e4d1768e6e31cfd0f37cfce33ebf.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 2713,
+      "checked_at": "2026-11-07T00:39:10.758296+00:00",
+      "encryption": "AES256",
+      "sha256": "ad37a3ee1e31e485b225bef7f00905daf826ff12926b0b06196cb2bb9404646c",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-59/indexes/ad37a3ee1e31e485b225bef7f00905daf826ff12926b0b06196cb2bb9404646c.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 8488371,
+      "checked_at": "2026-11-07T00:39:10.789945+00:00",
+      "encryption": "AES256",
+      "sha256": "22f1de3c9fa5d22db4e3271c0f342b4f3677afcef795142e7cb4ac5964d4783f",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-71/archives/22f1de3c9fa5d22db4e3271c0f342b4f3677afcef795142e7cb4ac5964d4783f.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 2713,
+      "checked_at": "2026-11-07T00:39:10.802364+00:00",
+      "encryption": "AES256",
+      "sha256": "609ebc37b07d005230928913ddddb18644ec93868d8cca57524573e9a3d4cccf",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/deletion-baselines-20261106-randomized-block-seed-71/indexes/609ebc37b07d005230928913ddddb18644ec93868d8cca57524573e9a3d4cccf.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 63530,
+      "checked_at": "2026-11-07T00:39:10.803755+00:00",
+      "encryption": "AES256",
+      "sha256": "a778ae09169187a4e01867e4180b375db928aaf896b30737d966235e016f725c",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion-records/a778ae09169187a4e01867e4180b375db928aaf896b30737d966235e016f725c.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 7462,
+      "checked_at": "2026-11-07T00:39:10.800515+00:00",
+      "encryption": "AES256",
+      "sha256": "cf51ad5d5076bbf34e3d6f6fd51827ba2d962b602b0af8218c3130262b632809",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion-records/cf51ad5d5076bbf34e3d6f6fd51827ba2d962b602b0af8218c3130262b632809.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 3025,
+      "checked_at": "2026-11-07T00:39:10.830371+00:00",
+      "encryption": "AES256",
+      "sha256": "093224aebf84052f8226d091cb9a6174d7183cf5d0465b9ae5b77eef59a89260",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/093224aebf84052f8226d091cb9a6174d7183cf5d0465b9ae5b77eef59a89260.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 55676,
+      "checked_at": "2026-11-07T00:39:10.904713+00:00",
+      "encryption": "AES256",
+      "sha256": "0b2ed3ddc6005036f6058572e119674e9213737e58fe6d1da474dc0d2d919157",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/0b2ed3ddc6005036f6058572e119674e9213737e58fe6d1da474dc0d2d919157.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 933,
+      "checked_at": "2026-11-07T00:39:10.919890+00:00",
+      "encryption": "AES256",
+      "sha256": "2c4cad0173cf6eb5757f0f565d348662e53cf68f4f4bfe5a0697773ec3bb8b21",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/2c4cad0173cf6eb5757f0f565d348662e53cf68f4f4bfe5a0697773ec3bb8b21.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 819,
+      "checked_at": "2026-11-07T00:39:10.934239+00:00",
+      "encryption": "AES256",
+      "sha256": "565f7b686e753edafcd48e9aa7b099797edc7815b587bbedf0971ca793f9b600",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/565f7b686e753edafcd48e9aa7b099797edc7815b587bbedf0971ca793f9b600.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1343,
+      "checked_at": "2026-11-07T00:39:10.925340+00:00",
+      "encryption": "AES256",
+      "sha256": "6761c358d337693c9ec873c32a66e1925a9d57f89260a8ea4bc72f6ccb83ce12",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/6761c358d337693c9ec873c32a66e1925a9d57f89260a8ea4bc72f6ccb83ce12.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 859,
+      "checked_at": "2026-11-07T00:39:11.070151+00:00",
+      "encryption": "AES256",
+      "sha256": "6c2cd075df0f3b5a231d1c8a8cfad16b64b1e6274b10f8adcea526dbbb4e46ef",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/6c2cd075df0f3b5a231d1c8a8cfad16b64b1e6274b10f8adcea526dbbb4e46ef.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 46808,
+      "checked_at": "2026-11-07T00:39:11.054677+00:00",
+      "encryption": "AES256",
+      "sha256": "79a5ab695bcbe68bc0bb48156bbab4d76ec997f5b7eb122b265f32fef55598c4",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/79a5ab695bcbe68bc0bb48156bbab4d76ec997f5b7eb122b265f32fef55598c4.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 17048,
+      "checked_at": "2026-11-07T00:39:11.096422+00:00",
+      "encryption": "AES256",
+      "sha256": "90e173e3faa95f0f07e0609efef20cdff7d7c83bba184cd0c991e3b1252289aa",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/90e173e3faa95f0f07e0609efef20cdff7d7c83bba184cd0c991e3b1252289aa.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 273,
+      "checked_at": "2026-11-07T00:39:11.163226+00:00",
+      "encryption": "AES256",
+      "sha256": "930accb105901ce01f974ecf16f04a49ddc40f093dba8bd0496be8282e1b12b7",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/930accb105901ce01f974ecf16f04a49ddc40f093dba8bd0496be8282e1b12b7.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 28941,
+      "checked_at": "2026-11-07T00:39:11.174480+00:00",
+      "encryption": "AES256",
+      "sha256": "9f8ef5c0357f63fb997133bb47618352aad971891350b5a9b2c4eb48ba5e01a3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/9f8ef5c0357f63fb997133bb47618352aad971891350b5a9b2c4eb48ba5e01a3.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1068125,
+      "checked_at": "2026-11-07T00:39:11.206453+00:00",
+      "encryption": "AES256",
+      "sha256": "ae7b3b521860c62224d8061ef2d488a2b2527986dbe708d3e27f6e0470fc9b53",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/ae7b3b521860c62224d8061ef2d488a2b2527986dbe708d3e27f6e0470fc9b53.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 263103,
+      "checked_at": "2026-11-07T00:39:11.246687+00:00",
+      "encryption": "AES256",
+      "sha256": "b333073f95f692a1575f93ebc341a6f75ff2766f894a81a5680a877d455ba275",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/b333073f95f692a1575f93ebc341a6f75ff2766f894a81a5680a877d455ba275.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 2818,
+      "checked_at": "2026-11-07T00:39:11.339410+00:00",
+      "encryption": "AES256",
+      "sha256": "dcb0fa82255eccd3dcb5df406368fbd0f613189e00c3a8d8918fedcb8d65cc88",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/completion/dcb0fa82255eccd3dcb5df406368fbd0f613189e00c3a8d8918fedcb8d65cc88.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 8228,
+      "checked_at": "2026-11-07T00:39:11.345797+00:00",
+      "encryption": "AES256",
+      "sha256": "4ced267c57e74c6568848442d6eee3caf3719a982bad7e088928edbba6d4d639",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/final/4ced267c57e74c6568848442d6eee3caf3719a982bad7e088928edbba6d4d639.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 28941,
+      "checked_at": "2026-11-07T00:39:11.420925+00:00",
+      "encryption": "AES256",
+      "sha256": "9f8ef5c0357f63fb997133bb47618352aad971891350b5a9b2c4eb48ba5e01a3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/final/9f8ef5c0357f63fb997133bb47618352aad971891350b5a9b2c4eb48ba5e01a3.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 87873574,
+      "checked_at": "2026-11-07T00:39:11.426463+00:00",
+      "encryption": "AES256",
+      "sha256": "bec469356806eb4b3bd460af301780b51e05b9e81d9f3f2e2f92d9c6ec2e2822",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/final/bec469356806eb4b3bd460af301780b51e05b9e81d9f3f2e2f92d9c6ec2e2822.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 21079,
+      "checked_at": "2026-11-07T00:39:11.473098+00:00",
+      "encryption": "AES256",
+      "sha256": "da02d3213847c186902662b7b7fee212b73aa57a4bb72d289f94dee3d1bada04",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/final/da02d3213847c186902662b7b7fee212b73aa57a4bb72d289f94dee3d1bada04.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 553,
+      "checked_at": "2026-11-07T00:39:11.528766+00:00",
+      "encryption": "AES256",
+      "sha256": "01cd7827030f817788b366c6f91320e4e55b0c3856de87d542434ca06f26a55d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/01cd7827030f817788b366c6f91320e4e55b0c3856de87d542434ca06f26a55d.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 854,
+      "checked_at": "2026-11-07T00:39:11.539500+00:00",
+      "encryption": "AES256",
+      "sha256": "0843af2b321ab8ddca60b7e1e89379795e14858d1ba123e2ed9e6ae35c830fb1",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/0843af2b321ab8ddca60b7e1e89379795e14858d1ba123e2ed9e6ae35c830fb1.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 4195,
+      "checked_at": "2026-11-07T00:39:11.584897+00:00",
+      "encryption": "AES256",
+      "sha256": "107ed21bb91401033d5050bd65ccd721a27387dee1e52d767a7363c63be40496",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/107ed21bb91401033d5050bd65ccd721a27387dee1e52d767a7363c63be40496.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 8580,
+      "checked_at": "2026-11-07T00:39:11.608188+00:00",
+      "encryption": "AES256",
+      "sha256": "29260e2eccf946588781f50a9ec4d684accb19a084aa220077300f3fb0af34c7",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/29260e2eccf946588781f50a9ec4d684accb19a084aa220077300f3fb0af34c7.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 24365,
+      "checked_at": "2026-11-07T00:39:11.608955+00:00",
+      "encryption": "AES256",
+      "sha256": "4b6d83630166f3b9d99b9ced75fbad2281c757844d6ce344eb5b2b537bd052b2",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/4b6d83630166f3b9d99b9ced75fbad2281c757844d6ce344eb5b2b537bd052b2.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 322,
+      "checked_at": "2026-11-07T00:39:11.781217+00:00",
+      "encryption": "AES256",
+      "sha256": "565a3f18c3ac88d6d5b2d38c6b02f350ed650829ed3603a5abe33ed6ee7b3954",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/565a3f18c3ac88d6d5b2d38c6b02f350ed650829ed3603a5abe33ed6ee7b3954.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 2764,
+      "checked_at": "2026-11-07T00:39:11.820265+00:00",
+      "encryption": "AES256",
+      "sha256": "56aed0e3a2140adbebbc73b79ee51de7ad54c62c200376dc26243dc71758631e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/56aed0e3a2140adbebbc73b79ee51de7ad54c62c200376dc26243dc71758631e.txt",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 14904,
+      "checked_at": "2026-11-07T00:39:11.852372+00:00",
+      "encryption": "AES256",
+      "sha256": "59c15900116fb834bdb28bcfddd9123dfe1a07a9e9aa7c9d4047ba311125fa31",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/59c15900116fb834bdb28bcfddd9123dfe1a07a9e9aa7c9d4047ba311125fa31.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 131,
+      "checked_at": "2026-11-07T00:39:11.905064+00:00",
+      "encryption": "AES256",
+      "sha256": "5c57838379708fac1164e3d18444786123e6693addc6f62f16d56aafd39950b9",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/5c57838379708fac1164e3d18444786123e6693addc6f62f16d56aafd39950b9.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 136,
+      "checked_at": "2026-11-07T00:39:11.881474+00:00",
+      "encryption": "AES256",
+      "sha256": "5ef0e5a004a1d0b56c01236e2e461aef32af9d599d2e91eae8d2f95b00663d2c",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/5ef0e5a004a1d0b56c01236e2e461aef32af9d599d2e91eae8d2f95b00663d2c.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 697,
+      "checked_at": "2026-11-07T00:39:11.885093+00:00",
+      "encryption": "AES256",
+      "sha256": "66e5ae5653721381e517ddd3a4312757fb69a723d61c1eda870cce079c24856a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/66e5ae5653721381e517ddd3a4312757fb69a723d61c1eda870cce079c24856a.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1030,
+      "checked_at": "2026-11-07T00:39:11.903023+00:00",
+      "encryption": "AES256",
+      "sha256": "8625a4ef4a5ae104254e84dec1b41f7e73b19bf7b4d36d46bd8b42ce5228724b",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/8625a4ef4a5ae104254e84dec1b41f7e73b19bf7b4d36d46bd8b42ce5228724b.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 4429,
+      "checked_at": "2026-11-07T00:39:11.935702+00:00",
+      "encryption": "AES256",
+      "sha256": "9262aedc06ca4fada6fd07169ef67c1ed2c774e867cfdb349954c02e6dc8586a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/9262aedc06ca4fada6fd07169ef67c1ed2c774e867cfdb349954c02e6dc8586a.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 3899,
+      "checked_at": "2026-11-07T00:39:12.051000+00:00",
+      "encryption": "AES256",
+      "sha256": "d90c8a0f93b7e6ba0c27ffbf0bb7497f6cda9cf05fd8dde49d09a5f5880f0f24",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/d90c8a0f93b7e6ba0c27ffbf0bb7497f6cda9cf05fd8dde49d09a5f5880f0f24.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 466727,
+      "checked_at": "2026-11-07T00:39:12.061745+00:00",
+      "encryption": "AES256",
+      "sha256": "e298196ebea6a6f8601b809f7d0ee7ad637028af14b7e4d1681628bf0ae6193e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/e298196ebea6a6f8601b809f7d0ee7ad637028af14b7e4d1681628bf0ae6193e.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 772,
+      "checked_at": "2026-11-07T00:39:12.102359+00:00",
+      "encryption": "AES256",
+      "sha256": "ef0153269cdaa50d237d3d29a88797d76013cf139d51f0abf525e153291e9f9e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/ef0153269cdaa50d237d3d29a88797d76013cf139d51f0abf525e153291e9f9e.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 2904,
+      "checked_at": "2026-11-07T00:39:12.128784+00:00",
+      "encryption": "AES256",
+      "sha256": "f9b0c95dd94cf3772e32fdd26b8a3b70e4525e578fdeff80d1b73871c901f103",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/launch/f9b0c95dd94cf3772e32fdd26b8a3b70e4525e578fdeff80d1b73871c901f103.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 10049,
+      "checked_at": "2026-11-07T00:39:12.148731+00:00",
+      "encryption": "AES256",
+      "sha256": "4064a70af5f4dbf84e8775d27f7f14fc0eb7b7e8b2b337e95491cb3ff10f4eea",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/4064a70af5f4dbf84e8775d27f7f14fc0eb7b7e8b2b337e95491cb3ff10f4eea.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1731,
+      "checked_at": "2026-11-07T00:39:12.166953+00:00",
+      "encryption": "AES256",
+      "sha256": "6468c1da2305725cb2679db52db41ae037715744fd49ec7381d113bb42517850",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/6468c1da2305725cb2679db52db41ae037715744fd49ec7381d113bb42517850.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 2003,
+      "checked_at": "2026-11-07T00:39:12.180984+00:00",
+      "encryption": "AES256",
+      "sha256": "7fe5b585ef3012ff19eed9d8ee091111b1bd6fa6fb43daaced638862747528e7",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/7fe5b585ef3012ff19eed9d8ee091111b1bd6fa6fb43daaced638862747528e7.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 709,
+      "checked_at": "2026-11-07T00:39:12.185207+00:00",
+      "encryption": "AES256",
+      "sha256": "9202ca6d735980682ed6853323eeff3e5efd25b2607bbdee711c1f267f87fd09",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/9202ca6d735980682ed6853323eeff3e5efd25b2607bbdee711c1f267f87fd09.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 13551,
+      "checked_at": "2026-11-07T00:39:12.335949+00:00",
+      "encryption": "AES256",
+      "sha256": "9cbb7c3b1073697196a41940b3a8e50a2c0794daa6f2965a0828851f27189632",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/9cbb7c3b1073697196a41940b3a8e50a2c0794daa6f2965a0828851f27189632.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1489,
+      "checked_at": "2026-11-07T00:39:12.352820+00:00",
+      "encryption": "AES256",
+      "sha256": "aca7cb5563e04b1c31a98ee8b8414d7e5acfef408b3dcc4114d4ea70bc9e1a00",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/aca7cb5563e04b1c31a98ee8b8414d7e5acfef408b3dcc4114d4ea70bc9e1a00.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 9810,
+      "checked_at": "2026-11-07T00:39:12.403753+00:00",
+      "encryption": "AES256",
+      "sha256": "de7d54014ac461da86974ea0fc2123d1e3b08ec6f5a6939f561b057e6ab9d369",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/de7d54014ac461da86974ea0fc2123d1e3b08ec6f5a6939f561b057e6ab9d369.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 2887,
+      "checked_at": "2026-11-07T00:39:12.454907+00:00",
+      "encryption": "AES256",
+      "sha256": "df19d69542f445ff634216026f41c2d1be073466c727f913b4ab2ba2d045dcf5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/df19d69542f445ff634216026f41c2d1be073466c727f913b4ab2ba2d045dcf5.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 10852,
+      "checked_at": "2026-11-07T00:39:12.420622+00:00",
+      "encryption": "AES256",
+      "sha256": "e8802c9189b71faa4f6d265769cdd3732b2474d6fbf9b097f42bccb84ac94098",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/deletion-baselines-20261106/study/preparation/e8802c9189b71faa4f6d265769cdd3732b2474d6fbf9b097f42bccb84ac94098.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 635940,
+      "checked_at": "2026-11-07T00:39:12.464189+00:00",
+      "encryption": "AES256",
+      "sha256": "159d79a9fb2b4b9c23165e14ea7074b58091126b8ef34c7e79f0d25205d941af",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/analysis/159d79a9fb2b4b9c23165e14ea7074b58091126b8ef34c7e79f0d25205d941af.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 13177,
+      "checked_at": "2026-11-07T00:39:12.492415+00:00",
+      "encryption": "AES256",
+      "sha256": "f76f8296dbb12c9f2ff79fc1b725ac8bc88ea5ec822d5fe66714d4602953e3e0",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/analysis/f76f8296dbb12c9f2ff79fc1b725ac8bc88ea5ec822d5fe66714d4602953e3e0.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 23153429,
+      "checked_at": "2026-11-07T00:39:12.617555+00:00",
+      "encryption": "AES256",
+      "sha256": "369b1c5b171f276549e45c2656b5293d99c547295e0386010c389caebe13b432",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/checkpoints/369b1c5b171f276549e45c2656b5293d99c547295e0386010c389caebe13b432.tar.gz",
+      "verification": "size_and_encryption; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 4545,
+      "checked_at": "2026-11-07T00:39:12.639356+00:00",
+      "encryption": "AES256",
+      "sha256": "20e8d6d001a4560781cb0229c543bba441b44925748a54c73cfdf61a6f2ba2e7",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/diagnostics/20e8d6d001a4560781cb0229c543bba441b44925748a54c73cfdf61a6f2ba2e7.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 28401,
+      "checked_at": "2026-11-07T00:39:12.659519+00:00",
+      "encryption": "AES256",
+      "sha256": "53d361cfc034185c7d41a737503bba277eb40bfee7c00843d009c0cbdce5e07c",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/monitoring/53d361cfc034185c7d41a737503bba277eb40bfee7c00843d009c0cbdce5e07c.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 16172,
+      "checked_at": "2026-11-07T00:39:12.681600+00:00",
+      "encryption": "AES256",
+      "sha256": "6a35a3bb2e65b2c6b5370d44aa521092371b61452aa328266c419b65931bf36a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/monitoring/6a35a3bb2e65b2c6b5370d44aa521092371b61452aa328266c419b65931bf36a.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 20404,
+      "checked_at": "2026-11-07T00:39:12.734059+00:00",
+      "encryption": "AES256",
+      "sha256": "25b2740cf3d2c764076548e80e5c86b9e334153da4c6ea6c8f3a5eeecd93881d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/plans/25b2740cf3d2c764076548e80e5c86b9e334153da4c6ea6c8f3a5eeecd93881d.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1034,
+      "checked_at": "2026-11-07T00:39:12.736079+00:00",
+      "encryption": "AES256",
+      "sha256": "08e456cc355b4832932054b13ea297a1144144017d80e93a989946a985e89eec",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/08e456cc355b4832932054b13ea297a1144144017d80e93a989946a985e89eec.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 805,
+      "checked_at": "2026-11-07T00:39:12.738113+00:00",
+      "encryption": "AES256",
+      "sha256": "0b526ee53909856d5d7057393dad2b505bbe09dde85a675d4549ff71488acd6a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/0b526ee53909856d5d7057393dad2b505bbe09dde85a675d4549ff71488acd6a.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 428,
+      "checked_at": "2026-11-07T00:39:12.768415+00:00",
+      "encryption": "AES256",
+      "sha256": "0cc0035f6208e7e68d30475a21560782bac21af0f0aaa586a043e030f5594aaf",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/0cc0035f6208e7e68d30475a21560782bac21af0f0aaa586a043e030f5594aaf.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 6828,
+      "checked_at": "2026-11-07T00:39:12.901510+00:00",
+      "encryption": "AES256",
+      "sha256": "1851a2a3162af4b23b13924ec7217d48019fd6b26e2d3fdc8bf1fbe02421309e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/1851a2a3162af4b23b13924ec7217d48019fd6b26e2d3fdc8bf1fbe02421309e.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 3787,
+      "checked_at": "2026-11-07T00:39:12.941277+00:00",
+      "encryption": "AES256",
+      "sha256": "199037113e4232176a85590507f2c49c1bdb06e6d77d238cb72fcb55753ebc00",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/199037113e4232176a85590507f2c49c1bdb06e6d77d238cb72fcb55753ebc00.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1000,
+      "checked_at": "2026-11-07T00:39:12.943571+00:00",
+      "encryption": "AES256",
+      "sha256": "1ec7dadd3aaef45233ac2a4d7a1d03014612949630231e0460e98ed59204b964",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/1ec7dadd3aaef45233ac2a4d7a1d03014612949630231e0460e98ed59204b964.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 822,
+      "checked_at": "2026-11-07T00:39:12.989698+00:00",
+      "encryption": "AES256",
+      "sha256": "2580db77d60254193f66d89f76f758fff7713d692e32a3b781e300ace98dee0d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/2580db77d60254193f66d89f76f758fff7713d692e32a3b781e300ace98dee0d.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 249,
+      "checked_at": "2026-11-07T00:39:12.993597+00:00",
+      "encryption": "AES256",
+      "sha256": "653ff27f0620d88bb7cf07cef2b0b4ad3d2909635ec3761ff7078338c5ceafc9",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/653ff27f0620d88bb7cf07cef2b0b4ad3d2909635ec3761ff7078338c5ceafc9.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 936,
+      "checked_at": "2026-11-07T00:39:13.073728+00:00",
+      "encryption": "AES256",
+      "sha256": "80ba96e66cff8c78e55cd277dd252ca68b6a935ca036a67cd45ce3f23e5808b3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/80ba96e66cff8c78e55cd277dd252ca68b6a935ca036a67cd45ce3f23e5808b3.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1404,
+      "checked_at": "2026-11-07T00:39:13.063363+00:00",
+      "encryption": "AES256",
+      "sha256": "834eb95b370f7bcc89d0eef49d9ba461eac4c005cf7cde0c1911605bfd01c9ff",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/834eb95b370f7bcc89d0eef49d9ba461eac4c005cf7cde0c1911605bfd01c9ff.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 5098,
+      "checked_at": "2026-11-07T00:39:13.170658+00:00",
+      "encryption": "AES256",
+      "sha256": "85af79b5a8a2d5ac9511ca919d28aef6ae7eba9c70c1c7ca76f8f35c6e6a2a16",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/85af79b5a8a2d5ac9511ca919d28aef6ae7eba9c70c1c7ca76f8f35c6e6a2a16.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 2672,
+      "checked_at": "2026-11-07T00:39:13.185082+00:00",
+      "encryption": "AES256",
+      "sha256": "cfc2e37280b5d1f0242c1a3642f784bab977ec0a6f72ef972f5f6ee94add78da",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/cfc2e37280b5d1f0242c1a3642f784bab977ec0a6f72ef972f5f6ee94add78da.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 2073,
+      "checked_at": "2026-11-07T00:39:13.199772+00:00",
+      "encryption": "AES256",
+      "sha256": "e883a1b6bc4e88caa6229afe230cb3aa6155fa41383945d227496ad5cab74d90",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/e883a1b6bc4e88caa6229afe230cb3aa6155fa41383945d227496ad5cab74d90.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 372,
+      "checked_at": "2026-11-07T00:39:13.213036+00:00",
+      "encryption": "AES256",
+      "sha256": "f08a84f13aca2685529c2a9f773df32dc22a13c69a2f7df17095b4da77baed9c",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/f08a84f13aca2685529c2a9f773df32dc22a13c69a2f7df17095b4da77baed9c.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 798,
+      "checked_at": "2026-11-07T00:39:13.236625+00:00",
+      "encryption": "AES256",
+      "sha256": "fd667c40c9e48ef15d2a3d1a63dbcca36f5c4788de3a5efc6cbe8d1ed3bc54b3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/provenance/fd667c40c9e48ef15d2a3d1a63dbcca36f5c4788de3a5efc6cbe8d1ed3bc54b3.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 4544,
+      "checked_at": "2026-11-07T00:39:13.247641+00:00",
+      "encryption": "AES256",
+      "sha256": "ff1252f73182a2ce6145ab231f32d5edd53a032cc671b378238af06c420d055e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/literature-ablation-kimi-continuation-20261106/verification/ff1252f73182a2ce6145ab231f32d5edd53a032cc671b378238af06c420d055e.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 22566,
+      "checked_at": "2026-11-07T00:39:13.338669+00:00",
+      "encryption": "AES256",
+      "sha256": "e953eecd50834531e5cc067b0d1104d96e33b9408f47a32dc263bb99ab08b2f0",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/calibration-retry1/checkpoints/e953eecd50834531e5cc067b0d1104d96e33b9408f47a32dc263bb99ab08b2f0.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 525218,
+      "checked_at": "2026-11-07T00:39:13.387066+00:00",
+      "encryption": "AES256",
+      "sha256": "8251006dc5b6609e8fdce8a57fc9c27e4d39777d52f2b73bc551f647c03ee36f",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/seed-101/checkpoints/8251006dc5b6609e8fdce8a57fc9c27e4d39777d52f2b73bc551f647c03ee36f.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 548229,
+      "checked_at": "2026-11-07T00:39:13.423555+00:00",
+      "encryption": "AES256",
+      "sha256": "70f418b7bc2296452fe6f7f3189a9f7646f6c9b5c970aa0bcc4e4dd9d23c8196",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/seed-211/checkpoints/70f418b7bc2296452fe6f7f3189a9f7646f6c9b5c970aa0bcc4e4dd9d23c8196.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 537185,
+      "checked_at": "2026-11-07T00:39:13.476007+00:00",
+      "encryption": "AES256",
+      "sha256": "6d973c1b22fd4b44852d65818b32f10c70181dfed670c952841ba75ffc78a2de",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/seed-307/checkpoints/6d973c1b22fd4b44852d65818b32f10c70181dfed670c952841ba75ffc78a2de.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 16021,
+      "checked_at": "2026-11-07T00:39:13.478553+00:00",
+      "encryption": "AES256",
+      "sha256": "030ea6f5f139193bff2e6e9ae4ce4f597a33e6fffc426ac5a55ce62ff001aeb0",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/030ea6f5f139193bff2e6e9ae4ce4f597a33e6fffc426ac5a55ce62ff001aeb0.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1900232,
+      "checked_at": "2026-11-07T00:39:13.483431+00:00",
+      "encryption": "AES256",
+      "sha256": "1095c64b4d23263e9ea59c551fa10db2c403a36aec383f79b4faf24fe15895c9",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/1095c64b4d23263e9ea59c551fa10db2c403a36aec383f79b4faf24fe15895c9.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1651,
+      "checked_at": "2026-11-07T00:39:13.515077+00:00",
+      "encryption": "AES256",
+      "sha256": "231e93565f338021f577957ccf6106a7aa61e0998c22509a491f190c7089b54a",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/231e93565f338021f577957ccf6106a7aa61e0998c22509a491f190c7089b54a.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 7578,
+      "checked_at": "2026-11-07T00:39:13.539030+00:00",
+      "encryption": "AES256",
+      "sha256": "24382a23cd40d04617b07214c075ddf5482b4a39f87adc4eda1ec49ab66e3202",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/24382a23cd40d04617b07214c075ddf5482b4a39f87adc4eda1ec49ab66e3202.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1785024,
+      "checked_at": "2026-11-07T00:39:13.597155+00:00",
+      "encryption": "AES256",
+      "sha256": "67ef91b41fd2d9839be55d805ff37d2a0cc3cc5aaec4a06113614c56a5707857",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/67ef91b41fd2d9839be55d805ff37d2a0cc3cc5aaec4a06113614c56a5707857.jsonl",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 1282866,
+      "checked_at": "2026-11-07T00:39:13.714636+00:00",
+      "encryption": "AES256",
+      "sha256": "714bee672feb4271bf64858bf612354f73531ec1dce1dc1d0018e32b2941f894",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/714bee672feb4271bf64858bf612354f73531ec1dce1dc1d0018e32b2941f894.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 349987,
+      "checked_at": "2026-11-07T00:39:13.754067+00:00",
+      "encryption": "AES256",
+      "sha256": "ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/ab7ebeda0e866c420a7be4f2d491420d3af60308facc7f4cfa682a2879abdd70.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1983030,
+      "checked_at": "2026-11-07T00:39:13.780302+00:00",
+      "encryption": "AES256",
+      "sha256": "ae4ba5393f9b918c931103e1decc5a16a062ed3102e835e07f35eb8490f4f85d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/ae4ba5393f9b918c931103e1decc5a16a062ed3102e835e07f35eb8490f4f85d.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 11685,
+      "checked_at": "2026-11-07T00:39:13.788419+00:00",
+      "encryption": "AES256",
+      "sha256": "e041a16420ad957836ae6db8c979e024f26f90588363ae3081dbd767e99c0a71",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/e041a16420ad957836ae6db8c979e024f26f90588363ae3081dbd767e99c0a71.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 3938,
+      "checked_at": "2026-11-07T00:39:13.816136+00:00",
+      "encryption": "AES256",
+      "sha256": "f29cf9fdee26de0add8bfc71b5c76612a755600b031c97a2d5cf424f72d9e7b5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-analysis/f29cf9fdee26de0add8bfc71b5c76612a755600b031c97a2d5cf424f72d9e7b5.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1703,
+      "checked_at": "2026-11-07T00:39:13.855362+00:00",
+      "encryption": "AES256",
+      "sha256": "fcea1163ecc577450d1bcf8f77af0689b6c1e1786e5559c3ee680f05fda6cd4e",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final-cleanup/fcea1163ecc577450d1bcf8f77af0689b6c1e1786e5559c3ee680f05fda6cd4e.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1883274600,
+      "checked_at": "2026-11-07T00:39:13.865984+00:00",
+      "encryption": "AES256",
+      "sha256": "6227579eba5bbabbf3d52833b48fcc785f086126674a987dbb2e2179f2708e1c",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final/6227579eba5bbabbf3d52833b48fcc785f086126674a987dbb2e2179f2708e1c.tar.gz",
+      "verification": "stored_SHA256_and_size; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 1282866,
+      "checked_at": "2026-11-07T00:39:13.983496+00:00",
+      "encryption": "AES256",
+      "sha256": "714bee672feb4271bf64858bf612354f73531ec1dce1dc1d0018e32b2941f894",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/final/714bee672feb4271bf64858bf612354f73531ec1dce1dc1d0018e32b2941f894.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 329,
+      "checked_at": "2026-11-07T00:39:14.058584+00:00",
+      "encryption": "AES256",
+      "sha256": "02cacd40f381849781530ab427e434a04be325eb317d329ae34b0b549a73f3dc",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/02cacd40f381849781530ab427e434a04be325eb317d329ae34b0b549a73f3dc.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 19294,
+      "checked_at": "2026-11-07T00:39:14.070080+00:00",
+      "encryption": "AES256",
+      "sha256": "10e1a54fafd25993a5caffc0d90e7b33b79d7661b80596ad186761d5192d3038",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/10e1a54fafd25993a5caffc0d90e7b33b79d7661b80596ad186761d5192d3038.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 11071,
+      "checked_at": "2026-11-07T00:39:14.103595+00:00",
+      "encryption": "AES256",
+      "sha256": "2609bda2625a725c97302dfe3ae65af69fcc43d778680cd748920663807c74c2",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/2609bda2625a725c97302dfe3ae65af69fcc43d778680cd748920663807c74c2.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 637503,
+      "checked_at": "2026-11-07T00:39:14.091433+00:00",
+      "encryption": "AES256",
+      "sha256": "5c56de72bcd5242d26f3f63a5694afddb9796387b88f865df616624cd49f98e5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/5c56de72bcd5242d26f3f63a5694afddb9796387b88f865df616624cd49f98e5.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 949,
+      "checked_at": "2026-11-07T00:39:14.312631+00:00",
+      "encryption": "AES256",
+      "sha256": "8ddbb3baa4a735881fc35be881ca9ce24f7c8a496370596326d37e7c896baea5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/8ddbb3baa4a735881fc35be881ca9ce24f7c8a496370596326d37e7c896baea5.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 4470,
+      "checked_at": "2026-11-07T00:39:14.326694+00:00",
+      "encryption": "AES256",
+      "sha256": "8f56e71fdb85f1d53c0ac89ad3c1e8448ac4ab9ef40f78240ce2967790b5f6f9",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/8f56e71fdb85f1d53c0ac89ad3c1e8448ac4ab9ef40f78240ce2967790b5f6f9.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 20706,
+      "checked_at": "2026-11-07T00:39:14.354019+00:00",
+      "encryption": "AES256",
+      "sha256": "aa6df6789cf013198d90f137152c0f13ef2d19328e348e323d5f3cb1e6fa37ec",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/aa6df6789cf013198d90f137152c0f13ef2d19328e348e323d5f3cb1e6fa37ec.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1724,
+      "checked_at": "2026-11-07T00:39:14.370790+00:00",
+      "encryption": "AES256",
+      "sha256": "afc14b7bf66712aafe2a62d50c154b69f6826d1b81302bd55ac43b6b5c12c5ad",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/afc14b7bf66712aafe2a62d50c154b69f6826d1b81302bd55ac43b6b5c12c5ad.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 27265,
+      "checked_at": "2026-11-07T00:39:14.398452+00:00",
+      "encryption": "AES256",
+      "sha256": "b17e1869146099540b1e1b751ee5089abb639bdf12e2717420c2f024783fb066",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/b17e1869146099540b1e1b751ee5089abb639bdf12e2717420c2f024783fb066.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1632,
+      "checked_at": "2026-11-07T00:39:14.427934+00:00",
+      "encryption": "AES256",
+      "sha256": "b27f4e7ae97e1ec1a877dce8ef7a19ad8f40fa4ce1749e65f5dbb27eee0f2c03",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/b27f4e7ae97e1ec1a877dce8ef7a19ad8f40fa4ce1749e65f5dbb27eee0f2c03.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 3460,
+      "checked_at": "2026-11-07T00:39:14.506871+00:00",
+      "encryption": "AES256",
+      "sha256": "bf1a91096d9c3c221c8a0d978947ea38799aa22fc72728f2074b45a1a61cb1a9",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/bf1a91096d9c3c221c8a0d978947ea38799aa22fc72728f2074b45a1a61cb1a9.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 546,
+      "checked_at": "2026-11-07T00:39:14.601747+00:00",
+      "encryption": "AES256",
+      "sha256": "fb94d0049a0fc575ef6c27afd2bbbbf61c53d55b21ccac993feb34f34b3aa299",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/fb94d0049a0fc575ef6c27afd2bbbbf61c53d55b21ccac993feb34f34b3aa299.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1148,
+      "checked_at": "2026-11-07T00:39:14.604734+00:00",
+      "encryption": "AES256",
+      "sha256": "fbdbf426c5c36e8323e74b02aefe88de1367d3d12634ac82be0c59e955a7e4ed",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/launch-and-monitoring/fbdbf426c5c36e8323e74b02aefe88de1367d3d12634ac82be0c59e955a7e4ed.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 11213,
+      "checked_at": "2026-11-07T00:39:14.630251+00:00",
+      "encryption": "AES256",
+      "sha256": "23aa3c7fe053bd9aeb3a9505ca0a939e98da204875d032c9e512d50cda6f47f9",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/23aa3c7fe053bd9aeb3a9505ca0a939e98da204875d032c9e512d50cda6f47f9.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 6297,
+      "checked_at": "2026-11-07T00:39:14.674432+00:00",
+      "encryption": "AES256",
+      "sha256": "2dff7e711718572b8fd4c881beb79d93f8fabe1ba58f748b365a7c70f3c69c15",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/2dff7e711718572b8fd4c881beb79d93f8fabe1ba58f748b365a7c70f3c69c15.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 958,
+      "checked_at": "2026-11-07T00:39:14.639331+00:00",
+      "encryption": "AES256",
+      "sha256": "36ad1226c5686a8717f60a75aebb10907b389238a67c86ea8ea00a044e3867ab",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/36ad1226c5686a8717f60a75aebb10907b389238a67c86ea8ea00a044e3867ab.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 291454,
+      "checked_at": "2026-11-07T00:39:14.679711+00:00",
+      "encryption": "AES256",
+      "sha256": "41d3057653691956567c09ee10d003bfa8cfc42d5b38672257a13c7bdf06f2f0",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/41d3057653691956567c09ee10d003bfa8cfc42d5b38672257a13c7bdf06f2f0.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 9363,
+      "checked_at": "2026-11-07T00:39:14.723259+00:00",
+      "encryption": "AES256",
+      "sha256": "8ed9ecf2c7306927965768026937297a4c8c6be9922aa5bc746aa019ee54cb51",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/8ed9ecf2c7306927965768026937297a4c8c6be9922aa5bc746aa019ee54cb51.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 898,
+      "checked_at": "2026-11-07T00:39:14.795851+00:00",
+      "encryption": "AES256",
+      "sha256": "b7eb786a9517569a1920f41bd416376485ef94dd1972e3087478d4ee38f3edff",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/b7eb786a9517569a1920f41bd416376485ef94dd1972e3087478d4ee38f3edff.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 936,
+      "checked_at": "2026-11-07T00:39:14.877666+00:00",
+      "encryption": "AES256",
+      "sha256": "e095524abfc6bf01e0d4be58fa14e6a4b270909cc2a2821aa9c876d16b1ab43b",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/e095524abfc6bf01e0d4be58fa14e6a4b270909cc2a2821aa9c876d16b1ab43b.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 2323,
+      "checked_at": "2026-11-07T00:39:15.219092+00:00",
+      "encryption": "AES256",
+      "sha256": "ff5bef63fae3fb7d78a6dda4283dec6aa1b9cd366e12c11e6f152aa65ef3739d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-deletion-baselines-20gen-3seed-20261106/study/preparation/ff5bef63fae3fb7d78a6dda4283dec6aa1b9cd366e12c11e6f152aa65ef3739d.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 19534,
+      "checked_at": "2026-11-07T00:39:14.893097+00:00",
+      "encryption": "AES256",
+      "sha256": "bba7d8d20dc1b5f4738455531037fad6dfb938be6cbd854d96d7b6fb487cfa77",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/calibration/checkpoints/bba7d8d20dc1b5f4738455531037fad6dfb938be6cbd854d96d7b6fb487cfa77.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1000,
+      "checked_at": "2026-11-07T00:39:14.903751+00:00",
+      "encryption": "AES256",
+      "sha256": "221a5a151ca6d51c5d62277a2e811b0ef2a559a9798444d78865f693bd7534dc",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/221a5a151ca6d51c5d62277a2e811b0ef2a559a9798444d78865f693bd7534dc.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 12214,
+      "checked_at": "2026-11-07T00:39:14.997143+00:00",
+      "encryption": "AES256",
+      "sha256": "307bf345f2dc476ff075c80c8a96e5e4568dc6e426bc2ebd1606a6e008d9c5f3",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/307bf345f2dc476ff075c80c8a96e5e4568dc6e426bc2ebd1606a6e008d9c5f3.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 26999,
+      "checked_at": "2026-11-07T00:39:15.006440+00:00",
+      "encryption": "AES256",
+      "sha256": "339d96cc435ffc7083e2f17b1d25a5975eab41b9e04dc28f86cc7b8e5fc0d685",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/339d96cc435ffc7083e2f17b1d25a5975eab41b9e04dc28f86cc7b8e5fc0d685.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 47967,
+      "checked_at": "2026-11-07T00:39:15.003477+00:00",
+      "encryption": "AES256",
+      "sha256": "69b7f816d55db3fd437abd10a10c7709f76c3c0b5cf6cd0e7e4e153e5860fc4f",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/69b7f816d55db3fd437abd10a10c7709f76c3c0b5cf6cd0e7e4e153e5860fc4f.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 320,
+      "checked_at": "2026-11-07T00:39:15.038746+00:00",
+      "encryption": "AES256",
+      "sha256": "9a352f282c776b20dbc4b63a76318f4e4fe0e4e15075ea1a5dc95e9e8eeab75f",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/9a352f282c776b20dbc4b63a76318f4e4fe0e4e15075ea1a5dc95e9e8eeab75f.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 16172,
+      "checked_at": "2026-11-07T00:39:15.128518+00:00",
+      "encryption": "AES256",
+      "sha256": "bb4fc7fdb0f5321a33dc3d74efa53f58b0ca9a97c578923cd3f3f11be25cc739",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/bb4fc7fdb0f5321a33dc3d74efa53f58b0ca9a97c578923cd3f3f11be25cc739.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 608,
+      "checked_at": "2026-11-07T00:39:15.139609+00:00",
+      "encryption": "AES256",
+      "sha256": "cb3f5796bdaac8d4633512eed40fcf31e3e00db827d8e59624372680f8a0bb9b",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/cb3f5796bdaac8d4633512eed40fcf31e3e00db827d8e59624372680f8a0bb9b.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 335097,
+      "checked_at": "2026-11-07T00:39:15.168333+00:00",
+      "encryption": "AES256",
+      "sha256": "f7d0f0949eb9059bf25beb5e0ed62655467b7ec9f7f710216684ee64ff4c0abe",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/completion/f7d0f0949eb9059bf25beb5e0ed62655467b7ec9f7f710216684ee64ff4c0abe.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 1326410801,
+      "checked_at": "2026-11-07T00:39:15.286869+00:00",
+      "encryption": "AES256",
+      "sha256": "1843b3a14185058d2b64497c7d913b831a00ef97223e8198414cdacbe5300556",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/final/1843b3a14185058d2b64497c7d913b831a00ef97223e8198414cdacbe5300556.tar.gz",
+      "verification": "size_and_encryption; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 1931449,
+      "checked_at": "2026-11-07T00:39:15.311685+00:00",
+      "encryption": "AES256",
+      "sha256": "5fc408489e042266150b7bc5ea3dc421d74a18051d37f31be1205d95d5199edb",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/final/5fc408489e042266150b7bc5ea3dc421d74a18051d37f31be1205d95d5199edb.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 726205,
+      "checked_at": "2026-11-07T00:39:15.291119+00:00",
+      "encryption": "AES256",
+      "sha256": "47f1201d21b7593a85bb08589d5ff98754aee7cbeea41d17ab13ccb730495249",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-101/checkpoints/47f1201d21b7593a85bb08589d5ff98754aee7cbeea41d17ab13ccb730495249.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 711660,
+      "checked_at": "2026-11-07T00:39:15.342323+00:00",
+      "encryption": "AES256",
+      "sha256": "4a7e6ff9ae6c4ee2fbef1a475c0bbcbe1f57fa51b4a9dcc7a8723ef71b90da20",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-211/checkpoints/4a7e6ff9ae6c4ee2fbef1a475c0bbcbe1f57fa51b4a9dcc7a8723ef71b90da20.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 676757,
+      "checked_at": "2026-11-07T00:39:15.384557+00:00",
+      "encryption": "AES256",
+      "sha256": "2d4ba664315e6d45e104206af9223040631dd1b0e65472c12f5eb28df53a18a5",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-307/checkpoints/2d4ba664315e6d45e104206af9223040631dd1b0e65472c12f5eb28df53a18a5.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 555283,
+      "checked_at": "2026-11-07T00:39:15.413190+00:00",
+      "encryption": "AES256",
+      "sha256": "72d9cbe74e663236d6669225281d66bb9b1aa10e02856a4bdad4782319b41c54",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-307/checkpoints/72d9cbe74e663236d6669225281d66bb9b1aa10e02856a4bdad4782319b41c54.json",
+      "verification": "full_GET_SHA256"
+    },
+    {
+      "bytes": 248,
+      "checked_at": "2026-11-07T00:39:15.410603+00:00",
+      "encryption": "AES256",
+      "sha256": "2ffe07f09e4cb422525458a48537e88354e3250b39ff725fedda3de1b5f0e450",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-307/objects/2ffe07f09e4cb422525458a48537e88354e3250b39ff725fedda3de1b5f0e450",
+      "verification": "size_and_encryption; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 1,
+      "checked_at": "2026-11-07T00:39:15.529610+00:00",
+      "encryption": "AES256",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-307/objects/6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "verification": "size_and_encryption; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 3437,
+      "checked_at": "2026-11-07T00:39:15.541580+00:00",
+      "encryption": "AES256",
+      "sha256": "8641c2e418c37426bc0821d8c49fcd7692ee3cba2b7f1a7fc9da336c8077252b",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-kimi-continuation-20gen-3seed-20261106/seed-307/objects/8641c2e418c37426bc0821d8c49fcd7692ee3cba2b7f1a7fc9da336c8077252b",
+      "verification": "size_and_encryption; prior full GET/member audits retained"
+    },
+    {
+      "bytes": 30869,
+      "checked_at": "2026-11-07T00:39:15.609380+00:00",
+      "encryption": "AES256",
+      "sha256": "0830845f20ebe8f35d49b9024329fa241b83a78f6a302420f52a150583f024ee",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-0830845f20ebe8f35d49b9024329fa241b83a78f6a302420f52a150583f024ee.json",
+      "verification": "full_GET_SHA256"
+    }
+  ],
+  "objects_checked": 148,
+  "schema_version": 1,
+  "scope": "Fresh full GET of linked JSON metadata and HEAD/stored-checksum checks for data archives. Existing independent full archive/member and W&B download audits remain the content-verification evidence; no scientific rerun or archive deletion.",
+  "status": "verified",
+  "verified_at": "2026-11-07T00:39:15.740894+00:00"
+}

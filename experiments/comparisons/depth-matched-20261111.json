@@ -1,0 +1,3016 @@
+{
+  "analysis_method_sha256": "30181de01e41dba1607b4e06f3184398efd741d8116a8a28c0ae20aa948667b1",
+  "at": "2026-11-11T06:11:42.818869+00:00",
+  "comparison_rows": [
+    {
+      "all_three_reached20": false,
+      "deletions": 1468,
+      "method": "adaptive_literature",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.3948778002890636,
+            1.2458758851083669
+          ],
+          "generation_durations_s": [
+            2206.0,
+            3397.0
+          ],
+          "generations_completed": 2,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.6946893273099156,
+            "duration_cv": 0.212564697483491,
+            "mean_dry_mass_fold_change": 1.3203768426987152,
+            "mean_duration_s": 2801.5,
+            "window_generations": 2
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.4689040499138566,
+            1.3759770290487745
+          ],
+          "generation_durations_s": [
+            2861.0,
+            5355.0
+          ],
+          "generations_completed": 2,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.7342584174798871,
+            "duration_cv": 0.30355404089581306,
+            "mean_dry_mass_fold_change": 1.4224405394813155,
+            "mean_duration_s": 4108.0,
+            "window_generations": 2
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.5354861466005163,
+            1.4799812690034346,
+            26.94439549447655
+          ],
+          "generation_durations_s": [
+            3437.0,
+            7771.0,
+            8555.0
+          ],
+          "generations_completed": 3,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.5691387637266826,
+            "duration_cv": 0.34165839712595536,
+            "mean_dry_mass_fold_change": 9.986620970026832,
+            "mean_duration_s": 6587.666666666667,
+            "window_generations": 3
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        }
+      ],
+      "registry_deletion_percent": 34.21911421911422,
+      "search_seed": 103,
+      "source_run_id": "search-replication-20261109-adaptive-literature-seed-103",
+      "state_id": "42260b9dbb915f6654b82ad4b22b05f5158e94a080f5caf9d54adae1dcb0eaaa",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": true,
+      "deletions": 1622,
+      "method": "adaptive_literature",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            2.085274036899203,
+            1.7876031210746484,
+            1.9459227075295078,
+            1.9182065035176878,
+            2.052065105604746,
+            1.9962149359043422,
+            2.152710009956423,
+            2.066734815466827,
+            1.9055445956755703,
+            1.8914262782119458,
+            1.9445277244326886,
+            2.120387317344891,
+            2.088803594148091,
+            1.8558833406362294,
+            2.0002038856874877,
+            2.08450502989285,
+            1.855528952600767,
+            2.0364601624532543,
+            2.069839796876238,
+            1.8435803486655684
+          ],
+          "generation_durations_s": [
+            2204.0,
+            2174.0,
+            2443.0,
+            2568.0,
+            2645.0,
+            2627.0,
+            2632.0,
+            2433.0,
+            2328.0,
+            2379.0,
+            2586.0,
+            2670.0,
+            2559.0,
+            2373.0,
+            2519.0,
+            2610.0,
+            2441.0,
+            2553.0,
+            2659.0,
+            2478.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.9777656569741839,
+            "duration_cv": 0.03289459653533463,
+            "mean_dry_mass_fold_change": 1.951352315148957,
+            "mean_duration_s": 2532.75,
+            "window_generations": 4
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.757642515096991,
+            1.931142919241815,
+            1.7847993377323432,
+            1.8854025380301938,
+            1.811972059069244,
+            1.9545214922185616,
+            2.2337251541737753,
+            1.9907803600322245,
+            1.7900949671212245,
+            1.9161693164446407,
+            2.2125225748486157,
+            2.16559057663407,
+            1.9532157142777216,
+            1.905367478954631,
+            1.9622074222564303,
+            2.0398826261591676,
+            2.0212266254515288,
+            2.065054667793841,
+            1.9209866252022048,
+            1.9010035612026053
+          ],
+          "generation_durations_s": [
+            2860.0,
+            2077.0,
+            2003.0,
+            2269.0,
+            2427.0,
+            2619.0,
+            2811.0,
+            2508.0,
+            2424.0,
+            2694.0,
+            2951.0,
+            2590.0,
+            2373.0,
+            2438.0,
+            2550.0,
+            2612.0,
+            2581.0,
+            2529.0,
+            2465.0,
+            2525.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0031426810001167,
+            "duration_cv": 0.016271396898355755,
+            "mean_dry_mass_fold_change": 1.977067869912545,
+            "mean_duration_s": 2525.0,
+            "window_generations": 4
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.809071593272182,
+            1.7473119414825082,
+            2.030048430950426,
+            1.9087433872111816,
+            2.1400155571489305,
+            2.3031538167937993,
+            1.8909124643894153,
+            1.822854461794966,
+            1.9197165890676235,
+            2.0718843396595403,
+            2.3041184824814143,
+            2.057519574034813,
+            1.9394596635280759,
+            1.9964541692647724,
+            1.9597882008859167,
+            1.8085946135939146,
+            1.930699238766062,
+            2.2070681681286084,
+            1.9740456228821164,
+            1.89951960901437
+          ],
+          "generation_durations_s": [
+            3435.0,
+            2133.0,
+            2614.0,
+            2623.0,
+            2744.0,
+            2680.0,
+            2225.0,
+            2292.0,
+            2490.0,
+            2747.0,
+            2606.0,
+            2396.0,
+            2181.0,
+            2303.0,
+            2263.0,
+            2260.0,
+            2493.0,
+            2620.0,
+            2433.0,
+            2313.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0549305133895472,
+            "duration_cv": 0.04487605698164833,
+            "mean_dry_mass_fold_change": 2.002833159697789,
+            "mean_duration_s": 2464.75,
+            "window_generations": 4
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "registry_deletion_percent": 37.80885780885781,
+      "search_seed": 227,
+      "source_run_id": "search-replication-20261109-adaptive-literature-seed-227",
+      "state_id": "528c93aa82c4ae8001fd5f51eeb2bececeed8b50ee4ce57e1541c0958c5ca0dd",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": true,
+      "deletions": 1898,
+      "method": "adaptive_literature",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            2.134222793232893,
+            1.9688234419049662,
+            2.0885519580652474,
+            2.086822790664647,
+            1.9910555166951263,
+            1.8231384387793952,
+            1.9991488062951128,
+            2.048448159352137,
+            2.058711943321547,
+            1.956225036956409,
+            2.001303897034933,
+            2.0255854696688846,
+            2.038085638661954,
+            2.0389760223235407,
+            1.9338901128697554,
+            2.002322187528456,
+            2.026772192236397,
+            1.923124928304184,
+            2.0631558610467735,
+            2.010286693161807
+          ],
+          "generation_durations_s": [
+            2205.0,
+            2150.0,
+            2283.0,
+            2167.0,
+            2121.0,
+            2017.0,
+            2213.0,
+            2315.0,
+            2215.0,
+            2169.0,
+            2221.0,
+            2175.0,
+            2231.0,
+            2143.0,
+            2111.0,
+            2168.0,
+            2214.0,
+            2131.0,
+            2222.0,
+            2197.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0040472199528516,
+            "duration_cv": 0.016338678520920812,
+            "mean_dry_mass_fold_change": 2.0058349186872904,
+            "mean_duration_s": 2191.0,
+            "window_generations": 4
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.6665632715582346,
+            1.8354836045081095,
+            2.0017744520056295,
+            2.022496467028158,
+            1.9959331163339495,
+            1.8804453876677258,
+            2.0658899763813827,
+            2.150383245556317,
+            2.1006840420530426,
+            2.024978380617565,
+            2.123711241045301,
+            2.1412124629639213,
+            1.86147645245252,
+            1.7140889415554172,
+            1.9625282397158563,
+            1.936209540835786,
+            1.8450210681342274,
+            2.0779252818468814,
+            2.1093372391110257,
+            2.1590719827940794
+          ],
+          "generation_durations_s": [
+            2860.0,
+            2012.0,
+            2232.0,
+            2285.0,
+            2241.0,
+            2223.0,
+            2366.0,
+            2346.0,
+            2228.0,
+            2087.0,
+            2096.0,
+            2019.0,
+            1871.0,
+            1854.0,
+            2139.0,
+            2313.0,
+            2243.0,
+            2573.0,
+            2418.0,
+            2449.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0071565533126519,
+            "duration_cv": 0.048694763983280376,
+            "mean_dry_mass_fold_change": 2.0478388929715536,
+            "mean_duration_s": 2420.75,
+            "window_generations": 4
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            3.1844131028564515,
+            1.7294515465452793,
+            1.94562207549279,
+            2.0455852870994535,
+            1.951442864605104,
+            2.1006868401877825,
+            1.8780191034278468,
+            2.0275872904689085,
+            2.154556643933494,
+            1.9210891048430978,
+            1.967235353014314,
+            2.1873436194867706,
+            2.0951223741722758,
+            2.023537569568763,
+            1.9812425368843871,
+            1.9779868616791545,
+            1.8222758072253862,
+            1.9002789021253592,
+            2.1264401542501923,
+            1.9706486899702973
+          ],
+          "generation_durations_s": [
+            3433.0,
+            1931.0,
+            2270.0,
+            2455.0,
+            2291.0,
+            2445.0,
+            2324.0,
+            2417.0,
+            2541.0,
+            2257.0,
+            2305.0,
+            2485.0,
+            2269.0,
+            2157.0,
+            2068.0,
+            2124.0,
+            2122.0,
+            2254.0,
+            2460.0,
+            2331.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.9183251261475113,
+            "duration_cv": 0.053480979058620426,
+            "mean_dry_mass_fold_change": 1.9549108883928088,
+            "mean_duration_s": 2291.75,
+            "window_generations": 4
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "registry_deletion_percent": 44.24242424242424,
+      "search_seed": 349,
+      "source_run_id": "search-replication-20261109-adaptive-literature-seed-349",
+      "state_id": "e79d4769780fbbbc28988e5fa9ab5416ab7f86d6ed3d1bd024e6f883d311f6f2",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": true,
+      "deletions": 1053,
+      "method": "adaptive_literature",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.8116310518931131,
+            1.7631818682480989,
+            1.9054048657419056,
+            2.0392729532289815,
+            1.9914090584177018,
+            1.9381475710063931,
+            2.0197202021235348,
+            2.09622221556963,
+            2.0517117108114933,
+            1.990098660158204,
+            2.0784259530822307,
+            2.1679134552152215,
+            1.8622091107147118,
+            1.8678501431818726,
+            1.9552276553148167,
+            1.8626041889256673,
+            1.8851286130889024,
+            2.0214218119955008,
+            2.5359893135082627,
+            1.8366201134256686
+          ],
+          "generation_durations_s": [
+            2206.0,
+            2487.0,
+            2941.0,
+            3119.0,
+            3054.0,
+            3081.0,
+            3183.0,
+            3153.0,
+            2949.0,
+            2834.0,
+            2870.0,
+            2816.0,
+            2511.0,
+            2679.0,
+            2947.0,
+            3036.0,
+            3307.0,
+            3562.0,
+            3504.0,
+            2664.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.2240402184391235,
+            "duration_cv": 0.1093588018690544,
+            "mean_dry_mass_fold_change": 2.0697899630045837,
+            "mean_duration_s": 3259.25,
+            "window_generations": 4
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.1915310369211927,
+            1.7676664772330348,
+            1.921055939214324,
+            1.9491845350667691,
+            2.068483576543961,
+            2.0682978639943044,
+            2.207614630416581,
+            2.0698992975879245,
+            1.912248146442807,
+            1.932344431098905,
+            1.8568257218268571,
+            1.8932652042435483,
+            2.028628920531839,
+            1.9844974491599212,
+            1.9595983512826074,
+            2.220668016998841,
+            2.0623099584783464,
+            1.8812732522401343,
+            1.866754168902742,
+            2.06135467519257
+          ],
+          "generation_durations_s": [
+            2860.0,
+            2464.0,
+            2829.0,
+            3061.0,
+            3129.0,
+            2993.0,
+            2943.0,
+            2627.0,
+            2422.0,
+            2675.0,
+            2671.0,
+            2929.0,
+            3146.0,
+            3054.0,
+            3150.0,
+            3223.0,
+            2834.0,
+            2642.0,
+            2886.0,
+            3171.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.9078790670856755,
+            "duration_cv": 0.0656772400295128,
+            "mean_dry_mass_fold_change": 1.9679230137034482,
+            "mean_duration_s": 2883.25,
+            "window_generations": 4
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.530666742208023,
+            1.7959816360981686,
+            2.054850949817126,
+            1.9495446104054939,
+            2.029855286428033,
+            2.015825004485598,
+            2.003014824007168,
+            1.864363151674602,
+            1.8537437673505353,
+            2.0252334434973585,
+            2.1403142036342397,
+            2.1728449611676197,
+            2.0381498782208785,
+            2.028649399442852,
+            1.9430625283132419,
+            1.8772907838470176,
+            1.8553986500091788,
+            2.00553115528943,
+            2.149634723442775,
+            1.7839733774900322
+          ],
+          "generation_durations_s": [
+            3433.0,
+            2470.0,
+            2841.0,
+            2736.0,
+            2829.0,
+            2814.0,
+            2796.0,
+            2754.0,
+            2967.0,
+            3329.0,
+            3287.0,
+            3043.0,
+            2750.0,
+            2708.0,
+            2607.0,
+            2720.0,
+            2858.0,
+            3180.0,
+            3155.0,
+            2871.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0051954143572175,
+            "duration_cv": 0.0503405850177183,
+            "mean_dry_mass_fold_change": 1.948634476557854,
+            "mean_duration_s": 3016.0,
+            "window_generations": 4
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "registry_deletion_percent": 24.545454545454547,
+      "search_seed": 461,
+      "source_run_id": "search-replication-20261109-adaptive-literature-seed-461",
+      "state_id": "4e0b1535f5707b381dfc929419c61ee9d8c0d981541849e00abd35081717baa9",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": true,
+      "deletions": 1281,
+      "method": "adaptive_literature",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.9816670622155939,
+            1.7664446876650168,
+            1.955219742320662,
+            2.114916316686357,
+            2.050286316174697,
+            2.009663646406956,
+            1.8490268883060978,
+            2.0322364805222106,
+            2.0447147523120193,
+            1.9015890449656534,
+            1.9883403693403325,
+            2.0540160052782857,
+            2.090650480836092,
+            1.994014229502805,
+            1.8762499206738652,
+            2.0402766052441317,
+            2.03587740895926,
+            1.9417280382046407,
+            2.26138857212663,
+            1.8777637392344226
+          ],
+          "generation_durations_s": [
+            2205.0,
+            2270.0,
+            2638.0,
+            2772.0,
+            2564.0,
+            2505.0,
+            2418.0,
+            2686.0,
+            2643.0,
+            2510.0,
+            2729.0,
+            2711.0,
+            2621.0,
+            2588.0,
+            2444.0,
+            2661.0,
+            2707.0,
+            2571.0,
+            2705.0,
+            2383.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.1193970070883925,
+            "duration_cv": 0.05108863042472028,
+            "mean_dry_mass_fold_change": 2.029189439631238,
+            "mean_duration_s": 2591.5,
+            "window_generations": 4
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.3684098030264464,
+            1.7146443745793245,
+            1.9638754421300118,
+            2.021989067753185,
+            1.95671537323657,
+            2.2433681609393825,
+            1.9015669469939709,
+            1.9344235894934732,
+            2.0728878889500324,
+            1.9675696555833033,
+            1.8981727124587748,
+            2.003858616803023,
+            2.0974312812493388,
+            1.8908458910064843,
+            2.1426409581892703,
+            2.1369198835351524,
+            1.9539089146992408,
+            1.883199422631214,
+            1.7843382839517041,
+            1.9283089717663011
+          ],
+          "generation_durations_s": [
+            2860.0,
+            2199.0,
+            2711.0,
+            2806.0,
+            2735.0,
+            2806.0,
+            2517.0,
+            2569.0,
+            2763.0,
+            2613.0,
+            2621.0,
+            2818.0,
+            2812.0,
+            2710.0,
+            2837.0,
+            2674.0,
+            2485.0,
+            2498.0,
+            2625.0,
+            3026.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.8275512646862601,
+            "duration_cv": 0.08241956519501646,
+            "mean_dry_mass_fold_change": 1.887438898262115,
+            "mean_duration_s": 2658.5,
+            "window_generations": 4
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.8748276609439825,
+            1.8091466732119532,
+            1.8214785695281672,
+            1.9124627445161562,
+            2.0415391168369963,
+            2.272219199796567,
+            2.116566720556195,
+            1.795149792234446,
+            1.8695408440812038,
+            2.0769004474103947,
+            1.9684721799933922,
+            1.9164438153291259,
+            2.021534516878018,
+            2.252766765314407,
+            2.0216514814558453,
+            1.9051241042058196,
+            2.0681617096008185,
+            1.9914275554796157,
+            1.8590728770641383,
+            2.0075678397603913
+          ],
+          "generation_durations_s": [
+            3434.0,
+            2177.0,
+            2408.0,
+            2681.0,
+            2881.0,
+            2894.0,
+            2537.0,
+            2287.0,
+            2458.0,
+            2733.0,
+            2635.0,
+            2795.0,
+            2798.0,
+            2802.0,
+            2511.0,
+            2342.0,
+            2550.0,
+            2431.0,
+            2437.0,
+            2654.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.9512325541915339,
+            "duration_cv": 0.03642560827610036,
+            "mean_dry_mass_fold_change": 1.981557495476241,
+            "mean_duration_s": 2518.0,
+            "window_generations": 4
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "registry_deletion_percent": 29.86013986013986,
+      "search_seed": 587,
+      "source_run_id": "search-replication-20261109-adaptive-literature-seed-587",
+      "state_id": "af857a40162fac386ffb7a5203695f51144fe750eda13a80e0b7f841f9f14123",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1859,
+      "method": "frozen_dossier",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.2064690979500503,
+            1.4284098829015055,
+            8.346260392651812,
+            8.591018028669291
+          ],
+          "generation_durations_s": [
+            2206.0,
+            5789.0,
+            8409.0,
+            1723.0
+          ],
+          "generations_completed": 4,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.794038459933886,
+            "duration_cv": 0.6034291880528405,
+            "mean_dry_mass_fold_change": 4.893039350543165,
+            "mean_duration_s": 4531.75,
+            "window_generations": 4
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.2572794508980274,
+            1.7014733643086632,
+            10.791168182905036,
+            3.6511323730826653
+          ],
+          "generation_durations_s": [
+            2861.0,
+            8541.0,
+            5972.0,
+            1471.0
+          ],
+          "generations_completed": 4,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 2.8835442361714136,
+            "duration_cv": 0.5830249565278001,
+            "mean_dry_mass_fold_change": 4.350263342798598,
+            "mean_duration_s": 4711.25,
+            "window_generations": 4
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.3136703089532606
+          ],
+          "generation_durations_s": [
+            3436.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.3136703089532606,
+            "mean_duration_s": 3436.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "registry_deletion_percent": 43.333333333333336,
+      "search_seed": 103,
+      "source_run_id": "search-replication-20261109-frozen-dossier-seed-103",
+      "state_id": "9b878eb67ecfddd9f1d9ce07de1260e611d64f164f144d89464132687c42044e",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": true,
+      "deletions": 1699,
+      "method": "frozen_dossier",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            2.053822028329481,
+            2.074997467615363,
+            1.9864472548567735,
+            1.990838521595455,
+            2.0366306302844435,
+            2.036697200765021,
+            2.0431433049454837,
+            1.9876527532758455,
+            1.9326388128773264,
+            1.931918935408033,
+            1.9701863746340198,
+            2.0816151403708947,
+            1.8502439328887799,
+            1.8586312323064997,
+            2.1925189006697057,
+            2.282274439663274,
+            1.920625771455491,
+            1.8536006723351057,
+            1.998467008055931,
+            1.9841729921578881
+          ],
+          "generation_durations_s": [
+            2206.0,
+            2366.0,
+            2191.0,
+            2212.0,
+            2187.0,
+            2266.0,
+            2135.0,
+            2151.0,
+            2083.0,
+            2155.0,
+            2203.0,
+            2284.0,
+            2163.0,
+            2279.0,
+            2512.0,
+            2405.0,
+            2123.0,
+            2007.0,
+            2307.0,
+            2263.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.8904133275017989,
+            "duration_cv": 0.0544473428711263,
+            "mean_dry_mass_fold_change": 1.939216611001104,
+            "mean_duration_s": 2175.0,
+            "window_generations": 4
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.21072500093909,
+            2.023120001970617,
+            2.1967671289162936,
+            2.020973699828341,
+            1.9666260069146237,
+            1.8820389250585627,
+            2.0011786808310683,
+            1.8883159944954864,
+            2.251193716144955,
+            1.9857051650241,
+            1.9616862133882598,
+            1.883109114235532,
+            1.9205359545202692,
+            1.925304692918813,
+            2.2018321796539553,
+            2.000617887495568,
+            1.9165466474321915,
+            2.045577380953499,
+            1.9061101407934733,
+            2.042527520306758
+          ],
+          "generation_durations_s": [
+            2860.0,
+            2448.0,
+            2538.0,
+            2241.0,
+            2278.0,
+            2205.0,
+            2386.0,
+            2422.0,
+            2519.0,
+            2328.0,
+            2260.0,
+            2284.0,
+            2413.0,
+            2494.0,
+            2674.0,
+            2405.0,
+            2349.0,
+            2489.0,
+            2424.0,
+            2514.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.9359073258009768,
+            "duration_cv": 0.026159394133683348,
+            "mean_dry_mass_fold_change": 1.9776904223714804,
+            "mean_duration_s": 2444.0,
+            "window_generations": 4
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.7853127440517533,
+            1.8465629208161238,
+            2.0711040544115202,
+            1.9598595955236218,
+            1.974414896900542,
+            2.212647891642811,
+            2.011204041838181,
+            1.8760666237001555,
+            2.044156618433696,
+            2.003025160349495,
+            2.126175688323272,
+            2.0012780268032073,
+            1.8988996104570266,
+            1.9067659839689128,
+            1.9418543487428337,
+            1.7429996866649067,
+            2.344054322801561,
+            2.184382206355639,
+            2.007396040555443,
+            1.8070034956301624
+          ],
+          "generation_durations_s": [
+            3433.0,
+            2233.0,
+            2495.0,
+            2421.0,
+            2408.0,
+            2577.0,
+            2384.0,
+            2158.0,
+            2417.0,
+            2343.0,
+            2377.0,
+            2237.0,
+            2218.0,
+            2254.0,
+            2415.0,
+            2491.0,
+            2944.0,
+            2494.0,
+            2372.0,
+            2148.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.2871869648690515,
+            "duration_cv": 0.11659637988355226,
+            "mean_dry_mass_fold_change": 2.0857090163357013,
+            "mean_duration_s": 2489.5,
+            "window_generations": 4
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "registry_deletion_percent": 39.603729603729604,
+      "search_seed": 227,
+      "source_run_id": "search-replication-20261109-frozen-dossier-seed-227",
+      "state_id": "774ad1ac8cb374606dbf5b7ef3f7729810fe72bd428dd3166a50166b854f3ff2",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1534,
+      "method": "frozen_dossier",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.9011478408894662,
+            1.6727227148453194,
+            1.8373456604717295,
+            1.8246279707021404,
+            1.7906330326402924,
+            2.2407145658550967,
+            1.8709985669299436,
+            2.033559857720088,
+            2.2277133401369418,
+            1.8690820638021142,
+            2.060043642415125,
+            1.8540464478910106,
+            2.1573840087381853,
+            1.9119320254626213,
+            1.909076549771144,
+            1.8522908584294913,
+            1.3987960162610018
+          ],
+          "generation_durations_s": [
+            2205.0,
+            2334.0,
+            2934.0,
+            3321.0,
+            3810.0,
+            4513.0,
+            3704.0,
+            4085.0,
+            4234.0,
+            3425.0,
+            3824.0,
+            3666.0,
+            4042.0,
+            3623.0,
+            3885.0,
+            4235.0,
+            6418.0
+          ],
+          "generations_completed": 17,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.8444706575191858,
+            "duration_cv": 0.2435212114725025,
+            "mean_dry_mass_fold_change": 1.7680238624810647,
+            "mean_duration_s": 4540.25,
+            "window_generations": 4
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.1923884489848646,
+            1.6593882290200181,
+            1.7715998254837881,
+            1.8076295285083028,
+            2.1342873662976545,
+            2.0940717402444102,
+            1.8724097341208212,
+            1.9075194261669925,
+            1.9865539682529092,
+            2.1340036525915718,
+            2.032723537515569,
+            2.0150874807752643,
+            1.8794093361845623,
+            2.0243268034379813,
+            2.0680313918704556,
+            1.924837104090814,
+            1.9609170485119958,
+            2.180348718881848,
+            1.8797148859428336,
+            1.9592813157317621
+          ],
+          "generation_durations_s": [
+            2861.0,
+            2383.0,
+            3064.0,
+            3649.0,
+            4301.0,
+            3875.0,
+            3607.0,
+            3997.0,
+            4276.0,
+            4350.0,
+            3929.0,
+            3787.0,
+            3780.0,
+            4181.0,
+            4056.0,
+            3890.0,
+            4159.0,
+            4268.0,
+            3756.0,
+            4119.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.006067382518356,
+            "duration_cv": 0.04719776480423798,
+            "mean_dry_mass_fold_change": 1.9950654922671098,
+            "mean_duration_s": 4075.5,
+            "window_generations": 4
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.539706111523168,
+            1.5585620573226624,
+            1.9078482177075073,
+            1.9888672695133225,
+            1.8382925217881743,
+            1.8945750237632095,
+            2.075265043626589,
+            2.003369889492721,
+            2.0334361764643747,
+            1.8777757734026763,
+            2.0041098544798923,
+            2.036692149890234,
+            1.9119498831219504,
+            1.9701240451528497,
+            1.9671506841811786,
+            1.9338977005489215,
+            2.2361025058393325,
+            2.103940993377866,
+            2.0528203321617235,
+            2.011162562347222
+          ],
+          "generation_durations_s": [
+            3434.0,
+            2309.0,
+            3385.0,
+            3655.0,
+            3722.0,
+            4078.0,
+            4328.0,
+            4460.0,
+            4374.0,
+            4357.0,
+            4945.0,
+            4807.0,
+            4857.0,
+            5091.0,
+            5308.0,
+            5669.0,
+            5556.0,
+            4572.0,
+            4203.0,
+            4033.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.2067833006593855,
+            "duration_cv": 0.12856278243344252,
+            "mean_dry_mass_fold_change": 2.101006598431536,
+            "mean_duration_s": 4591.0,
+            "window_generations": 4
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "registry_deletion_percent": 35.75757575757576,
+      "search_seed": 349,
+      "source_run_id": "search-replication-20261109-frozen-dossier-seed-349",
+      "state_id": "961cca126fe01df9e432bf35849fc7474e5bec402a15c214bd8f796df185808d",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 2025,
+      "method": "frozen_dossier",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            2.285371563554343,
+            2.021079206765524,
+            2.1615612827571944
+          ],
+          "generation_durations_s": [
+            2205.0,
+            2069.0,
+            2084.0
+          ],
+          "generations_completed": 3,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.1534300448041832,
+            "duration_cv": 0.028728008157161845,
+            "mean_dry_mass_fold_change": 2.1560040176923536,
+            "mean_duration_s": 2119.3333333333335,
+            "window_generations": 3
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        },
+        {
+          "dry_mass_fold_changes": [
+            3.0113656118283223,
+            1.987500742737945,
+            2.029958605097833,
+            1.9863902584742004,
+            2.0518501133788067,
+            2.1374381586457103,
+            1.8581605658639941,
+            1.8512840494441096,
+            1.9566049051922882,
+            2.0966738107981664,
+            1.9999940028963377
+          ],
+          "generation_durations_s": [
+            2861.0,
+            1920.0,
+            1908.0,
+            1948.0,
+            1851.0,
+            1962.0,
+            1766.0,
+            1787.0,
+            1984.0,
+            1992.0,
+            1943.0
+          ],
+          "generations_completed": 11,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.9511613486775339,
+            "duration_cv": 0.04290548951920488,
+            "mean_dry_mass_fold_change": 1.9761391920827256,
+            "mean_duration_s": 1926.5,
+            "window_generations": 4
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        },
+        {
+          "dry_mass_fold_changes": [
+            3.4845930074816063,
+            1.8530065633088408,
+            2.0667305456501452,
+            2.0030773340397268
+          ],
+          "generation_durations_s": [
+            3434.0,
+            1779.0,
+            2087.0,
+            1962.0
+          ],
+          "generations_completed": 4,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.6713312373539202,
+            "duration_cv": 0.2828720652572922,
+            "mean_dry_mass_fold_change": 2.3518518626200797,
+            "mean_duration_s": 2315.5,
+            "window_generations": 4
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        }
+      ],
+      "registry_deletion_percent": 47.2027972027972,
+      "search_seed": 461,
+      "source_run_id": "search-replication-20261109-frozen-dossier-seed-461",
+      "state_id": "3a6130176f4242b83775ec3dd4748c6a8643073f93113daa9ab6f6531d85771e",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": true,
+      "deletions": 1745,
+      "method": "frozen_dossier",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.8745134671801953,
+            1.7664274863660285,
+            1.9367435280053127,
+            2.066881485380446,
+            1.9508095466238982,
+            2.178000600031112,
+            2.185239203237025,
+            1.97614102866535,
+            1.9641772995468427,
+            2.0423195929202036,
+            2.0199539120230074,
+            2.171656042198497,
+            2.114339261341861,
+            1.7297797306255969,
+            1.7642254140711258,
+            2.002397272815727,
+            2.1428706191406466,
+            1.984636979740875,
+            1.8868032561251948,
+            2.01999591262966
+          ],
+          "generation_durations_s": [
+            2204.0,
+            2422.0,
+            2779.0,
+            2980.0,
+            2772.0,
+            2916.0,
+            2849.0,
+            2489.0,
+            2377.0,
+            2502.0,
+            2388.0,
+            2388.0,
+            2349.0,
+            1982.0,
+            2329.0,
+            2667.0,
+            2777.0,
+            2565.0,
+            2506.0,
+            2692.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0022085416383202,
+            "duration_cv": 0.040232179050076124,
+            "mean_dry_mass_fold_change": 2.008576691909094,
+            "mean_duration_s": 2635.0,
+            "window_generations": 4
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.2699609282812854,
+            1.8934717236545744,
+            1.995333277213571,
+            2.041048810228858,
+            1.9442001713189807,
+            2.021237046419738,
+            2.176214456166416,
+            1.9754003586272606,
+            1.8816051425937357,
+            1.9618862870682874,
+            1.9750392042469411,
+            1.9512221968745744,
+            1.9578563402741087,
+            1.9874964921921552,
+            2.1150968254659253,
+            2.0054967427444175,
+            2.0025530781015086,
+            2.2344671406440573,
+            2.002487649945699,
+            1.8978671889038283
+          ],
+          "generation_durations_s": [
+            2859.0,
+            2424.0,
+            2512.0,
+            2664.0,
+            2423.0,
+            2674.0,
+            2546.0,
+            2428.0,
+            2298.0,
+            2516.0,
+            2553.0,
+            2665.0,
+            2620.0,
+            2761.0,
+            2716.0,
+            2540.0,
+            2745.0,
+            2646.0,
+            2389.0,
+            2265.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.115284668013588,
+            "duration_cv": 0.07669531500642573,
+            "mean_dry_mass_fold_change": 2.0343437643987734,
+            "mean_duration_s": 2511.25,
+            "window_generations": 4
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.6310223904109296,
+            2.0065338378676363,
+            2.0351570963799133,
+            1.9459954671412651,
+            1.833937324871616,
+            1.9120886559052321,
+            2.0230835562401954,
+            2.056540205797884,
+            2.041781208255902,
+            2.0705425678700324,
+            1.841334175561799,
+            2.2239709668763403,
+            2.203925315599709,
+            1.8079844432326444,
+            1.924888926691802,
+            1.9277834157590157,
+            2.1692461260038254,
+            1.9639576286790197,
+            1.9662023470109171,
+            1.904485104172712
+          ],
+          "generation_durations_s": [
+            3433.0,
+            2405.0,
+            2431.0,
+            2421.0,
+            2433.0,
+            2629.0,
+            2845.0,
+            2806.0,
+            2689.0,
+            2722.0,
+            2516.0,
+            2992.0,
+            2618.0,
+            2282.0,
+            2459.0,
+            2551.0,
+            2749.0,
+            2603.0,
+            2543.0,
+            2570.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.04532461367147,
+            "duration_cv": 0.030400072913886335,
+            "mean_dry_mass_fold_change": 2.0009728014666184,
+            "mean_duration_s": 2616.25,
+            "window_generations": 4
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "registry_deletion_percent": 40.675990675990676,
+      "search_seed": 587,
+      "source_run_id": "search-replication-20261109-frozen-dossier-seed-587",
+      "state_id": "16b2aa91844de8041390b8b72c2f0a6d780dd73ef83f9f72e4921df3795a0cec",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1562,
+      "method": "no_retrieval",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.848608219128056,
+            1.642713457188381,
+            1.6861583283975128,
+            1.7410540222838733,
+            2.1944629792006616,
+            2.146190584408253,
+            1.8524445587594616,
+            1.9159652841427732,
+            1.9403652687672526,
+            2.2218301781865657,
+            2.0439380720328364,
+            2.008295244173394,
+            2.116018373591992,
+            1.837293644463775,
+            1.8711987937617667
+          ],
+          "generation_durations_s": [
+            2205.0,
+            2413.0,
+            3040.0,
+            3966.0,
+            5050.0,
+            4210.0,
+            3756.0,
+            4308.0,
+            4674.0,
+            4783.0,
+            4046.0,
+            3912.0,
+            3827.0,
+            3558.0,
+            4087.0
+          ],
+          "generations_completed": 15,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.9840710803366104,
+            "duration_cv": 0.04963100699167025,
+            "mean_dry_mass_fold_change": 1.9582015139977318,
+            "mean_duration_s": 3846.0,
+            "window_generations": 4
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.0418933082388873,
+            1.6049627128929465,
+            1.8212775278258688,
+            1.9855961086564582,
+            2.1235582068554804,
+            2.011439190736133,
+            1.824980734425433,
+            2.024824680524783,
+            1.919993098763841,
+            1.9954626982483195,
+            2.0936357841480033,
+            1.9690932899042783,
+            1.9273825967118765
+          ],
+          "generation_durations_s": [
+            2860.0,
+            2532.0,
+            3573.0,
+            4157.0,
+            4250.0,
+            3864.0,
+            3792.0,
+            4579.0,
+            4415.0,
+            4741.0,
+            4773.0,
+            4291.0,
+            4488.0
+          ],
+          "generations_completed": 13,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.03077405518546,
+            "duration_cv": 0.04304004642702589,
+            "mean_dry_mass_fold_change": 1.9963935922531193,
+            "mean_duration_s": 4573.25,
+            "window_generations": 4
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.513683148502087,
+            1.6729447679633642,
+            1.867606897792612,
+            1.9346935635237363,
+            1.9229996304480057,
+            1.8557029509703273,
+            1.8278853001986322,
+            2.1140512908742495,
+            2.198907316946698,
+            1.887373054333362,
+            1.8529500586421963,
+            2.0561730349054317
+          ],
+          "generation_durations_s": [
+            3435.0,
+            2416.0,
+            3118.0,
+            3425.0,
+            3577.0,
+            3827.0,
+            4444.0,
+            5284.0,
+            4677.0,
+            3891.0,
+            4432.0,
+            4983.0
+          ],
+          "generations_completed": 12,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.963804682896124,
+            "duration_cv": 0.08897644643510265,
+            "mean_dry_mass_fold_change": 1.998850866206922,
+            "mean_duration_s": 4495.75,
+            "window_generations": 4
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "registry_deletion_percent": 36.41025641025641,
+      "search_seed": 103,
+      "source_run_id": "search-replication-20261109-no-retrieval-seed-103",
+      "state_id": "23948ccdbdc63c593163b3a016fef9ae06b86f66a0ce75d47aee4dd5bb888198",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": true,
+      "deletions": 2318,
+      "method": "no_retrieval",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.9459995525067029,
+            1.7326036067151553,
+            1.7077751990647934,
+            1.8803810716163765,
+            1.9338187541983851,
+            1.7650682215050904,
+            1.6311802310683159,
+            2.8977795789875045,
+            1.7956007849815294,
+            2.2631152066201756,
+            1.9046544561898275,
+            2.061715347418034,
+            2.1235240224637963,
+            2.0215261514098404,
+            1.892717691933394,
+            2.0013262847357294,
+            1.9235156432633453,
+            2.1272088080036977,
+            1.8968651251475472,
+            1.904110428226721
+          ],
+          "generation_durations_s": [
+            2205.0,
+            2331.0,
+            2691.0,
+            3348.0,
+            3675.0,
+            3873.0,
+            5596.0,
+            6586.0,
+            3633.0,
+            4220.0,
+            3534.0,
+            3798.0,
+            3654.0,
+            3364.0,
+            3316.0,
+            3588.0,
+            3573.0,
+            3759.0,
+            3448.0,
+            3762.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.9648340239112566,
+            "duration_cv": 0.03647002174261716,
+            "mean_dry_mass_fold_change": 1.9629250011603279,
+            "mean_duration_s": 3635.5,
+            "window_generations": 4
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.3652571113213487,
+            1.7093002136770448,
+            1.7021903109258878,
+            1.834762100494852,
+            2.1166144836076546,
+            1.8795161845439607,
+            2.008892685594704,
+            2.1365768705131,
+            1.8794228050207187,
+            2.090688715501109,
+            1.9605510825248855,
+            1.6389612262410462,
+            2.3279900078362736,
+            1.915853389855639,
+            2.09963306390401,
+            2.2961800598628312,
+            1.7394240146902527,
+            2.220497499230179,
+            1.8920380548656732,
+            1.9661901323895767
+          ],
+          "generation_durations_s": [
+            2859.0,
+            2214.0,
+            2670.0,
+            3310.0,
+            3753.0,
+            3450.0,
+            3767.0,
+            3728.0,
+            3388.0,
+            3701.0,
+            3481.0,
+            3582.0,
+            5157.0,
+            3876.0,
+            4095.0,
+            3805.0,
+            3125.0,
+            3815.0,
+            3267.0,
+            3551.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.9174805484578529,
+            "duration_cv": 0.07721033981787648,
+            "mean_dry_mass_fold_change": 1.9545374252939203,
+            "mean_duration_s": 3439.5,
+            "window_generations": 4
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.6129078292355916,
+            1.6669687582084272,
+            1.8388026294105118,
+            1.9460175841565863,
+            2.0632591066434562,
+            1.9674127877504572,
+            1.939858689550249,
+            2.0201658157449067,
+            1.954947524041658,
+            2.0391734775713375,
+            1.9935345848587767,
+            2.1243599424563673,
+            1.8955309939992113,
+            1.8900836869342243,
+            2.036742493763397,
+            1.7764720037248396,
+            2.1618637176604456,
+            2.064939316766018,
+            1.8966503355980235,
+            2.0490252640102096
+          ],
+          "generation_durations_s": [
+            3435.0,
+            2306.0,
+            2980.0,
+            3340.0,
+            3478.0,
+            3330.0,
+            3413.0,
+            3554.0,
+            3490.0,
+            3589.0,
+            3514.0,
+            3508.0,
+            3240.0,
+            3472.0,
+            3792.0,
+            3665.0,
+            4798.0,
+            3891.0,
+            3764.0,
+            4097.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0526736935308456,
+            "duration_cv": 0.0965380425067002,
+            "mean_dry_mass_fold_change": 2.043119658508674,
+            "mean_duration_s": 4137.5,
+            "window_generations": 4
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "registry_deletion_percent": 54.032634032634036,
+      "search_seed": 227,
+      "source_run_id": "search-replication-20261109-no-retrieval-seed-227",
+      "state_id": "eabc96e1c0cc223820f530f43188aa0f4113ad3516d89d7758fafd6158f85bba",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1996,
+      "method": "no_retrieval",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.3858362991495505,
+            1.2563334357301357,
+            36.0985355038412
+          ],
+          "generation_durations_s": [
+            2205.0,
+            3461.0,
+            7733.0
+          ],
+          "generations_completed": 3,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.4362399953385799,
+            "duration_cv": 0.5297657341186778,
+            "mean_dry_mass_fold_change": 12.913568412906962,
+            "mean_duration_s": 4466.333333333333,
+            "window_generations": 3
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.4689954802030238,
+            1.3549150785301516
+          ],
+          "generation_durations_s": [
+            2860.0,
+            5160.0
+          ],
+          "generations_completed": 2,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.7366192028205097,
+            "duration_cv": 0.286783042394015,
+            "mean_dry_mass_fold_change": 1.4119552793665877,
+            "mean_duration_s": 4010.0,
+            "window_generations": 2
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.528915239079128,
+            1.5413412775330313,
+            13.634145330782147
+          ],
+          "generation_durations_s": [
+            3435.0,
+            7470.0,
+            7871.0
+          ],
+          "generations_completed": 3,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.5928679028401926,
+            "duration_cv": 0.3200895734066139,
+            "mean_dry_mass_fold_change": 5.568133949131435,
+            "mean_duration_s": 6258.666666666667,
+            "window_generations": 3
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        }
+      ],
+      "registry_deletion_percent": 46.526806526806524,
+      "search_seed": 349,
+      "source_run_id": "search-replication-20261109-no-retrieval-seed-349",
+      "state_id": "c7710bb29df0f762cb1cd139e0614c158978badae17a89ed11e461cae6746f5b",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1813,
+      "method": "no_retrieval",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.3722771346043152
+          ],
+          "generation_durations_s": [
+            2204.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.3722771346043152,
+            "mean_duration_s": 2204.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.6160673849848357
+          ],
+          "generation_durations_s": [
+            2860.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.6160673849848357,
+            "mean_duration_s": 2860.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.9476276744286534
+          ],
+          "generation_durations_s": [
+            3434.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.9476276744286534,
+            "mean_duration_s": 3434.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        }
+      ],
+      "registry_deletion_percent": 42.26107226107226,
+      "search_seed": 461,
+      "source_run_id": "search-replication-20261109-no-retrieval-seed-461",
+      "state_id": "21269ea10c74667151dd87ec0a39eb4dd6ab312a23ff3f0b580c127dc7cab65a",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": true,
+      "deletions": 1933,
+      "method": "no_retrieval",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.981917328890931,
+            1.9243859729270187,
+            1.873052932390883,
+            1.929846724835154,
+            2.082858968142683,
+            1.9485891354685618,
+            1.8755212205066771,
+            2.0754833108104336,
+            1.993668306247964,
+            1.9917324870541437,
+            2.1530126184877183,
+            2.0215182474138254,
+            1.8671462989789156,
+            2.124424463313398,
+            2.0939043182030024,
+            1.9961994379343981,
+            1.8356047814749563,
+            1.9604298268649798,
+            1.8912548750677631,
+            2.126462890252961
+          ],
+          "generation_durations_s": [
+            2206.0,
+            2333.0,
+            2469.0,
+            2530.0,
+            2705.0,
+            2576.0,
+            2668.0,
+            2886.0,
+            2742.0,
+            2751.0,
+            2745.0,
+            2648.0,
+            2480.0,
+            2695.0,
+            2613.0,
+            2433.0,
+            2366.0,
+            2641.0,
+            2697.0,
+            2805.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.8531210259516429,
+            "duration_cv": 0.06163932869703406,
+            "mean_dry_mass_fold_change": 1.9534380934151652,
+            "mean_duration_s": 2627.25,
+            "window_generations": 4
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.2856421801506532,
+            1.796512282769102,
+            2.040107156427328,
+            2.1834184036262814,
+            1.993532770885544,
+            1.9701367096364206,
+            2.1292878469801013,
+            1.8834830618851357,
+            2.0468467702337803,
+            2.110716287094557,
+            2.0370331522546317,
+            1.9310993253070572,
+            1.946664735938617,
+            1.9558532815655065,
+            1.9533170028885556,
+            2.0297035167416553,
+            2.0805339590649377,
+            2.148767449807592,
+            2.0395286771945607,
+            1.9399528262133054
+          ],
+          "generation_durations_s": [
+            2860.0,
+            2328.0,
+            2649.0,
+            2677.0,
+            2426.0,
+            2399.0,
+            2478.0,
+            2265.0,
+            2413.0,
+            2408.0,
+            2278.0,
+            2235.0,
+            2220.0,
+            2349.0,
+            2373.0,
+            2469.0,
+            2453.0,
+            2376.0,
+            2188.0,
+            2140.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.143787759029705,
+            "duration_cv": 0.056478335519419894,
+            "mean_dry_mass_fold_change": 2.052195728070099,
+            "mean_duration_s": 2289.25,
+            "window_generations": 4
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        },
+        {
+          "dry_mass_fold_changes": [
+            3.0574277492690727,
+            1.883555057070659,
+            1.9527434348184065,
+            1.9960555880196698,
+            2.059389196925782,
+            2.063110844234834,
+            1.8962877719064193,
+            1.854862222690637,
+            1.9819191706687231,
+            1.9982744149136995,
+            2.0748000975802388,
+            1.928614997459486,
+            1.9675119880991994,
+            2.048856025971064,
+            2.006784022371068,
+            1.9445772265808103,
+            2.0171430212619508,
+            2.2492390191921,
+            1.9938066409467532,
+            1.7961446578885931
+          ],
+          "generation_durations_s": [
+            3434.0,
+            2057.0,
+            2234.0,
+            2340.0,
+            2329.0,
+            2243.0,
+            2177.0,
+            2247.0,
+            2425.0,
+            2449.0,
+            2518.0,
+            2415.0,
+            2417.0,
+            2550.0,
+            2437.0,
+            2444.0,
+            2479.0,
+            2577.0,
+            2289.0,
+            2193.0
+          ],
+          "generations_completed": 20,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.126603391709321,
+            "duration_cv": 0.06352495093409907,
+            "mean_dry_mass_fold_change": 2.0140833348223492,
+            "mean_duration_s": 2384.5,
+            "window_generations": 4
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "reached_max_generations"
+        }
+      ],
+      "registry_deletion_percent": 45.05827505827506,
+      "search_seed": 587,
+      "source_run_id": "search-replication-20261109-no-retrieval-seed-587",
+      "state_id": "e19de6c5b5a7932492425da48f15b9039535601c8845ee06a41d453158a13294",
+      "study": "search-replication-20261109"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1720,
+      "method": "greedy_block",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.0323439633014582
+          ],
+          "generation_durations_s": [
+            2205.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.0323439633014582,
+            "mean_duration_s": 2205.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.0417974108980437
+          ],
+          "generation_durations_s": [
+            2858.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.0417974108980437,
+            "mean_duration_s": 2858.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.06025598252114
+          ],
+          "generation_durations_s": [
+            3434.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.06025598252114,
+            "mean_duration_s": 3434.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "registry_deletion_percent": 40.09324009324009,
+      "search_seed": 103,
+      "source_run_id": "baseline-depth-extension-20261110-greedy-block-seed-103",
+      "state_id": "c1b435d5e57facd24fff760afe07250755712d77e497f16a583c42da171ec4f8",
+      "study": "vecoli-depth-matched-20261111"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1705,
+      "method": "randomized_block",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.1144685454090588
+          ],
+          "generation_durations_s": [
+            2205.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.1144685454090588,
+            "mean_duration_s": 2205.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.1235027023474733
+          ],
+          "generation_durations_s": [
+            2860.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.1235027023474733,
+            "mean_duration_s": 2860.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.1330331994191387
+          ],
+          "generation_durations_s": [
+            3436.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.1330331994191387,
+            "mean_duration_s": 3436.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "registry_deletion_percent": 39.743589743589745,
+      "search_seed": 103,
+      "source_run_id": "baseline-depth-extension-20261110-randomized-block-seed-103",
+      "state_id": "a00af77b7087c60ae11e3828c0dcc14c84017c21b10271b7b34732d1263d8faf",
+      "study": "vecoli-depth-matched-20261111"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1405,
+      "method": "greedy_block",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.805290343945496,
+            1.925257642464768,
+            1.2087003640391607,
+            1.6172329262598157
+          ],
+          "generation_durations_s": [
+            2205.0,
+            2553.0,
+            2652.0,
+            9403.0
+          ],
+          "generations_completed": 4,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.5269091302801087,
+            "duration_cv": 0.715318772518384,
+            "mean_dry_mass_fold_change": 1.63912031917731,
+            "mean_duration_s": 4203.25,
+            "window_generations": 4
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.0910942191924007,
+            1.9311582557080342,
+            1.8097698194648215,
+            1.2489189552260456
+          ],
+          "generation_durations_s": [
+            2860.0,
+            2600.0,
+            2826.0,
+            3018.0
+          ],
+          "generations_completed": 4,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.9160952269807356,
+            "duration_cv": 0.05281131118271114,
+            "mean_dry_mass_fold_change": 1.7702353123978254,
+            "mean_duration_s": 2826.0,
+            "window_generations": 4
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            2.3960892940654253,
+            1.709217562267203,
+            2.202196237970573,
+            2.2066794977882376,
+            1.2306285061062747,
+            1.4785075009961088
+          ],
+          "generation_durations_s": [
+            3435.0,
+            2642.0,
+            3266.0,
+            2871.0,
+            2703.0,
+            8441.0
+          ],
+          "generations_completed": 6,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.7471393280935014,
+            "duration_cv": 0.5527175677702597,
+            "mean_dry_mass_fold_change": 1.7795029357152985,
+            "mean_duration_s": 4320.25,
+            "window_generations": 4
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        }
+      ],
+      "registry_deletion_percent": 32.75058275058275,
+      "search_seed": 227,
+      "source_run_id": "baseline-depth-extension-20261110-greedy-block-seed-227",
+      "state_id": "1e85144f2dca0b0e1a9af3fb955cb4f81eade8a53f002efcf4bbfa10d26eb453",
+      "study": "vecoli-depth-matched-20261111"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1715,
+      "method": "randomized_block",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.0551278208591401
+          ],
+          "generation_durations_s": [
+            2204.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.0551278208591401,
+            "mean_duration_s": 2204.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.0733190687300544
+          ],
+          "generation_durations_s": [
+            2860.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.0733190687300544,
+            "mean_duration_s": 2860.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.0953414130984465
+          ],
+          "generation_durations_s": [
+            3435.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.0953414130984465,
+            "mean_duration_s": 3435.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "registry_deletion_percent": 39.976689976689975,
+      "search_seed": 227,
+      "source_run_id": "baseline-depth-extension-20261110-randomized-block-seed-227",
+      "state_id": "0877e61be9493a1288017a511b505cb08a85ef92f0e5f267ef64e410df100691",
+      "study": "vecoli-depth-matched-20261111"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1715,
+      "method": "randomized_block",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.089540850647624
+          ],
+          "generation_durations_s": [
+            2205.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.089540850647624,
+            "mean_duration_s": 2205.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.0973796471173962
+          ],
+          "generation_durations_s": [
+            2859.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.0973796471173962,
+            "mean_duration_s": 2859.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.120403982506734
+          ],
+          "generation_durations_s": [
+            3434.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.120403982506734,
+            "mean_duration_s": 3434.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "registry_deletion_percent": 39.976689976689975,
+      "search_seed": 349,
+      "source_run_id": "baseline-depth-extension-20261110-randomized-block-seed-349",
+      "state_id": "8667363765837ac0bfbd4069bed4615f0b9d1970db6c7bf1b4f5f5f27df220c3",
+      "study": "vecoli-depth-matched-20261111"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1715,
+      "method": "greedy_block",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.089540850647624
+          ],
+          "generation_durations_s": [
+            2205.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.089540850647624,
+            "mean_duration_s": 2205.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.0973796471173962
+          ],
+          "generation_durations_s": [
+            2859.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.0973796471173962,
+            "mean_duration_s": 2859.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.120403982506734
+          ],
+          "generation_durations_s": [
+            3434.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.120403982506734,
+            "mean_duration_s": 3434.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "registry_deletion_percent": 39.976689976689975,
+      "search_seed": 349,
+      "source_run_id": "baseline-depth-extension-20261110-greedy-block-seed-349",
+      "state_id": "8667363765837ac0bfbd4069bed4615f0b9d1970db6c7bf1b4f5f5f27df220c3",
+      "study": "vecoli-depth-matched-20261111"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1705,
+      "method": "greedy_block",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [],
+          "generation_durations_s": [],
+          "generations_completed": 0,
+          "late_cycle_metrics": {
+            "window_generations": 0
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [],
+          "generation_durations_s": [],
+          "generations_completed": 0,
+          "late_cycle_metrics": {
+            "window_generations": 0
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [],
+          "generation_durations_s": [],
+          "generations_completed": 0,
+          "late_cycle_metrics": {
+            "window_generations": 0
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "registry_deletion_percent": 39.743589743589745,
+      "search_seed": 461,
+      "source_run_id": "baseline-depth-extension-20261110-greedy-block-seed-461",
+      "state_id": "90ae933ae0172a107b89f5cdc44b93fcfb61b68e2ed19f5a55d51f4512948903",
+      "study": "vecoli-depth-matched-20261111"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1705,
+      "method": "randomized_block",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [],
+          "generation_durations_s": [],
+          "generations_completed": 0,
+          "late_cycle_metrics": {
+            "window_generations": 0
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [],
+          "generation_durations_s": [],
+          "generations_completed": 0,
+          "late_cycle_metrics": {
+            "window_generations": 0
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [],
+          "generation_durations_s": [],
+          "generations_completed": 0,
+          "late_cycle_metrics": {
+            "window_generations": 0
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "registry_deletion_percent": 39.743589743589745,
+      "search_seed": 461,
+      "source_run_id": "baseline-depth-extension-20261110-randomized-block-seed-461",
+      "state_id": "3858ba44ec74ff307bd4983f94a73dee60bac8691b070b1f40e7f9b203bbb4d6",
+      "study": "vecoli-depth-matched-20261111"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1715,
+      "method": "greedy_block",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.057220299312632
+          ],
+          "generation_durations_s": [
+            2205.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.057220299312632,
+            "mean_duration_s": 2205.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.067480326733241
+          ],
+          "generation_durations_s": [
+            2860.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.067480326733241,
+            "mean_duration_s": 2860.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.0787450203440556
+          ],
+          "generation_durations_s": [
+            3435.0
+          ],
+          "generations_completed": 1,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 1.0,
+            "duration_cv": 0.0,
+            "mean_dry_mass_fold_change": 1.0787450203440556,
+            "mean_duration_s": 3435.0,
+            "window_generations": 1
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        }
+      ],
+      "registry_deletion_percent": 39.976689976689975,
+      "search_seed": 587,
+      "source_run_id": "baseline-depth-extension-20261110-greedy-block-seed-587",
+      "state_id": "b2fa9470a255de6d647809120bf28d7571a910ad9a8d31ce108115837ec17f02",
+      "study": "vecoli-depth-matched-20261111"
+    },
+    {
+      "all_three_reached20": false,
+      "deletions": 1715,
+      "method": "randomized_block",
+      "outcomes": [
+        {
+          "dry_mass_fold_changes": [
+            1.3628498853158066,
+            1.288732167464152
+          ],
+          "generation_durations_s": [
+            2206.0,
+            3682.0
+          ],
+          "generations_completed": 2,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.6802963325254534,
+            "duration_cv": 0.250679347826087,
+            "mean_dry_mass_fold_change": 1.3257910263899793,
+            "mean_duration_s": 2944.0,
+            "window_generations": 2
+          },
+          "simulation_seed": 101,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "nondivision_max_duration"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.438746102767632,
+            1.3792612698298072
+          ],
+          "generation_durations_s": [
+            2861.0,
+            5521.0
+          ],
+          "generations_completed": 2,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.7200546268417078,
+            "duration_cv": 0.3173466952994512,
+            "mean_dry_mass_fold_change": 1.4090036862987196,
+            "mean_duration_s": 4191.0,
+            "window_generations": 2
+          },
+          "simulation_seed": 211,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        },
+        {
+          "dry_mass_fold_changes": [
+            1.505664577796197,
+            1.501884318492905
+          ],
+          "generation_durations_s": [
+            3436.0,
+            7893.0
+          ],
+          "generations_completed": 2,
+          "late_cycle_metrics": {
+            "birth_mass_last_over_first": 0.752937088304533,
+            "duration_cv": 0.3934151293141495,
+            "mean_dry_mass_fold_change": 1.503774448144551,
+            "mean_duration_s": 5664.5,
+            "window_generations": 2
+          },
+          "simulation_seed": 307,
+          "solver_assisted_cells": 0,
+          "terminal_reason": "model_exception"
+        }
+      ],
+      "registry_deletion_percent": 39.976689976689975,
+      "search_seed": 587,
+      "source_run_id": "baseline-depth-extension-20261110-randomized-block-seed-587",
+      "state_id": "6f7d1aaeeb3ce0882a89f883048038e08b809a105699a6ef7ee2e29c256c44e8",
+      "study": "vecoli-depth-matched-20261111"
+    }
+  ],
+  "control_source": {
+    "bytes": 1773947,
+    "full_get_verified": true,
+    "sha256": "60b282c74b3b028b9fa5d48ddd421e3591ca35c0f42ed8d6096aef13144d7fd5",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/60b282c74b3b028b9fa5d48ddd421e3591ca35c0f42ed8d6096aef13144d7fd5.json",
+    "verified_at": "2026-11-11T06:23:41.890063+00:00"
+  },
+  "controls": [
+    {
+      "deletion_count": 0,
+      "generations_completed": 20,
+      "name": "mg1655-control",
+      "simulation_seed": 101,
+      "state_id": "e1c094af1688db37bd6af27237d63462b79d769e3dc494d3fff0cb030f674004",
+      "terminal_reason": "reached_max_generations"
+    },
+    {
+      "deletion_count": 1030,
+      "generations_completed": 20,
+      "name": "starting-genome-control",
+      "simulation_seed": 101,
+      "state_id": "11a12418d088502a6d28f143e2a1b98fdb308e592d1be3009748b7eed3480343",
+      "terminal_reason": "reached_max_generations"
+    },
+    {
+      "deletion_count": 0,
+      "generations_completed": 20,
+      "name": "mg1655-control",
+      "simulation_seed": 211,
+      "state_id": "e1c094af1688db37bd6af27237d63462b79d769e3dc494d3fff0cb030f674004",
+      "terminal_reason": "reached_max_generations"
+    },
+    {
+      "deletion_count": 1030,
+      "generations_completed": 20,
+      "name": "starting-genome-control",
+      "simulation_seed": 211,
+      "state_id": "11a12418d088502a6d28f143e2a1b98fdb308e592d1be3009748b7eed3480343",
+      "terminal_reason": "reached_max_generations"
+    },
+    {
+      "deletion_count": 0,
+      "generations_completed": 20,
+      "name": "mg1655-control",
+      "simulation_seed": 307,
+      "state_id": "e1c094af1688db37bd6af27237d63462b79d769e3dc494d3fff0cb030f674004",
+      "terminal_reason": "reached_max_generations"
+    },
+    {
+      "deletion_count": 1030,
+      "generations_completed": 20,
+      "name": "starting-genome-control",
+      "simulation_seed": 307,
+      "state_id": "11a12418d088502a6d28f143e2a1b98fdb308e592d1be3009748b7eed3480343",
+      "terminal_reason": "reached_max_generations"
+    }
+  ],
+  "experiment_id": "vecoli-depth-matched-20261111",
+  "interpretation": [
+    "Nondivision means no next division within the preset 10800 simulated seconds, not demonstrated cell death.",
+    "Numerical/model exceptions remain inconclusive for biological viability; no repairs or reruns were performed.",
+    "Original agent results are reused unchanged; baseline selection and stopping were exploratory amendments, not an equal-budget superiority test.",
+    "Greedy349 and randomized349 are the same genotype and share three trajectories; they are not independent validation replicates.",
+    "The 1405-deletion greedy227 shortfall is retained. Other baseline nominees have1705\u20131720 total deletions.",
+    "Counts include the common1030 deletions. Percentages use4290 registry genes, not a model-gene denominator.",
+    "Twenty model generations are computational evidence, not laboratory viability."
+  ],
+  "method_summary": {
+    "adaptive_literature": {
+      "all_three_reached20": 4,
+      "assigned_searches": 5,
+      "terminal_counts": {
+        "model_exception": 2,
+        "nondivision_max_duration": 1,
+        "reached_max_generations": 12
+      }
+    },
+    "frozen_dossier": {
+      "all_three_reached20": 2,
+      "assigned_searches": 5,
+      "terminal_counts": {
+        "model_exception": 5,
+        "nondivision_max_duration": 2,
+        "reached_max_generations": 8
+      }
+    },
+    "greedy_block": {
+      "all_three_reached20": 0,
+      "assigned_searches": 5,
+      "terminal_counts": {
+        "model_exception": 2,
+        "nondivision_max_duration": 13
+      }
+    },
+    "no_retrieval": {
+      "all_three_reached20": 2,
+      "assigned_searches": 5,
+      "terminal_counts": {
+        "model_exception": 5,
+        "nondivision_max_duration": 4,
+        "reached_max_generations": 6
+      }
+    },
+    "randomized_block": {
+      "all_three_reached20": 0,
+      "assigned_searches": 5,
+      "terminal_counts": {
+        "model_exception": 2,
+        "nondivision_max_duration": 13
+      }
+    }
+  },
+  "original_verified_summary": {
+    "bytes": 89745,
+    "full_get_verified": true,
+    "sha256": "be6b779d3e42c79e71f96b02185bb4d6592af1b8278335b1dd8fb0318faed467",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/metadata/be6b779d3e42c79e71f96b02185bb4d6592af1b8278335b1dd8fb0318faed467.json",
+    "verified_at": "2026-11-11T06:23:41.890063+00:00"
+  },
+  "physical_baseline_division_range": {
+    "model_exception": [
+      2,
+      6
+    ],
+    "nondivision": [
+      0,
+      4
+    ]
+  },
+  "science_finished_at": "2026-11-11T05:22:21.864104+00:00",
+  "science_status": "completed_with_exceptions",
+  "source_sha256": {
+    "runs/search-replication-20261109/parallel-validation/finalization/metadata-101/progress.json": "e965d0388e460f61c4fbe14518790438efeeee071bd679279d45c75d02d5ba78",
+    "runs/search-replication-20261109/parallel-validation/finalization/metadata-211/progress.json": "b6fc08879f6d03ce2f7e7cfb8847feb2ef213a30f95c2429c3768812cbc3e6d6",
+    "runs/search-replication-20261109/parallel-validation/finalization/metadata-307/progress.json": "e08912eb15a347c1cbe69c5d61b8cec2deb084a3b4ced538f022fe5d7598af16",
+    "runs/vecoli-depth-matched-20261111/final-checkpoint-metadata.json": "60b282c74b3b028b9fa5d48ddd421e3591ca35c0f42ed8d6096aef13144d7fd5",
+    "runs/vecoli-depth-matched-20261111/matched-nominations.json": "672568e925e36606f0d8fcf5df396ae8c139eb9ea44d3042c46c1b7c003ccce3",
+    "runs/vecoli-depth-matched-20261111/selection-amendment.json": "1fe6c567a15745d00fdd4317c6c5d593b4901d5bdc18a312e0aeb09e0fd9c904"
+  },
+  "totals": {
+    "active_cells": 0,
+    "active_workers": 0,
+    "baseline_terminal_counts": {
+      "model_exception": 4,
+      "nondivision_max_duration": 23
+    },
+    "completed_divisions": 155,
+    "controls_at20": 6,
+    "lineages_at20": 6,
+    "physical_baseline_lineages": 27
+  }
+}

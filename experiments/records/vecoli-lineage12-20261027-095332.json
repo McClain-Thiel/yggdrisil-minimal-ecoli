@@ -1,0 +1,105 @@
+{
+  "analysis": "runs/vecoli-lineage12-20261027-095332/final-validation.json",
+  "attempts": [
+    {
+      "controller_source": {
+        "path": "/Users/mcclainthiel/Documents/ChatGPT/yggdrisil/runs/vecoli-lineage12-20261027-095332/source/track_vecoli_experiment.py",
+        "sha256": "a10e0652c389f6d832d810146a4d5329c45c6943f0ea981664ddce689704acd7",
+        "uploaded": false
+      },
+      "data_artifact": "mcclain/yggdrisil/vecoli-lineage12-20261027-095332-data:v1",
+      "finished_at": "2026-10-27T10:03:51.082720+00:00",
+      "fix": "Native vEcoli Python is now first in child PATH; VIRTUAL_ENV matches it.",
+      "reason": "createVariants selected application Python; vivarium unavailable. No cells ran.",
+      "started_at": "2026-10-27T10:03:16.508898+00:00",
+      "status": "setup_failed",
+      "workflow_exit_code": 1
+    }
+  ],
+  "backup_verification": "runs/vecoli-lineage12-20261027-095332/backup-verification-report.json",
+  "completion_monitor": {
+    "id": "check-12-generation-vecoli-validation",
+    "status": "deleted"
+  },
+  "config": "runs/vecoli-lineage12-20261027-095332/workflow.json",
+  "controller_pid": 58972,
+  "created_at": "2026-10-27T09:53:32.319431+00:00",
+  "data_backup": {
+    "completed_cell_cycles": 84,
+    "final_audit_included": true,
+    "parent_artifact": "mcclain/yggdrisil/genomic-search-20261027-complete-data:v1",
+    "progress_sha256": "c992ca0fc0fc7b7b294622f53517122dbb153405c7e9705295ac275df2f517b2",
+    "scope": "Closed cell outputs; running cells are backed up after completion.",
+    "status": "verified",
+    "verified_at": "2026-10-27T14:25:02.723916+00:00",
+    "verified_immutable_output_bytes": 371974637,
+    "verified_immutable_output_files": 1381,
+    "wandb_artifact": "mcclain/yggdrisil/vecoli-lineage12-20261027-095332-data:v82"
+  },
+  "error": null,
+  "event_log": "runs/vecoli-lineage12-20261027-095332/events.jsonl",
+  "failed_at": null,
+  "finished_at": "2026-10-27T14:18:07.626390+00:00",
+  "genome_reference": "NC_000913.3",
+  "genotype_count": 7,
+  "id": "vecoli-lineage12-20261027-095332",
+  "kind": "whole_cell_validation",
+  "local_root": "runs/vecoli-lineage12-20261027-095332",
+  "manifest": "runs/vecoli-lineage12-20261027-095332/manifest.json",
+  "model_budget_usd": 0,
+  "new_edison_jobs": 0,
+  "parent_ids": [
+    "long-genomic-search-20261027-074708",
+    "vecoli-screen-20261027"
+  ],
+  "progress": "runs/vecoli-lineage12-20261027-095332/progress.json",
+  "purpose": "12-generation persistence screen of seven frozen genotypes; no further agent search",
+  "results": "runs/vecoli-lineage12-20261027-095332/results.json",
+  "s3_migration": {
+    "group_indexes": {
+      "application/cache/vecoli-lineage12-20261027-095332": {
+        "bytes": 5450,
+        "sha256": "91267c67ae2f6c87db9ee29177bf7bb8b3f964e43ec1e78cc5d35de603502621",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-91267c67ae2f6c87db9ee29177bf7bb8b3f964e43ec1e78cc5d35de603502621.json",
+        "verified_at": "2026-11-05T22:51:21.271461+00:00"
+      },
+      "application/runs/vecoli-lineage12-20261027-095332": {
+        "bytes": 13776,
+        "sha256": "d088876f2374de841e73c66cbea5a57d0b4a57355f0aa8c4614a0ab322bda808",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-d088876f2374de841e73c66cbea5a57d0b4a57355f0aa8c4614a0ab322bda808.json",
+        "verified_at": "2026-11-05T22:51:08.852180+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "seed_count": 1,
+  "started_at": "2026-10-27T10:11:34.988886+00:00",
+  "status": "completed",
+  "target_generations": 12,
+  "validation_summary": {
+    "active_targeted_transcripts_detected": 0,
+    "daughter_states_checked": 168,
+    "finite_emitted_mass_time_values": 1038672,
+    "late_cycle_window_generations": [
+      9,
+      10,
+      11,
+      12
+    ],
+    "runtime_warning_count": 2528,
+    "single_seed": true,
+    "successful_cell_cycles": 84
+  },
+  "wandb_run_urls": [
+    "https://forge.coreweave.com/wandb/mcclain/yggdrisil/runs/5c67c34d"
+  ],
+  "workflow_exit_code": 0,
+  "workflow_log": "runs/vecoli-lineage12-20261027-095332/workflow.log"
+}

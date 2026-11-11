@@ -423,6 +423,29 @@ def test_lineage_summary_distinguishes_division_from_nondivision(
 
     assert combined_result["finalists"] == result["finalists"]
 
+    benchmark = tmp_path / "catalog.json"
+    benchmark.write_text('{"frozen": "published deletion projections"}\n')
+    benchmark_payload = json.loads(manifest.read_text())
+    benchmark_payload.pop("selection")
+    benchmark_payload.pop("application")
+    benchmark_payload["benchmark_inputs"] = {
+        "catalog": {
+            "path": str(benchmark),
+            "sha256": hashlib.sha256(benchmark.read_bytes()).hexdigest(),
+        }
+    }
+    benchmark_manifest = tmp_path / "benchmark-manifest.json"
+    benchmark_manifest.write_text(json.dumps(benchmark_payload))
+    benchmark_result = summarize_vecoli_lineages(
+        benchmark_manifest, tmp_path / "benchmark-result.json"
+    )
+    assert benchmark_result["finalists"] == result["finalists"]
+    benchmark.write_text("changed benchmark\n")
+    with pytest.raises(ValueError, match="benchmark catalog hash"):
+        summarize_vecoli_lineages(
+            benchmark_manifest, tmp_path / "changed-benchmark-result.json"
+        )
+
     for source in (selection_source, registry, adapter, config):
         frozen = source.read_bytes()
         source.write_text("changed input\n")

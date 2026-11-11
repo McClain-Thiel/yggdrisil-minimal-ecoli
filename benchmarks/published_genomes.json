@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "reference": {
+    "name": "MG1655",
+    "accession": "NC_000913.3",
+    "filename": "MG1655.gbff.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.gbff.gz",
+    "sha256": "cbcc40a9859312cbcdbeb3df484ee471dfe354c5cd8f28056b48431353b28384",
+    "sequence_length_bp": 4641652
+  },
+  "ms56": {
+    "filename": "MS56_Park_2014_supplement.pdf",
+    "url": "https://media.springernature.com/original/springer-static/esm/art%3A10.1007%2Fs00253-014-5739-y/MediaObjects/253_2014_5739_MOESM1_ESM.pdf",
+    "sha256": "b2b45b1733a212071a07af2a12307be241c5ee72fe1d437537c2f7b8b6b2c1b7",
+    "doi": "10.1007/s00253-014-5739-y",
+    "table": "Supplementary Table S3",
+    "published_locus_tag_count": 1005,
+    "native_parent": "MG1655",
+    "limitations": [
+      "The source is a deleted-locus table, not a complete genome sequence or deletion-boundary specification.",
+      "Growth conditions and a measured growth phenotype are not established by this table alone.",
+      "Locus tags absent from the current protein-coding registry must remain explicitly excluded."
+    ]
+  },
+  "genomes": {
+    "W3110": {
+      "accession": "AP009048.1",
+      "filename": "W3110.embl",
+      "url": "https://www.ebi.ac.uk/ena/browser/api/embl/AP009048.1?download=true",
+      "sha256": "820983fbf68c66fd902d3d5e13ebe152616210bdde1acb478748d1957e3ced82",
+      "sequence_length_bp": 4646332,
+      "native_parent": null,
+      "role": "DGF-298 parent-background control",
+      "published_condition": null,
+      "background_notes": [
+        "W3110 and MG1655 differ in sequence and chromosome organization. Reference-relative absences are not necessarily engineered deletions."
+      ]
+    },
+    "DGF298": {
+      "accession": "CP127119.1",
+      "filename": "DGF298.embl",
+      "url": "https://www.ebi.ac.uk/ena/browser/api/embl/CP127119.1?download=true",
+      "sha256": "602d87b90b75f1cbcb032c888f9ec5072336aa04931a384a5884b88242081057",
+      "sequence_length_bp": 2991126,
+      "native_parent": "W3110",
+      "role": "published reduced genome",
+      "doi": "10.1128/mra.00665-23",
+      "phenotype_doi": "10.1128/mbio.00873-24",
+      "published_model_disagreement": {
+        "model": "iML1515",
+        "bottleneck": "glycolaldehyde disposal during folate synthesis",
+        "diagnostic_reaction": "SK_gcald_c",
+        "interpretation": "The phenotype study reports a no-growth prediction inconsistent with observed growth; an artificial glycolaldehyde sink restores model growth. This is a diagnostic model assumption, not an established biological reaction."
+      },
+      "published_condition": {
+        "medium": "M9/MOPS minimal glucose and other media examined in the phenotype study",
+        "temperature_c": 37,
+        "quantitative_match_to_current_evaluators": false
+      },
+      "background_notes": [
+        "The phenotype study reports functional E. coli B alleles of ilvG and pyrE in DGF-298 and its repaired W3110S control.",
+        "The deposited DGF-298 record and subsequently cleaned/evolved DGF-C derivatives are distinct genotypes.",
+        "A deletion-only projection on MG1655 does not encode these allele changes or the complete W3110 background."
+      ]
+    },
+    "D33a": {
+      "accession": "AP027453.1",
+      "filename": "D33a.embl",
+      "url": "https://www.ebi.ac.uk/ena/browser/api/embl/AP027453.1?download=true",
+      "sha256": "9eddc4c5417e220dc7ab32db827a431dc78026655078e721f64ba2d392bf46ca",
+      "sequence_length_bp": 2828911,
+      "native_parent": "MG1655",
+      "role": "published reduction-lineage ancestor",
+      "doi": "10.3389/fmicb.2023.1189877",
+      "published_condition": {
+        "medium": "AM3 rich medium",
+        "temperature_c": 37,
+        "doubling_time_minutes": 170.0,
+        "doubling_time_se_minutes": 9.4,
+        "quantitative_match_to_current_evaluators": false
+      },
+      "background_notes": [
+        "Sequencing identifies substitutions, small indels and chromosome rearrangements in addition to the large deletions."
+      ]
+    },
+    "D37c16": {
+      "accession": "AP027460.1",
+      "filename": "D37c16.embl",
+      "url": "https://www.ebi.ac.uk/ena/browser/api/embl/AP027460.1?download=true",
+      "sha256": "a1d3d69a0bebfeb9ae77650ac7d11aff2d53d43d4a8d0e73420c1e027bb0f287",
+      "sequence_length_bp": 2645552,
+      "native_parent": "MG1655 via D33a, D33b and D37b",
+      "role": "published evolved parent of D41c",
+      "doi": "10.3389/fmicb.2023.1189877",
+      "published_condition": {
+        "medium": "AM3 rich medium",
+        "temperature_c": 37,
+        "doubling_time_minutes": 40.0,
+        "doubling_time_se_minutes": 0.0,
+        "quantitative_match_to_current_evaluators": false
+      },
+      "background_notes": [
+        "This strain followed adaptive laboratory evolution and is not specified by its deletion set alone."
+      ]
+    },
+    "D41c": {
+      "accession": "AP027461.1",
+      "filename": "D41c.embl",
+      "url": "https://www.ebi.ac.uk/ena/browser/api/embl/AP027461.1?download=true",
+      "sha256": "4e175b3d4223ca8ed4c355eb957f2185bedd24dbc531e4bf1c9bfc6d8a54a7f9",
+      "sequence_length_bp": 2600243,
+      "native_parent": "D37c16",
+      "role": "published reduced genome",
+      "doi": "10.3389/fmicb.2023.1189877",
+      "published_condition": {
+        "medium": "AM3 rich medium",
+        "temperature_c": 37,
+        "doubling_time_minutes": 136.7,
+        "doubling_time_se_minutes": 29.9,
+        "quantitative_match_to_current_evaluators": false
+      },
+      "background_notes": [
+        "This genome retains an evolved genetic background with substitutions, small indels and rearrangements that GenomeState does not represent.",
+        "AM3 growth is not a positive control for growth in unsupplemented M9."
+      ]
+    }
+  }
+}

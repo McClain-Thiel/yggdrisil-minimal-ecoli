@@ -1,0 +1,35 @@
+{
+  "child_runs": [],
+  "data_backup": {
+    "note": "Selected local scientific data verified in S3; exact archives are linked by s3_migration. Source, credentials and rebuildable caches are excluded.",
+    "prior_note": "Local records inventoried; no complete remote data backup verified by this registry.",
+    "status": "verified"
+  },
+  "id": "genomic-live-research-20261026-155420",
+  "kind": "historical_validation_or_pilot",
+  "local_root": "runs/genomic-live-research-20261026-155420",
+  "records": [
+    "runs/genomic-live-research-20261026-155420/audit_summary.json",
+    "runs/genomic-live-research-20261026-155420/config.json"
+  ],
+  "s3_migration": {
+    "group_indexes": {
+      "application/runs/genomic-live-research-20261026-155420": {
+        "bytes": 1270,
+        "sha256": "e3ac77ec3198a4e418bf29323407eea43d863ffe65cba3febab4c11e62f6bbc1",
+        "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/group-e3ac77ec3198a4e418bf29323407eea43d863ffe65cba3febab4c11e62f6bbc1.json",
+        "verified_at": "2026-11-05T22:50:45.703472+00:00"
+      }
+    },
+    "local_data": "Archived scientific working files removed. Historical local paths are restore paths; code, credentials and explicitly retained caches remain.",
+    "member_verification": {
+      "bytes": 70476,
+      "sha256": "20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d",
+      "uri": "s3://phd-research-storage-1758274488/yggdrisil/migrations/20261105/index/member-audit-20d7a14c2f1bbc8b733509ea884a7cf0e07a277de3f04f66855b3167e237729d.json",
+      "verified_at": "2026-11-05T22:51:28.122870+00:00"
+    },
+    "status": "verified"
+  },
+  "status": "historical_recorded",
+  "wandb_run_urls": []
+}
