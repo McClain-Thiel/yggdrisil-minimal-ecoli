@@ -231,7 +231,7 @@ class BaselineArchive:
                     target = members / "literature" / path.name
                     target.parent.mkdir(exist_ok=True)
                     target.write_bytes(path.read_bytes())
-            files = []
+            files: list[dict[str, Any]] = []
             for path in sorted(members.rglob("*")):
                 if path.is_file():
                     screen(path, self.secrets)

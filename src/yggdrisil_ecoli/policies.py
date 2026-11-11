@@ -6,6 +6,7 @@ import hashlib
 import math
 import random
 from collections.abc import Callable, Mapping, Sequence
+from typing import cast
 
 import pandas as pd
 from yggdrisil import BestFirstPolicy, Decision, Proposal, RunStatus
@@ -153,7 +154,7 @@ class BlockDeletionPolicy:
         evidence = {name: records[key] for name, key in self.identities.items()}
         if not passes_growth_gates(evidence):
             return None
-        growth = float(evidence["fba"].metrics["growth_rate"])
+        growth = float(cast(float, evidence["fba"].metrics["growth_rate"]))
         if not math.isfinite(growth):
             raise ValueError("Nonfinite feasible FBA growth")
         return (-len(node.state.deleted_genes), -growth, node.state_id)
