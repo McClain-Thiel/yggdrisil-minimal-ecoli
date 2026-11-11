@@ -442,27 +442,27 @@
       "status": "completed_with_exceptions_verified"
     },
     {
-      "bytes": 116683,
+      "bytes": 118346,
       "id": "baseline-depth-extension-20261110",
       "path": "records/baseline-depth-extension-20261110.json",
-      "sha256": "4ab51c0fc779cacb545f43e59a2a7807f64ba337f3ae967ed1f2b96db7442f63",
+      "sha256": "40c3b807fb6a834fbbd2fdc5d0c4d1e3d3c0fcdb262e065df42d4f311b5d96b3",
       "status": "completed_with_user_stopped_searches_verified"
     },
     {
-      "bytes": 93021,
+      "bytes": 94684,
       "id": "vecoli-depth-matched-20261111",
       "path": "records/vecoli-depth-matched-20261111.json",
-      "sha256": "1ca1634788235dc295b0d1456fb483f00a49873575ddaf21b35b86f2943501bb",
+      "sha256": "b29d8912e106781e31c3e0d91c7dcc53dcfc115408dbd62873678162a8d9a2a2",
       "status": "completed_with_exceptions_verified"
     }
   ],
   "export_schema_version": 1,
   "full_ledger": {
-    "bytes": 1081934,
+    "bytes": 1085444,
     "full_get_verified": true,
-    "sha256": "9c94007f78310b4c29f2dfe1f5c73ec3d860f1089d2fadd6aef58f8e0acac8b9",
-    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/9c94007f78310b4c29f2dfe1f5c73ec3d860f1089d2fadd6aef58f8e0acac8b9.json",
-    "verified_at": "2026-11-11T09:51:05.622876+00:00"
+    "sha256": "0ebbb7bcd4ffc612df1182226e3438c378adf76a394d181f98cfc937279b6c62",
+    "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/0ebbb7bcd4ffc612df1182226e3438c378adf76a394d181f98cfc937279b6c62.json",
+    "verified_at": "2026-11-11T09:53:25.527532+00:00"
   },
   "ledger_metadata": {
     "catalog_corrections": [
@@ -662,6 +662,6 @@
       "progress": "Active experiment controllers run remotely; record remote progress/events and verified S3 checkpoints here.",
       "registry": "This compact catalog stays in Git. Historical local data paths are restore paths after migration; bulk data and complete inventories are in private S3."
     },
-    "updated_at": "2026-11-11T09:51:05.622876+00:00"
+    "updated_at": "2026-11-11T09:53:25.527532+00:00"
   }
 }

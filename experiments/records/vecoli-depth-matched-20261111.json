@@ -869,7 +869,30 @@
       "uri": "s3://phd-research-storage-1758274488/yggdrisil/experiments/vecoli-depth-matched-20261111/publication/c5098f1f78e522750dcce9e3cad9160b86b8413a1e41b80adbb994ad1ed7292e.json",
       "verified_at": "2026-11-11T09:51:05.622876+00:00"
     },
-    "git_status": "prepared_for_user_authorized_push",
+    "git": {
+      "at": "2026-11-11T09:53:25.527532+00:00",
+      "branch": "codex/literature-ablation-pilot",
+      "catalog_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/blob/0271a3faddc44638b9dbeca1d564dc68a75c1e39/experiments/comparisons/depth-matched-data-index-20261111.json",
+      "commit_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/commit/0271a3faddc44638b9dbeca1d564dc68a75c1e39",
+      "figure_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/blob/0271a3faddc44638b9dbeca1d564dc68a75c1e39/experiments/figures/depth-matched-20261111.png",
+      "github_remote_head_verified": true,
+      "methods_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/blob/0271a3faddc44638b9dbeca1d564dc68a75c1e39/methods/20261111/README.md",
+      "png_sha256": "80cf0c4b92cbb5994ef8b55b3f29e2eb928a1563aaddcea9834128e5b6e85993",
+      "portable_figure_rebuild": "PNG byte-identical to the archived original",
+      "public_payload": "Screened source, compact metadata and figures only; no credentials or bulk data.",
+      "pull_request": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/pull/9",
+      "results_url": "https://github.com/McClain-Thiel/yggdrisil-minimal-ecoli/blob/0271a3faddc44638b9dbeca1d564dc68a75c1e39/experiments/README.md",
+      "source_results_commit": "0271a3faddc44638b9dbeca1d564dc68a75c1e39",
+      "status": "published_verified",
+      "tests": {
+        "lossless_ledger_restore": "passed",
+        "pytest_passed": 55,
+        "ruff": "passed",
+        "subtests_passed": 52
+      },
+      "verification": "GitHub PR head API and git ls-remote matched the pushed commit."
+    },
+    "git_status": "published_verified",
     "method_manifest": {
       "path": "methods/20261111/manifest.json",
       "sha256": "009509d5a026c3edd7da17468fd0738cc0491328b5f311206f45225c6a609579"
@@ -1769,7 +1792,7 @@
     "user_request": "Aim for the mean or a bit less than the other modes; then validate with vEcoli."
   },
   "status": "completed_with_exceptions_verified",
-  "updated_at": "2026-11-11T09:51:05.622876+00:00",
+  "updated_at": "2026-11-11T09:53:25.527532+00:00",
   "worker_lifecycle": {
     "at": "2026-11-11T05:10:43.288339+00:00",
     "instances": [
